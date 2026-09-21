@@ -1,0 +1,77 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Packaging and build artifacts
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# IDEs and editors
+.idea/
+.vscode/
+*.iml
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Model weights and ML checkpoints
+*.ckpt
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.onnx
+checkpoints/
+models/
+weights/
+
+# Hugging Face and ML framework caches
+.cache/
+.huggingface/
+huggingface/
+wandb/
+mlruns/
+
+# Datasets and lab-local data
+/datasets/
+/data/
+labs/*/data/*
+!labs/*/data/.gitkeep
+
+# Vector databases and indexes
+vector_db/
+vector_store/
+chroma/
+chroma_db/
+*.faiss
+
+# Generated artifacts
+/outputs/
+/results/
+/generated/
+/runs/
+labs/*/outputs/*
+!labs/*/outputs/.gitkeep
+
+# Operating-system files
+.DS_Store
+Thumbs.db
+desktop.ini
