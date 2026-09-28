@@ -1,0 +1,152 @@
+[
+  {
+    "scenario_id": "role",
+    "category": "no_tool",
+    "user_input": "In one sentence, explain your role as an assistant.",
+    "tool_required": false,
+    "evaluation_type": "evidence_rubric_with_manual_review",
+    "expected_facts": [],
+    "with_tools": true
+  },
+  {
+    "scenario_id": "lab4",
+    "category": "lookup",
+    "user_input": "Which Stable Diffusion model was used in Lab 4?",
+    "tool_required": true,
+    "evaluation_type": "evidence_rubric_with_manual_review",
+    "expected_facts": [
+      "stable-diffusion-v1-5"
+    ],
+    "with_tools": true
+  },
+  {
+    "scenario_id": "lab5",
+    "category": "lookup",
+    "user_input": "Which multimodal model was used in Lab 5?",
+    "tool_required": true,
+    "evaluation_type": "evidence_rubric_with_manual_review",
+    "expected_facts": [
+      "llava-hf/llava-interleave-qwen-0.5b-hf"
+    ],
+    "with_tools": true
+  },
+  {
+    "scenario_id": "cross",
+    "category": "cross_file",
+    "user_input": "Compare the core model/system used in Lab 4 and Lab 5 and briefly explain what each was used for. Cite the relevant local report files.",
+    "tool_required": true,
+    "evaluation_type": "evidence_rubric_with_manual_review",
+    "expected_facts": [
+      "stable-diffusion-v1-5",
+      "llava-interleave-qwen-0.5b-hf"
+    ],
+    "with_tools": true
+  },
+  {
+    "scenario_id": "multi",
+    "category": "multi_step",
+    "user_input": "According to the local reports, how many generated/inference outputs were produced in Lab 4 and Lab 5? Which laboratory produced more, and by how many? Cite the source files.",
+    "tool_required": true,
+    "evaluation_type": "evidence_rubric_with_manual_review",
+    "expected_facts": [
+      "13",
+      "17",
+      "4"
+    ],
+    "with_tools": true
+  },
+  {
+    "scenario_id": "memory_set",
+    "category": "memory",
+    "user_input": "For this conversation, call Lab 5 'Vision Lab'.",
+    "tool_required": false,
+    "evaluation_type": "evidence_rubric_with_manual_review",
+    "expected_facts": [],
+    "with_tools": true,
+    "session": "A"
+  },
+  {
+    "scenario_id": "memory_recall",
+    "category": "memory",
+    "user_input": "Which model was used in Vision Lab?",
+    "tool_required": true,
+    "evaluation_type": "evidence_rubric_with_manual_review",
+    "expected_facts": [
+      "llava-hf/llava-interleave-qwen-0.5b-hf"
+    ],
+    "with_tools": true,
+    "session": "A"
+  },
+  {
+    "scenario_id": "memory_isolated",
+    "category": "isolation",
+    "user_input": "Which model was used in Vision Lab?",
+    "tool_required": false,
+    "evaluation_type": "evidence_rubric_with_manual_review",
+    "expected_facts": [],
+    "with_tools": true,
+    "session": "B"
+  },
+  {
+    "scenario_id": "unsupported",
+    "category": "unsupported",
+    "user_input": "What was the exact outdoor temperature in Lviv when Lab 4 was executed?",
+    "tool_required": true,
+    "evaluation_type": "evidence_rubric_with_manual_review",
+    "expected_facts": [],
+    "with_tools": true
+  },
+  {
+    "scenario_id": "baseline",
+    "category": "comparison",
+    "user_input": "According to the local reports, how many generated/inference outputs were produced in Lab 4 and Lab 5? Which laboratory produced more, and by how many? Cite the source files.",
+    "tool_required": true,
+    "evaluation_type": "evidence_rubric_with_manual_review",
+    "expected_facts": [
+      "13",
+      "17",
+      "4"
+    ],
+    "with_tools": false
+  },
+  {
+    "scenario_id": "comparison_tools",
+    "category": "comparison",
+    "user_input": "According to the local reports, how many generated/inference outputs were produced in Lab 4 and Lab 5? Which laboratory produced more, and by how many? Cite the source files.",
+    "tool_required": true,
+    "evaluation_type": "evidence_rubric_with_manual_review",
+    "expected_facts": [
+      "13",
+      "17",
+      "4"
+    ],
+    "with_tools": true
+  },
+  {
+    "scenario_id": "numeric_extended",
+    "category": "multi_step",
+    "user_input": "Across Lab 4 and Lab 5, what is the combined total number of unique generated/inference outputs, and what percentage of that total came from Lab 5? Give the percentage to four decimal places and cite the local report files.",
+    "tool_required": true,
+    "evaluation_type": "evidence_rubric_with_manual_review",
+    "expected_facts": [
+      "13",
+      "17",
+      "30",
+      "56.6667"
+    ],
+    "with_tools": true
+  },
+  {
+    "scenario_id": "calculator_probe",
+    "category": "guided_diagnostic",
+    "user_input": "Find the number of unique generated/inference outputs in Lab 4 and Lab 5 in the local reports. Then call the calculate function to compute their sum. Cite the report filenames and return the calculator result.",
+    "tool_required": true,
+    "evaluation_type": "evidence_rubric_with_manual_review",
+    "expected_facts": [
+      "13",
+      "17",
+      "30"
+    ],
+    "with_tools": true
+  }
+]

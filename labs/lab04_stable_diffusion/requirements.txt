@@ -1,0 +1,16 @@
+# Keep the existing CUDA-enabled torch wheel. Install it separately on a new machine.
+# Tested: torch 2.14.0+cu130, Python 3.13.5; do not blindly replace torch.
+diffusers==0.40.0
+transformers==5.17.0
+accelerate==1.15.0
+safetensors==0.8.0
+huggingface-hub==1.32.0
+Pillow==12.3.0
+matplotlib==3.11.2
+pandas==3.0.6
+numpy==2.5.3
+pytest==9.1.1
+nbformat==5.11.1
+ipykernel==7.3.0
+nbclient==0.11.0
+psutil==7.2.2

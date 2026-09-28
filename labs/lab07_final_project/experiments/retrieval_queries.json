@@ -1,0 +1,65 @@
+[
+  {
+    "query_id": "q01",
+    "query": "Which Stable Diffusion model was used in Lab 4?",
+    "expected_source_ids": [
+      "lab04"
+    ],
+    "notes": "exact model fact"
+  },
+  {
+    "query_id": "q02",
+    "query": "What approach kept chat context between user messages?",
+    "expected_source_ids": [
+      "lab06"
+    ],
+    "notes": "semantic paraphrase"
+  },
+  {
+    "query_id": "q03",
+    "query": "What limitation of vector retrieval was demonstrated in Lab 3?",
+    "expected_source_ids": [
+      "lab03"
+    ],
+    "notes": "Lab 3"
+  },
+  {
+    "query_id": "q04",
+    "query": "Stable Diffusion seed CFG negative prompt",
+    "expected_source_ids": [
+      "lab04"
+    ],
+    "notes": "Lab 4"
+  },
+  {
+    "query_id": "q05",
+    "query": "What hallucination behavior was observed in the Lab 5 VQA experiment?",
+    "expected_source_ids": [
+      "lab05"
+    ],
+    "notes": "Lab 5 English"
+  },
+  {
+    "query_id": "q06",
+    "query": "SQLiteSession пам’ять інструменти агента",
+    "expected_source_ids": [
+      "lab06"
+    ],
+    "notes": "Lab 6 Ukrainian"
+  },
+  {
+    "query_id": "q07",
+    "query": "Compare Stable Diffusion and LLaVA model roles",
+    "expected_source_ids": [
+      "lab04",
+      "lab05"
+    ],
+    "notes": "cross-source; require all expected sources as secondary metric"
+  },
+  {
+    "query_id": "q08",
+    "query": "Exact outdoor temperature during execution of Lab 4",
+    "expected_source_ids": [],
+    "notes": "unsupported: no hit metric"
+  }
+]

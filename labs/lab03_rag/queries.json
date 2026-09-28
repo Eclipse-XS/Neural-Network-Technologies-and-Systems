@@ -1,0 +1,298 @@
+{
+  "corpus_sha256": {
+    "dresses.csv": "846451524f325f58a19005fe5c47392495e76bdb37b5c8ae28368785e48ab267",
+    "earrings.csv": "1040c970376583daa70aab84b798b71d3c1fbd351192b04363ebd03359021583",
+    "sports-shoes.csv": "93a0d131ef117c48558d97727ce06f796e3e71f7d12bb9b8c07cdb810ab729f3"
+  },
+  "queries": [
+    {
+      "id": "q01",
+      "kind": "direct",
+      "question": "What are the listed final_price, discount and rating of Lancer Men Navy Blue Textile Running Non-Marking Shoes (17745816)? Report any price inconsistency.",
+      "category_filter": null,
+      "relevant_product_ids": [
+        "17745816"
+      ],
+      "expected_fields": [
+        {
+          "product_id": "17745816",
+          "record_id": "sports-shoes.csv:0",
+          "field": "title",
+          "value": "Lancer"
+        },
+        {
+          "product_id": "17745816",
+          "record_id": "sports-shoes.csv:0",
+          "field": "final_price",
+          "value": "\"₹1,999.00\""
+        },
+        {
+          "product_id": "17745816",
+          "record_id": "sports-shoes.csv:0",
+          "field": "category",
+          "value": "sports-shoes"
+        },
+        {
+          "product_id": "17745816",
+          "record_id": "sports-shoes.csv:0",
+          "field": "discount",
+          "value": "40.0"
+        },
+        {
+          "product_id": "17745816",
+          "record_id": "sports-shoes.csv:0",
+          "field": "rating",
+          "value": "4.0"
+        }
+      ],
+      "relevance_rule": "Exact product ID"
+    },
+    {
+      "id": "q02",
+      "kind": "semantic",
+      "question": "Find cotton maxi dresses suitable for casual wear.",
+      "category_filter": null,
+      "relevant_product_ids": [
+        "21664722",
+        "21664936",
+        "13379612"
+      ],
+      "expected_fields": [],
+      "relevance_rule": "Cotton + Maxi + Casual specification fields; check labels below"
+    },
+    {
+      "id": "q03",
+      "kind": "filter",
+      "question": "Show silver-plated earrings and compare their listed prices.",
+      "category_filter": "earrings",
+      "relevant_product_ids": [
+        "15720652",
+        "20041906",
+        "22618882",
+        "22593810",
+        "14399558",
+        "19072820",
+        "22600220",
+        "22593700",
+        "22593696"
+      ],
+      "expected_fields": [],
+      "relevance_rule": "Earrings with Plating=Silver-Plated"
+    },
+    {
+      "id": "q04",
+      "kind": "comparison",
+      "question": "Compare the listed prices and ratings of Trendyol Black Maxi Dress (21426422) and COVER STORY Embellished Shoulder Straps Velvet Sheath Dress (21238004). Which of these two has the lower listed final_price?",
+      "category_filter": "dresses",
+      "relevant_product_ids": [
+        "21426422",
+        "21238004"
+      ],
+      "expected_fields": [
+        {
+          "product_id": "21426422",
+          "record_id": "dresses.csv:1",
+          "field": "title",
+          "value": "Trendyol"
+        },
+        {
+          "product_id": "21426422",
+          "record_id": "dresses.csv:1",
+          "field": "final_price",
+          "value": "\"₹2,419.00\""
+        },
+        {
+          "product_id": "21426422",
+          "record_id": "dresses.csv:1",
+          "field": "category",
+          "value": "dresses"
+        },
+        {
+          "product_id": "21426422",
+          "record_id": "dresses.csv:1",
+          "field": "discount",
+          "value": "45.0"
+        },
+        {
+          "product_id": "21426422",
+          "record_id": "dresses.csv:1",
+          "field": "rating",
+          "value": "4.1"
+        },
+        {
+          "product_id": "21238004",
+          "record_id": "dresses.csv:2",
+          "field": "title",
+          "value": "COVER STORY"
+        },
+        {
+          "product_id": "21238004",
+          "record_id": "dresses.csv:2",
+          "field": "final_price",
+          "value": "\"₹2,094.00\""
+        },
+        {
+          "product_id": "21238004",
+          "record_id": "dresses.csv:2",
+          "field": "category",
+          "value": "dresses"
+        },
+        {
+          "product_id": "21238004",
+          "record_id": "dresses.csv:2",
+          "field": "discount",
+          "value": "40.0"
+        },
+        {
+          "product_id": "21238004",
+          "record_id": "dresses.csv:2",
+          "field": "rating",
+          "value": "4.8"
+        }
+      ],
+      "relevance_rule": "Both named products required"
+    },
+    {
+      "id": "q05",
+      "kind": "multi_condition",
+      "question": "Find the lowest listed final_price among sports shoes with rating at least 4 and a stated positive discount. Compare the retrieved candidates and state the coverage limitation.",
+      "category_filter": "sports-shoes",
+      "relevant_product_ids": [
+        "11960808"
+      ],
+      "expected_fields": [
+        {
+          "product_id": "11960808",
+          "record_id": "sports-shoes.csv:25",
+          "field": "title",
+          "value": "Campus"
+        },
+        {
+          "product_id": "11960808",
+          "record_id": "sports-shoes.csv:25",
+          "field": "final_price",
+          "value": "\"₹659.00\""
+        },
+        {
+          "product_id": "11960808",
+          "record_id": "sports-shoes.csv:25",
+          "field": "category",
+          "value": "sports-shoes"
+        },
+        {
+          "product_id": "11960808",
+          "record_id": "sports-shoes.csv:25",
+          "field": "discount",
+          "value": "56.0"
+        },
+        {
+          "product_id": "11960808",
+          "record_id": "sports-shoes.csv:25",
+          "field": "rating",
+          "value": "4.2"
+        }
+      ],
+      "relevance_rule": "Full CSV numeric oracle: category=sports-shoes, rating>=4, discount>0, minimum recorded final_price; oracle never enters retrieval"
+    },
+    {
+      "id": "q06",
+      "kind": "cross_category",
+      "question": "Compare Trendyol Black Maxi Dress (21426422) and Rubans Silver-Toned Dome Shaped Studs Earrings (15720652): category, listed price, discount and rating.",
+      "category_filter": null,
+      "relevant_product_ids": [
+        "21426422",
+        "15720652"
+      ],
+      "expected_fields": [
+        {
+          "product_id": "21426422",
+          "record_id": "dresses.csv:1",
+          "field": "title",
+          "value": "Trendyol"
+        },
+        {
+          "product_id": "21426422",
+          "record_id": "dresses.csv:1",
+          "field": "final_price",
+          "value": "\"₹2,419.00\""
+        },
+        {
+          "product_id": "21426422",
+          "record_id": "dresses.csv:1",
+          "field": "category",
+          "value": "dresses"
+        },
+        {
+          "product_id": "21426422",
+          "record_id": "dresses.csv:1",
+          "field": "discount",
+          "value": "45.0"
+        },
+        {
+          "product_id": "21426422",
+          "record_id": "dresses.csv:1",
+          "field": "rating",
+          "value": "4.1"
+        },
+        {
+          "product_id": "15720652",
+          "record_id": "earrings.csv:0",
+          "field": "title",
+          "value": "Rubans"
+        },
+        {
+          "product_id": "15720652",
+          "record_id": "earrings.csv:0",
+          "field": "final_price",
+          "value": "\"₹355.00\""
+        },
+        {
+          "product_id": "15720652",
+          "record_id": "earrings.csv:0",
+          "field": "category",
+          "value": "earrings"
+        },
+        {
+          "product_id": "15720652",
+          "record_id": "earrings.csv:0",
+          "field": "discount",
+          "value": "76.0"
+        },
+        {
+          "product_id": "15720652",
+          "record_id": "earrings.csv:0",
+          "field": "rating",
+          "value": "3.8"
+        }
+      ],
+      "relevance_rule": "Both named products from different CSVs required"
+    },
+    {
+      "id": "q07",
+      "kind": "semantic",
+      "question": "Find comfortable walking shoes and compare the materials of the retrieved products.",
+      "category_filter": null,
+      "relevant_product_ids": [
+        "17631178",
+        "13686682",
+        "20075460",
+        "11963938",
+        "11986876",
+        "11400234",
+        "19402102",
+        "18382842"
+      ],
+      "expected_fields": [],
+      "relevance_rule": "Walking occurs in source product_description; proxy labels, not exhaustive human relevance"
+    },
+    {
+      "id": "q08",
+      "kind": "unsupported",
+      "question": "Which of these products can be delivered to Kyiv tomorrow, and what is the exact shipping fee?",
+      "category_filter": null,
+      "relevant_product_ids": [],
+      "expected_fields": [],
+      "relevance_rule": "No destination-specific date or shipping fee in selected records; must abstain"
+    }
+  ]
+}

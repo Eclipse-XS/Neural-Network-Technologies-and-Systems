@@ -1,0 +1,20 @@
+[
+  {
+    "workspace_filename": "lab03_report.md",
+    "source_repository_path": "labs/lab03_rag/report/report.md",
+    "sha256": "c0868ad8220f7aa30a65a0e5206c4a4bcddc61731f4a230c12705ca71bf6ae35",
+    "size_bytes": 20169
+  },
+  {
+    "workspace_filename": "lab04_report.md",
+    "source_repository_path": "labs/lab04_stable_diffusion/report/report.md",
+    "sha256": "ed04c0943add4aa9e091bc1da7cd118b07e19ab5da3b3f83aa7ba2bb61115c04",
+    "size_bytes": 16033
+  },
+  {
+    "workspace_filename": "lab05_report.md",
+    "source_repository_path": "labs/lab05_multimodal/report/report.md",
+    "sha256": "9c4fce1431dd2cba9c0514fd5941f05783453e377951533e3698419593e91b5e",
+    "size_bytes": 25125
+  }
+]

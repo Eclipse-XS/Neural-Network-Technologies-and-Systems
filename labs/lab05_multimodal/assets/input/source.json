@@ -1,0 +1,9 @@
+{
+  "filename": "primary_image.png",
+  "source_type": "lab04_generated",
+  "source_path_or_url": "labs/lab04_stable_diffusion/outputs/images/styles/photorealistic_seed42_steps30_cfg7p5_df410b01ba0eea49.png",
+  "sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+  "width": 512,
+  "height": 512,
+  "format": "PNG"
+}

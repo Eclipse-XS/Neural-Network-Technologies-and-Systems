@@ -1,0 +1,172 @@
+[
+  {
+    "run_id": "76dd14bbaa4d0508858d4df0cea1215efc49fab7cbf8e89de5167699eeadbe8f",
+    "question_id": "fact_01",
+    "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+    "answer": "left",
+    "evaluation_label": "CORRECT",
+    "grounding_issue": "",
+    "notes": "Будиночок чітко розташований у лівій половині кадру.",
+    "method": "manual_visual_review_by_assistant"
+  },
+  {
+    "run_id": "183d0c1716cfd7fa50bcdd584a0616017e1eeb61c842d5a757004bea50281375",
+    "question_id": "desc_01",
+    "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+    "answer": "The image shows a cabin nestled among trees on a lake, with a reflection of the cabin in the water. The cabin has a wooden roof and a small deck. The surrounding environment is lush with green trees and mountains in the background.",
+    "evaluation_label": "HALLUCINATED_DETAIL",
+    "grounding_issue": "unsupported_roof_material",
+    "notes": "Основні об’єкти названо правильно, але матеріал даху wooden не можна надійно встановити з пікселів. Замість запитаних двох речень отримано три.",
+    "method": "manual_visual_review_by_assistant"
+  },
+  {
+    "run_id": "028e00616502d9c5f8964d91ff70fc68a69d42fd39c4c2ab35f0c73d9f4ebcd4",
+    "question_id": "desc_02",
+    "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+    "answer": "The cabin has a dark roof and a wooden frame.",
+    "evaluation_label": "GROUNDED",
+    "grounding_issue": "",
+    "notes": "Темний дах і дерев’яна конструкція видимі; відповідь коротка та неповна, але без явних вигадок.",
+    "method": "manual_visual_review_by_assistant"
+  },
+  {
+    "run_id": "6de24b5b73ce7d7ebf05f0125b0903988db7b3d300740b233f64df179af171a6",
+    "question_id": "desc_03",
+    "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+    "answer": "The water is calm, reflecting the cabin and trees. The cabin is situated on a lake, surrounded by tall trees. The cabin is surrounded by a forest, with the lake reflecting the surrounding greenery.",
+    "evaluation_label": "MOSTLY_GROUNDED",
+    "grounding_issue": "spatial_omissions",
+    "notes": "Вода, дерева й відбиття описані правильно; не зазначено ліве розташування будинку та передній план водойми. Формулювання on a lake неточне: будинок стоїть біля берега.",
+    "method": "manual_visual_review_by_assistant"
+  },
+  {
+    "run_id": "adec88d1e9e12ee4a0640a2316bd9eeeabf6f4ac892a1b055f626ff86fc568d4",
+    "question_id": "fact_02",
+    "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+    "answer": "Brown",
+    "evaluation_label": "CORRECT",
+    "grounding_issue": "",
+    "notes": "Видимі дерев’яні стіни коричневі; оцінюється колір стін, не даху.",
+    "method": "manual_visual_review_by_assistant"
+  },
+  {
+    "run_id": "99afb78ad746fe7f0e9b9a3e2794cbf1c48123431f0312cd536d092d97c4c8ee",
+    "question_id": "fact_03",
+    "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+    "answer": "Yes",
+    "evaluation_label": "CORRECT",
+    "grounding_issue": "",
+    "notes": "У передньому плані видно відбиття дерев у воді.",
+    "method": "manual_visual_review_by_assistant"
+  },
+  {
+    "run_id": "fc0727189997dc6da13c8934270c7c509ad1039c81329db1e01ad4232e4525f5",
+    "question_id": "analysis_01",
+    "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+    "answer": "The water appears calm, and there is visible evidence of a calm lake.",
+    "evaluation_label": "PARTLY_SUPPORTED",
+    "grounding_issue": "missing_evidence",
+    "notes": "Висновок про спокійну воду прийнятний, але calm lake повторює висновок замість наведення конкретної ознаки.",
+    "method": "manual_visual_review_by_assistant"
+  },
+  {
+    "run_id": "51c48744ba59c55d4d9c26612e80b530c628d04478a0c3f261ab4dab4421297f",
+    "question_id": "analysis_02",
+    "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+    "answer": "This scene appears natural, and the visible features that support this interpretation include the presence of a lake, a forest, and a mountain in the background.",
+    "evaluation_label": "SUPPORTED_BY_VISIBLE_EVIDENCE",
+    "grounding_issue": "",
+    "notes": "Природне середовище обґрунтовано водоймою, лісом і схилом на тлі. Точна географія не названа.",
+    "method": "manual_visual_review_by_assistant"
+  },
+  {
+    "run_id": "24a0cc04753744a9191804a4b0e7a408a8ff7463f1f6f6dd7cd37abe8d00f963",
+    "question_id": "analysis_03",
+    "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+    "answer": "The shapes in the lower half of the image are reflections of the trees because the image is a photograph of a forest with a lake. The reflection of the trees is the reflection of the trees themselves, not additional upright trees.",
+    "evaluation_label": "PARTLY_SUPPORTED",
+    "grounding_issue": "circular_explanation",
+    "notes": "Відбиття визначено правильно, проте відповідь тавтологічна: не пояснює перевертання форм чи їх відповідність деревам над берегом. Називання зображення фотографією не підтверджує його походження; воно згенероване.",
+    "method": "manual_visual_review_by_assistant"
+  },
+  {
+    "run_id": "cf0c78a34f44fc0d7f47a3cc6c5c094e85f425d9073b97510c6b2fac786a300c",
+    "question_id": "control_01",
+    "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+    "answer": "[0.542,0.544,0.856,0.731]",
+    "evaluation_label": "HALLUCINATED",
+    "grounding_issue": "unsupported_numeric_output",
+    "notes": "Замість визнання невизначеності подано чотири числа без джерела. Вони нагадують координати рамки, але їх значення невідоме; це не обґрунтовані географічні координати.",
+    "method": "manual_visual_review_by_assistant"
+  },
+  {
+    "run_id": "49843402a64f6ecc9042352edce62991764f7fa9a91c75a06ecc8417e22b2dfd",
+    "question_id": "analysis_01",
+    "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+    "answer": "The water appears calm, and the reflection of the cabin and the surrounding trees is visible.",
+    "evaluation_label": "SUPPORTED_BY_VISIBLE_EVIDENCE",
+    "grounding_issue": "",
+    "notes": "Спокій води пояснено видимими відбиттями будинку й дерев.",
+    "method": "manual_visual_review_by_assistant"
+  },
+  {
+    "run_id": "1ee29e1f209666d93e02f4786a05de2cad537037534b9aacfac645e33f6ac77c",
+    "question_id": "analysis_01",
+    "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+    "answer": "The water appears calm, and visible evidence of calmness is the reflection of the cabin and the surrounding trees.",
+    "evaluation_label": "SUPPORTED_BY_VISIBLE_EVIDENCE",
+    "grounding_issue": "",
+    "notes": "Той самий висновок і та сама видима опора: відбиття будинку й дерев.",
+    "method": "manual_visual_review_by_assistant"
+  },
+  {
+    "run_id": "5ab9d15008935d93f01877691575241546788fd5267d96862f75e83c2d0e08f2",
+    "question_id": "analysis_01",
+    "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+    "answer": "The water appears calm. This is evident from the reflection of the cabin and trees on the water's surface.",
+    "evaluation_label": "SUPPORTED_BY_VISIBLE_EVIDENCE",
+    "grounding_issue": "",
+    "notes": "Два короткі речення; висновок про спокійну воду підтримано відбиттями.",
+    "method": "manual_visual_review_by_assistant"
+  },
+  {
+    "run_id": "58c3114a5c6ff379df262e35322269c955c48cc8a2cdbd4148026af8d4870e02",
+    "question_id": "desc_01",
+    "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+    "answer": "The image shows a cabin nestled among trees on a lake, with a reflection of the cabin in the water. The cabin",
+    "evaluation_label": "GROUNDED",
+    "grounding_issue": "truncated",
+    "notes": "Наявні об’єкти описано коректно, але останнє The cabin незавершене; досягнуто 24 токени без EOS.",
+    "method": "manual_visual_review_by_assistant"
+  },
+  {
+    "run_id": "ab48c819f9280ce6cc8d979ec48fd9aaa95533a6aa7b1b8dd99d907a2eccbc23",
+    "question_id": "fact_01",
+    "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+    "answer": "center",
+    "evaluation_label": "INCORRECT",
+    "grounding_issue": "wrong_horizontal_position",
+    "notes": "Center суперечить зображенню: будинок ліворуч.",
+    "method": "manual_visual_review_by_assistant"
+  },
+  {
+    "run_id": "cf22ad74fcc692769d4de6cd1d3e183c42d551be3c6f7daeb956f77a6b6df760",
+    "question_id": "fact_01",
+    "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+    "answer": "Left",
+    "evaluation_label": "CORRECT",
+    "grounding_issue": "",
+    "notes": "Left правильно вказує на ліву частину кадру.",
+    "method": "manual_visual_review_by_assistant"
+  },
+  {
+    "run_id": "286c314bb432b0e54ec20fb6882e3bbb0f92ac46eedc35b5ae5199bb33bc29bb",
+    "question_id": "desc_01",
+    "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+    "answer": "The image shows a cabin nestled among trees on a lake, with a reflection of the cabin in the water. The cabin has a wooden roof and a small deck. The surrounding environment is lush with green trees and mountains in the background.",
+    "evaluation_label": "HALLUCINATED_DETAIL",
+    "grounding_issue": "unsupported_roof_material",
+    "notes": "Основні об’єкти названо правильно, але матеріал даху wooden не можна надійно встановити з пікселів. Замість запитаних двох речень отримано три.",
+    "method": "manual_visual_review_by_assistant"
+  }
+]

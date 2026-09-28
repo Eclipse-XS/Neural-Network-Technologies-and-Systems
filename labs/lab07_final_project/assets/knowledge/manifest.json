@@ -1,0 +1,38 @@
+[
+  {
+    "source_id": "lab03",
+    "lab_number": 3,
+    "title": "Лабораторна робота №3. Реалізація RAG-системи для витягування знань",
+    "workspace_filename": "lab03_rag_report.md",
+    "original_repository_path": "labs/lab03_rag/report/report.md",
+    "sha256": "c0868ad8220f7aa30a65a0e5206c4a4bcddc61731f4a230c12705ca71bf6ae35",
+    "size_bytes": 20169
+  },
+  {
+    "source_id": "lab04",
+    "lab_number": 4,
+    "title": "Лабораторна робота №4",
+    "workspace_filename": "lab04_stable_diffusion_report.md",
+    "original_repository_path": "labs/lab04_stable_diffusion/report/report.md",
+    "sha256": "ed04c0943add4aa9e091bc1da7cd118b07e19ab5da3b3f83aa7ba2bb61115c04",
+    "size_bytes": 16033
+  },
+  {
+    "source_id": "lab05",
+    "lab_number": 5,
+    "title": "Лабораторна робота №5",
+    "workspace_filename": "lab05_multimodal_report.md",
+    "original_repository_path": "labs/lab05_multimodal/report/report.md",
+    "sha256": "9c4fce1431dd2cba9c0514fd5941f05783453e377951533e3698419593e91b5e",
+    "size_bytes": 25125
+  },
+  {
+    "source_id": "lab06",
+    "lab_number": 6,
+    "title": "Лабораторна робота №6",
+    "workspace_filename": "lab06_agents_report.md",
+    "original_repository_path": "labs/lab06_agents/report/report.md",
+    "sha256": "bccc31c3d081b410818d2fbfaa363fd182a8a8db4361799cc3391e72c6eb893d",
+    "size_bytes": 34221
+  }
+]

@@ -1,0 +1,17 @@
+# Tested direct dependencies. Preserve working torch/CUDA and transformers.
+openai==3.17.0
+openai-agents==0.22.3
+httpx2==2.13.0
+langchain-core==1.6.4
+langchain-text-splitters==1.1.2
+langchain-huggingface==1.2.2
+langchain-redis==0.2.6
+sentence-transformers==6.1.0
+redis==8.1.0
+redisvl==0.27.2
+numpy>=1.26,<3
+pandas>=2.2,<4
+pytest>=8,<10
+nbformat>=5.10,<6
+nbclient>=0.10,<1
+ipykernel>=6,<8

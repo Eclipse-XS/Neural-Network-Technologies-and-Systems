@@ -1,0 +1,183 @@
+[
+  {
+    "scenario_id": "role",
+    "category": "no-tool",
+    "user_turns": [
+      "In one sentence, explain what you can help me with."
+    ],
+    "requires_rag": false,
+    "requires_memory": false,
+    "requires_calculation": false,
+    "expected_sources": [],
+    "expected_facts": [],
+    "evaluation_notes": "Manual factual and claim-evidence review; source hit and citation membership alone do not prove correctness.",
+    "baseline_comparison": false
+  },
+  {
+    "scenario_id": "lab4",
+    "category": "RAG",
+    "user_turns": [
+      "Which Stable Diffusion model was used in Lab 4?"
+    ],
+    "requires_rag": true,
+    "requires_memory": false,
+    "requires_calculation": false,
+    "expected_sources": [
+      "lab04"
+    ],
+    "expected_facts": [
+      "stable-diffusion-v1-5/stable-diffusion-v1-5"
+    ],
+    "evaluation_notes": "Manual factual and claim-evidence review; source hit and citation membership alone do not prove correctness.",
+    "baseline_comparison": true
+  },
+  {
+    "scenario_id": "lab3",
+    "category": "semantic",
+    "user_turns": [
+      "What important limitation of vector retrieval was demonstrated in Lab 3?"
+    ],
+    "requires_rag": true,
+    "requires_memory": false,
+    "requires_calculation": false,
+    "expected_sources": [
+      "lab03"
+    ],
+    "expected_facts": [
+      "global minimum not guaranteed",
+      "q05 missed product 11960808 at 659 INR"
+    ],
+    "evaluation_notes": "Manual factual and claim-evidence review; source hit and citation membership alone do not prove correctness.",
+    "baseline_comparison": false
+  },
+  {
+    "scenario_id": "lab5",
+    "category": "RAG",
+    "user_turns": [
+      "What hallucination behavior was observed in the Lab 5 VQA experiment?"
+    ],
+    "requires_rag": true,
+    "requires_memory": false,
+    "requires_calculation": false,
+    "expected_sources": [
+      "lab05"
+    ],
+    "expected_facts": [
+      "invented geographic coordinates",
+      "[0.542,0.544,0.856,0.731]"
+    ],
+    "evaluation_notes": "Manual factual and claim-evidence review; source hit and citation membership alone do not prove correctness.",
+    "baseline_comparison": false
+  },
+  {
+    "scenario_id": "cross",
+    "category": "cross-source",
+    "user_turns": [
+      "Compare the main neural model used in Lab 4 with the multimodal model used in Lab 5 and explain the different roles they performed."
+    ],
+    "requires_rag": true,
+    "requires_memory": false,
+    "requires_calculation": false,
+    "expected_sources": [
+      "lab04",
+      "lab05"
+    ],
+    "expected_facts": [
+      "Stable Diffusion v1.5: text-to-image",
+      "llava-hf/llava-interleave-qwen-0.5b-hf: VQA"
+    ],
+    "evaluation_notes": "Manual factual and claim-evidence review; source hit and citation membership alone do not prove correctness.",
+    "baseline_comparison": true
+  },
+  {
+    "scenario_id": "multi",
+    "category": "multi-step",
+    "user_turns": [
+      "According to the indexed reports, how many generated outputs were produced in Lab 4 and how many VQA generations were performed in Lab 5? Which lab produced more, and by how many? Cite the evidence."
+    ],
+    "requires_rag": true,
+    "requires_memory": false,
+    "requires_calculation": true,
+    "expected_sources": [
+      "lab04",
+      "lab05"
+    ],
+    "expected_facts": [
+      "Lab 4: 13",
+      "Lab 5: 17 unique inference, not 19 rows",
+      "Lab 5 more by 4"
+    ],
+    "evaluation_notes": "Manual factual and claim-evidence review; source hit and citation membership alone do not prove correctness.",
+    "baseline_comparison": true
+  },
+  {
+    "scenario_id": "memory",
+    "category": "memory",
+    "user_turns": [
+      "What model was used in Lab 6?",
+      "What main behavioral weakness was observed with it?"
+    ],
+    "requires_rag": true,
+    "requires_memory": true,
+    "requires_calculation": false,
+    "expected_sources": [
+      "lab06"
+    ],
+    "expected_facts": [
+      "mistralai/ministral-3-3b",
+      "poor tool selection and synthesis; often skipped calculate despite retrieved facts"
+    ],
+    "evaluation_notes": "Manual factual and claim-evidence review; source hit and citation membership alone do not prove correctness.",
+    "baseline_comparison": false
+  },
+  {
+    "scenario_id": "isolation",
+    "category": "isolation",
+    "user_turns": [
+      "What main behavioral weakness was observed with it?"
+    ],
+    "requires_rag": false,
+    "requires_memory": false,
+    "requires_calculation": false,
+    "expected_sources": [],
+    "expected_facts": [
+      "ask clarification: it has no antecedent"
+    ],
+    "evaluation_notes": "Manual factual and claim-evidence review; source hit and citation membership alone do not prove correctness.",
+    "baseline_comparison": false
+  },
+  {
+    "scenario_id": "unsupported",
+    "category": "unsupported",
+    "user_turns": [
+      "What exact outdoor temperature was recorded when Lab 4 was executed?"
+    ],
+    "requires_rag": true,
+    "requires_memory": false,
+    "requires_calculation": false,
+    "expected_sources": [
+      "lab04"
+    ],
+    "expected_facts": [
+      "not available in reports; do not invent temperature"
+    ],
+    "evaluation_notes": "Manual factual and claim-evidence review; source hit and citation membership alone do not prove correctness.",
+    "baseline_comparison": true
+  },
+  {
+    "scenario_id": "sources",
+    "category": "discovery",
+    "user_turns": [
+      "What laboratory reports are available in your knowledge base?"
+    ],
+    "requires_rag": false,
+    "requires_memory": false,
+    "requires_calculation": false,
+    "expected_sources": [],
+    "expected_facts": [
+      "Labs 3, 4, 5, 6"
+    ],
+    "evaluation_notes": "Manual factual and claim-evidence review; source hit and citation membership alone do not prove correctness.",
+    "baseline_comparison": false
+  }
+]

@@ -1,0 +1,14 @@
+# Install into the lab environment; preserve existing torch/CUDA installation.
+langchain-community==0.4.2
+langchain-core==1.6.4
+langchain-huggingface==1.2.2
+langchain-redis==0.2.6
+langchain-openai==1.6.3
+sentence-transformers==6.1.0
+redis==8.1.0
+redisvl==0.27.2
+pandas>=2.2,<4
+numpy>=1.26,<3
+pytest>=8,<10
+nbformat>=5.10,<6
+ipykernel>=6,<8

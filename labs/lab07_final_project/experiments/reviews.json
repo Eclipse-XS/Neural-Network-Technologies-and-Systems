@@ -1,0 +1,152 @@
+{
+  "cd6e5c9d671949d7a8a1c3d4ea3ff0cd": {
+    "answer_correctness": "NOT_SCORABLE",
+    "grounding": "GROUNDED",
+    "retrieval": "NOT_APPLICABLE",
+    "tool_behavior": "APPROPRIATE",
+    "memory": "NOT_APPLICABLE",
+    "planning": "NOT_APPLICABLE",
+    "hallucination": false,
+    "notes": "Коректна розмовна відповідь без tools; стиль не є об’єктивно оцінюваною фактологічною задачею."
+  },
+  "af8371c383094ce5813a73017be56e01": {
+    "answer_correctness": "PARTIAL",
+    "grounding": "GROUNDED",
+    "retrieval": "RELEVANT",
+    "tool_behavior": "APPROPRIATE",
+    "memory": "NOT_APPLICABLE",
+    "planning": "NOT_APPLICABLE",
+    "hallucination": false,
+    "notes": "Правильно названо Stable Diffusion v1.5 та legacy ID runwayml/stable-diffusion-v1-5; точний поточний checkpoint ID скорочено до stable-diffusion-v1-5. Отриманий chunk містить повний canonical ID, цитата підтримує сімейство."
+  },
+  "3b02f15b58b44f5c8fbaedc50e2ad147": {
+    "answer_correctness": "PARTIAL",
+    "grounding": "UNSUPPORTED",
+    "retrieval": "NOT_APPLICABLE",
+    "tool_behavior": "MISSING",
+    "memory": "NOT_APPLICABLE",
+    "planning": "NOT_APPLICABLE",
+    "hallucination": true,
+    "notes": "Версію v1.5 вгадано, але пошук, англомовна цитата та lab4_report#1 вигадані. Tools навмисно недоступні у baseline."
+  },
+  "2d99ea541f994ffcb4320fe123909974": {
+    "answer_correctness": "INCORRECT",
+    "grounding": "PARTIAL",
+    "retrieval": "RELEVANT",
+    "tool_behavior": "APPROPRIATE",
+    "memory": "NOT_APPLICABLE",
+    "planning": "FAIL",
+    "hallucination": true,
+    "notes": "6/7 і неповнота retrieval підтримані. Причину про зміну векторів і нестабільність із часом вигадано; не пояснено, що top-k не гарантує глобальний мінімум, хоча це є у retrieved висновках."
+  },
+  "478466a0a3bd4003b80fd25c7335f2f3": {
+    "answer_correctness": "INCORRECT",
+    "grounding": "PARTIAL",
+    "retrieval": "FAILED",
+    "tool_behavior": "APPROPRIATE",
+    "memory": "NOT_APPLICABLE",
+    "planning": "FAIL",
+    "hallucination": true,
+    "notes": "Retrieval дав лише загальні розділи. Галюцинацію помилково витлумачено як обман та заперечено її опис. У справжньому розділі 14 модель вигадала географічні координати; твердження про відсутність такого опису хибне."
+  },
+  "0a90e72971a2444abc82b1a2a0803f2d": {
+    "answer_correctness": "PARTIAL",
+    "grounding": "PARTIAL",
+    "retrieval": "PARTIAL",
+    "tool_behavior": "APPROPRIATE",
+    "memory": "NOT_APPLICABLE",
+    "planning": "PARTIAL",
+    "hallucination": true,
+    "notes": "Знайдено обидва джерела, правильно названо сімейства і основні ролі. Проте приписано LLaVA генерацію зображень, немає точних checkpoint IDs та жодних цитат."
+  },
+  "a5ffff86e2f54c96a56aa599df6e6233": {
+    "answer_correctness": "INCORRECT",
+    "grounding": "UNSUPPORTED",
+    "retrieval": "NOT_APPLICABLE",
+    "tool_behavior": "MISSING",
+    "memory": "NOT_APPLICABLE",
+    "planning": "FAIL",
+    "hallucination": true,
+    "notes": "Замість фактичних моделей — припущення про BERT/CLIP, single-modal Lab 4 та вигадані цитовані речення з placeholder IDs. Наприкінці визнає відсутність звітів, але це не виправляє непідтверджені попередні твердження."
+  },
+  "22cb105ab3534566ada815900ac4bde9": {
+    "answer_correctness": "INCORRECT",
+    "grounding": "PARTIAL",
+    "retrieval": "PARTIAL",
+    "tool_behavior": "MISSING",
+    "memory": "NOT_APPLICABLE",
+    "planning": "FAIL",
+    "hallucination": true,
+    "notes": "13 для Lab 4 правильно, але цитований chunk-3ac026fae50fcc08 не містить цього числа; воно є в іншому retrieved chunk. Не знайдено 17 для Lab 5, calculate пропущено, умовний висновок про перевагу Lab 4 хибний. Валідний ID не означає підтримку твердження."
+  },
+  "c69a7f11d54743a896ddfad0fb2f9ef8": {
+    "answer_correctness": "INCORRECT",
+    "grounding": "UNSUPPORTED",
+    "retrieval": "NOT_APPLICABLE",
+    "tool_behavior": "MISSING",
+    "memory": "NOT_APPLICABLE",
+    "planning": "FAIL",
+    "hallucination": true,
+    "notes": "Вигадано 10 і 3, різницю 7, цитати та докази. Правильні значення: 13, 17, різниця 4. Написана арифметика не є викликом calculate."
+  },
+  "309b3042615b4560a4aa1ba8e9fd089f": {
+    "answer_correctness": "INCORRECT",
+    "grounding": "UNSUPPORTED",
+    "retrieval": "FAILED",
+    "tool_behavior": "APPROPRIATE",
+    "memory": "NOT_APPLICABLE",
+    "planning": "FAIL",
+    "hallucination": true,
+    "notes": "Lab 6 явно вказує mistralai/ministral-3-3b; модельний розділ не retrieved. Відповідь хибно заперечує наявність моделі та посилається на припущення про інші лабораторні."
+  },
+  "5a821aca12ec4225a06569e8fe3b7d23": {
+    "answer_correctness": "PARTIAL",
+    "grounding": "PARTIAL",
+    "retrieval": "RELEVANT",
+    "tool_behavior": "APPROPRIATE",
+    "memory": "PASS",
+    "planning": "PARTIAL",
+    "hallucination": true,
+    "notes": "Історія правильно прив’язує it до Lab 6: source_id=lab06 без згадки лабораторної у follow-up. Відтворено вигадані CSV та 28/32 з evidence, але відмову вигадувати названо відмовою давати корисні відповіді; пропущено проблему вибору calculate та синтезу з tools."
+  },
+  "855053989d8447618050d9a6ab33e7ce": {
+    "answer_correctness": "CORRECT",
+    "grounding": "GROUNDED",
+    "retrieval": "NOT_APPLICABLE",
+    "tool_behavior": "APPROPRIATE",
+    "memory": "PASS",
+    "planning": "NOT_APPLICABLE",
+    "hallucination": false,
+    "notes": "Нова сесія запитує уточнення замість успадкування Lab 6. Жодного tool call; antecedent не вигадано."
+  },
+  "5135327c490f4e579f4115a281fb21fa": {
+    "answer_correctness": "CORRECT",
+    "grounding": "PARTIAL",
+    "retrieval": "NOT_APPLICABLE",
+    "tool_behavior": "UNNECESSARY",
+    "memory": "NOT_APPLICABLE",
+    "planning": "PARTIAL",
+    "hallucination": false,
+    "notes": "Не вигадано температуру, повідомлено неможливість визначення. Три близькі пошуки надмірні, цитату пропущено; retrieval не може довести відсутність факту в усьому корпусі, хоча тут факт справді відсутній."
+  },
+  "e6387ee676b94e8c96e6790394e6df83": {
+    "answer_correctness": "INCORRECT",
+    "grounding": "UNSUPPORTED",
+    "retrieval": "NOT_APPLICABLE",
+    "tool_behavior": "MISSING",
+    "memory": "NOT_APPLICABLE",
+    "planning": "FAIL",
+    "hallucination": true,
+    "notes": "Вигадано +18°C, +17.9°C, датчик і два source_id. Жоден звіт не містить outdoor temperature."
+  },
+  "9d78d5261bd24ed3909c9ddd44c5ee23": {
+    "answer_correctness": "CORRECT",
+    "grounding": "GROUNDED",
+    "retrieval": "NOT_APPLICABLE",
+    "tool_behavior": "APPROPRIATE",
+    "memory": "NOT_APPLICABLE",
+    "planning": "NOT_APPLICABLE",
+    "hallucination": false,
+    "notes": "Справжній list_knowledge_sources повернув чотири джерела; список лабораторних коректний. Каталог не є report-derived factual claim про експерименти."
+  }
+}

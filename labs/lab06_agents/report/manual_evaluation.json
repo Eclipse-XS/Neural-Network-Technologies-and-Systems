@@ -1,0 +1,106 @@
+{
+  "fbc87f71178c41adab9c758b557d4917": {
+    "answer_correctness": "NOT_OBJECTIVELY_SCORABLE",
+    "tool_behavior": "APPROPRIATE",
+    "grounding": "NOT_APPLICABLE",
+    "memory_behavior": "NOT_APPLICABLE",
+    "planning_behavior": "NOT_APPLICABLE",
+    "notes": "Пряма відповідь про роль, нуль викликів; зайві дії відсутні."
+  },
+  "0dcaa0248fca482d84d0cdac2f07ddca": {
+    "answer_correctness": "CORRECT",
+    "tool_behavior": "APPROPRIATE",
+    "grounding": "GROUNDED",
+    "memory_behavior": "NOT_APPLICABLE",
+    "planning_behavior": "NOT_APPLICABLE",
+    "notes": "Правильно визначено Stable Diffusion v1.5, наведено lab04_report.md. Checkpoint скорочено до назви сімейства; твердження підтверджує прочитаний model-card рядок."
+  },
+  "9419aadefa764b6f95bef47f463b6682": {
+    "answer_correctness": "CORRECT",
+    "tool_behavior": "APPROPRIATE",
+    "grounding": "PARTIAL",
+    "memory_behavior": "NOT_APPLICABLE",
+    "planning_behavior": "NOT_APPLICABLE",
+    "notes": "Точний checkpoint, revision і кількість параметрів правильні. Агент пропустив обов’язкове посилання на lab05_report.md."
+  },
+  "4dc845e079d245679a8d4d730ead13d7": {
+    "answer_correctness": "PARTIAL",
+    "tool_behavior": "APPROPRIATE",
+    "grounding": "PARTIAL",
+    "memory_behavior": "NOT_APPLICABLE",
+    "planning_behavior": "PARTIAL",
+    "notes": "Основні призначення двох лабораторних визначено правильно. Але CPU offload неточно описаний як виконання на CPU, додано непідтверджену LLaVA-v1.5, змішано text-to-image з VQA, пропущено точний checkpoint Lab 5; діапазон 158–138 перевернутий. Наявність цитат не усуває цих помилок."
+  },
+  "fc9125032bed4c55b942c4d44d62f1c2": {
+    "answer_correctness": "PARTIAL",
+    "tool_behavior": "MISSING",
+    "grounding": "PARTIAL",
+    "memory_behavior": "NOT_APPLICABLE",
+    "planning_behavior": "PARTIAL",
+    "notes": "Фінальні числа 13, 17 і різниця 4 правильні, обидва джерела вказано. Вступ хибно заперечує наявність кількості Lab 4 і суперечить власному висновку. Calculate не викликано, хоча потрібний за політикою."
+  },
+  "dcf42af61247400bb1d1d6111e2968aa": {
+    "answer_correctness": "CORRECT",
+    "tool_behavior": "APPROPRIATE",
+    "grounding": "NOT_APPLICABLE",
+    "memory_behavior": "PASS",
+    "planning_behavior": "NOT_APPLICABLE",
+    "notes": "Псевдонім Vision Lab → Lab 5 збережено; відповідь про checkpoint у першому запиті відсутня."
+  },
+  "d05a27704eb8460b8ad09c2baebaeb3f": {
+    "answer_correctness": "PARTIAL",
+    "tool_behavior": "UNNECESSARY",
+    "grounding": "PARTIAL",
+    "memory_behavior": "PASS",
+    "planning_behavior": "PARTIAL",
+    "notes": "Історія A збережена; агент правильно спрямовує alias-запит у lab05_report.md. Це доказ перенесення контексту, але не успіх фактологічної відповіді: точний checkpoint не знайдено, вдруге без потреби викликано list_workspace_files, фінальна відповідь містить припущення та прохання уточнити."
+  },
+  "d2ab96186dc84493b8a0612ca5e54925": {
+    "answer_correctness": "CORRECT",
+    "tool_behavior": "UNNECESSARY",
+    "grounding": "NOT_APPLICABLE",
+    "memory_behavior": "PASS",
+    "planning_behavior": "NOT_APPLICABLE",
+    "notes": "Сесія B не містить встановлення alias і не обирає Lab 5 без уточнення. Ізоляція підтверджена. Для уточнення невідомого alias список файлів не був необхідним."
+  },
+  "9ee96af9f2144c91820c50b0b05fe79e": {
+    "answer_correctness": "CORRECT",
+    "tool_behavior": "APPROPRIATE",
+    "grounding": "PARTIAL",
+    "memory_behavior": "NOT_APPLICABLE",
+    "planning_behavior": "NOT_APPLICABLE",
+    "notes": "Не вигадує температуру й повідомляє про відсутність даних; пошук і читання доречні. Фінальна відповідь не цитує filename."
+  },
+  "f5cc94fe1d5d4e5484c5acf859bb4afb": {
+    "answer_correctness": "INCORRECT",
+    "tool_behavior": "MISSING",
+    "grounding": "UNSUPPORTED",
+    "memory_behavior": "NOT_APPLICABLE",
+    "planning_behavior": "FAIL",
+    "notes": "Без tools модель вигадала CSV-файли, значення 28 і 32 та докази з неіснуючих таблиць. Текст calculate(32 - 28) не є function call: у trace нуль викликів. Випадково правильна різниця 4 не робить відповідь правильною. Відсутність tools тут контрольована умовами baseline."
+  },
+  "b7d43c7ef5254c9ba7a775a550104140": {
+    "answer_correctness": "INCORRECT",
+    "tool_behavior": "MISSING",
+    "grounding": "PARTIAL",
+    "memory_behavior": "NOT_APPLICABLE",
+    "planning_behavior": "FAIL",
+    "notes": "З tools правильно знайдено 13 для Lab 4, але три рядки таблиці Lab 5 помилково прийнято за загальну кількість outputs. Результат 13 проти 3, різниця 10 та переможець неправильні. Числа 24/64/128 — параметри max_new_tokens, не temperature. Calculate пропущено; номери рядків названо сторінками. Пошук inference|output помилково використано як regex, хоча інструмент literal."
+  },
+  "126c0e26b84742e5a3f09104d4173a4f": {
+    "answer_correctness": "CORRECT",
+    "tool_behavior": "MISSING",
+    "grounding": "GROUNDED",
+    "memory_behavior": "NOT_APPLICABLE",
+    "planning_behavior": "PARTIAL",
+    "notes": "Правильні 13, 17, сума 30 і частка 56.6667%; обидва джерела та рядки вказано. Проте всі похідні величини обчислено у відповіді без calculate. Це правильна арифметична відповідь, але невиконана політика використання калькулятора."
+  },
+  "9f28f52dce184818bd5368452a60d3c4": {
+    "answer_correctness": "INCORRECT",
+    "tool_behavior": "APPROPRIATE",
+    "grounding": "PARTIAL",
+    "memory_behavior": "NOT_APPLICABLE",
+    "planning_behavior": "PARTIAL",
+    "notes": "Справжній calculate викликано з expression=(3 + 17), SDK повернув 20 і модель використала цей результат. Функція працює правильно, але вхід 3 для Lab 4 хибний: агент знову зробив висновок з частини таблиці. Правильна сума 30. Filename-цитати пропущені. Явна вимога calculate у цьому запиті означає керовану діагностику, а не самостійний вибір калькулятора."
+  }
+}
