@@ -198,10 +198,28 @@ def test_real_reference_words_not_unk_ids():
     assert rows.reference.iloc[0] == "unseen absent missing word"
 
 
-@pytest.mark.parametrize("name", ["01_spam_classification.ipynb", "02_text_generation.ipynb"])
-def test_notebooks_valid_without_errors(name):
+@pytest.mark.parametrize("name,expected_output_cells", [
+    ("01_spam_classification.ipynb", (
+        "DEVICE = device_info()", "baseline_result = fit_classifier(",
+        "grid_results = run_grid(", "selected_checkpoint = select_checkpoint(",
+        "test_metrics, predictions = evaluate_final_classifier(",
+    )),
+    ("02_text_generation.ipynb", (
+        "DEVICE = device_info()", "baseline_result = fit_language_model(",
+        "validation_examples = evaluate_continuations(", "grid_results = run_grid(",
+        "selected_checkpoint = select_checkpoint(",
+        "test_metrics, generation_samples = evaluate_final_generation(",
+    )),
+])
+def test_final_notebooks_are_executed_valid_and_error_free(name, expected_output_cells):
     notebook = nbformat.read(LAB / "notebooks" / name, as_version=4)
     nbformat.validate(notebook)
+    code_cells = [cell for cell in notebook.cells if cell.cell_type == "code"]
+    assert code_cells and all(cell.execution_count is not None for cell in code_cells)
+    assert any(cell.outputs for cell in code_cells)
+    for snippet in expected_output_cells:
+        matches = [cell for cell in code_cells if snippet in cell.source]
+        assert len(matches) == 1 and matches[0].outputs
     for index, cell in enumerate(notebook.cells):
         if cell.cell_type == "code":
             compile(cell.source, name, "exec")
@@ -220,3 +238,8 @@ def test_notebooks_valid_without_errors(name):
                         assert "epochs" not in arguments
                         assert arguments["max_epochs"].id == "MAX_EPOCHS"
                         assert arguments["patience"].id == "PATIENCE"
+
+
+def test_missing_dataset_errors_explain_required_location(tmp_path):
+    with pytest.raises(FileNotFoundError, match=r"spam\.csv.*data/raw"):
+        inspect_data(tmp_path / "spam.csv")

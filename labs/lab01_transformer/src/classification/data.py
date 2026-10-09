@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import torch
+from pathlib import Path
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset, DataLoader
 from torch.nn.utils.rnn import pad_sequence
@@ -8,6 +9,11 @@ from ..common.text import PAD, UNK, tokenize
 
 
 def inspect_data(path):
+    path = Path(path)
+    if not path.is_file():
+        raise FileNotFoundError(
+            f"Missing SMS dataset: {path}. Place spam.csv in labs/lab01_transformer/data/raw/."
+        )
     frame = pd.read_csv(path, encoding="utf-8")
     if set(frame.columns) != {"Category", "Message"}:
         raise ValueError(f"Unexpected columns: {frame.columns.tolist()}")

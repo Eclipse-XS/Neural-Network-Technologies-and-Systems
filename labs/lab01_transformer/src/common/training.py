@@ -81,6 +81,18 @@ def fit(model, loaders, vocabulary, device, output_dir, task, weights=None,
                            learning_rate=learning_rate, seed=seed,
                            weight_decay=.01, batch_size=loaders["train"].batch_size,
                            class_weights=weights.tolist() if weights is not None else None)
+    task_name = "Spam classification" if task == "classification" else "BBC language model"
+    print("=" * 60)
+    print(f"EXPERIMENT      : {task_name}")
+    print("=" * 60)
+    print(f"Device          : {device}")
+    print(f"Model           : {model.__class__.__name__}")
+    print(f"Configuration   : {model.config}")
+    print(f"Parameters      : {sum(parameter.numel() for parameter in model.parameters()):,}")
+    print(f"Batch size      : {loaders['train'].batch_size}")
+    print(f"Max epochs      : {max_epochs}; patience: {patience}; learning rate: {learning_rate:g}")
+    print(f"Checkpoint      : {checkpoint}")
+    print("-" * 60)
     for epoch in range(1, max_epochs + 1):
         train = run_epoch(model, loaders["train"], device, task, weights, optimizer)
         validation = run_epoch(model, loaders["validation"], device, task, weights)
@@ -101,7 +113,15 @@ def fit(model, loaders, vocabulary, device, output_dir, task, weights=None,
                             best_validation, best_epoch=best_epoch, dataset_metadata=dataset_metadata)
         else:
             epochs_without_improvement += 1
-        print(row)
+        best_mark = " *" if improved else ""
+        if task == "classification":
+            print(f"Epoch {epoch:02d}/{max_epochs:02d} | Train CE: {train['loss']:.4f} | "
+                  f"Val CE: {validation['loss']:.4f} | Val F1: {validation['f1']:.4f} | "
+                  f"LR: {optimizer.param_groups[0]['lr']:.2e}{best_mark}")
+        else:
+            print(f"Epoch {epoch:02d}/{max_epochs:02d} | Train CE: {train['loss']:.4f} | "
+                  f"Val CE: {validation['loss']:.4f} | Val PPL: {validation['perplexity']:.2f} | "
+                  f"LR: {optimizer.param_groups[0]['lr']:.2e}{best_mark}")
         if epochs_without_improvement >= patience:
             break
     summary = {"best_epoch": best_epoch, "epochs_trained": len(history),
@@ -112,5 +132,10 @@ def fit(model, loaders, vocabulary, device, output_dir, task, weights=None,
                "seconds": time.perf_counter() - start,
                "parameters": sum(p.numel() for p in model.parameters())}
     (metric_dir / "summary.json").write_text(json.dumps(summary, indent=2, allow_nan=False), encoding="utf-8")
-    print(f"Best epoch: {best_epoch}; epochs trained: {len(history)}; stop: {summary['stop_reason']}")
+    print("-" * 60)
+    print(f"Best epoch      : {best_epoch}")
+    print(f"Epochs trained  : {len(history)}")
+    print(f"Stop reason     : {summary['stop_reason']}")
+    print(f"Training time   : {summary['seconds']:.1f} s")
+    print("=" * 60)
     return {"checkpoint": str(checkpoint), "history": history, **summary}

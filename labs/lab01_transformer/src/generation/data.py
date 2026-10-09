@@ -10,7 +10,12 @@ from ..common.text import PAD, BOS, EOS
 
 def inspect_corpus(path):
     """Read strict UTF-8 BBC CSV; categories remain descriptive metadata."""
-    with Path(path).open(encoding="utf-8", newline="") as stream:
+    path = Path(path)
+    if not path.is_file():
+        raise FileNotFoundError(
+            f"Missing BBC dataset: {path}. Place bbc-text.csv in labs/lab01_transformer/data/raw/."
+        )
+    with path.open(encoding="utf-8", newline="") as stream:
         rows = list(csv.reader(stream, strict=True))
     if not rows or rows[0] != ["category", "text"]:
         raise ValueError("Expected BBC columns: category,text")

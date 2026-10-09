@@ -74,3 +74,37 @@ def plot_confusion_matrix(predictions, output_path=None):
         labels=[0, 1], display_labels=["ham", "spam"], ax=axis)
     axis.set(title="Матриця помилок: test", xlabel="Передбачений клас", ylabel="Справжній клас")
     return save_figure(figure, output_path)
+
+
+def plot_unk_rates(rates, output_path=None):
+    figure, axis = plt.subplots(figsize=(7, 4))
+    names, values = list(rates), [100 * rates[name] for name in rates]
+    bars = axis.bar(names, values, color=["#4C78A8", "#F58518", "#E45756"])
+    axis.bar_label(bars, fmt="%.2f%%", padding=3)
+    axis.set(title="Частка UNK у корпусі", xlabel="Split", ylabel="UNK, %", ylim=(0, max(values) * 1.2))
+    axis.grid(axis="y", alpha=.3)
+    return save_figure(figure, output_path)
+
+
+def plot_top_predictions(table, output_path=None, limit=12):
+    view = table.head(limit).iloc[::-1]
+    figure, axis = plt.subplots(figsize=(8, 5))
+    axis.barh(view.token, 100 * view.share, color="#4C78A8")
+    axis.set(title="Найчастіші argmax-прогнози на validation",
+             xlabel="Частка непорожніх позицій, %", ylabel="Токен")
+    axis.grid(axis="x", alpha=.3)
+    return save_figure(figure, output_path)
+
+
+def plot_decoding_comparison(table, output_path=None):
+    metrics = ["bleu_4", "rouge_l", "unk_rate", "repetition_rate", "distinct_2"]
+    titles = {"bleu_4": "BLEU-4", "rouge_l": "ROUGE-L", "unk_rate": "Частка UNK",
+              "repetition_rate": "Частка повторів", "distinct_2": "Distinct-2"}
+    figure, axes = plt.subplots(2, 3, figsize=(14, 9))
+    labels = table.strategy.str.replace("_", " ")
+    for axis, metric in zip(axes.flat, metrics):
+        axis.barh(labels, table[metric], color="#4C78A8")
+        axis.set(title=titles[metric], xlabel="Значення", ylabel="")
+        axis.grid(axis="x", alpha=.3)
+    axes.flat[-1].axis("off")
+    return save_figure(figure, output_path)

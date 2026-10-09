@@ -23,6 +23,11 @@ def test_bbc_schema_rejects_invalid_csv(tmp_path, contents):
         inspect_corpus(path)
 
 
+def test_missing_bbc_error_explains_required_location(tmp_path):
+    with pytest.raises(FileNotFoundError, match=r"bbc-text\.csv.*data/raw"):
+        inspect_corpus(tmp_path / "bbc-text.csv")
+
+
 def test_exact_dedup_preserves_text_and_first_metadata(tmp_path):
     path = tmp_path / "corpus.csv"
     path.write_text('category,text\nsport,"Hello, world"\ntech,"Hello, world"\ntech,"hello, world"\ntech,\n', encoding="utf-8")
@@ -72,6 +77,8 @@ def test_windows_cover_each_target_once_including_eos():
 
 def test_real_bbc_preparation_counts_without_training():
     path = Path(__file__).parents[1] / "data/raw/bbc-text.csv"
+    if not path.exists():
+        pytest.skip("Local dataset is intentionally not version-controlled")
     raw = inspect_corpus(path)
     assert len(raw) == 2225 and raw.text.duplicated().sum() == 99
     splits = split_corpus(clean_corpus(raw))
