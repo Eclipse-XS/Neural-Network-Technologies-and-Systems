@@ -55,6 +55,8 @@ mlruns/
 /data/
 labs/*/data/*
 !labs/*/data/.gitkeep
+!labs/lab03_rag/data/README.md
+!labs/lab03_rag/data/manifest.json
 
 # Vector databases and indexes
 vector_db/
@@ -71,7 +73,16 @@ chroma_db/
 labs/*/outputs/*
 !labs/*/outputs/.gitkeep
 
+# Curated, small, verified portfolio artifacts are versioned explicitly.
+!labs/lab03_rag/artifacts/
+!labs/lab03_rag/artifacts/portfolio/
+!labs/lab03_rag/artifacts/portfolio/**
+!labs/lab04_stable_diffusion/artifacts/
+!labs/lab04_stable_diffusion/artifacts/portfolio/
+!labs/lab04_stable_diffusion/artifacts/portfolio/**
+
 # Operating-system files
 .DS_Store
 Thumbs.db
 desktop.ini
+

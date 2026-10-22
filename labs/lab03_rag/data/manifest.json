@@ -1,0 +1,10 @@
+{
+  "source": "https://www.kaggle.com/datasets/anvitkumar/shopping-dataset",
+  "redistribution": "not included; download from the source under its published terms",
+  "encoding": "utf-8-sig",
+  "files": [
+    {"name": "dresses.csv", "rows": 100, "columns": 24, "sha256": "846451524f325f58a19005fe5c47392495e76bdb37b5c8ae28368785e48ab267"},
+    {"name": "earrings.csv", "rows": 34, "columns": 24, "sha256": "1040c970376583daa70aab84b798b71d3c1fbd351192b04363ebd03359021583"},
+    {"name": "sports-shoes.csv", "rows": 51, "columns": 24, "sha256": "93a0d131ef117c48558d97727ce06f796e3e71f7d12bb9b8c07cdb810ab729f3"}
+  ]
+}
