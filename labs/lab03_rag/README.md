@@ -1,143 +1,96 @@
-# Лабораторна робота №3. Реалізація RAG-системи для витягування знань
+# Laboratory 3: Retrieval-Augmented Generation with Redis and CSV
 
-**Варіант 3: Redis Vector Similarity + CSV.**
-CSV → CSVLoader → текст рядка → MiniLM (CPU) → LangChain RedisVectorStore →
-Redis retrieval → grounded prompt → локальна LLM у LM Studio → перевірка полів.
-Інші лабораторні та CUDA не змінюються.
+## Project Overview
 
-## Корпус і структура
+This project builds and audits a local RAG pipeline over a 185-product catalog. It preserves an honest semantic-search baseline, demonstrates why vector similarity fails on exact and aggregate questions, and compares it with a deterministic hybrid router.
 
-`data/raw/csv/`: `dresses.csv` (100), `sports-shoes.csv` (51), `earrings.csv` (34).
-Разом 185 товарів, 24 спільні колонки. Повний набір із 98 CSV у батьківському data/
-не входить до індексу. [Повний аудит](dataset_audit.md).
-Дані взято з [Kaggle](https://www.kaggle.com/datasets/anvitkumar/shopping-dataset).
-Для іншого checkout потрібні ці три оригінальні CSV; queries.json перевіряє їхні SHA-256.
-Дані, кеші та outputs ігноруються Git.
+![RAG architecture](artifacts/portfolio/rag_architecture.png)
 
-```text
-lab03_rag/
-  README.md, dataset_audit.md, requirements.txt, setup.ps1
-  docker-compose.yml, queries.json
-  data/raw/csv/                  # три локальні CSV
-  notebooks/01_redis_csv_rag.ipynb
-  src/                          # config, data, documents, embeddings,
-                                # redis_store, retrieval, llm, rag, evaluation
-  tests/                        # офлайн unit/schema tests
-  report/report.md
-  report/defense_notes.md
-  outputs/                      # результати, embeddings, QA
-```
+## Educational Objectives
 
-## Windows / PyCharm
+The notebook explains document construction, MiniLM embeddings, token truncation, cosine distance, Redis indexing, retrieval metrics, grounded prompting, citation checks, numeric verification, failure analysis, and query routing.
 
-Команди виконуються з кореня репозиторію. Python ≥3.11; фактично перевірено **3.13.5**.
-Python 3.11 окремо не тестувався. Окреме середовище Lab 3 використовує вже встановлений
-у репозиторії torch через локальний .pth. setup.ps1 не оновлює CUDA та пакети батьківського
-середовища, фіксує його torch як constraint для встановлення.
+## Official Variant and Requirements
 
-```powershell
-.\labs\lab03_rag\setup.ps1 -Python .\.venv\Scripts\python.exe
-```
+Variant 3 requires 2–3 CSV files loaded through `CSVLoader`, `all-MiniLM-L6-v2`, Redis Vector Similarity with cosine distance, and a local OpenAI-compatible LLM. This implementation uses three source CSV files, one product row per document, Redis Stack, and LM Studio.
 
-У PyCharm виберіть `labs/lab03_rag/.venv/Scripts/python.exe` для notebook.
-Якщо потрібен іменований Jupyter kernel, зареєструйте вручну:
+## Architecture
 
-```powershell
-.\labs\lab03_rag\.venv\Scripts\python.exe -m ipykernel install --user --name lab03 --display-name "Python (Lab 3)"
-```
+`CSV → CSVLoader → row Document → normalized MiniLM embedding → Redis FLAT/COSINE index → semantic or structured retrieval → grounded prompt → local LLM → evaluated answer`
 
-Прямі версії інтеграцій зафіксовано в requirements.txt; це не повний transitive lock.
-Використано langchain-community 0.4.2 (CSVLoader), langchain-redis 0.2.6,
-langchain-huggingface 1.2.2, langchain-openai 1.6.3, sentence-transformers 6.1.0.
-Пакет community видає sunset warning, але містить потрібний методичкою CSVLoader.
-Redis і HuggingFace використовують окремі інтеграції. Жодної LLM у Python/PyTorch не завантажуємо.
+## Technology Stack
 
-## Redis Stack
+- Python 3.13, pandas, NumPy, matplotlib
+- LangChain Core, Community, Redis, Hugging Face and OpenAI integrations
+- `sentence-transformers/all-MiniLM-L6-v2`, 384 dimensions
+- Redis Stack with `FLOAT32`, `FLAT`, `COSINE`
+- LM Studio local OpenAI-compatible endpoint
+- pytest and notebook schema/syntax checks
 
-Запустіть Docker Desktop (Linux containers):
+## Dataset
 
-```powershell
-docker compose -f labs/lab03_rag/docker-compose.yml up -d
-docker compose -f labs/lab03_rag/docker-compose.yml ps
-docker compose -f labs/lab03_rag/docker-compose.yml exec redis redis-cli FT._LIST
-```
+The frozen corpus contains 100 dresses, 51 sports shoes and 34 earrings. It has 24 source columns, 32 missing discount values, 22 unrated records represented as rating 0 with zero ratings, and 29 price/discount formula conflicts. Acquisition and SHA-256 verification are documented in [data/README.md](data/README.md).
 
-Один сервіс `redis/redis-stack:7.4.0-v8`; Redis на `127.0.0.1:6379`,
-RedisInsight на [localhost:8001](http://localhost:8001). Named volume зберігає дані.
-У контейнерному RedisInsight підключення до Redis: host 127.0.0.1, port 6379.
-WSL доступний із distro docker-desktop; ще один Redis у WSL не потрібний.
-Код перевіряє PING і FT._LIST: звичайного Redis без Search недостатньо.
+![EDA dashboard](artifacts/portfolio/eda_dashboard.png)
 
-Індекс `lab03_<fingerprint>`: FLAT, COSINE, FLOAT32, 384 виміри, TAG/NUMERIC metadata.
-Назва залежить від корпусу, серіалізації, embedding revision та схеми.
-Повторний запуск додає лише відсутні ключі. FLUSHDB/видалення чужих даних не виконується.
-Після зміни корпусу старі індекси залишаються для ручного керування.
+## Step-by-Step Workflow
 
-## LM Studio
+The [notebook](notebooks/01_redis_csv_rag.ipynb) has 16 stages: RAG concepts, environment, dataset, EDA, loader, embeddings, PCA, Redis, retrieval, metrics, prompt, answer evaluation, error analysis, improvement experiments, dashboard, and limitations.
 
-Завантажте локальну chat-модель у LM Studio, запустіть Developer → Local Server.
-Використовуйте вже наявну модель; велике завантаження не потрібне.
+## Experimental Design
+
+Eight frozen queries cover direct lookup, semantic search, metadata filtering, two-record comparison, a global numeric condition, cross-category comparison, a broad semantic request and an unsupported delivery question. Ground truth and corpus hashes are fixed in `queries.json`.
+
+## Results and Visualizations
+
+The semantic baseline achieved Hit@5 = 0.857 and MRR = 0.690 over seven labeled queries. It failed the exact global-minimum query and retrieved only one of two required products for one comparison. The hybrid router leaves semantic queries unchanged and applies exact-ID or structured numeric retrieval when the intent is explicit.
+
+![Baseline versus hybrid](artifacts/portfolio/baseline_vs_hybrid.png)
+
+## Quantitative Evaluation
+
+Detailed per-query values are in [baseline_vs_hybrid.csv](artifacts/portfolio/baseline_vs_hybrid.csv). Recall@5 is separate from Hit@5; q03 has nine relevant products, so Recall@5 cannot exceed 5/9.
+
+## Error Analysis
+
+The machine-readable taxonomy covers inconsistent source fields, missing-value semantics, unit errors, incomplete multi-row retrieval, incorrect global aggregation, arithmetic errors, unsupported claims, and correct abstention. See [error_taxonomy.csv](artifacts/portfolio/error_taxonomy.csv).
+
+## Engineering Decisions
+
+- One row is one document to preserve product-level provenance.
+- Raw values remain intact; numeric values are derived and explicitly named.
+- Redis indexing is corpus-fingerprinted and idempotent.
+- Structured retrieval is used only for explicit exact/numeric intent.
+- LLM lexical field checks are not presented as semantic correctness.
+
+## Reproducibility
+
+1. Download and verify the dataset as documented under `data/`.
+2. Install `requirements.txt` without replacing an existing CUDA build.
+3. Start Redis: `docker compose -f labs/lab03_rag/docker-compose.yml up -d`.
+4. Load a local chat model in LM Studio and set `LM_STUDIO_MODEL`.
+5. Run the notebook from top to bottom.
+
+## Installation and Execution
 
 ```powershell
-Invoke-RestMethod http://localhost:1234/v1/models
-$env:LM_STUDIO_BASE_URL = "http://localhost:1234/v1"
-$env:LM_STUDIO_MODEL = "mistralai/ministral-3-3b"
+python -m venv labs/lab03_rag/.venv
+labs/lab03_rag/.venv/Scripts/pip install -r labs/lab03_rag/requirements.txt
+labs/lab03_rag/.venv/Scripts/python -m jupyter notebook labs/lab03_rag/notebooks/01_redis_csv_rag.ipynb
 ```
 
-Наведений ID фактично був завантажений у цьому середовищі. На іншій машині виберіть
-власний chat-model ID зі списку. Код не має hardcoded model ID. Задайте ці змінні також
-у конфігурації PyCharm/Jupyter та перезапустіть kernel. Опційна LM_STUDIO_API_KEY.
-REDIS_URL типово `redis://localhost:6379`.
-
-## Notebook і експеримент
-
-Виконуйте `notebooks/01_redis_csv_rag.ipynb` згори вниз. Комірки короткі; логіка у src/.
-Перший запуск MiniLM без кешу потребує `local_files_only=False` у комірці embeddings;
-далі використовуйте True. Revision зафіксовано в config.py. Вектори кешуються за текстом
-і налаштуваннями. Запуск генерації надсилає реальні HTTP-запити до LM Studio.
-
-Вісім фіксованих queries, k=5: точний/семантичний пошук, category filter, порівняння,
-числові умови, різні CSV, insufficient context. Score — **cosine distance**, менше краще.
-Hit@5/MRR рахуються лише для семи запитів із мітками. Recall@5 показує coverage,
-особливо коли потрібні два товари. Виміряний час включає query embedding, мережу й парсинг;
-це не чиста latency Redis. Numeric oracle використовується тільки для оцінювання.
-
-Результати:
-
-- `outputs/retrieval/results.csv`: кожен отриманий рядок, rank, distance, provenance, preview, metadata.
-- `outputs/retrieval/summary.csv`, `metrics.json`: усі запити й retrieval metrics.
-- `outputs/rag/final_answers.csv`: відповіді або помилки, очікувані поля та перевірки.
-- `outputs/rag/q*_prompt.json`: фактичні промпти.
-- `outputs/embedding_audit.json`, `index_info.json`, `environment.json`: аудит поточного запуску.
-
-Повторний запуск перезаписує відповідні outputs. Для нового порівняння задайте
-окремий `Settings(output_dir=...)` і збережіть той самий queries.json.
-
-## Обмеження
-
-Raw дані мають 29 неузгоджень ціни зі знижкою понад 1 INR та 22 записи без оцінок.
-Missing discount не дорівнює нулю. Значення не виправляємо; prompt вимагає називати суперечності.
-17 із 185 текстів довші за 256 word pieces MiniLM і обрізаються при embedding;
-повний текст лишається в Redis для генерації. Не всі характеристики беруть участь у пошуку.
-
-Vector top-k не гарантує глобальний мінімум. Hit=1 не доводить отримання всіх потрібних рядків.
-Перевірка полів — лексичні збіги й валідність посилань; атрибуцію й висновок перевіряємо вручну.
-Dot product, row batches і baseline без контексту не входять до обов’язкового baseline.
-
-## Перевірки та звіт
+## Testing
 
 ```powershell
-.\labs\lab03_rag\.venv\Scripts\python.exe -m pytest labs/lab03_rag/tests -q
-.\labs\lab03_rag\.venv\Scripts\python.exe -m compileall -q labs/lab03_rag/src labs/lab03_rag/tests
-git diff --check
+labs/lab03_rag/.venv/Scripts/python -m pytest labs/lab03_rag/tests -q
 ```
 
-Тести не потребують сервісів, Hugging Face download або CSV-корпусу. Тестові fixtures
-явно штучні й не використовуються як експериментальні дані.
-[Звіт і checklist скриншотів](report/report.md),
-[10 офіційних контрольних запитань і пояснення реалізації](report/defense_notes.md).
-GUI-скриншоти залишаються ручним кроком; їх не підмінено згенерованими зображеннями.
+Unit tests do not require Redis or LM Studio. Integration checks require their services and are reported separately.
 
-Документація: [RedisVectorStore](https://reference.langchain.com/python/langchain-redis/vectorstores/RedisVectorStore),
-[Redis Stack image](https://hub.docker.com/r/redis/redis-stack/tags),
-[MiniLM model card](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2).
+## Limitations
+
+The corpus is small and domain-specific. Relevance labels are not a complete human benchmark. Stored latency is a single observation per query and includes embedding, networking and parsing. The tokenizer audit, not the prompt, is the authority for the actual truncation count.
+
+## Portfolio Highlights
+
+The project demonstrates data contracts, provenance, vector database validation, machine-readable evaluation, honest failure analysis, deterministic numeric tools and a public curated artifact layer without publishing caches or model weights.

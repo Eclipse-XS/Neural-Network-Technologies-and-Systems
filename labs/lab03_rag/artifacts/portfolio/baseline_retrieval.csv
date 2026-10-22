@@ -1,0 +1,9 @@
+﻿query_id,query,kind,returned,query_elapsed_ms,hit_at_k,first_relevant_rank,reciprocal_rank,recall_at_k
+q01,"What are the listed final_price, discount and rating of Lancer Men Navy Blue Textile Running Non-Marking Shoes (17745816)? Report any price inconsistency.",direct,5,6.353999997372739,1.0,1.0,1.0,1.0
+q02,Find cotton maxi dresses suitable for casual wear.,semantic,5,6.009200005792081,1.0,3.0,0.3333333333333333,0.6666666666666666
+q03,Show silver-plated earrings and compare their listed prices.,filter,5,4.728100000647828,1.0,2.0,0.5,0.2222222222222222
+q04,Compare the listed prices and ratings of Trendyol Black Maxi Dress (21426422) and COVER STORY Embellished Shoulder Straps Velvet Sheath Dress (21238004). Which of these two has the lower listed final_price?,comparison,5,4.590199998347089,1.0,1.0,1.0,0.5
+q05,Find the lowest listed final_price among sports shoes with rating at least 4 and a stated positive discount. Compare the retrieved candidates and state the coverage limitation.,multi_condition,5,4.739500000141561,0.0,,0.0,0.0
+q06,"Compare Trendyol Black Maxi Dress (21426422) and Rubans Silver-Toned Dome Shaped Studs Earrings (15720652): category, listed price, discount and rating.",cross_category,5,4.280799999833107,1.0,1.0,1.0,1.0
+q07,Find comfortable walking shoes and compare the materials of the retrieved products.,semantic,5,3.4124999947380275,1.0,1.0,1.0,0.625
+q08,"Which of these products can be delivered to Kyiv tomorrow, and what is the exact shipping fee?",unsupported,5,4.259799999999814,,,,

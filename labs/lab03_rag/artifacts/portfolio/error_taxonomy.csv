@@ -1,0 +1,9 @@
+﻿query_id,failure_category,review
+q01,reasoning_over_conflicting_fields,Помилка пояснення: ціна 1999 і discount 40% суперечать одне одному; LLM назвала їх узгодженими. Основні числа відтворено.
+q02,missing_value_semantics,"Підібрано два доречні товари, але порожній discount помилково названо No discount. Третій релевантний товар не retrieved."
+q03,unit_error_and_citation_format,"Дві доречні позиції; discount 77 записано як суму ₹77, а не відсоток. Цитати мають нестандартний формат і не проходять строгий parser."
+q04,incomplete_multi_record_retrieval,Коректна відмова порівняти: COVER STORY відсутній у top-5. Ціна Trendyol правильна. Citation format не відповідає вимозі.
+q05,semantic_search_used_for_global_aggregation,Глобальний oracle 11960808 за 659 INR не retrieved. Названо Puma за 2474 серед кандидатів; твердження No global minimum exists некоректне. Не пояснено конфлікт Duke; citation format невалідний.
+q06,arithmetic_error,"10/10 очікуваних полів присутні й обидві цитати валідні, але арифметика помилкова: 1480*(1-0.76)=355.20, не 352.00. Різниця до raw 355 — лише 0.20 INR, тому висновок про суттєву суперечність хибний."
+q07,unsupported_claim,Названі material/sole material і ціни трьох товарів узгоджені з джерелами. Додано непідтверджене контекстом узагальнення breathable/lightweight; FAUSTO має raw price-discount conflict.
+q08,correct_abstention,Коректна відмова Insufficient context: відсутні дані про доставку до Kyiv завтра й точну вартість.
