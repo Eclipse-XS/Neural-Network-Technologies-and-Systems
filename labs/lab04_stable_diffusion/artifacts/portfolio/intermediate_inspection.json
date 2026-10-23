@@ -1,0 +1,273 @@
+{
+  "generated_at": null,
+  "model_id": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+  "revision": "451f4fe16113bff5a5d2269ed5ad43b0592e9a14",
+  "device": "model_cpu_offload",
+  "dtype": "torch.float16",
+  "tokenizer": {
+    "prompt": "a futuristic city street at sunset, neon signs, wet pavement reflections, detailed architecture, cinematic lighting, pedestrians in the distance",
+    "model_max_length": 77,
+    "token_count": 26,
+    "bos_token_id": 49406,
+    "eos_token_id": 49407,
+    "pad_token_id": 49407,
+    "first_tokens": [
+      [
+        0,
+        49406,
+        "<|startoftext|>"
+      ],
+      [
+        1,
+        320,
+        "a</w>"
+      ],
+      [
+        2,
+        30987,
+        "futuristic</w>"
+      ],
+      [
+        3,
+        1305,
+        "city</w>"
+      ],
+      [
+        4,
+        2012,
+        "street</w>"
+      ],
+      [
+        5,
+        536,
+        "at</w>"
+      ],
+      [
+        6,
+        3424,
+        "sunset</w>"
+      ],
+      [
+        7,
+        267,
+        ",</w>"
+      ],
+      [
+        8,
+        13919,
+        "neon</w>"
+      ],
+      [
+        9,
+        4659,
+        "signs</w>"
+      ],
+      [
+        10,
+        267,
+        ",</w>"
+      ],
+      [
+        11,
+        6682,
+        "wet</w>"
+      ],
+      [
+        12,
+        27669,
+        "pavement</w>"
+      ],
+      [
+        13,
+        16647,
+        "reflections</w>"
+      ],
+      [
+        14,
+        267,
+        ",</w>"
+      ],
+      [
+        15,
+        12609,
+        "detailed</w>"
+      ],
+      [
+        16,
+        4920,
+        "architecture</w>"
+      ],
+      [
+        17,
+        267,
+        ",</w>"
+      ],
+      [
+        18,
+        25602,
+        "cinematic</w>"
+      ],
+      [
+        19,
+        5799,
+        "lighting</w>"
+      ],
+      [
+        20,
+        267,
+        ",</w>"
+      ],
+      [
+        21,
+        33895,
+        "pedestrians</w>"
+      ],
+      [
+        22,
+        530,
+        "in</w>"
+      ],
+      [
+        23,
+        518,
+        "the</w>"
+      ],
+      [
+        24,
+        7964,
+        "distance</w>"
+      ]
+    ],
+    "attention_mask_shape": [
+      1,
+      77
+    ]
+  },
+  "clip_text_encoder": {
+    "text_encoder_class": "CLIPTextModel",
+    "shape": [
+      1,
+      77,
+      768
+    ],
+    "dtype": "torch.float16",
+    "device": "cuda:0",
+    "is_finite": true,
+    "mean": -0.10858154296875,
+    "std": 1.0009765625,
+    "min": -28.078125,
+    "max": 33.09375,
+    "norm_first_token": 43.84375,
+    "norm_last_token": 27.4375
+  },
+  "initial_latent": {
+    "seed": 42,
+    "shape": [
+      1,
+      4,
+      64,
+      64
+    ],
+    "dtype": "torch.float32",
+    "init_noise_sigma": 1.0,
+    "mean": 0.009140918031334877,
+    "std": 1.004021406173706,
+    "min": -3.832531690597534,
+    "max": 4.220885276794434,
+    "is_finite": true
+  },
+  "unet_cfg": {
+    "timestep": 958,
+    "unet_class": "UNet2DConditionModel",
+    "input_shape": [
+      2,
+      4,
+      64,
+      64
+    ],
+    "conditioning_shape": [
+      1,
+      77,
+      768
+    ],
+    "predicted_noise_shape": [
+      2,
+      4,
+      64,
+      64
+    ],
+    "noise_uncond_mean": 0.0047454833984375,
+    "noise_uncond_std": 1.00390625,
+    "noise_cond_mean": 0.0060272216796875,
+    "noise_cond_std": 1.00390625,
+    "noise_cfg_mean": 0.0143585205078125,
+    "noise_cfg_std": 1.0068359375,
+    "guidance_scale": 7.5,
+    "cfg_algebraic_identity_verified": true
+  },
+  "denoising_progression": [
+    {
+      "step": 0,
+      "timestep": 958,
+      "progress_pct": 3,
+      "latent_mean": 0.00804901123046875,
+      "latent_std": 1.0029296875,
+      "image_filename": "step_00_t958.png",
+      "relative_path": "artifacts/portfolio/denoising_steps/step_00_t958.png",
+      "sha256": "4fa8ed5b8384e18117d8fc1b2678ddcb419c78323d8c1ad95ed6da1ac82d3246"
+    },
+    {
+      "step": 7,
+      "timestep": 760,
+      "progress_pct": 27,
+      "latent_mean": 0.01026153564453125,
+      "latent_std": 0.99609375,
+      "image_filename": "step_07_t760.png",
+      "relative_path": "artifacts/portfolio/denoising_steps/step_07_t760.png",
+      "sha256": "70d3ea9ac53f3b02e3a2120a7efa4415adb74cd1497be28c174cb044093437ce"
+    },
+    {
+      "step": 15,
+      "timestep": 496,
+      "progress_pct": 53,
+      "latent_mean": 0.020843505859375,
+      "latent_std": 0.96484375,
+      "image_filename": "step_15_t496.png",
+      "relative_path": "artifacts/portfolio/denoising_steps/step_15_t496.png",
+      "sha256": "cc8da3b02bb4bcc143aec180638316ff7c9ca93e120e69f2e616f99a5e053d96"
+    },
+    {
+      "step": 22,
+      "timestep": 265,
+      "progress_pct": 77,
+      "latent_mean": 0.030303955078125,
+      "latent_std": 0.91259765625,
+      "image_filename": "step_22_t265.png",
+      "relative_path": "artifacts/portfolio/denoising_steps/step_22_t265.png",
+      "sha256": "12e588c01691f74caa777e7272eb1e888e61756deef1763d423b58f4e67b7d31"
+    },
+    {
+      "step": 29,
+      "timestep": 34,
+      "progress_pct": 100,
+      "latent_mean": 0.03582763671875,
+      "latent_std": 0.8662109375,
+      "image_filename": "step_29_t034.png",
+      "relative_path": "artifacts/portfolio/denoising_steps/step_29_t034.png",
+      "sha256": "1182ac27b6035ba9ecdff3e5047a726a6410bdc5d6cb44362207ce721269ef65"
+    }
+  ],
+  "vae": {
+    "vae_class": "AutoencoderKL",
+    "in_channels": 3,
+    "out_channels": 3,
+    "latent_channels": 4,
+    "scaling_factor": 0.18215,
+    "sample_size": 512,
+    "decoded_resolution": [
+      512,
+      512
+    ],
+    "num_upsample_blocks": 4
+  }
+}

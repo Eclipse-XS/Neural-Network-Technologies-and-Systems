@@ -38,8 +38,14 @@ def execute(path: Path, mode: str = "replay") -> tuple[int, int]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", choices=("replay", "full"), default="replay")
+    parser.add_argument("--lab", choices=("3", "4", "all"), default="all")
     args = parser.parse_args()
-    for path in NOTEBOOKS:
+    targets = NOTEBOOKS
+    if args.lab == "3":
+        targets = [NOTEBOOKS[0]]
+    elif args.lab == "4":
+        targets = [NOTEBOOKS[1]]
+    for path in targets:
         cells, errors = execute(path, args.mode)
         print(f"{path.relative_to(ROOT)}: EXECUTED mode={args.mode} code_cells={cells} errors={errors}")
 

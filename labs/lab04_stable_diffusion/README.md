@@ -12,7 +12,7 @@
 
 ## Експеримент
 
-[Notebook](notebooks/01_text_to_image.ipynb) має 17 кроків: теорія diffusion, pipeline audit, baseline, seed/steps/CFG, negative prompts, styles, scheduler status, qualitative rubric, runtime/memory analysis, dashboard і LoRA theory.
+[Notebook](notebooks/01_text_to_image.ipynb) має 21 крок: математичні основи дифузії, архітектура LDM, завантаження та перевірка пайплайну, інспекція токенізації та CLIP-ембедінгів, початковий латентний шум, прямий прохід U-Net, механізм Classifier-Free Guidance (CFG), траєкторія денойзингу шедулера, VAE-декодування у пікселі, baseline генерація, дослідження seed/steps/CFG, negative prompts, 3 стилі на другому сюжеті, статус шедулера, 10-пунктовий аудит цілісності, продуктивність/дашборд, аналіз параметрів LoRA та академічні висновки.
 
 Контрольовані серії:
 
@@ -57,6 +57,11 @@ CPU-only replay перевіряє 13 committed PNG та metadata, після ч
 ```powershell
 python scripts/execute_portfolio_notebooks.py --mode replay
 ```
+
+## Документація верифікації та аудиту
+
+- [Матриця відповідності методичним вимогам (16 пунктів)](LAB4_METHODOLOGY_COMPLIANCE.md)
+- [Технічний звіт контролю якості (QA Audit & Verification Report)](LAB4_NOTEBOOK_QA.md)
 
 ## Перевірки й обмеження
 

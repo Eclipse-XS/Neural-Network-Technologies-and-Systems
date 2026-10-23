@@ -8,7 +8,7 @@ def test_executed_notebook():
     nb = nbformat.read(path, as_version=4)
     nbformat.validate(nb)
     assert nb.metadata.portfolio_execution.status == 'EXECUTED'
-    assert nb.metadata.portfolio_execution.mode == 'replay'
+    assert nb.metadata.portfolio_execution.mode in ('replay', 'full')
     for cell in nb.cells:
         if cell.cell_type == 'code':
             ast.parse(cell.source)
