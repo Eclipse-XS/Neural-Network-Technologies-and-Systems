@@ -5,11 +5,19 @@ on:
     paths:
       - "labs/lab03_rag/**"
       - "labs/lab04_stable_diffusion/**"
+      - "scripts/build_labs34_portfolio.py"
+      - "scripts/execute_portfolio_notebooks.py"
+      - "EDUCATIONAL_PORTFOLIO_QA.md"
+      - "README.md"
       - ".github/workflows/labs-3-4-ci.yml"
   pull_request:
     paths:
       - "labs/lab03_rag/**"
       - "labs/lab04_stable_diffusion/**"
+      - "scripts/build_labs34_portfolio.py"
+      - "scripts/execute_portfolio_notebooks.py"
+      - "EDUCATIONAL_PORTFOLIO_QA.md"
+      - "README.md"
       - ".github/workflows/labs-3-4-ci.yml"
 
 jobs:
