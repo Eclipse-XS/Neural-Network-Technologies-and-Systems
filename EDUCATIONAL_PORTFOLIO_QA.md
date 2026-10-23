@@ -119,7 +119,7 @@ Euler and DDIM are marked `NOT_EXECUTED`. CLIPScore and FID are not reported bec
 
 | Check | Result |
 |---|---|
-| Lab 3 unit and notebook tests | UNIT TESTED: 29 passed, including 7 anti-leakage tests |
+| Lab 3 unit, integration, replay and notebook tests | 36 passed, including 7 anti-leakage tests |
 | Lab 4 unit and notebook tests | 15 passed |
 | Python compileall | PASS |
 | Lab 3 notebook execution | 16/16 code cells executed, 0 error cells |
@@ -211,7 +211,7 @@ Notebook generation and execution are separate. The builder writes unexecuted no
 
 ### D. Tests
 
-The suites cover hybrid entrypoint routing, semantic Redis fallback with fakes, catalog-to-Document adaptation, provenance, citation validation, deterministic numeric/refusal modes, ground-truth isolation, notebook schema and real-output checks, replay evidence availability, absence of author-specific paths, PNG decoding and README links. GitHub Actions installs CPU-only dependencies, compiles source, executes both notebooks with a real kernel, then runs both lab suites. Final local and CI counts are recorded after the integration commits below; unavailable live services are not counted as passed integration tests.
+The suites cover hybrid entrypoint routing, semantic Redis fallback with fakes, catalog-to-Document adaptation, provenance, citation validation, deterministic numeric/refusal modes, ground-truth isolation, notebook schema and real-output checks, replay evidence availability, absence of author-specific paths, PNG decoding and README links. GitHub Actions installs CPU-only dependencies, compiles source, executes both notebooks with a real kernel, then runs both lab suites. Final CI result: Lab 3 `36 passed, 0 failed, 0 skipped` (one deprecation warning); Lab 4 `15 passed, 0 failed, 0 skipped`. Both notebook replay executions completed with zero error cells. Unavailable live services are not counted as passed integration tests.
 
 ### E. Remaining Problems
 
