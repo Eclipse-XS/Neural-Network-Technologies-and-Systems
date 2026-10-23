@@ -23,7 +23,7 @@ def write(path, cells):
 
 def lab3():
     cells = [
-        md("""# Лабораторна робота №3: executable RAG із CSV та Redis
+        md("""# Лабораторна робота №3: RAG із CSV та Redis
 
 Notebook відтворює весь шлях `CSV → Document → embedding → index → retrieval → prompt → evaluation`. `FULL EXPERIMENT` виконує моделі й зовнішні сервіси. `PORTFOLIO REPLAY` не імітує inference: він переобчислює статистики, маршрутизацію, метрики та графіки з версіонованих доказів. Кожен результат має статус `LIVE COMPUTATION`, `RECOMPUTED FROM EVIDENCE` або `HISTORICAL INFERENCE`."""),
         md("""## STEP 01 — Bootstrap і обчислювальний контракт
@@ -244,7 +244,7 @@ print({'chart_source':'current metrics DataFrame','status':computation_status(MO
 
 def lab4():
     cells = [
-        md("""# Лабораторна робота №4: executable Stable Diffusion Text-to-Image
+        md("""# Лабораторна робота №4: Stable Diffusion Text-to-Image
 
 Notebook виконує або доказово відтворює 13 SD 1.5 generations. У `full` кожен `GenerationSpec` проходить через `generate_image`; у `replay` кожен PNG звіряється з параметрами manifest і SHA-256, після чого galleries та performance plots будуються заново. Replay не називається новою генерацією."""),
         md("""## STEP 01 — Generative AI і межі експерименту
@@ -394,7 +394,7 @@ print({'chart_source':'records resolved in current session','records':len(all_re
 LoRA заморожує $W$ і навчає low-rank update $\\Delta W=BA$, де rank значно менший за dimensions $W$. Для чесного досліду потрібні dataset/license audit, train/validation split, adapter rank/alpha, learning-rate schedule, checkpoints і base-vs-adapter evaluation на фіксованих prompts/seeds. Тут LoRA не навчалася і не підключалася; жоден image не маркується як LoRA-generated."""),
         md("""## STEP 17 — Висновки
 
-Поточний запуск сформував specs кодом, resolved 13 records, перевірив 13 SHA-256 у replay, заново побудував п'ять experiment galleries, runtime chart і performance dashboard. Seed змінює композицію; steps мають cost trade-off; CFG не має доведеного монотонного optimum; negative prompt не є гарантією; style prompting змінює style і geometry. Обмеження: SD 1.5, 512×512, PNDM-only evidence, один run на spec, historical GPU timings, відсутні CLIPScore та blind raters. Replay є перевіркою доказів і повторним аналізом, а не новим diffusion inference."""),
+Поточний запуск сформував конфігурації кодом, перевірив 13 SHA-256 у replay і заново побудував сім галерей, runtime chart та performance dashboard. Seed змінює композицію; steps мають trade-off часу й деталей; CFG не має доведеного монотонного optimum; negative prompt не гарантує усунення артефактів; style prompt змінює фактуру й геометрію. Обмеження: SD 1.5, 512×512, лише PNDM, один запуск на конфігурацію, historical GPU timings, відсутні CLIPScore та blind raters. Replay перевіряє докази й повторює аналіз, але не запускає diffusion inference."""),
     ]
     write(ROOT/'labs/lab04_stable_diffusion/notebooks/01_text_to_image.ipynb', cells)
 

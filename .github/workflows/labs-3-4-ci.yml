@@ -8,8 +8,8 @@ on:
       - "scripts/build_labs34_portfolio.py"
       - "scripts/execute_portfolio_notebooks.py"
       - "scripts/rebuild_executable_notebooks.py"
-      - "NOTEBOOK_EXECUTION_COMPARISON.md"
-      - "EDUCATIONAL_PORTFOLIO_QA.md"
+      - "docs/audits/notebook-execution-comparison.md"
+      - "docs/audits/labs-3-4-qa.md"
       - "README.md"
       - ".github/workflows/labs-3-4-ci.yml"
   pull_request:
@@ -19,8 +19,8 @@ on:
       - "scripts/build_labs34_portfolio.py"
       - "scripts/execute_portfolio_notebooks.py"
       - "scripts/rebuild_executable_notebooks.py"
-      - "NOTEBOOK_EXECUTION_COMPARISON.md"
-      - "EDUCATIONAL_PORTFOLIO_QA.md"
+      - "docs/audits/notebook-execution-comparison.md"
+      - "docs/audits/labs-3-4-qa.md"
       - "README.md"
       - ".github/workflows/labs-3-4-ci.yml"
 

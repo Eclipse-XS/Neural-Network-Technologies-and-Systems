@@ -1,85 +1,41 @@
-# Laboratory 4: Stable Diffusion Text-to-Image
+# Лабораторна робота №4. Stable Diffusion Text-to-Image
 
-## Project Overview
+**Варіант 1.** Дослідження Stable Diffusion 1.5 на RTX 3050 Laptop GPU з 4 ГБ VRAM. Збережено 13 генерацій із параметрами, runtime metadata і SHA-256. Модель не навчалась і не донавчалась.
 
-This project is a controlled local Stable Diffusion 1.5 study on an NVIDIA RTX 3050 Laptop GPU with 4 GB VRAM. It preserves 13 verified generations, their complete controls, SHA-256 hashes, runtime observations and visual analysis.
+## Архітектура і модель
 
-![Stable Diffusion architecture](artifacts/portfolio/stable_diffusion_architecture.png)
+`Prompt → tokenizer → CLIP text encoder → U-Net + scheduler → latent → VAE decoder → RGB`
 
-## Educational Objectives
+Використано `stable-diffusion-v1-5/stable-diffusion-v1-5`, revision `451f4fe16113bff5a5d2269ed5ad43b0592e9a14`, `StableDiffusionPipeline`, FP16, PNDM і model CPU offload. Роздільність — 512×512, batch size — 1.
 
-The notebook explains diffusion training and sampling, latent space, CLIP conditioning, U-Net denoising, schedulers, VAE decoding, classifier-free guidance, reproducible seeds, negative prompts, prompt-based styling, performance limits and LoRA.
+![Архітектура Stable Diffusion](artifacts/portfolio/stable_diffusion_architecture.png)
 
-## Official Variant and Requirements
+## Експеримент
 
-Variant 1 requires Text-to-Image generation, parameter studies for seed, steps and CFG, negative-prompt comparisons, three styles, persisted parameters and an optional scheduler study. The implementation uses SD 1.5 at 512×512.
+[Notebook](notebooks/01_text_to_image.ipynb) має 17 кроків: теорія diffusion, pipeline audit, baseline, seed/steps/CFG, negative prompts, styles, scheduler status, qualitative rubric, runtime/memory analysis, dashboard і LoRA theory.
 
-## Architecture
+Контрольовані серії:
 
-`Prompt → tokenizer → CLIP text encoder → text embeddings → U-Net + PNDM scheduler → latent → VAE decoder → RGB image`
+- seeds: 42, 123, 777, 2026;
+- inference steps: 20, 30, 50;
+- CFG: 5, 7,5, 10;
+- negative prompt: дві пари для seeds 42 і 123;
+- styles: watercolor, isometric, photorealistic;
+- scheduler: виконано PNDM; Euler і DDIM не запускались.
 
-## Technology Stack
+Baseline повторно використовується в групах seed/steps/CFG, тому матриця містить 13, а не 18 дубльованих генерацій.
 
-Python, PyTorch, Diffusers, Transformers, Accelerate, safetensors, Pillow, pandas and matplotlib. The verified run used FP16, model CPU offload and PyTorch SDPA.
+![Порівняння seed](artifacts/portfolio/seed_comparison.png)
 
-## Model
+![Порівняння steps](artifacts/portfolio/steps_comparison.png)
 
-The exact model is `stable-diffusion-v1-5/stable-diffusion-v1-5` at revision `451f4fe16113bff5a5d2269ed5ad43b0592e9a14`. SD 1.5 is materially more realistic on 4 GB VRAM than SDXL.
+![Порівняння CFG](artifacts/portfolio/cfg_comparison.png)
 
-## Step-by-Step Workflow
+Seed змінює композицію за сталих prompt, steps і CFG. Збільшення steps не дало монотонного покращення на трьох зразках. CFG = 10 змінив геометрію та стилізацію, тому guidance scale не можна трактувати як accuracy. Negative prompt змінив denoising trajectory, але не прибрав усі псевдонаписи. Style suffix вплинув і на фактуру, і на композицію.
 
-The [notebook](notebooks/01_text_to_image.ipynb) contains 17 stages from generative-model fundamentals through the experiment dashboard, LoRA and limitations.
+Runtime і peak allocated CUDA memory записані для кожної генерації. Це одиничні observations, не benchmark: baseline містить warm-up effect, повторних warmed runs немає. CLIPScore і FID не обчислювалися; оцінювання є якісним.
 
-## Experimental Design
-
-- Seeds: 42, 123, 777, 2026
-- Inference steps: 20, 30, 50
-- CFG: 5, 7.5, 10
-- Negative prompt: controlled pairs for seeds 42 and 123
-- Styles: watercolor, isometric, photorealistic
-- Scheduler: PNDM verified; Euler and DDIM explicitly not executed
-
-The canonical baseline is reused across groups, producing 13 unique configurations rather than duplicated inference.
-
-## Results and Visualizations
-
-![Seed comparison](artifacts/portfolio/seed_comparison.png)
-
-![Steps comparison](artifacts/portfolio/steps_comparison.png)
-
-![CFG comparison](artifacts/portfolio/cfg_comparison.png)
-
-## Quantitative Evaluation
-
-Runtime and peak-memory fields are recorded per generation. They are observations, not benchmarks: most configurations have one run, and the first baseline includes warm-up effects. See [performance_summary.csv](artifacts/portfolio/performance_summary.csv).
-
-## Error Analysis
-
-Manual visual review records prompt/style adherence, pseudo-text, malformed small objects, composition changes and the limits of negative prompts. No CLIPScore or FID is claimed because neither was validly computed for this experiment.
-
-## Engineering Decisions
-
-- Every artifact identity includes controls, model revision, scheduler config and runtime stack.
-- Cache reuse requires identity match, file integrity, valid PNG decoding and expected dimensions.
-- CPU generators improve reproducibility with model offload.
-- Existing CUDA/PyTorch packages are never replaced automatically.
-
-## Portfolio Replay
-
-The versioned notebook executes on CPU without CUDA or a model download:
-
-```powershell
-$env:PORTFOLIO_MODE='replay'
-python scripts/execute_portfolio_notebooks.py --mode replay
-```
-
-It reads the 13 curated PNGs, manifest, galleries and `historical_environment.json` from `artifacts/portfolio/`. Outputs are labeled `REPLAYED FROM VERIFIED EVIDENCE`; `generations.csv` is a manifest of historical inference, not a replacement for inference.
-
-## Full Experimental Execution
-
-Install the declared packages while preserving a working CUDA-enabled PyTorch build. Set `PORTFOLIO_MODE=full` and run the generation entrypoint before the notebook. A second run reuses an artifact only after full integrity validation. PNDM is the only executed scheduler; Euler, DDIM and LoRA remain `NOT_EXECUTED`.
-
-## Installation and Execution
+## Запуск
 
 ```powershell
 python -m venv labs/lab04_stable_diffusion/.venv
@@ -87,20 +43,27 @@ labs/lab04_stable_diffusion/.venv/Scripts/pip install -r labs/lab04_stable_diffu
 labs/lab04_stable_diffusion/.venv/Scripts/python -m jupyter notebook labs/lab04_stable_diffusion/notebooks/01_text_to_image.ipynb
 ```
 
-Do not blindly reinstall PyTorch on the original machine.
+Для повного експерименту потрібні CUDA, model weights і достатньо RAM/disk для offload:
 
-## Testing
+```powershell
+$env:PORTFOLIO_MODE='full'
+python scripts/execute_portfolio_notebooks.py --mode full
+```
+
+Не перевстановлюйте PyTorch без перевірки сумісності CUDA. `generate_image()` повторно використовує результат лише після збігу model/config identity, SHA-256, PNG decoding і dimensions.
+
+CPU-only replay перевіряє 13 committed PNG та metadata, після чого заново будує galleries і performance plots. Він не запускає diffusion inference:
+
+```powershell
+python scripts/execute_portfolio_notebooks.py --mode replay
+```
+
+## Перевірки й обмеження
 
 ```powershell
 python -m pytest labs/lab04_stable_diffusion/tests -q
 ```
 
-Unit tests validate the experiment matrix, identities, cache integrity, notebook schema and evaluation contracts without downloading the model.
+Тести перевіряють experiment matrix, cache identity, SHA-256, image dimensions, notebook execution та програмну побудову galleries.
 
-## Limitations
-
-The study has one verified image per configuration, one verified scheduler, a single model and resolution, no repeated warmed runs, no CLIPScore, and no LoRA training. Visual judgments are qualitative and cannot establish general model quality.
-
-## Portfolio Highlights
-
-The project shows controlled one-factor experiments, resumable generation, provenance, content-addressed artifacts, explicit non-executed states, machine-readable manifests and GitHub-visible galleries.
+Висновки обмежені SD 1.5, однією роздільністю, одним scheduler і одним зображенням на конфігурацію. Visual review не є статистичною оцінкою загальної якості. Euler, DDIM, repeated timing runs, CLIPScore, FID і LoRA training не виконувались.

@@ -132,26 +132,11 @@ Seed змінив композицію і палітру: 42 — відкрит�
 
 ## Відповідність методичці
 
-| Вимога | Статус | Доказ |
-|---|---|---|
-| Середовище | PASS | environment.json; CUDA доступна |
-| SD 1.5 | PASS | model_id і revision у кожному sidecar |
-| StableDiffusionPipeline | PASS | фактичний pipeline_class |
-| Baseline 1–2 | PASS | 1 baseline PNG |
-| 3–5 seeds | PASS | 42, 123, 777, 2026; seed_comparison.png |
-| Steps 20/30/50 | PASS | steps_comparison.png |
-| CFG 5/7.5/10 | PASS | cfg_comparison.png |
-| Scheduler comparison | OPTIONAL — NOT EXECUTED | PNDM фіксований для всіх випадків |
-| Negative prompt 2–3 приклади | PASS | 2 пари, seeds 42 і 123 |
-| Друга сцена | PASS | cabin/lake/pines у стильовій серії |
-| Три стилі | PASS | watercolor, isometric, photorealistic |
-| Параметри кожного зображення | PASS | 13 JSON sidecars і generations.csv |
-| Зрозумілі імена | PASS | seed, steps, CFG у назві PNG |
-| Код і результати у звіті | PASS | фрагмент коду, PNG, таблиця нижче |
-| Контрольні запитання | PASS | defense_notes.md: усі 10 |
+Виконано baseline, чотири seed, 20/30/50 inference steps, CFG 5/7,5/10, дві negative-prompt пари та три стилі для другої сцени. Модель, revision, pipeline class, scheduler і параметри кожного з 13 PNG зафіксовані в `generations.csv` та JSON sidecars; цілісність PNG перевіряється SHA-256.
 
+Порівняння scheduler не проводилося: всі зображення отримано з PNDM, а для Euler і DDIM немає PNG або вимірів часу. LoRA описано теоретично без навчання адаптера. Ці межі не впливають на виконані обов'язкові серії Варіанта 1.
 
-Executed notebook і результати автоматичних перевірок зазначено в README. [Відповіді на всі контрольні запитання](defense_notes.md). [Скріншоти GUI, якщо їх окремо вимагають](screenshot_checklist.md).
+Notebook і команди перевірки наведено в README. [Відповіді на контрольні запитання](defense_notes.md). [Перелік GUI-скриншотів, якщо їх окремо вимагають](screenshot_checklist.md).
 
 ## Джерела
 
