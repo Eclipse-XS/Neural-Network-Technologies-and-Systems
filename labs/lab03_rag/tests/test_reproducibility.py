@@ -15,6 +15,7 @@ def test_generator_does_not_forge_execution_counts():
 def test_replay_evidence_is_published_and_not_local_output_dependent():
     required = [
         "labs/lab03_rag/artifacts/portfolio/embedding_audit.json",
+        "labs/lab03_rag/artifacts/portfolio/catalog_replay.csv",
         "labs/lab03_rag/artifacts/portfolio/index_info.json",
         "labs/lab03_rag/artifacts/portfolio/semantic_results.csv",
         "labs/lab03_rag/artifacts/portfolio/historical_semantic_answers.csv",

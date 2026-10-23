@@ -80,7 +80,7 @@ $env:PORTFOLIO_MODE='replay'
 python scripts/execute_portfolio_notebooks.py --mode replay
 ```
 
-The notebook reads only versioned files under `artifacts/portfolio/` and labels the run `REPLAYED FROM VERIFIED EVIDENCE`. Semantic retrieval tables and LLM answers are historical evidence; replay does not claim a new Redis or LLM call.
+The notebook reads only versioned files under `artifacts/portfolio/`, including the frozen `catalog_replay.csv` snapshot, and labels the run `REPLAYED FROM VERIFIED EVIDENCE`. Semantic retrieval tables and LLM answers are historical evidence; replay does not claim a new Redis or LLM call. Full execution continues to use the original CSV acquisition and hash-validation path.
 
 ## Full Experimental Execution
 

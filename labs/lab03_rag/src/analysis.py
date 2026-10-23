@@ -33,6 +33,20 @@ def load_catalog(directory: Path) -> pd.DataFrame:
     return result
 
 
+def load_replay_catalog(path: Path) -> pd.DataFrame:
+    """Load the versioned, derived catalog snapshot used only for portfolio replay."""
+    frame = pd.read_csv(path, dtype={"product_id": str}, keep_default_na=False, encoding="utf-8-sig")
+    for name in ("initial_price", "final_price", "discount", "rating", "ratings_count"):
+        frame[f"{name}_numeric"] = frame[name].map(number)
+    frame["rating_observed"] = ~(
+        frame["rating_numeric"].eq(0) & frame["ratings_count_numeric"].eq(0))
+    frame["description_chars"] = frame["product_description"].str.len()
+    expected = frame["initial_price_numeric"] * (1 - frame["discount_numeric"] / 100)
+    frame["price_formula_delta_inr"] = (frame["final_price_numeric"] - expected).abs()
+    frame["price_conflict"] = frame["price_formula_delta_inr"].gt(1) & frame["discount_numeric"].notna()
+    return frame
+
+
 def catalog_summary(frame: pd.DataFrame) -> dict:
     return {
         "rows": int(len(frame)), "columns_in_source": 24,

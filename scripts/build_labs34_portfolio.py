@@ -38,6 +38,9 @@ def savefig(path: Path):
 def lab3_artifacts():
     frame = load_catalog(LAB3 / "data/raw/csv")
     P3.mkdir(parents=True, exist_ok=True)
+    source_columns = [column for column in frame.columns if not column.endswith("_numeric") and column not in {
+        "rating_observed", "description_chars", "price_formula_delta_inr", "price_conflict"}]
+    frame[source_columns].to_csv(P3 / "catalog_replay.csv", index=False, encoding="utf-8-sig")
     # Publish the small, verified evidence required by CPU-only portfolio replay.
     shutil.copy2(LAB3 / "outputs/embedding_audit.json", P3 / "embedding_audit.json")
     shutil.copy2(LAB3 / "outputs/index_info.json", P3 / "index_info.json")
@@ -261,8 +264,9 @@ display(environment)"""),
     md("""## STEP 03 — Завантаження даних
 
 Три вихідні CSV читаються без зміни значень. `final_price` додатково перетворюється на числову похідну для аналізу. Нульовий rating із нульовою кількістю оцінок позначається як «оцінка не спостерігалася», а не як справжня оцінка 0."""),
-    code("""from labs.lab03_rag.src.analysis import load_catalog, catalog_summary
-catalog = load_catalog(settings.data_dir)
+    code("""from labs.lab03_rag.src.analysis import load_catalog, load_replay_catalog, catalog_summary
+catalog = (load_replay_catalog(LAB/'artifacts/portfolio/catalog_replay.csv') if MODE == 'replay'
+           else load_catalog(settings.data_dir))
 display(pd.DataFrame([catalog_summary(catalog)]))
 display(catalog.groupby('category').head(2)[['source_file','row_id','product_id','title','product_description','final_price','discount','rating']])
 assert len(catalog) == 185 and catalog.product_id.is_unique"""),
