@@ -24,11 +24,15 @@ jobs:
       - name: Install CPU-only test dependencies
         run: >-
           python -m pip install
-          pytest nbformat pandas numpy Pillow
+          pytest nbformat nbclient jupyter-client ipykernel pandas numpy matplotlib Pillow
           langchain-core langchain-community langchain-openai
           langchain-huggingface langchain-redis redis redisvl
       - name: Compile source modules
         run: python -m compileall -q labs/lab03_rag/src labs/lab04_stable_diffusion/src
+      - name: Execute portfolio replay with a real kernel
+        env:
+          PORTFOLIO_MODE: replay
+        run: python scripts/execute_portfolio_notebooks.py --mode replay
       - name: Run offline unit and notebook checks
         run: |
           python -m pytest labs/lab03_rag/tests -q

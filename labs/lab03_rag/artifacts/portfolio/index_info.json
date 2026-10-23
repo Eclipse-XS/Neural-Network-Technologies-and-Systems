@@ -1,0 +1,120 @@
+{
+  "index": "lab03_ec7829ffcaca539f98c4",
+  "document_count": 185,
+  "vector": {
+    "identifier": "embedding",
+    "attribute": "embedding",
+    "type": "VECTOR",
+    "algorithm": "FLAT",
+    "data_type": "FLOAT32",
+    "dim": 384,
+    "distance_metric": "COSINE",
+    "flags": []
+  },
+  "metadata_schema": [
+    {
+      "identifier": "text",
+      "attribute": "text",
+      "type": "TEXT",
+      "WEIGHT": 1.0,
+      "flags": []
+    },
+    {
+      "identifier": "embedding",
+      "attribute": "embedding",
+      "type": "VECTOR",
+      "algorithm": "FLAT",
+      "data_type": "FLOAT32",
+      "dim": 384,
+      "distance_metric": "COSINE",
+      "flags": []
+    },
+    {
+      "identifier": "_index_name",
+      "attribute": "_index_name",
+      "type": "TEXT",
+      "WEIGHT": 1.0,
+      "flags": []
+    },
+    {
+      "identifier": "_metadata_json",
+      "attribute": "_metadata_json",
+      "type": "TEXT",
+      "WEIGHT": 1.0,
+      "flags": []
+    },
+    {
+      "identifier": "source_file",
+      "attribute": "source_file",
+      "type": "TAG",
+      "SEPARATOR": "|",
+      "flags": []
+    },
+    {
+      "identifier": "record_id",
+      "attribute": "record_id",
+      "type": "TAG",
+      "SEPARATOR": "|",
+      "flags": []
+    },
+    {
+      "identifier": "product_id",
+      "attribute": "product_id",
+      "type": "TAG",
+      "SEPARATOR": "|",
+      "flags": []
+    },
+    {
+      "identifier": "category",
+      "attribute": "category",
+      "type": "TAG",
+      "SEPARATOR": "|",
+      "flags": []
+    },
+    {
+      "identifier": "price_conflict",
+      "attribute": "price_conflict",
+      "type": "TAG",
+      "SEPARATOR": "|",
+      "flags": []
+    },
+    {
+      "identifier": "row_id",
+      "attribute": "row_id",
+      "type": "NUMERIC",
+      "flags": []
+    },
+    {
+      "identifier": "rating",
+      "attribute": "rating",
+      "type": "NUMERIC",
+      "flags": []
+    },
+    {
+      "identifier": "ratings_count",
+      "attribute": "ratings_count",
+      "type": "NUMERIC",
+      "flags": []
+    },
+    {
+      "identifier": "initial_price",
+      "attribute": "initial_price",
+      "type": "NUMERIC",
+      "flags": []
+    },
+    {
+      "identifier": "final_price",
+      "attribute": "final_price",
+      "type": "NUMERIC",
+      "flags": []
+    },
+    {
+      "identifier": "discount",
+      "attribute": "discount",
+      "type": "NUMERIC",
+      "flags": []
+    }
+  ],
+  "corpus_sha256": "ec7829ffcaca539f98c405c68d6795c4bb5f6276a95387063af1e17430506338",
+  "inserted": 185
+}

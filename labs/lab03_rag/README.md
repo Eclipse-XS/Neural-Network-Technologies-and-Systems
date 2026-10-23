@@ -18,6 +18,8 @@ Variant 3 requires 2–3 CSV files loaded through `CSVLoader`, `all-MiniLM-L6-v2
 
 `CSV → CSVLoader → row Document → normalized MiniLM embedding → Redis FLAT/COSINE index → semantic or structured retrieval → grounded prompt → local LLM → evaluated answer`
 
+`src.rag.answer_query(..., mode="hybrid", catalog=catalog)` is the main entrypoint. It invokes Redis only for semantic intent, converts exact/structured catalog rows through the same `Document` metadata contract, generates deterministic catalog answers for exact/numeric intent, and returns strategy, prompt, provenance, citation validation and diagnostics. `mode="semantic_baseline"` preserves the original Redis+LLM baseline.
+
 ## Technology Stack
 
 - Python 3.13, pandas, NumPy, matplotlib
@@ -69,13 +71,24 @@ The machine-readable taxonomy covers inconsistent source fields, missing-value s
 - Structured retrieval is used only for explicit exact/numeric intent.
 - LLM lexical field checks are not presented as semantic correctness.
 
-## Reproducibility
+## Portfolio Replay
+
+CPU-only replay requires no Redis, LM Studio, CUDA or model download. From the repository root, install `nbformat nbclient jupyter-client ipykernel pandas numpy matplotlib Pillow langchain-core`, then run:
+
+```powershell
+$env:PORTFOLIO_MODE='replay'
+python scripts/execute_portfolio_notebooks.py --mode replay
+```
+
+The notebook reads only versioned files under `artifacts/portfolio/` and labels the run `REPLAYED FROM VERIFIED EVIDENCE`. Semantic retrieval tables and LLM answers are historical evidence; replay does not claim a new Redis or LLM call.
+
+## Full Experimental Execution
 
 1. Download and verify the dataset as documented under `data/`.
 2. Install `requirements.txt` without replacing an existing CUDA build.
 3. Start Redis: `docker compose -f labs/lab03_rag/docker-compose.yml up -d`.
 4. Load a local chat model in LM Studio and set `LM_STUDIO_MODEL`.
-5. Run the notebook from top to bottom.
+5. Set `PORTFOLIO_MODE=full`, run the existing indexing/evaluation entrypoints to create `outputs/`, then execute the notebook. A missing service or evidence file is an error, not a synthetic fallback.
 
 ## Installation and Execution
 
@@ -96,6 +109,8 @@ Unit tests do not require Redis or LM Studio. Integration checks require their s
 ## Limitations
 
 The corpus is small and domain-specific. Relevance labels are not a complete human benchmark. Stored latency is a single observation per query and includes embedding, networking and parsing. The tokenizer audit, not the prompt, is the authority for the actual truncation count.
+
+Retrieval Experiments A/B were recomputed offline. Experiment C for the new hybrid pipeline was not executed against LM Studio; the displayed answer-quality table is the historical semantic baseline and is labeled accordingly. Improved Hit@5 therefore is not presented as improved LLM answer accuracy.
 
 ## Portfolio Highlights
 

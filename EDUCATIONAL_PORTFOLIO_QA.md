@@ -189,3 +189,34 @@ Official-method compliance estimate: `19/20`.
 | Total | 91 | 100 | |
 
 Official-method compliance estimate: `18/20`.
+
+## Final Integration & Reproducibility Audit
+
+### A. RAG Integration
+
+The production entrypoint is `labs.lab03_rag.src.rag.answer_query`. Its default hybrid mode parses intent before retrieval: exact IDs and structured/numeric conditions use the catalog; semantic intent calls the Redis retriever; unsupported delivery intent returns a deterministic refusal. Catalog rows pass through `dataframe_to_documents()`, which uses the same `Document` metadata keys as indexed records (`source_file`, `row_id`, `record_id`, `product_id`, `category`, `fields_json`). The separate `semantic_baseline` mode retains Redis+LLM behavior. No live Redis or LM Studio inference was performed in this audit. Hybrid answer-quality Experiment C is therefore `NOT EXECUTED`; historical answers remain explicitly labeled semantic-baseline evidence.
+
+### B. Notebook Execution
+
+Notebook generation and execution are separate. The builder writes unexecuted notebooks and contains no assignment to `execution_count`. `scripts/execute_portfolio_notebooks.py` uses `nbclient.NotebookClient` with a real `python3` kernel, saves outputs, records `portfolio_execution.status=EXECUTED`, and rejects errors, missing execution counts or output-free notebooks. In replay mode Lab 3 executed 16 code cells and Lab 4 executed 13, with zero error outputs. Both use repository-relative curated evidence and run without Redis, LM Studio, CUDA or a Hugging Face cache.
+
+### C. Evidence Integrity
+
+- `LIVE`: no external model, Redis or LM Studio execution in this audit.
+- `HISTORICAL`: Redis semantic results, LM Studio answers, GPU environment, 13 PNDM Stable Diffusion images and their timings.
+- `REPLAYED FROM VERIFIED EVIDENCE`: both executed notebooks, figures, tables and recomputed retrieval summaries.
+- `NOT EXECUTED`: hybrid LLM answer-quality experiment, Euler/DDIM, LoRA, new Stable Diffusion inference and repeated warmed benchmarks.
+
+`generations.csv` is treated as a historical manifest. It does not constitute a new generation run. Single timings remain observations, not benchmark estimates.
+
+### D. Tests
+
+The suites cover hybrid entrypoint routing, semantic Redis fallback with fakes, catalog-to-Document adaptation, provenance, citation validation, deterministic numeric/refusal modes, ground-truth isolation, notebook schema and real-output checks, replay evidence availability, absence of author-specific paths, PNG decoding and README links. GitHub Actions installs CPU-only dependencies, compiles source, executes both notebooks with a real kernel, then runs both lab suites. Final local and CI counts are recorded after the integration commits below; unavailable live services are not counted as passed integration tests.
+
+### E. Remaining Problems
+
+The intent grammar is deliberately narrow and English-only. Redis and LM Studio were not live-tested in the final environment. Hybrid retrieval improvement does not establish improved LLM answer accuracy. Lab 4 retains one sample per configuration, manual visual assessment and PNDM-only execution. Full-mode notebooks assume their respective run entrypoints have produced `outputs/`; they fail explicitly when those prerequisites are absent.
+
+### Revised independent score
+
+Lab 3 remains `93/100`: integration and replay defects were corrected, but no new live Redis/LM Studio run or hybrid LLM evaluation justifies a higher score. Lab 4 remains `91/100`: replay is now clean-clone capable, while the scientific limitations of single runs, manual evaluation and one scheduler are unchanged.

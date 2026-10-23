@@ -38,6 +38,11 @@ def savefig(path: Path):
 def lab3_artifacts():
     frame = load_catalog(LAB3 / "data/raw/csv")
     P3.mkdir(parents=True, exist_ok=True)
+    # Publish the small, verified evidence required by CPU-only portfolio replay.
+    shutil.copy2(LAB3 / "outputs/embedding_audit.json", P3 / "embedding_audit.json")
+    shutil.copy2(LAB3 / "outputs/index_info.json", P3 / "index_info.json")
+    shutil.copy2(LAB3 / "outputs/retrieval/results.csv", P3 / "semantic_results.csv")
+    shutil.copy2(LAB3 / "outputs/rag/final_answers.csv", P3 / "historical_semantic_answers.csv")
     (P3 / "dataset_summary.json").write_text(
         json.dumps(catalog_summary(frame), ensure_ascii=False, indent=2), encoding="utf-8")
 
@@ -178,6 +183,7 @@ def diagram(path: Path, labels: list[str], title: str):
 
 def lab4_artifacts():
     P4.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(LAB4 / "outputs/metadata/environment.json", P4 / "historical_environment.json")
     for source in (LAB4 / "outputs/figures").glob("*.png"):
         shutil.copy2(source, P4 / source.name)
     baseline = next((LAB4 / "outputs/images/baseline").glob("*.png"))
@@ -231,12 +237,16 @@ def lab3_notebook():
 
 LLM генерує текст із параметричних знань, але не має гарантованого доступу до локального каталогу. RAG складається з retrieval, augmentation і generation. Це не fine-tuning: ваги моделі не змінюються; змінюється контекст запиту. Архітектура нижче відповідає фактичній реалізації."""),
     code("""from pathlib import Path
-import sys, json, platform
+import sys, json, platform, os
 import pandas as pd
 from IPython.display import display, Image
 ROOT = next(p for p in (Path.cwd().resolve(), *Path.cwd().resolve().parents) if (p/'labs/lab03_rag').is_dir())
 sys.path.insert(0, str(ROOT))
 LAB = ROOT/'labs/lab03_rag'
+MODE = os.getenv('PORTFOLIO_MODE', 'replay').lower()
+if MODE not in {'replay', 'full'}: raise ValueError('PORTFOLIO_MODE must be replay or full')
+EVIDENCE = LAB/'artifacts/portfolio' if MODE == 'replay' else LAB/'outputs'
+print('REPLAYED FROM VERIFIED EVIDENCE' if MODE == 'replay' else 'FULL EXPERIMENTAL EXECUTION')
 display(Image(filename=str(LAB/'artifacts/portfolio/rag_architecture.png')))"""),
     md("""## STEP 02 — Перевірка середовища
 
@@ -278,7 +288,8 @@ assert len(documents) == 185 == len({d.metadata['record_id'] for d in documents}
     md("""## STEP 06 — Embedding model
 
 `all-MiniLM-L6-v2` відображає текст у 384-вимірний unit-normalized вектор. Cosine similarity дорівнює $\\frac{a\\cdot b}{\\|a\\|\\|b\\|}$; для normalized vectors це dot product. Модель має межу 256 word pieces: довші записи обрізаються, тому truncation треба вимірювати, а не приховувати."""),
-    code("""audit = json.loads((settings.output_dir/'embedding_audit.json').read_text(encoding='utf-8'))
+    code("""path = LAB/'artifacts/portfolio/embedding_audit.json' if MODE == 'replay' else settings.output_dir/'embedding_audit.json'
+audit = json.loads(path.read_text(encoding='utf-8'))
 display(pd.DataFrame([{k:v for k,v in audit.items() if k!='token_lengths'}]))
 lengths = pd.Series(audit['token_lengths'], name='word_pieces')
 display(lengths.describe().to_frame().T)
@@ -290,7 +301,8 @@ assert audit['dimension'] == 384 and audit['truncated_rows'] == int((lengths > a
     md("""## STEP 08 — Redis vector index
 
 Індекс: `FLOAT32`, 384 виміри, `COSINE`, `FLAT`. FLAT виправданий малим корпусом. Реальний `FT.INFO` збережено як evidence; live-перевірка виконується лише при запущеному Redis Stack."""),
-    code("""index_info = json.loads((settings.output_dir/'index_info.json').read_text(encoding='utf-8'))
+    code("""path = LAB/'artifacts/portfolio/index_info.json' if MODE == 'replay' else settings.output_dir/'index_info.json'
+index_info = json.loads(path.read_text(encoding='utf-8'))
 display(pd.DataFrame([{'index':index_info['index'],'documents':index_info['document_count'],
                        'algorithm':index_info['vector']['algorithm'],'dimension':index_info['vector']['dim'],
                        'metric':index_info['vector']['distance_metric']}]))
@@ -298,7 +310,8 @@ assert index_info['document_count'] == 185"""),
     md("""## STEP 09 — Semantic retrieval
 
 Для cosine distance менше значення означає більшу близькість. Rank сам по собі не доводить фактичну релевантність; його треба порівнювати з ground truth."""),
-    code("""retrieval = pd.read_csv(settings.output_dir/'retrieval/results.csv')
+    code("""path = LAB/'artifacts/portfolio/semantic_results.csv' if MODE == 'replay' else settings.output_dir/'retrieval/results.csv'
+retrieval = pd.read_csv(path)
 display(retrieval[retrieval.query_id=='q01'][['rank','product_id','category','cosine_distance','source_file','row_id','preview']])
 display(Image(filename=str(LAB/'artifacts/portfolio/q01_top5_distances.png')))"""),
     md("""## STEP 10 — Оцінювання retrieval
@@ -313,15 +326,24 @@ assert comparison.query_id.nunique() == 8"""),
 
 System instruction забороняє непідтверджені твердження; retrieved records відокремлені як untrusted data; цитата має формат `[source.csv:row]`."""),
     code("""from labs.lab03_rag.src.rag import build_prompt
+from labs.lab03_rag.src.hybrid import route_and_retrieve
+from labs.lab03_rag.src.documents import dataframe_to_documents
 q = next(q for q in json.loads((LAB/'queries.json').read_text(encoding='utf-8'))['queries'] if q['id']=='q04')
-saved = json.loads((settings.output_dir/'retrieval/context.json').read_text(encoding='utf-8'))
-display(pd.DataFrame([{'block':'system','content':build_prompt(q['question'], documents[:2])[0].content},
-                      {'block':'user + context','content':build_prompt(q['question'], documents[:2])[1].content[:1800]}]))"""),
+chain = route_and_retrieve(catalog, q['question'], k=5)
+q_documents = dataframe_to_documents(chain.rows)
+q_prompt = build_prompt(q['question'], q_documents)
+display(pd.DataFrame([{'question':q['question'], 'strategy':chain.intent.strategy,
+                       'product_ids':chain.product_ids, 'record_ids':[d.metadata['record_id'] for d in q_documents]}]))
+display(pd.DataFrame([{'block':'system','content':q_prompt[0].content},
+                      {'block':'user + exact retrieved context','content':q_prompt[1].content}]))
+print('Prompt constructed from the same q04 hybrid retrieval. LLM NOT EXECUTED in replay mode.')"""),
     md("""## STEP 12 — Оцінювання відповіді LLM
 
 Retrieval correctness, field correctness, citation validity, numerical correctness, unsupported claims і abstention оцінюються окремо. Простий збіг числа не доводить правильну атрибуцію."""),
-    code("""answers = pd.read_csv(settings.output_dir/'rag/final_answers.csv')
+    code("""path = LAB/'artifacts/portfolio/historical_semantic_answers.csv' if MODE == 'replay' else settings.output_dir/'rag/final_answers.csv'
+answers = pd.read_csv(path)
 reviews = pd.read_csv(LAB/'artifacts/portfolio/error_taxonomy.csv')
+print('HISTORICAL SEMANTIC BASELINE; NOT A NEW HYBRID LLM RUN')
 display(answers[['query_id','status','answer','manual_review']].merge(reviews,on='query_id'))"""),
     md("""## STEP 13 — Error analysis
 
@@ -365,16 +387,21 @@ Forward training process: $x_t=\\sqrt{\\bar\\alpha_t}x_0+\\sqrt{1-\\bar\\alpha_t
 
 Tokenizer готує token IDs; CLIP text encoder створює conditioning; U-Net прогнозує шум; cross-attention пов’язує text і latent features; scheduler задає sampling update; VAE decoder перетворює latent у RGB. Classifier-Free Guidance: $\\hat\\epsilon=\\epsilon_u+w(\\epsilon_c-\\epsilon_u)$."""),
     code("""from pathlib import Path
-import sys, json, platform
+import sys, json, platform, os
 import pandas as pd
 from IPython.display import display, Image
 ROOT = next(p for p in (Path.cwd().resolve(), *Path.cwd().resolve().parents) if (p/'labs/lab04_stable_diffusion').is_dir())
 sys.path.insert(0, str(ROOT)); LAB=ROOT/'labs/lab04_stable_diffusion'
+MODE=os.getenv('PORTFOLIO_MODE','replay').lower()
+if MODE not in {'replay','full'}: raise ValueError('PORTFOLIO_MODE must be replay or full')
+print('REPLAYED FROM VERIFIED EVIDENCE' if MODE == 'replay' else 'FULL EXPERIMENTAL EXECUTION')
 display(Image(filename=str(LAB/'artifacts/portfolio/stable_diffusion_architecture.png')))"""),
     md("""## STEP 04 — Середовище і модель
 
 SD 1.5 обрано через 4 GB VRAM; SDXL суттєво важчий. FP16, model CPU offload і PyTorch SDPA зменшують тиск на VRAM. Таблиця нижче походить із збереженого виконання, а не з поточного хоста."""),
-    code("""env=json.loads((LAB/'outputs/metadata/environment.json').read_text(encoding='utf-8'))
+    code("""path=LAB/'artifacts/portfolio/historical_environment.json' if MODE=='replay' else LAB/'outputs/metadata/environment.json'
+env=json.loads(path.read_text(encoding='utf-8'))
+print('Historical environment evidence; not the current replay host.')
 display(pd.DataFrame([{'field':k,'value':v} for k,v in env.items() if k!='versions']))"""),
     md("""## STEP 05 — Завантаження pipeline
 
@@ -417,9 +444,6 @@ LoRA заморожує основні ваги $W$ і навчає low-rank upd
 
 Seed найбільше змінює композицію; steps створюють trade-off часу й деталей; CFG не має монотонного зв’язку з якістю; negative prompt не є гарантією; style prompting змінює і стиль, і геометрію. Обмеження: SD 1.5, 512×512, 4 GB VRAM, одна генерація на конфігурацію, PNDM-only verified evidence, відсутність CLIPScore та repeated warm runs. Збережені 13 генерацій не втрачено.""")]
     nb=nbf.v4.new_notebook(cells=cells,metadata={"kernelspec":{"display_name":"Python 3","language":"python","name":"python3"},"language_info":{"name":"python","version":"3.13"}})
-    # Static evidence cells are deliberately executed from persisted artifacts.
-    for i, cell in enumerate(nb.cells):
-        if cell.cell_type == "code": cell.execution_count = i + 1
     nbf.write(nb, LAB4 / "notebooks/01_text_to_image.ipynb")
 
 

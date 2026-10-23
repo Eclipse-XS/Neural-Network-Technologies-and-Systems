@@ -1,0 +1,59 @@
+{
+  "python_version": "3.13.5",
+  "versions": {
+    "torch": "2.14.0+cu130",
+    "diffusers": "0.40.0",
+    "transformers": "5.17.0",
+    "accelerate": "1.15.0",
+    "safetensors": "0.8.0",
+    "Pillow": "12.3.0",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "matplotlib": "3.11.2",
+    "nbformat": "5.11.1",
+    "nbclient": "0.11.0",
+    "ipykernel": "7.3.0",
+    "pytest": "9.1.1"
+  },
+  "torch_version": "2.14.0+cu130",
+  "diffusers_version": "0.40.0",
+  "cuda_version": "13.0",
+  "cuda_available": true,
+  "gpu_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+  "gpu_total_bytes": 4294443008,
+  "gpu_free_bytes": 3466277684,
+  "ram_total_bytes": 16312721408,
+  "ram_available_bytes": 247500800,
+  "disk_free_bytes": 8645865472,
+  "requested_model_id": "runwayml/stable-diffusion-v1-5",
+  "model_id": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+  "revision": "451f4fe16113bff5a5d2269ed5ad43b0592e9a14",
+  "device_strategy": "model_cpu_offload",
+  "dtype": "torch.float16",
+  "pipeline_class": "StableDiffusionPipeline",
+  "scheduler": "PNDMScheduler",
+  "scheduler_config": {
+    "num_train_timesteps": 1000,
+    "beta_start": 0.00085,
+    "beta_end": 0.012,
+    "beta_schedule": "scaled_linear",
+    "trained_betas": null,
+    "skip_prk_steps": true,
+    "set_alpha_to_one": false,
+    "prediction_type": "epsilon",
+    "timestep_spacing": "leading",
+    "steps_offset": 1,
+    "_use_default_values": [
+      "prediction_type",
+      "timestep_spacing"
+    ],
+    "_class_name": "PNDMScheduler",
+    "_diffusers_version": "0.6.0",
+    "clip_sample": false
+  },
+  "attention_processors": [
+    "AttnProcessor2_0"
+  ],
+  "model_load_seconds": 42.3740747999982,
+  "model_resolution_note": "Runway model API redirects to the equivalent SD 1.5 repository."
+}

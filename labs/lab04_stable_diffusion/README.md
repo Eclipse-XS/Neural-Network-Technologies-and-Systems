@@ -64,9 +64,20 @@ Manual visual review records prompt/style adherence, pseudo-text, malformed smal
 - CPU generators improve reproducibility with model offload.
 - Existing CUDA/PyTorch packages are never replaced automatically.
 
-## Reproducibility
+## Portfolio Replay
 
-Install the declared packages while preserving a working CUDA-enabled PyTorch build. Run the notebook on a CUDA machine. A second run reuses an artifact only after full integrity validation.
+The versioned notebook executes on CPU without CUDA or a model download:
+
+```powershell
+$env:PORTFOLIO_MODE='replay'
+python scripts/execute_portfolio_notebooks.py --mode replay
+```
+
+It reads the 13 curated PNGs, manifest, galleries and `historical_environment.json` from `artifacts/portfolio/`. Outputs are labeled `REPLAYED FROM VERIFIED EVIDENCE`; `generations.csv` is a manifest of historical inference, not a replacement for inference.
+
+## Full Experimental Execution
+
+Install the declared packages while preserving a working CUDA-enabled PyTorch build. Set `PORTFOLIO_MODE=full` and run the generation entrypoint before the notebook. A second run reuses an artifact only after full integrity validation. PNDM is the only executed scheduler; Euler, DDIM and LoRA remain `NOT_EXECUTED`.
 
 ## Installation and Execution
 

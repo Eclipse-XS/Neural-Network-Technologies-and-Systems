@@ -39,3 +39,7 @@ A controlled SD 1.5 experiment with 13 verified generations covering seeds, infe
 - `scripts/` contains narrowly scoped development or repository automation scripts.
 
 Large datasets, model weights, checkpoints, vector databases, full generated outputs, secrets, virtual environments, and IDE metadata are excluded from version control. Small reviewed artifacts under each lab's `artifacts/portfolio/` directory are intentionally versioned for GitHub rendering.
+
+## CPU-only portfolio replay
+
+Labs 3 and 4 have a versioned replay mode that does not require Redis, LM Studio, CUDA or model downloads. After installing the lightweight CI dependencies, run `python scripts/execute_portfolio_notebooks.py --mode replay` from the repository root. This executes both notebooks through a real Jupyter kernel and marks their outputs `REPLAYED FROM VERIFIED EVIDENCE`. Full experimental execution remains separate and requires the services and hardware documented in each lab README.
