@@ -459,4 +459,8 @@ Seed найбільше змінює композицію; steps створюю�
 
 
 if __name__ == "__main__":
-    lab3_artifacts(); lab4_artifacts(); lab3_notebook(); lab4_notebook()
+    lab3_artifacts(); lab4_artifacts()
+    # The executable notebooks have their own focused builder. Keeping this call
+    # here prevents artifact refreshes from restoring the obsolete viewer-only notebooks.
+    from scripts.rebuild_executable_notebooks import lab3, lab4
+    lab3(); lab4()
