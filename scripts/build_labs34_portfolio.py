@@ -282,10 +282,17 @@ assert len(conflicts) == int(catalog.price_conflict.sum())"""),
 
 Один товар дорівнює одному `Document`, бо рядок є атомарною бізнес-сутністю. Довільний character chunking міг би розділити ціну, ID та опис. `source_file` і `row_id` забезпечують provenance."""),
     code("""from labs.lab03_rag.src.data import load_csv_documents
-from labs.lab03_rag.src.documents import build_documents
-loaded = load_csv_documents(settings.data_dir); documents = build_documents(loaded)
+from labs.lab03_rag.src.documents import build_documents, dataframe_to_documents
+if MODE == 'replay':
+    loaded = None
+    documents = dataframe_to_documents(catalog)
+    loader_preview = 'REPLAY: original CSVLoader output is not regenerated; the frozen row is adapted with the production Document contract.'
+else:
+    loaded = load_csv_documents(settings.data_dir)
+    documents = build_documents(loaded)
+    loader_preview = loaded[0].page_content[:800]
 display(pd.DataFrame([{'stage':'raw CSV row','preview':catalog.iloc[0].to_dict()},
-                      {'stage':'CSVLoader page_content','preview':loaded[0].page_content[:800]},
+                      {'stage':'CSVLoader page_content','preview':loader_preview},
                       {'stage':'serialized Document','preview':documents[0].page_content[:800]},
                       {'stage':'metadata','preview':{k:v for k,v in documents[0].metadata.items() if k!='fields_json'}}]))
 assert len(documents) == 185 == len({d.metadata['record_id'] for d in documents})"""),
