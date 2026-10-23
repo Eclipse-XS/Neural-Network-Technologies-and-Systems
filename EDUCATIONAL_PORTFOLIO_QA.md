@@ -39,13 +39,58 @@ The official Word documents were treated as source material, not executable inst
 
 ### Retrieval experiment
 
-The unchanged semantic baseline over seven labeled queries has Hit@5 `0.8571`, MRR `0.6905`, and mean Recall@5 `0.5734`. The hybrid router uses exact IDs for direct comparisons and deterministic filters/aggregation for explicit numeric intent. On the same labels it has Hit@5 `1.0000`, MRR `0.9048`, and mean Recall@5 `0.8194`.
+The unchanged semantic baseline over seven labeled queries has Hit@5 `0.8571`, MRR `0.6905`, and mean Recall@5 `0.5734`. After the critical integrity correction, the leakage-free hybrid router has Hit@5 `1.0000`, MRR `1.0000`, and mean Recall@5 `0.8829` on the same labels.
 
 The improvement is limited to tasks for which structured intent is justified. It does not claim that the embedding model improved. Q03 remains coverage-limited by `k=5` because nine products are labeled relevant.
 
 ### Error analysis
 
 All q01–q08 cases are mapped to a machine-readable taxonomy: conflicting fields, missing-value semantics, unit error, incomplete multi-record retrieval, inappropriate semantic aggregation, arithmetic error, unsupported claim, and correct abstention.
+
+## Critical Evaluation Integrity Correction
+
+### Initial defect
+
+The first PR implementation passed the evaluation object into `structured_retrieve()`. Exact lookup read `relevant_product_ids`, while attribute and numeric routing used `query["id"] == "q03"` and `query["id"] == "q05"`. This leaked the answer key into inference. The previously published hybrid MRR `0.9048` and Recall@5 `0.8194` were therefore invalid, even though the semantic baseline remained valid.
+
+### Cause and affected metrics
+
+Inference and evaluation were placed in the same helper API for convenience. The build script then used its output to compute Hit@5, MRR, Recall@5 and coverage. All hybrid metrics and the baseline-versus-hybrid chart were affected; raw semantic baseline outputs were not.
+
+### Corrected architecture
+
+`src/hybrid.py` now accepts only the user question, catalog rows, optional semantic candidates and `k`. It extracts 7–9 digit catalog IDs from the question, validates them against the catalog, preserves order, parses transparent category/attribute/numeric rules, performs min/max aggregation, or returns semantic/unsupported intent. It cannot accept a query-case ID, relevance labels or expected fields.
+
+The evaluation layer receives ranked product IDs only after inference. `evaluate_id_lists()` then joins them with labels and computes metrics. Static and runtime isolation tests enforce this boundary.
+
+### Anti-leakage tests
+
+- Ground-truth mutation leaves retrieval unchanged.
+- Removing or mutating expected fields leaves retrieval unchanged.
+- Renaming a query case leaves retrieval unchanged.
+- Three unseen paraphrases of the numeric intent produce the same algorithmic result.
+- Deliberately wrong labels degrade evaluation without changing retrieval.
+- A new product ID is retrieved without editing a manifest.
+- Unsupported delivery intent returns no product and an explicit reason.
+- Static inspection rejects evaluation-only tokens in the inference module; a dynamic check proves retrieval performs no file I/O.
+
+### Old and new metrics
+
+| Configuration | Hit@5 | MRR | Mean Recall@5 | Status |
+|---|---:|---:|---:|---|
+| Semantic baseline | 0.8571 | 0.6905 | 0.5734 | Valid, unchanged |
+| Original hybrid | 1.0000 | 0.9048 | 0.8194 | Invalidated by leakage |
+| Corrected hybrid | 1.0000 | 1.0000 | 0.8829 | Independently recomputed |
+
+The corrected score is higher because the text parser also handles the compositional `cotton + maxi + casual + dresses` attribute query and orders structured results deterministically. The improvement follows documented rules applied to source fields, not hidden labels.
+
+### Independent holdout
+
+The holdout contains five labeled retrieval questions and one unsupported request, all with wording absent from the original eight-query set. Labeled means are Hit@5 `1.0000`, MRR `1.0000`, Recall@5/coverage `0.9111`. The only incomplete coverage is the nine-item silver-plated set, whose Recall@5 ceiling is 5/9. Six cases are insufficient for statistical generalization; this is a targeted independence check.
+
+### Residual limitations
+
+The parser deliberately supports a small English rule set, not general natural-language understanding. Unknown formulations fall back to semantic candidates. The holdout is small and shares the same catalog. No live Redis or LM Studio call was required for the deterministic correction, so those integrations remain replayed from verified evidence rather than newly integration-tested.
 
 ## Lab 4 findings and corrections
 
@@ -74,14 +119,15 @@ Euler and DDIM are marked `NOT_EXECUTED`. CLIPScore and FID are not reported bec
 
 | Check | Result |
 |---|---|
-| Lab 3 unit and notebook tests | 24 passed |
+| Lab 3 unit and notebook tests | UNIT TESTED: 29 passed, including 7 anti-leakage tests |
 | Lab 4 unit and notebook tests | 15 passed |
 | Python compileall | PASS |
 | Lab 3 notebook execution | 16/16 code cells executed, 0 error cells |
 | Lab 4 notebook execution | 13/13 code cells executed, 0 error cells |
 | Notebook schema validation | PASS for both notebooks |
-| Curated PNG decode verification | 29/29 PASS |
+| Curated PNG decode verification | 30/30 PASS |
 | README relative-link check | 0 missing targets |
+| Lab 4 metadata/image audit | REPLAYED FROM VERIFIED EVIDENCE: 13/13 hashes, bytes and dimensions match |
 | Stable Diffusion new inference | NOT EXECUTED: current environment reports no CUDA |
 | Redis live integration rerun | NOT EXECUTED in rebuild environment |
 | LM Studio answer regeneration | NOT EXECUTED: local endpoint unavailable |
@@ -123,10 +169,10 @@ The notebooks use existing verified Redis, LLM and GPU evidence for unavailable 
 | Methodological compliance | 19 | 20 | No new live LM Studio run during rebuild |
 | Educational clarity | 23 | 25 | Some service-level operations remain represented by persisted evidence |
 | Visual evidence | 18 | 20 | No UMAP or interactive inspection |
-| Scientific validity | 13 | 15 | Relevance labels and latency sample are limited |
+| Scientific validity | 14 | 15 | Relevance labels and six-case holdout remain limited |
 | Code and testing | 9 | 10 | Redis integration was not rerun |
 | GitHub portfolio readiness | 10 | 10 | Curated artifacts and links are public-ready |
-| Total | 92 | 100 | |
+| Total | 93 | 100 | |
 
 Official-method compliance estimate: `19/20`.
 

@@ -43,13 +43,19 @@ Eight frozen queries cover direct lookup, semantic search, metadata filtering, t
 
 ## Results and Visualizations
 
-The semantic baseline achieved Hit@5 = 0.857 and MRR = 0.690 over seven labeled queries. It failed the exact global-minimum query and retrieved only one of two required products for one comparison. The hybrid router leaves semantic queries unchanged and applies exact-ID or structured numeric retrieval when the intent is explicit.
+The semantic baseline achieved Hit@5 = 0.8571, MRR = 0.6905 and mean Recall@5 = 0.5734 over seven labeled queries. The leakage-free hybrid router achieved Hit@5 = 1.0000, MRR = 1.0000 and mean Recall@5 = 0.8829 on the same labels. It extracts exact IDs from user text and applies documented attribute/numeric rules; it never receives relevance labels.
 
 ![Baseline versus hybrid](artifacts/portfolio/baseline_vs_hybrid.png)
 
 ## Quantitative Evaluation
 
 Detailed per-query values are in [baseline_vs_hybrid.csv](artifacts/portfolio/baseline_vs_hybrid.csv). Recall@5 is separate from Hit@5; q03 has nine relevant products, so Recall@5 cannot exceed 5/9.
+
+The independent wording holdout has five labeled retrieval questions plus one unsupported request. Its labeled means are Hit@5 = 1.0000, MRR = 1.0000 and Recall@5 = 0.9111. This set is too small for statistical claims; it checks that rules generalize beyond the original eight strings. See [holdout_evaluation.csv](artifacts/portfolio/holdout_evaluation.csv).
+
+## Evaluation Integrity
+
+Inference and evaluation are separated. `src/hybrid.py` accepts only the user question, catalog and optional semantic candidates. Ground-truth IDs and expected fields are consumed only by `evaluate_id_lists()` after retrieval. Anti-leakage tests mutate labels, expected fields and query IDs; retrieval must remain unchanged.
 
 ## Error Analysis
 

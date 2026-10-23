@@ -6,7 +6,7 @@ This repository contains seven independent laboratory workspaces for the univers
 
 ### Lab 3: RAG with Redis and CSV
 
-An auditable product-catalog RAG system over 185 records. It compares a Redis semantic baseline with a hybrid router for exact and numeric questions, distinguishes Hit@5 from Recall@5, preserves row provenance, and documents eight concrete failure cases.
+An auditable product-catalog RAG system over 185 records. It compares a Redis semantic baseline with a leakage-free hybrid router for exact, attribute and numeric questions, separates inference from ground-truth evaluation, preserves row provenance, and documents eight concrete failure cases.
 
 [Open Lab 3](labs/lab03_rag/README.md)
 

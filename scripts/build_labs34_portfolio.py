@@ -16,8 +16,8 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from labs.lab03_rag.src.analysis import (catalog_summary, evaluate_id_lists, load_catalog,
-                                         load_manual_review, structured_retrieve)
+from labs.lab03_rag.src.analysis import catalog_summary, evaluate_id_lists, load_catalog, load_manual_review
+from labs.lab03_rag.src.hybrid import route_and_retrieve
 
 LAB3 = ROOT / "labs/lab03_rag"
 LAB4 = ROOT / "labs/lab04_stable_diffusion"
@@ -78,11 +78,19 @@ def lab3_artifacts():
                     .sort_values(["query_id", "rank"]).groupby("query_id").product_id
                     .apply(lambda s: [str(x) for x in s]).to_dict())
     hybrid_ids = {k: list(v) for k, v in baseline_ids.items()}
-    structured_rows = []
+    structured_rows, routing_rows = [], []
     for query in queries:
-        exact = structured_retrieve(frame, query, 5)
-        if not exact.empty:
-            ids = exact.product_id.astype(str).tolist()
+        inference = route_and_retrieve(frame, query["question"], baseline_ids.get(query["id"], []), 5)
+        exact = inference.rows
+        routing_rows.append({"query_id": query["id"], "question": query["question"],
+                             "strategy": inference.intent.strategy,
+                             "conditions": json.dumps(inference.diagnostics["conditions"], ensure_ascii=False),
+                             "returned_ids": json.dumps(inference.product_ids),
+                             "diagnostics": json.dumps(inference.diagnostics, ensure_ascii=False)})
+        if inference.intent.strategy == "unsupported":
+            hybrid_ids[query["id"]] = []
+        else:
+            ids = inference.product_ids
             hybrid_ids[query["id"]] = ids + [x for x in baseline_ids.get(query["id"], []) if x not in ids]
             structured_rows.extend({"query_id": query["id"], **row} for row in exact.to_dict("records"))
     base_eval = evaluate_id_lists(queries, baseline_ids, 5).assign(configuration="semantic_baseline")
@@ -90,6 +98,20 @@ def lab3_artifacts():
     comparison = pd.concat([base_eval, hybrid_eval], ignore_index=True)
     comparison.to_csv(P3 / "baseline_vs_hybrid.csv", index=False, encoding="utf-8-sig")
     pd.DataFrame(structured_rows).to_csv(P3 / "structured_results.csv", index=False, encoding="utf-8-sig")
+    pd.DataFrame(routing_rows).to_csv(P3 / "routing_diagnostics.csv", index=False, encoding="utf-8-sig")
+    holdout = json.loads((LAB3 / "holdout_queries.json").read_text(encoding="utf-8"))["queries"]
+    holdout_ids, holdout_routes = {}, []
+    for query in holdout:
+        inference = route_and_retrieve(frame, query["question"], k=5)
+        holdout_ids[query["id"]] = inference.product_ids
+        holdout_routes.append({"query_id": query["id"], "question": query["question"],
+                               "strategy": inference.intent.strategy,
+                               "conditions": json.dumps(inference.diagnostics["conditions"], ensure_ascii=False),
+                               "returned_ids": json.dumps(inference.product_ids),
+                               "diagnostics": json.dumps(inference.diagnostics, ensure_ascii=False)})
+    holdout_eval = evaluate_id_lists(holdout, holdout_ids, 5)
+    holdout_eval.to_csv(P3 / "holdout_evaluation.csv", index=False, encoding="utf-8-sig")
+    pd.DataFrame(holdout_routes).to_csv(P3 / "holdout_routing.csv", index=False, encoding="utf-8-sig")
     review = load_manual_review(LAB3 / "outputs/rag/manual_review.json")
     review.to_csv(P3 / "error_taxonomy.csv", index=False, encoding="utf-8-sig")
 
@@ -192,6 +214,9 @@ def lab4_artifacts():
     diagram(P3 / "rag_architecture.png",
             ["CSV", "Documents", "MiniLM embeddings", "Redis index", "Retriever", "Grounded prompt", "Local LLM", "Answer"],
             "RAG architecture used in Laboratory 3")
+    diagram(P3 / "evaluation_integrity_flow.png",
+            ["User question", "Intent parser", "Strategy", "Retrieved IDs", "Evaluation boundary", "Ground-truth labels", "Metrics"],
+            "Leakage-free inference and independent evaluation")
 
 
 def md(text): return nbf.v4.new_markdown_cell(text.strip())
@@ -282,6 +307,7 @@ $Hit@k$ відповідає лише на питання, чи знайдено
     code("""comparison = pd.read_csv(LAB/'artifacts/portfolio/baseline_vs_hybrid.csv')
 display(comparison)
 display(Image(filename=str(LAB/'artifacts/portfolio/baseline_vs_hybrid.png')))
+display(Image(filename=str(LAB/'artifacts/portfolio/evaluation_integrity_flow.png')))
 assert comparison.query_id.nunique() == 8"""),
     md("""## STEP 11 — Побудова grounded prompt
 
@@ -303,19 +329,24 @@ display(answers[['query_id','status','answer','manual_review']].merge(reviews,on
     code("display(reviews[['query_id','failure_category','review']])"),
     md("""## STEP 14 — Improvement experiments
 
-Hybrid router зберігає semantic baseline для вільних запитів, але використовує exact-ID lookup і структуровані числові фільтри там, де intent це дозволяє. Ground truth не змінюється. Це усуває q04/q05 failure без удавання, що semantic retrieval став універсально кращим."""),
-    code("""structured = pd.read_csv(LAB/'artifacts/portfolio/structured_results.csv')
+Hybrid router отримує лише текст запиту, каталог і semantic candidates. Він витягує Product ID регулярним parser, розпізнає category/attribute/numeric intent, виконує min/max aggregation або повертає unsupported. `relevant_product_ids`, `expected_fields` і ID тестового кейсу не входять до inference API. Ground truth з'являється лише після отримання ranked IDs."""),
+    code("""routing = pd.read_csv(LAB/'artifacts/portfolio/routing_diagnostics.csv')
+display(routing[['query_id','question','strategy','conditions','returned_ids']])
+structured = pd.read_csv(LAB/'artifacts/portfolio/structured_results.csv')
 display(structured[['query_id','product_id','title','category','final_price_numeric','discount_numeric','rating_numeric','source_file','row_id']])"""),
     md("""## STEP 15 — Підсумкова evaluation dashboard
 
-Покращення стосується query routing і coverage для точних/числових задач. Latency baseline є одиничним спостереженням на запит і включає embedding, мережу та parsing; це не чистий Redis benchmark."""),
+Known set використовує незмінені вісім запитів. Окремий holdout містить нові формулювання, створені після фіксації правил router; його малий розмір не дає статистичної значущості. Latency baseline є одиничним спостереженням і не є чистим Redis benchmark."""),
     code("""dashboard = comparison.groupby('configuration').agg(
     scored=('hit_at_k','count'), hit_at_5=('hit_at_k','mean'), mrr=('mrr','mean'), recall_at_5=('recall_at_k','mean'))
 display(dashboard)
+holdout = pd.read_csv(LAB/'artifacts/portfolio/holdout_evaluation.csv')
+display(holdout)
+display(holdout[holdout.expected_count > 0][['hit_at_k','mrr','recall_at_k','coverage']].mean().to_frame('holdout_mean'))
 display(reviews.failure_category.value_counts().rename_axis('failure_category').to_frame('queries'))"""),
     md("""## STEP 16 — Висновки та обмеження
 
-Redis забезпечує швидкий vector search і metadata filters, але cosine similarity не виконує SQL-агрегації й не гарантує multi-row coverage. Для production потрібні query routing, deterministic numeric tools, citation validation, human-labeled relevance, повторні latency runs, access control, monitoring і versioned data contracts. LM Studio недоступний під час цього rebuild, тому старі підтверджені відповіді збережено; нові LLM твердження не вигадані.""")]
+Redis забезпечує швидкий vector search і metadata filters, але cosine similarity не виконує SQL-агрегації й не гарантує multi-row coverage. Leakage-free router покращує exact, attribute і numeric tasks, але його правила навмисно обмежені. Для production потрібні query routing, deterministic numeric tools, citation validation, human-labeled relevance, повторні latency runs, access control, monitoring і versioned data contracts. LM Studio недоступний під час цього rebuild, тому старі підтверджені відповіді збережено; нові LLM твердження не вигадані.""")]
     nb = nbf.v4.new_notebook(cells=cells, metadata={"kernelspec":{"display_name":"Python 3","language":"python","name":"python3"},"language_info":{"name":"python","version":"3.13"}})
     nbf.write(nb, LAB3 / "notebooks/01_redis_csv_rag.ipynb")
 
