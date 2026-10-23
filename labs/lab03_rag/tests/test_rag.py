@@ -4,7 +4,8 @@ from urllib.error import URLError
 from unittest.mock import Mock
 import pytest
 from langchain_core.documents import Document
-from labs.lab03_rag.src.rag import build_prompt, generate_answer
+from labs.lab03_rag.src.rag import answer_query, build_prompt, generate_answer
+from labs.lab03_rag.tests.test_analysis import catalog
 from labs.lab03_rag.src.config import Settings
 from labs.lab03_rag.src.llm import list_models, create_llm
 from labs.lab03_rag.src.evaluation import field_present, verify_answer, run_answers
@@ -63,3 +64,49 @@ def test_generation_failure_is_saved(tmp_path):
     assert table.iloc[0]['status']=='failed'
     assert 'offline' in table.iloc[0]['error']
     assert (tmp_path/'rag/final_answers.csv').exists()
+
+
+def test_hybrid_entrypoint_exact_id_uses_catalog_and_preserves_provenance():
+    store = Mock()
+    result = answer_query(store, Mock(), "Compare 17745816 and 15720652", catalog=catalog())
+    store.similarity_search_with_score.assert_not_called()
+    assert result["strategy"] == "exact_id"
+    assert result["answer_mode"] == "deterministic_catalog"
+    assert [d.metadata["product_id"] for d in result["documents"]] == ["17745816", "15720652"]
+    assert all(d.metadata["record_id"] in result["answer"] for d in result["documents"])
+    assert result["citations"]["valid"]
+
+
+def test_hybrid_entrypoint_numeric_and_unsupported_do_not_call_llm():
+    store, llm = Mock(), Mock()
+    numeric = answer_query(store, llm,
+        "Find the cheapest sports shoes rated at least 4 with discount > 0", catalog=catalog())
+    assert numeric["documents"][0].metadata["product_id"] == "11960808"
+    assert "659 INR" in numeric["answer"] and numeric["citations"]["valid"]
+    unsupported = answer_query(store, llm, "Can 17745816 be delivered to Kyiv tomorrow?", catalog=catalog())
+    assert unsupported["answer_mode"] == "deterministic_refusal"
+    assert "Insufficient context" in unsupported["answer"]
+    llm.invoke.assert_not_called()
+
+
+def test_hybrid_semantic_intent_uses_redis_then_llm():
+    frame = catalog()
+    from labs.lab03_rag.src.documents import dataframe_to_documents
+    document = dataframe_to_documents(frame.iloc[[0]])[0]
+    store = Mock(); store.similarity_search_with_score.return_value = [(document, 0.12)]
+    llm = Mock(); llm.invoke.return_value.content = "Lancer [sports-shoes.csv:0]"
+    result = answer_query(store, llm, "comfortable footwear", catalog=frame)
+    store.similarity_search_with_score.assert_called_once()
+    llm.invoke.assert_called_once()
+    assert result["strategy"] == "semantic" and result["answer_mode"] == "llm"
+    assert result["citations"]["valid"]
+
+
+def test_semantic_baseline_remains_available():
+    frame = catalog()
+    from labs.lab03_rag.src.documents import dataframe_to_documents
+    document = dataframe_to_documents(frame.iloc[[0]])[0]
+    store = Mock(); store.similarity_search_with_score.return_value = [(document, 0.2)]
+    llm = Mock(); llm.invoke.return_value.content = "answer"
+    result = answer_query(store, llm, "17745816", catalog=frame, mode="semantic_baseline")
+    assert result["strategy"] == "semantic" and result["answer_mode"] == "llm"
