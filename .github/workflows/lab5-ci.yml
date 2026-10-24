@@ -1,0 +1,90 @@
+name: Lab 5 CPU CI
+
+on:
+  pull_request:
+    paths:
+      - 'labs/lab05_multimodal/**'
+      - 'scripts/build_lab5_*.py'
+      - '.github/workflows/lab5-ci.yml'
+      - '.gitignore'
+  push:
+    branches: [main]
+    paths:
+      - 'labs/lab05_multimodal/**'
+      - 'scripts/build_lab5_*.py'
+      - '.github/workflows/lab5-ci.yml'
+      - '.gitignore'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cpu-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+
+      - name: Install CPU-only validation dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest==9.1.1 nbformat==5.11.1 nbclient==0.11.0 \
+            nbconvert ipykernel pandas==3.0.6 numpy==2.5.3 \
+            matplotlib==3.11.2 Pillow==12.3.0 psutil
+
+      - name: Compile Lab 5 Python
+        run: |
+          python -m compileall -q labs/lab05_multimodal/src \
+            scripts/build_lab5_evidence.py \
+            scripts/build_lab5_notebook.py \
+            scripts/build_lab5_live_notebook.py
+
+      - name: Run CPU-only tests
+        run: python -m pytest labs/lab05_multimodal/tests -q
+
+      - name: Validate both notebook schemas
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import nbformat
+          for path in sorted(Path('labs/lab05_multimodal/notebooks').glob('*.ipynb')):
+              notebook = nbformat.read(path, as_version=4)
+              nbformat.validate(notebook)
+              print(f'validated: {path}')
+          PY
+
+      - name: Execute CPU analysis notebook
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import nbformat
+          from nbclient import NotebookClient
+          source = Path('labs/lab05_multimodal/notebooks/01_llava_vqa.ipynb')
+          notebook = nbformat.read(source, as_version=4)
+          NotebookClient(
+              notebook,
+              timeout=180,
+              kernel_name='python3',
+              resources={'metadata': {'path': str(Path.cwd())}},
+          ).execute()
+          destination = Path('/tmp/01_llava_vqa.executed.ipynb')
+          nbformat.write(notebook, destination)
+          assert all(
+              output.output_type != 'error'
+              for cell in notebook.cells if cell.cell_type == 'code'
+              for output in cell.outputs
+          )
+          print(f'executed: {destination}')
+          PY
+
+      - name: Export CPU notebook to HTML
+        run: |
+          jupyter nbconvert --to html --output-dir /tmp/lab5-html \
+            /tmp/01_llava_vqa.executed.ipynb
+          test -s /tmp/lab5-html/01_llava_vqa.executed.html

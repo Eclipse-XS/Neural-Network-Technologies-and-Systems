@@ -16,6 +16,7 @@ def evaluated_results(rows):
                             grounding_issue=review['grounding_issue'] if review else '',
                             notes=review['notes'] if review else 'Потрібне ручне зіставлення з пікселями.'))
     frame = pd.DataFrame(records)
+    (OUTPUT_ROOT / 'metadata').mkdir(parents=True, exist_ok=True)
     frame[['run_id', 'question_id', 'evaluation_label', 'grounding_issue', 'notes']].drop_duplicates().to_csv(
         OUTPUT_ROOT / 'metadata/evaluation.csv', index=False, encoding='utf-8-sig')
     return frame

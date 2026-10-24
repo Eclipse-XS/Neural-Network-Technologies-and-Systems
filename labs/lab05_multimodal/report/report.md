@@ -38,7 +38,7 @@ SigLIP Vision виділяє ознаки, MLP-проєктор переводи
 
 ## 8. Апаратне та програмне середовище
 
-Windows; Python 3.13.5; PyTorch 2.14.0+cu130; Transformers 5.17.0; Accelerate 1.15.0; Pillow 12.3.0; CUDA 13.0; torch.cuda.is_available()=True; NVIDIA GeForce RTX 3050 Laptop GPU, 4.000 GiB VRAM. Перед завантаженням моделі доступно 3.23 GiB VRAM, 0.29 GiB RAM і 9.05 GiB диска. Це миттєві значення, не вимоги до ресурсів. Model load: 7.557 с; не включений у час відповідей. Пакети та CUDA не змінювалися. Повні версії збережено в outputs/metadata/environment.json.
+Windows; Python 3.13.5; PyTorch 2.14.0+cu130; Transformers 5.17.0; Accelerate 1.15.0; Pillow 12.3.0; CUDA 13.0; torch.cuda.is_available()=True; NVIDIA GeForce RTX 3050 Laptop GPU, 4.000 GiB VRAM. Перед завантаженням моделі доступно 3.23 GiB VRAM, 0.29 GiB RAM і 9.05 GiB диска. Це миттєві значення, не вимоги до ресурсів. Model load: 7.557 с; не включений у час відповідей. Пакети та CUDA не змінювалися. Перевірений snapshot середовища збережено в `evidence/environment.json`.
 
 ## 9. Вхідне зображення
 
@@ -123,7 +123,7 @@ Analysis_02 підкріплює природний характер сцени 
 
 За 24 токени продовження обірвано на The cabin, EOS відсутній. За лімітів 64 і 128 отримано дослівно однакову завершену відповідь із 48 токенів включно з EOS. Додатковий бюджет не усунув непідтверджений матеріал даху. max_new_tokens є верхньою межею довжини, не бажаною довжиною і не гарантією якості. Рядок 64 повторно використовує baseline desc_01.
 
-![Фактична довжина відповіді](../outputs/figures/token_budget.png)
+Графік фактичної довжини будується безпосередньо у виконаному notebook функцією `token_budget_figure(results)` із версіонованого `evidence/verified_runs.json`. Статичний PNG не підмінює виконувану комірку.
 
 ## 17. Узгодженість перефразованих питань
 
