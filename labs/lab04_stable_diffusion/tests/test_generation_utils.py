@@ -2,6 +2,8 @@ from dataclasses import replace
 import hashlib
 import json
 import re
+import sys
+from types import SimpleNamespace
 from PIL import Image
 from labs.lab04_stable_diffusion.src.config import GenerationSpec
 from labs.lab04_stable_diffusion.src.generation import artifact_id, filename, identity, save_json, cached_result, generate_image
@@ -40,7 +42,25 @@ def test_sidecar_roundtrip_and_reuse_requires_integrity(tmp_path):
     assert cached_result(s, ctx, tmp_path) is None
 
 
-def test_generate_image_cache_semantics_and_force_regenerate(tmp_path):
+def test_generate_image_cache_semantics_and_force_regenerate(tmp_path, monkeypatch):
+    class FakeGenerator:
+        def __init__(self, device):
+            self.device = device
+
+        def manual_seed(self, seed):
+            self.seed = seed
+            return self
+
+    class FakeInferenceMode:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_):
+            return False
+
+    monkeypatch.setitem(sys.modules, 'torch', SimpleNamespace(
+        Generator=FakeGenerator, inference_mode=FakeInferenceMode))
+
     class FakeOutput:
         images = [Image.new('RGB', (512, 512))]
         nsfw_content_detected = [False]
