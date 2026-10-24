@@ -4,7 +4,7 @@ from urllib.error import URLError
 from unittest.mock import Mock
 import pytest
 from langchain_core.documents import Document
-from labs.lab03_rag.src.rag import answer_query, build_prompt, generate_answer
+from labs.lab03_rag.src.rag import answer_query, build_prompt, generate_answer, validate_citations
 from labs.lab03_rag.tests.test_analysis import catalog
 from labs.lab03_rag.src.config import Settings
 from labs.lab03_rag.src.llm import list_models, create_llm
@@ -37,6 +37,14 @@ def test_citation_and_field_checked_separately():
     assert check['unknown_citations']==['b.csv:9']
     assert check['field_checks'][0]['value_present']
     assert not check['field_checks'][0]['expected_citation_present']
+
+
+def test_citation_validation_requires_evidence_for_factual_answers():
+    document = Document(page_content='x', metadata={
+        'record_id': 'a.csv:0', 'source_file': 'a.csv', 'row_id': 0})
+    assert not validate_citations('A factual answer without a citation.', [document])['valid']
+    assert validate_citations('Supported [a.csv:0].', [document])['valid']
+    assert validate_citations('Insufficient context: missing field.', [document])['valid']
 
 
 def test_local_url_and_offline_error():
@@ -87,6 +95,19 @@ def test_hybrid_entrypoint_numeric_and_unsupported_do_not_call_llm():
     assert unsupported["answer_mode"] == "deterministic_refusal"
     assert "Insufficient context" in unsupported["answer"]
     llm.invoke.assert_not_called()
+
+
+def test_hybrid_nonexistent_id_abstains_and_mixed_lookup_reports_missing_id():
+    store, llm = Mock(), Mock()
+    missing = answer_query(store, llm, 'Look up product 99999999', catalog=catalog())
+    assert missing['answer_mode'] == 'deterministic_catalog'
+    assert missing['answer'].startswith('Insufficient context:')
+    assert missing['citations']['valid']
+
+    mixed = answer_query(store, llm, 'Compare 17745816 and 99999999', catalog=catalog())
+    assert '17745816' in mixed['answer']
+    assert '99999999' in mixed['answer'] and 'absent from the catalog' in mixed['answer']
+    assert mixed['citations']['valid']
 
 
 def test_hybrid_semantic_intent_uses_redis_then_llm():

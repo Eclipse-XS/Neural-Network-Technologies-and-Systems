@@ -42,8 +42,10 @@ def generate_answer(llm, question, documents):
 def validate_citations(answer, documents):
     allowed = {d.metadata["record_id"] for d in documents}
     used = set(__import__("re").findall(r"\[([^\[\]]+\.csv:\d+)\]", answer))
+    abstained = answer.strip().casefold().startswith("insufficient context")
     return {"used": sorted(used), "allowed": sorted(allowed),
-            "unknown": sorted(used - allowed), "valid": not (used - allowed)}
+            "unknown": sorted(used - allowed),
+            "valid": not (used - allowed) and (bool(used) or abstained or not documents)}
 
 
 def answer_query(store, llm, question, k=5, category=None, *, catalog=None, mode="hybrid"):

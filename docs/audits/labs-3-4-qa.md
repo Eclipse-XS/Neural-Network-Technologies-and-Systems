@@ -10,11 +10,11 @@
 - 17 із 185 serialized records перевищують ліміт MiniLM у 256 word pieces.
 - Semantic baseline на семи labeled queries: Hit@5 `0,8571`, MRR `0,6905`, mean Recall@5 `0,5734`.
 - Hybrid router: Hit@5 `1,0000`, MRR `1,0000`, mean Recall@5 `0,8829`.
-- Holdout із п'яти labeled queries: Hit@5 `1,0000`, MRR `1,0000`, Recall@5 `0,9111`.
+- Post-rule wording set із п'яти labeled queries: Hit@5 `1,0000`, MRR `1,0000`, Recall@5 `0,9111`. Це не зовнішній незалежний benchmark.
 
 Початкова реалізація hybrid retrieval помилково передавала evaluation object до inference helper. Через це старі hybrid MRR `0,9048` і Recall@5 `0,8194` були невалідними. Поточний `src/hybrid.py` приймає question, catalog, optional semantic candidates і `k`; labels використовує лише `evaluate_id_lists()` після retrieval. Тести змінюють query ID, expected fields і relevance labels та перевіряють незмінність ranked results.
 
-Обмеження: intent grammar вузька й англомовна, labels є corpus-derived proxies, Redis latency має по одному спостереженню, live Redis і LM Studio під час replay не викликаються. Покращення retrieval не доводить покращення відповідей LLM.
+Обмеження: intent grammar вузька й англомовна, labels є corpus-derived proxies, Redis latency має по одному спостереженню, а live Redis і LM Studio не перевіряються offline. Покращення retrieval не доводить покращення відповідей LLM.
 
 ## ЛР4: генерації та metadata
 
@@ -31,13 +31,9 @@ Euler і DDIM не запускались. CLIPScore, FID, repeated warmed timin
 
 Notebook generation відокремлено від execution. `scripts/execute_portfolio_notebooks.py` запускає реальний Python kernel через `nbclient`, зберігає outputs і завершується помилкою за наявності error cell або відсутнього execution count.
 
-Replay використовує committed row-level evidence:
+Replay виконує лише ЛР4: звіряє 13 PNG із manifest та SHA-256, після чого будує galleries і performance plots. Historical GPU metadata і PNG не називаються новим inference. ЛР3 є live-only; committed row-level evidence використовується unit-тестами для перевірки метрик і routing без імітації Redis або LLM.
 
-- ЛР3 повторно обчислює EDA, PCA visualization, routing, Hit@5/MRR/Recall@5, citation checks і dashboard;
-- ЛР4 звіряє 13 PNG із manifest та SHA-256, після чого будує galleries і performance plots;
-- historical Redis results, LLM answers, GPU metadata і PNG не називаються новим inference.
-
-Full mode зберігає виклики MiniLM, Redis, LM Studio та Stable Diffusion pipeline, але потребує відповідних сервісів, моделей і GPU.
+Full mode для ЛР3 зберігає виклики MiniLM, Redis і LM Studio; full mode ЛР4 завантажує Stable Diffusion pipeline. Обидва режими потребують задокументованих зовнішніх залежностей.
 
 ## Перевірки
 

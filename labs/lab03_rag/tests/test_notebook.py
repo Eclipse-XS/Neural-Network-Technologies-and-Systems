@@ -8,6 +8,7 @@ def test_notebook_schema_syntax_and_outputs():
     notebook=nbformat.read(p,as_version=4)
     nbformat.validate(notebook)
     assert notebook.metadata.lab03_execution.mode == 'live-only'
+    assert notebook.metadata.lab03_execution.status in {'HISTORICAL_LIVE_OUTPUTS', 'EXECUTED_LIVE'}
     for cell in notebook.cells:
         if cell.cell_type=='code':
             ast.parse(cell.source)

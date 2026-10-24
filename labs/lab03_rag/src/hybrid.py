@@ -152,7 +152,10 @@ def numeric_answer(result: RetrievalResult) -> str:
     """Produce auditable answers for exact/numeric cases without an LLM."""
     rows = result.rows
     if rows.empty:
-        return "Structured retrieval is not applicable or returned no rows."
+        if result.intent.unknown_product_ids:
+            missing = ", ".join(result.intent.unknown_product_ids)
+            return f"Insufficient context: product ID(s) {missing} are absent from the catalog."
+        return "Insufficient context: no catalog rows match all requested conditions."
     citations = [f"[{r.source_file}:{int(r.row_id)}]" for r in rows.itertuples()]
     if result.intent.aggregation in {"min_final_price", "max_final_price"}:
         row = rows.iloc[0]
@@ -165,4 +168,7 @@ def numeric_answer(result: RetrievalResult) -> str:
         discount = "not provided" if pd.isna(row.discount_numeric) else f"{row.discount_numeric:.0f}%"
         parts.append(f"{row.title} ({row.product_id}): {row.final_price_numeric:.0f} INR; "
                      f"discount {discount}; rating {row.rating_numeric:.1f} {citation}")
+    if result.intent.unknown_product_ids:
+        missing = ", ".join(result.intent.unknown_product_ids)
+        parts.append(f"Insufficient context for product ID(s) {missing}: absent from the catalog.")
     return "\n".join(parts)

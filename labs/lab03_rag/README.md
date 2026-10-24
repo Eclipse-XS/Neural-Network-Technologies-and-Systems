@@ -22,7 +22,7 @@
 
 Вісім зафіксованих запитів охоплюють exact lookup, semantic search, filter, comparison, global numeric condition, cross-category retrieval та unsupported delivery request. Semantic baseline отримав Hit@5 = 0,8571, MRR = 0,6905 і mean Recall@5 = 0,5734 на семи запитах із relevance labels. Hybrid router — 1,0000, 1,0000 і 0,8829 відповідно. Це retrieval-метрики малого curated set, а не accuracy відповідей LLM.
 
-Для незалежного holdout із п’яти labeled запитів отримано Hit@5 = 1,0000, MRR = 1,0000 і Recall@5 = 0,9111. Обсяг holdout недостатній для статистичних узагальнень.
+Для post-rule wording set із п’яти labeled запитів отримано Hit@5 = 1,0000, MRR = 1,0000 і Recall@5 = 0,9111. Формулювання створено після фіксації правил router, але це не зовнішній незалежний benchmark; обсяг вибірки недостатній для статистичних узагальнень.
 
 ![Semantic baseline і hybrid router](artifacts/portfolio/baseline_vs_hybrid.png)
 

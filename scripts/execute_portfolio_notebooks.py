@@ -21,10 +21,16 @@ def execute(path: Path, mode: str = "replay") -> tuple[int, int]:
     client = NotebookClient(notebook, timeout=180, kernel_name="python3", allow_errors=False,
                             resources={"metadata": {"path": str(ROOT)}})
     client.execute(cwd=str(ROOT))
-    notebook.metadata["portfolio_execution"] = {
-        "status": "EXECUTED", "mode": mode,
-        "tool": "nbclient.NotebookClient", "cwd": ".",
-    }
+    if path == NOTEBOOKS[0]:
+        notebook.metadata["lab03_execution"] = {
+            "status": "EXECUTED_LIVE", "mode": "live-only",
+            "tool": "nbclient.NotebookClient", "cwd": ".",
+        }
+    else:
+        notebook.metadata["portfolio_execution"] = {
+            "status": "EXECUTED", "mode": mode,
+            "tool": "nbclient.NotebookClient", "cwd": ".",
+        }
     nbformat.write(notebook, path)
     code_cells = [cell for cell in notebook.cells if cell.cell_type == "code"]
     errors = [out for cell in code_cells for out in cell.outputs if out.output_type == "error"]
