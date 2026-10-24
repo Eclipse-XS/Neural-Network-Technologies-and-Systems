@@ -44,7 +44,7 @@ generation config, continuation count, EOS, timestamps, environment і точн�
 | Історичний evidence | PASS | Git object hash `8ad5682aec1e9cf68a2878a778abb8db121770d0`; 17 unique runs / 19 rows |
 | CPU pytest | PASS | 14 tests; модель і torch не завантажуються |
 | Python compilation | PASS | `src/` і три Lab 5 build scripts |
-| GitHub Actions final HEAD | NOT_VERIFIED | Оновити після виконання workflow `Lab 5 CPU CI` |
+| GitHub Actions | PASS | `Lab 5 CPU CI / cpu-validation`, run 40103824918: 43 с на commit `56b17b3` |
 
 Notebook 02 зберігає новий результат лише в ignored `outputs/live/` зі статусом
 `NOT_REVIEWED` і provenance `live_gpu_inference`. Це не змінює історичні 17 запусків.
