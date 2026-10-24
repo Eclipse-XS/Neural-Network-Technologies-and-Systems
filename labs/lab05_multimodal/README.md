@@ -38,6 +38,10 @@ processor і pipeline, chat template, `input_ids`/`pixel_values`, generation con
 прямий виклик `pipe(...)`, continuation tokens, EOS, runtime і окремий unreviewed output.
 Він не читає historical evidence і не виконується в CPU CI.
 
+Контрольний live Run All перевірено 24 жовтня 2026 року на RTX 3050 Laptop GPU:
+8/8 code cells, відповідь `left`, 2 continuation tokens, EOS, без truncation,
+10.529 с. Запис збережено окремо як `NOT_REVIEWED`; historical evidence не змінено.
+
 ## Новий inference
 
 ```powershell

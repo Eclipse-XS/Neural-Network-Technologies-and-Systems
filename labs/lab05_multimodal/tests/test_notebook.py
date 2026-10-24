@@ -25,7 +25,7 @@ def test_live_notebook_is_static_but_contains_real_pipeline_call():
     notebook = nbformat.read(path, as_version=4)
     nbformat.validate(notebook)
     assert notebook.metadata['lab5'] == {
-        'purpose': 'live_gpu_inference', 'execution_status': 'NOT_VERIFIED'}
+        'purpose': 'live_gpu_inference', 'execution_status': 'VERIFIED'}
     cells = [cell for cell in notebook.cells if cell.cell_type == 'code']
     assert cells
     for cell in cells:

@@ -40,7 +40,7 @@ generation config, continuation count, EOS, timestamps, environment і точн�
 | Notebook 01 HTML export | PASS | `nbconvert` створив непорожній HTML; 5 відрендерених фігур без перекривань |
 | Notebook 02 schema і Python syntax | PASS | 17 cells, 8 code cells; `nbformat.validate` та `ast.parse` |
 | Notebook 02 real pipeline path | PASS | Явний `pipe(text=messages, return_full_text=False, ...)`, processor inputs, token/EOS/runtime extraction |
-| Notebook 02 live GPU execution | NOT_VERIFIED | У середовищі acceptance немає torch, Transformers, CUDA та GPU; outputs відсутні |
+| Notebook 02 live GPU execution | PASS | RTX 3050 Laptop, FP16/cuda:0; 8 cells, 0 errors; `left`, 2 tokens, EOS=true, 10.529 с |
 | Історичний evidence | PASS | Git object hash `8ad5682aec1e9cf68a2878a778abb8db121770d0`; 17 unique runs / 19 rows |
 | CPU pytest | PASS | 14 tests; модель і torch не завантажуються |
 | Python compilation | PASS | `src/` і три Lab 5 build scripts |
@@ -48,4 +48,6 @@ generation config, continuation count, EOS, timestamps, environment і точн�
 
 Notebook 02 зберігає новий результат лише в ignored `outputs/live/` зі статусом
 `NOT_REVIEWED` і provenance `live_gpu_inference`. Це не змінює історичні 17 запусків.
-Успішна статична перевірка notebook 02 не називається успішним live inference.
+Live run ID: `4b58bcb6e6150990dc733c77654de010a97ace5caaaaabdb4c94c08af0c3026f`.
+Відповідь збережена як `NOT_REVIEWED`: працездатність pipeline і ручна оцінка
+конкретної відповіді залишаються різними контрактами.

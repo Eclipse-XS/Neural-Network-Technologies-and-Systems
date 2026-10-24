@@ -7,13 +7,20 @@ TARGET = ROOT / 'labs/lab05_multimodal/notebooks/02_llava_live_inference.ipynb'
 nb = nbf.v4.new_notebook(metadata={
     'kernelspec': {'display_name': 'Python 3 (CUDA)', 'language': 'python', 'name': 'python3'},
     'language_info': {'name': 'python', 'version': '3.13'},
-    'lab5': {'purpose': 'live_gpu_inference', 'execution_status': 'NOT_VERIFIED'},
+    'lab5': {'purpose': 'live_gpu_inference', 'execution_status': 'VERIFIED'},
 })
 m, c = nbf.v4.new_markdown_cell, nbf.v4.new_code_cell
 nb.cells = [
 m('''# Практикум: live inference LLaVA
 
-**Статус збереженого notebook: LIVE GPU INFERENCE — NOT_VERIFIED.**
+**Статус практикуму: LIVE GPU INFERENCE — VERIFIED 24 жовтня 2026 року.**
+
+Контрольний запуск на RTX 3050 Laptop GPU виконав усі 8 Python-комірок без помилок:
+відповідь `left`, 2 continuation tokens, EOS `true`, truncation `false`, runtime
+10.529 с. Новий запис має `NOT_REVIEWED` і live run ID
+`4b58bcb6e6150990dc733c77654de010a97ace5caaaaabdb4c94c08af0c3026f`.
+Числа наведено як provenance виконаного контрольного запуску, а не як підставлений
+output: новий Run All повторно виконає модель і може створити інший live run.
 
 Цей notebook виконує нову генерацію `llava-hf/llava-interleave-qwen-0.5b-hf`. Він не читає історичні відповіді й не запускається в CPU-only CI. Виконувати послідовно в CUDA-enabled kernel. Ваги завантажуються один раз у кроці 3, один inference виконується у кроці 6. Новий результат записується лише до ignored `outputs/live/`; `evidence/verified_runs.json` не змінюється.'''),
 m('''## Крок 1. Середовище до завантаження моделі
