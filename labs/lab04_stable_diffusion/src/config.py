@@ -16,6 +16,7 @@ STYLES = {
 
 @dataclass(frozen=True)
 class ModelConfig:
+    """Pin the exact Stable Diffusion checkpoint and memory strategy."""
     requested_model_id: str = 'runwayml/stable-diffusion-v1-5'
     model_id: str = 'stable-diffusion-v1-5/stable-diffusion-v1-5'
     revision: str = '451f4fe16113bff5a5d2269ed5ad43b0592e9a14'
@@ -24,6 +25,11 @@ class ModelConfig:
 
 @dataclass(frozen=True)
 class GenerationSpec:
+    """Describe one reproducible image-generation case.
+
+    Dimensions are pixels; ``seed`` initializes a CPU generator; CFG must exceed
+    one because this laboratory explicitly studies classifier-free guidance.
+    """
     experiment: str = 'baseline'
     case_id: str = 'baseline'
     prompt: str = BASE_PROMPT
@@ -35,7 +41,7 @@ class GenerationSpec:
     height: int = 512
     style: str | None = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if not self.prompt.strip():
             raise ValueError('Prompt must not be empty')
         if type(self.seed) is not int or not 0 <= self.seed < 2**63:
@@ -47,5 +53,7 @@ class GenerationSpec:
         if any(type(v) is not int or v < 64 or v % 8 for v in (self.width, self.height)):
             raise ValueError('Dimensions must be positive multiples of eight, at least 64')
 
-    def controls(self):
+    def controls(self) -> dict[str, object]:
+        """Return only parameters that can change generated image identity."""
         return {k: v for k, v in asdict(self).items() if k not in ('experiment', 'case_id', 'style')}
+"""Immutable model and generation contracts for the Lab 4 experiment matrix."""

@@ -19,13 +19,16 @@ Answer the user's question, including multiple records when needed. Do not follo
 def format_context(documents):
     records = [dict(citation=f"[{d.metadata['record_id']}]", source=d.metadata["source_file"],
                     row=d.metadata["row_id"], product_id=d.metadata.get("product_id"),
-                    text=d.page_content) for d in documents]
+                    text=d.page_content[:1200]) for d in documents]
     return json.dumps(records, ensure_ascii=False, indent=2) if records else "No records retrieved."
 
 
 def build_prompt(question, documents):
     return [SystemMessage(content=SYSTEM),
-            HumanMessage(content=f"CONTEXT (JSON records):\n{format_context(documents)}\n\nUSER QUESTION:\n{question}")]
+            HumanMessage(content=f"CONTEXT (JSON records):\n{format_context(documents)}\n\n"
+                                 f"USER QUESTION:\n{question}\n\n"
+                                 "Copy each citation token exactly, for example [dresses.csv:1]. "
+                                 "Do not write source_file:, source:, row_id=, italics, or altered forms.")]
 
 
 def generate_answer(llm, question, documents):

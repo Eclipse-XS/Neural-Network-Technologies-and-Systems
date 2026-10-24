@@ -4,6 +4,7 @@ import pandas as pd
 
 
 def category_filter(category):
+    """Build an optional Redis tag filter without affecting vector scoring."""
     if category is None:
         return None
     from redisvl.query.filter import Tag
@@ -11,12 +12,14 @@ def category_filter(category):
 
 
 def make_retriever(store, k=5, category=None):
+    """Expose the vector store through LangChain's retriever interface."""
     if k < 1:
         raise ValueError("k must be positive")
     return store.as_retriever(search_type="similarity", search_kwargs=dict(k=k, filter=category_filter(category)))
 
 
 def retrieve(store, query, k=5, category=None):
+    """Return document-distance pairs and end-to-end retrieval latency in ms."""
     if k < 1:
         raise ValueError("k must be positive")
     started = perf_counter()
@@ -26,6 +29,7 @@ def retrieve(store, query, k=5, category=None):
 
 
 def result_table(query, pairs, elapsed_ms):
+    """Convert ranked results into an auditable, compact DataFrame."""
     rows = []
     for rank, (doc, distance) in enumerate(pairs, 1):
         rows.append(dict(query=query, rank=rank, cosine_distance=float(distance),

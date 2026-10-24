@@ -6,6 +6,7 @@ from urllib.error import URLError, HTTPError
 
 
 def list_models(settings, opener=urlopen):
+    """Query the local LM Studio OpenAI-compatible model registry."""
     headers = {"Authorization": "Bearer " + os.getenv("LM_STUDIO_API_KEY", "lm-studio")}
     request = Request(settings.base_url.rstrip("/") + "/models", headers=headers)
     try:
@@ -19,10 +20,11 @@ def list_models(settings, opener=urlopen):
 
 
 def create_llm(settings):
+    """Create a deterministic chat client only after the configured model exists."""
     models = list_models(settings)
     if not settings.model or settings.model not in models:
         raise ValueError(f"Set LM_STUDIO_MODEL to a chat-model ID from /v1/models: {models}")
     from langchain_openai import ChatOpenAI
     return ChatOpenAI(base_url=settings.base_url, model=settings.model,
                       api_key=os.getenv("LM_STUDIO_API_KEY", "lm-studio"),
-                      temperature=0, max_tokens=800, timeout=120, max_retries=0)
+                      temperature=0, max_tokens=500, timeout=120, max_retries=1)

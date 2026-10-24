@@ -40,16 +40,13 @@ labs/lab03_rag/.venv/Scripts/python -m jupyter notebook labs/lab03_rag/notebooks
 
 ```powershell
 docker compose -f labs/lab03_rag/docker-compose.yml up -d
-$env:LM_STUDIO_MODEL='<model-id>'
-$env:PORTFOLIO_MODE='full'
-python scripts/execute_portfolio_notebooks.py --mode full
+$env:LM_STUDIO_MODEL='mistralai/ministral-3-3b'
+labs/lab03_rag/.venv/Scripts/python -m jupyter nbconvert --to notebook --execute --inplace `
+  labs/lab03_rag/notebooks/01_redis_csv_rag.ipynb
 ```
 
-CPU-only replay використовує row-level committed evidence й повторно обчислює доступні статистики, маршрутизацію, retrieval metrics і графіки. Він не повторює MiniLM, Redis або LLM inference:
-
-```powershell
-python scripts/execute_portfolio_notebooks.py --mode replay
-```
+Notebook має один режим: реальне виконання. Якщо Redis, MiniLM або LM Studio недоступні,
+відповідний STEP завершується діагностичною помилкою; історичні результати не підставляються.
 
 ## Перевірки й обмеження
 
@@ -59,4 +56,4 @@ python -m pytest labs/lab03_rag/tests -q
 
 Тести перевіряють data contracts, routing, anti-leakage, metrics, citations, notebook execution і відсутність viewer-only experiment steps. Live integration потребує Redis та LM Studio.
 
-Корпус і query set малі; labels не є повною human relevance розміткою. Stored latency містить embedding, network і parsing та має по одному спостереженню. LLM-відповіді в replay є historical semantic-baseline evidence. Покращення retrieval не доводить покращення answer correctness.
+Корпус і query set малі; labels не є повною human relevance розміткою. Latency містить embedding, network і parsing та має по одному спостереженню. Покращення retrieval не доводить покращення answer correctness; semantic completeness потребує ручного entailment-аудиту.

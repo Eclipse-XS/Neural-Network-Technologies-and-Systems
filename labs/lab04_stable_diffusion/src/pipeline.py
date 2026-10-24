@@ -6,7 +6,8 @@ import time
 from .config import LAB_ROOT, ModelConfig
 
 
-def environment():
+def environment() -> dict[str, object]:
+    """Return software, CUDA, RAM, VRAM and disk facts used for provenance."""
     import torch
     import psutil
     packages = ['torch', 'diffusers', 'transformers', 'accelerate', 'safetensors',
@@ -24,7 +25,12 @@ def environment():
             'disk_free_bytes': shutil.disk_usage(LAB_ROOT).free}
 
 
-def load_pipeline(config=ModelConfig()):
+def load_pipeline(config: ModelConfig = ModelConfig()):
+    """Load SD 1.5 with FP16 on CUDA and the configured CPU-offload policy.
+
+    Returns the Diffusers pipeline plus a serializable provenance dictionary.
+    Model download and allocation are intentional side effects of this call.
+    """
     import torch
     from diffusers import StableDiffusionPipeline
     env = environment()
@@ -52,3 +58,4 @@ def load_pipeline(config=ModelConfig()):
                'model_load_seconds': time.perf_counter() - start,
                'model_resolution_note': 'Runway model API redirects to the equivalent SD 1.5 repository.'}
     return pipe, context
+"""Inspect the runtime and initialize the pinned Stable Diffusion pipeline."""

@@ -23,7 +23,8 @@ def number(value):
     return float(value)
 
 
-def serialize_record(row, fields=TEXT_FIELDS, spec_fields=SPEC_FIELDS):
+def serialize_record(row, fields=TEXT_FIELDS, spec_fields=SPEC_FIELDS) -> str:
+    """Serialize one product row into stable, labeled text for retrieval."""
     fields = tuple(fields)
     if not any(str(row.get(key, "")).strip() for key in fields):
         raise ValueError("No configured textual fields in record")
@@ -51,6 +52,7 @@ def serialize_record(row, fields=TEXT_FIELDS, spec_fields=SPEC_FIELDS):
 
 
 def build_documents(loaded, fields=TEXT_FIELDS):
+    """Convert CSVLoader rows into one provenance-preserving Document per item."""
     result = []
     for doc in loaded:
         row = {k: v for k, v in doc.metadata.items() if k not in {"source", "row"}}

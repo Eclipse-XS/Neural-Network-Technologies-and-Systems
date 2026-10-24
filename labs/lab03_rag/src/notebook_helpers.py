@@ -1,4 +1,4 @@
-"""Executable notebook computations shared by full and portfolio-replay modes."""
+"""Executable computations used by the live laboratory notebook."""
 from __future__ import annotations
 
 import json
@@ -12,17 +12,6 @@ from .analysis import evaluate_id_lists
 from .documents import dataframe_to_documents
 from .evaluation import verify_answer
 from .hybrid import route_and_retrieve
-
-
-STATUS_LIVE = "LIVE COMPUTATION"
-STATUS_REPLAY = "RECOMPUTED FROM EVIDENCE"
-STATUS_HISTORICAL = "HISTORICAL INFERENCE"
-
-
-def computation_status(mode: str, *, historical: bool = False) -> str:
-    if historical:
-        return STATUS_HISTORICAL
-    return STATUS_LIVE if mode == "full" else STATUS_REPLAY
 
 
 def eda_tables(frame: pd.DataFrame) -> dict[str, pd.DataFrame]:
@@ -75,7 +64,7 @@ def plot_pca_coordinates(coordinates: pd.DataFrame, provenance: str):
     return fig
 
 
-def replay_rankings(results: pd.DataFrame) -> dict[str, list[str]]:
+def ranked_product_ids(results: pd.DataFrame) -> dict[str, list[str]]:
     required = {"query_id", "rank", "product_id"}
     if not required <= set(results):
         raise ValueError(f"Retrieval evidence lacks {sorted(required - set(results))}")
@@ -86,7 +75,7 @@ def replay_rankings(results: pd.DataFrame) -> dict[str, list[str]]:
 def evaluate_semantic_and_hybrid(catalog: pd.DataFrame, queries: list[dict],
                                  semantic_results: pd.DataFrame, k: int = 5):
     """Run inference without labels, then cross the evaluation boundary once."""
-    semantic_ids = replay_rankings(semantic_results)
+    semantic_ids = ranked_product_ids(semantic_results)
     hybrid_ids, routes, rows = {}, [], []
     for query in queries:
         result = route_and_retrieve(catalog, query["question"], semantic_ids.get(query["id"], ()), k)
@@ -103,26 +92,6 @@ def evaluate_semantic_and_hybrid(catalog: pd.DataFrame, queries: list[dict],
         evaluate_id_lists(queries, hybrid_ids, k).assign(configuration="hybrid_router"),
     ], ignore_index=True)
     return metrics, pd.DataFrame(routes), pd.DataFrame(rows), hybrid_ids
-
-
-def answer_audit(answers: pd.DataFrame, queries: list[dict], catalog: pd.DataFrame,
-                 ranked_ids: dict[str, list[str]]) -> pd.DataFrame:
-    """Recompute lexical field and citation checks over historical answer text."""
-    query_map = {q["id"]: q for q in queries}
-    rows = []
-    for record in answers.to_dict("records"):
-        query = query_map[record["query_id"]]
-        selected = catalog[catalog.product_id.astype(str).isin(ranked_ids.get(record["query_id"], []))]
-        docs = dataframe_to_documents(selected)
-        audit = verify_answer(str(record.get("answer", "")), docs, query.get("expected_fields", []))
-        checks = audit["field_checks"]
-        rows.append({"query_id": record["query_id"], "status": STATUS_HISTORICAL,
-                     "retrieved_records": len(docs), "unknown_citations": len(audit["unknown_citations"]),
-                     "valid_citation": audit["valid_citation_present"],
-                     "fields_present": sum(c["value_present"] is True for c in checks),
-                     "fields_expected": len(checks),
-                     "expected_citations": sum(c["expected_citation_present"] for c in checks)})
-    return pd.DataFrame(rows)
 
 
 def plot_retrieval_dashboard(metrics: pd.DataFrame):

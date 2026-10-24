@@ -175,10 +175,12 @@ def diagram(path: Path, labels: list[str], title: str):
     ax.axis("off")
     xs = np.linspace(.05, .95, len(labels))
     for x, label in zip(xs, labels):
-        ax.text(x, .5, label, ha="center", va="center", transform=ax.transAxes,
+        display_label = {"MiniLM embeddings": "MiniLM\nembeddings",
+                         "Grounded prompt": "Grounded\nprompt"}.get(label, label)
+        ax.text(x, .5, display_label, ha="center", va="center", transform=ax.transAxes,
                 bbox={"boxstyle": "round,pad=.45", "facecolor": "#EAF2F8", "edgecolor": "#3568A8"}, fontsize=10)
     for a, b in zip(xs[:-1], xs[1:]):
-        ax.annotate("", xy=(b-.035, .5), xytext=(a+.035, .5), xycoords=ax.transAxes,
+        ax.annotate("", xy=(b-.052, .5), xytext=(a+.052, .5), xycoords=ax.transAxes,
                     arrowprops={"arrowstyle": "->", "color": "#444"})
     ax.set_title(title, pad=18)
     savefig(path)

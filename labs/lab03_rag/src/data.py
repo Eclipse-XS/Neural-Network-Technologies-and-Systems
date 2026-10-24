@@ -6,14 +6,16 @@ import pandas as pd
 from langchain_community.document_loaders.csv_loader import CSVLoader
 
 
-def csv_files(directory):
+def csv_files(directory: Path) -> list[Path]:
+    """Return the expected catalog files in deterministic name order."""
     files = sorted(Path(directory).glob("*.csv"))
     if not 2 <= len(files) <= 3:
         raise ValueError(f"Expected 2–3 CSV files in {directory}; found {len(files)}")
     return files
 
 
-def inspect_csv(path):
+def inspect_csv(path: Path) -> dict[str, object]:
+    """Validate one CSV and return shape, missingness, samples and SHA-256."""
     path = Path(path)
     try:
         with path.open(encoding="utf-8-sig", newline="") as stream:
@@ -38,11 +40,12 @@ def inspect_csv(path):
                 sha256=hashlib.sha256(path.read_bytes()).hexdigest())
 
 
-def audit_corpus(directory):
+def audit_corpus(directory: Path) -> list[dict[str, object]]:
+    """Audit every source CSV before any record reaches the embedding model."""
     return [inspect_csv(path) for path in csv_files(directory)]
 
 
-def load_csv_documents(directory):
+def load_csv_documents(directory: Path):
     """CSVLoader preserves every cell verbatim in metadata, including multiline fields.
 
     Explicit content_columns lets the raw loader document show the original row;

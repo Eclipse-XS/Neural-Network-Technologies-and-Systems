@@ -18,7 +18,8 @@ STATUS_NOT_EXECUTED = "NOT_EXECUTED"
 STATUS_FAILED = "FAILED"
 
 
-def save_json(path, value):
+def save_json(path: Path, value: object) -> None:
+    """Atomically persist JSON metadata without permitting NaN values."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     temp = path.with_suffix('.tmp')
@@ -27,16 +28,19 @@ def save_json(path, value):
 
 
 def identity(spec, context):
+    """Combine generation controls and runtime provenance into cache identity."""
     keys = ('model_id', 'revision', 'pipeline_class', 'scheduler', 'scheduler_config',
             'dtype', 'device_strategy', 'torch_version', 'diffusers_version', 'cuda_version', 'gpu_name')
     return {**spec.controls(), **{k: context[k] for k in keys}}
 
 
 def artifact_id(spec, context):
+    """Return a stable short hash for one fully specified generation."""
     return hashlib.sha256(json.dumps(identity(spec, context), sort_keys=True).encode()).hexdigest()[:16]
 
 
 def filename(spec, key):
+    """Create a filesystem-safe PNG name containing the primary controls."""
     label = spec.style or spec.experiment
     label = re.sub(r'[^A-Za-z0-9_-]', '_', label)
     cfg = str(float(spec.guidance_scale)).replace('.', 'p')
@@ -44,6 +48,7 @@ def filename(spec, key):
 
 
 def cached_result(spec, context, root=LAB_ROOT):
+    """Return metadata only when identity, hash, decoding and dimensions agree."""
     key = artifact_id(spec, context)
     sidecar = root / 'outputs/metadata' / f'{key}.json'
     if not sidecar.exists():
@@ -67,6 +72,12 @@ def cached_result(spec, context, root=LAB_ROOT):
 
 
 def generate_image(pipe, spec, context, root=LAB_ROOT, force_regenerate=False, run_id=None):
+    """Generate or safely reuse one image and persist its complete provenance.
+
+    The measured duration covers pipeline inference, not model loading. CUDA peak
+    memory is recorded when available. Failed inference writes a diagnostic
+    sidecar and re-raises the original exception.
+    """
     if not force_regenerate:
         cached = cached_result(spec, context, root)
         if cached is not None:
@@ -134,6 +145,7 @@ def generate_image(pipe, spec, context, root=LAB_ROOT, force_regenerate=False, r
 
 
 def audit_and_manifest(specs, context, root=LAB_ROOT):
+    """Validate every planned artifact and write the canonical CSV manifest."""
     records = [cached_result(s, context, root) for s in specs]
     if any(r is None for r in records):
         raise ValueError('Missing, mismatched or damaged artifact')
