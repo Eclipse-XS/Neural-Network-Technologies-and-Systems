@@ -1,0 +1,41 @@
+{
+  "description": "Independent wording checks created after the router rules were specified. Labels are consumed only by evaluation.",
+  "queries": [
+    {
+      "id": "h01",
+      "kind": "exact_id",
+      "question": "Look up product 15713414 and return its catalog row.",
+      "relevant_product_ids": ["15713414"]
+    },
+    {
+      "id": "h02",
+      "kind": "multi_record_comparison",
+      "question": "Use the catalog to compare product IDs 17745816 and 15720652.",
+      "relevant_product_ids": ["17745816", "15720652"]
+    },
+    {
+      "id": "h03",
+      "kind": "numeric_aggregation",
+      "question": "Which sports shoes have the cheapest final price when rated at least 4 and discount > 0?",
+      "relevant_product_ids": ["11960808"]
+    },
+    {
+      "id": "h04",
+      "kind": "attribute_filter",
+      "question": "List silver plated earrings ordered by final price.",
+      "relevant_product_ids": ["19072820", "15720652", "20041906", "22593810", "14399558", "22593696", "22618882", "22593700", "22600220"]
+    },
+    {
+      "id": "h05",
+      "kind": "numeric_aggregation",
+      "question": "Find the most expensive dress in the catalog.",
+      "relevant_product_ids": ["21242962"]
+    },
+    {
+      "id": "h06",
+      "kind": "unsupported",
+      "question": "Can product 15713414 be delivered to Lviv tomorrow and what is the shipping fee?",
+      "relevant_product_ids": []
+    }
+  ]
+}

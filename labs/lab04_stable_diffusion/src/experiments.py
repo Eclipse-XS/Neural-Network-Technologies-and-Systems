@@ -2,7 +2,8 @@ from dataclasses import replace
 from .config import GenerationSpec, NEGATIVE_PROMPT, STYLES, STYLE_SCENE
 
 
-def experiment_groups():
+def experiment_groups() -> dict[str, list[GenerationSpec]]:
+    """Build comparison groups while reusing the identical baseline object."""
     base = GenerationSpec()
     seeds = [base] + [replace(base, experiment='seed', case_id=f'seed_{s}', seed=s) for s in (123, 777, 2026)]
     steps = [replace(base, experiment='steps', case_id=f'steps_{s}', num_inference_steps=s)
@@ -19,7 +20,8 @@ def experiment_groups():
     return groups
 
 
-def unique_plan():
+def unique_plan() -> list[GenerationSpec]:
+    """Deduplicate shared controls into the 13 generations actually executed."""
     seen, result = set(), []
     for group in experiment_groups().values():
         for spec in group:
@@ -28,3 +30,4 @@ def unique_plan():
                 seen.add(key)
                 result.append(spec)
     return result
+"""Controlled experiment design with one shared baseline and 13 unique cases."""

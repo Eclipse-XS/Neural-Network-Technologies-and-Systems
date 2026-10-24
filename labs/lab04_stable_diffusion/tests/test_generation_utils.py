@@ -2,14 +2,16 @@ from dataclasses import replace
 import hashlib
 import json
 import re
+import sys
+from types import SimpleNamespace
 from PIL import Image
 from labs.lab04_stable_diffusion.src.config import GenerationSpec
-from labs.lab04_stable_diffusion.src.generation import artifact_id, filename, identity, save_json, cached_result
+from labs.lab04_stable_diffusion.src.generation import artifact_id, filename, identity, save_json, cached_result, generate_image
 
 
 def context():
     return dict(model_id='test', revision='abc', pipeline_class='Fake', scheduler='PNDM', scheduler_config={'skip_prk_steps': True},
-                dtype='float16', device_strategy='cpu', torch_version='test', diffusers_version='test', cuda_version=None, gpu_name=None)
+                dtype='float16', device_strategy='cpu', torch_version='test', diffusers_version='test', cuda_version=None, gpu_name=None, cuda_available=False)
 
 
 def test_filename_and_complete_identity():
@@ -38,3 +40,50 @@ def test_sidecar_roundtrip_and_reuse_requires_integrity(tmp_path):
     assert cached_result(s, ctx, tmp_path) == record
     image.write_bytes(b'corrupt')
     assert cached_result(s, ctx, tmp_path) is None
+
+
+def test_generate_image_cache_semantics_and_force_regenerate(tmp_path, monkeypatch):
+    class FakeGenerator:
+        def __init__(self, device):
+            self.device = device
+
+        def manual_seed(self, seed):
+            self.seed = seed
+            return self
+
+    class FakeInferenceMode:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_):
+            return False
+
+    monkeypatch.setitem(sys.modules, 'torch', SimpleNamespace(
+        Generator=FakeGenerator, inference_mode=FakeInferenceMode))
+
+    class FakeOutput:
+        images = [Image.new('RGB', (512, 512))]
+        nsfw_content_detected = [False]
+
+    class FakePipe:
+        def __call__(self, **kwargs):
+            return FakeOutput()
+
+    s, ctx = GenerationSpec(), context()
+    pipe = FakePipe()
+
+    r1 = generate_image(pipe, s, ctx, root=tmp_path, force_regenerate=False)
+    assert r1['execution_status'] == 'LIVE_GENERATED'
+    assert r1['cache_hit'] is False
+    assert r1['generated_in_current_run'] is True
+
+    r2 = generate_image(pipe, s, ctx, root=tmp_path, force_regenerate=False)
+    assert r2['execution_status'] == 'CACHE_REUSED'
+    assert r2['cache_hit'] is True
+    assert r2['generated_in_current_run'] is False
+
+    r3 = generate_image(pipe, s, ctx, root=tmp_path, force_regenerate=True)
+    assert r3['execution_status'] == 'LIVE_GENERATED'
+    assert r3['cache_hit'] is False
+    assert r3['generated_in_current_run'] is True
+

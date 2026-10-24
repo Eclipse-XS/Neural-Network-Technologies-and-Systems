@@ -8,6 +8,7 @@ from .visualization import build_figures
 
 
 def main():
+    """Execute missing cases, audit all 13 artifacts, and rebuild figures."""
     plan = unique_plan()
     context_path = LAB_ROOT/'outputs/metadata/environment.json'
     pipe = None

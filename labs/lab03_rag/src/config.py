@@ -11,14 +11,16 @@ MODEL_REVISION = "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
 
 @dataclass(frozen=True)
 class Settings:
+    """Validated paths and local service endpoints for one RAG execution."""
     data_dir: Path = LAB_ROOT / "data/raw/csv"
     output_dir: Path = LAB_ROOT / "outputs"
     redis_url: str = field(default_factory=lambda: os.getenv("REDIS_URL", "redis://localhost:6379"))
     base_url: str = field(default_factory=lambda: os.getenv("LM_STUDIO_BASE_URL", "http://localhost:1234/v1"))
-    model: str = field(default_factory=lambda: os.getenv("LM_STUDIO_MODEL", ""))
+    model: str = field(default_factory=lambda: os.getenv(
+        "LM_STUDIO_MODEL", "mistralai/ministral-3-3b"))
     top_k: int = 5
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         parsed = urlparse(self.base_url)
         if parsed.scheme not in {"http", "https"} or parsed.hostname not in {"localhost", "127.0.0.1", "::1"}:
             raise ValueError("LM_STUDIO_BASE_URL must point to a local OpenAI-compatible server")

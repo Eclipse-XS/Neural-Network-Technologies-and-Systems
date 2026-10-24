@@ -1,0 +1,17 @@
+﻿query_id,kind,k,expected_count,returned,hit_at_k,first_relevant_rank,mrr,recall_at_k,coverage,configuration
+q01,direct,5,1,5,1.0,1.0,1.0,1.0,1.0,semantic_baseline
+q02,semantic,5,3,5,1.0,3.0,0.3333333333333333,0.6666666666666666,0.6666666666666666,semantic_baseline
+q03,filter,5,9,5,1.0,2.0,0.5,0.2222222222222222,0.2222222222222222,semantic_baseline
+q04,comparison,5,2,5,1.0,1.0,1.0,0.5,0.5,semantic_baseline
+q05,multi_condition,5,1,5,0.0,,0.0,0.0,0.0,semantic_baseline
+q06,cross_category,5,2,5,1.0,1.0,1.0,1.0,1.0,semantic_baseline
+q07,semantic,5,8,5,1.0,1.0,1.0,0.625,0.625,semantic_baseline
+q08,unsupported,5,0,5,,,,,,semantic_baseline
+q01,direct,5,1,5,1.0,1.0,1.0,1.0,1.0,hybrid_router
+q02,semantic,5,3,5,1.0,1.0,1.0,1.0,1.0,hybrid_router
+q03,filter,5,9,5,1.0,1.0,1.0,0.5555555555555556,0.5555555555555556,hybrid_router
+q04,comparison,5,2,5,1.0,1.0,1.0,1.0,1.0,hybrid_router
+q05,multi_condition,5,1,5,1.0,1.0,1.0,1.0,1.0,hybrid_router
+q06,cross_category,5,2,5,1.0,1.0,1.0,1.0,1.0,hybrid_router
+q07,semantic,5,8,5,1.0,1.0,1.0,0.625,0.625,hybrid_router
+q08,unsupported,5,0,0,,,,,,hybrid_router

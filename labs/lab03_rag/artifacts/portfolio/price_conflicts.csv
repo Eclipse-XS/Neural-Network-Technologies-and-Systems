@@ -1,0 +1,30 @@
+﻿product_id,title,category,initial_price_numeric,discount_numeric,final_price_numeric,price_formula_delta_inr,source_file,row_id
+21673378,RACHNA,dresses,1299.0,51.0,628.0,8.509999999999991,dresses.csv,4
+18951626,Berrylush,dresses,1899.0,78.0,398.0,19.779999999999973,dresses.csv,18
+18977246,AURELIA,dresses,4299.0,59.0,1750.0,12.590000000000146,dresses.csv,21
+15788324,Tokyo Talkies,dresses,1399.0,53.0,475.0,182.52999999999997,dresses.csv,30
+17661682,Tokyo Talkies,dresses,1549.0,61.0,340.0,264.11,dresses.csv,37
+17194598,Tokyo Talkies,dresses,1749.0,65.0,437.0,175.14999999999998,dresses.csv,39
+17194592,Tokyo Talkies,dresses,1749.0,65.0,367.0,245.14999999999998,dresses.csv,40
+19513066,Stylecast X Hersheinbox,dresses,2559.0,54.0,2559.0,1381.8600000000001,dresses.csv,56
+18975316,Berrylush,dresses,3200.0,74.0,640.0,192.0,dresses.csv,58
+21242962,Tommy Hilfiger,dresses,5999.0,40.0,5699.0,2099.6,dresses.csv,60
+13572604,Tokyo Talkies,dresses,1799.0,63.0,1799.0,1133.37,dresses.csv,69
+13487998,THREAD MUSTER,dresses,2499.0,74.0,2499.0,1849.26,dresses.csv,71
+13467444,Sugr,dresses,899.0,30.0,899.0,269.70000000000005,dresses.csv,72
+13558254,Tokyo Talkies,dresses,1349.0,59.0,1349.0,795.91,dresses.csv,76
+13586840,all about you,dresses,1899.0,55.0,1899.0,1044.45,dresses.csv,77
+13586818,all about you,dresses,1899.0,54.0,1899.0,1025.46,dresses.csv,78
+1341220,Miss Chase,dresses,1149.0,10.0,689.0,345.10000000000014,dresses.csv,80
+12933978,Oxolloxo,dresses,1899.0,64.0,669.0,14.639999999999986,dresses.csv,93
+17354670,ANIKAS CREATION,earrings,1995.0,69.0,1995.0,1376.5499999999997,earrings.csv,12
+13401002,Adwitiya Collection,earrings,3189.0,81.0,599.0,6.9099999999998545,earrings.csv,23
+17745816,Lancer,sports-shoes,1999.0,40.0,1999.0,799.6000000000001,sports-shoes.csv,0
+11441718,Duke,sports-shoes,2695.0,75.0,2695.0,2021.25,sports-shoes.csv,16
+11627996,Yuuki,sports-shoes,2999.0,67.0,2999.0,2009.3300000000002,sports-shoes.csv,18
+11963938,FAUSTO,sports-shoes,899.0,1.0,899.0,8.990000000000009,sports-shoes.csv,19
+11986876,FAUSTO,sports-shoes,899.0,1.0,899.0,8.990000000000009,sports-shoes.csv,21
+19102564,Puma,sports-shoes,11999.0,25.0,11999.0,2999.75,sports-shoes.csv,26
+11400234,Yuuki,sports-shoes,2499.0,72.0,2499.0,1799.28,sports-shoes.csv,27
+19402102,U.S. Polo Assn.,sports-shoes,4999.0,50.0,4999.0,2499.5,sports-shoes.csv,29
+19298764,Campus,sports-shoes,1299.0,10.0,909.0,260.10000000000014,sports-shoes.csv,50

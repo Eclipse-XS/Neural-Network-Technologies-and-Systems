@@ -35,6 +35,8 @@ def run_retrieval(store, queries, output_dir, k=5):
     frames, summaries, results = [], [], {}
     for q in queries:
         pairs, elapsed = retrieve(store, q["question"], k, q.get("category_filter"))
+        for document, _ in pairs:
+            document.metadata["query_elapsed_ms"] = elapsed
         results[q["id"]] = pairs
         frame = result_table(q["question"], pairs, elapsed)
         frame.insert(0, "query_id", q["id"])
@@ -91,10 +93,16 @@ def run_answers(llm, queries, retrieval_results, output_dir, model_id):
     output.mkdir(parents=True, exist_ok=True)
     rows = []
     for q in queries:
-        docs = [d for d, _ in retrieval_results[q["id"]]]
+        pairs = retrieval_results[q["id"]]
+        docs = [d for d, _ in pairs]
+        retrieval_ms = (pairs[0][0].metadata.get("query_elapsed_ms")
+                        if pairs and "query_elapsed_ms" in pairs[0][0].metadata else None)
         started = perf_counter()
         try:
-            answer, messages = generate_answer(llm, q["question"], docs)
+            try:
+                answer, messages = generate_answer(llm, q["question"], docs)
+            except Exception:
+                answer, messages = generate_answer(llm, q["question"], docs)
             verification = verify_answer(answer, docs, q["expected_fields"])
             status, error = "completed", ""
             (output / f"{q['id']}_prompt.json").write_text(
@@ -103,11 +111,65 @@ def run_answers(llm, queries, retrieval_results, output_dir, model_id):
         except Exception as exc:
             answer, verification = "", {}
             status, error = "failed", f"{type(exc).__name__}: {exc}"
+        checks = verification.get("field_checks", [])
+        expected = len(checks)
+        matched = sum(c.get("value_present") is True and
+                      c.get("expected_citation_present") is True for c in checks)
+        retrieved_expected = len({c["record_id"] for c in checks
+                                  if c.get("expected_record_retrieved") is True})
+        abstained = answer.strip().casefold().startswith("insufficient context")
+        citation_valid = bool(verification) and not verification.get("unknown_citations") and (
+            verification.get("valid_citation_present") or abstained or not docs)
+        completeness = ("NOT APPLICABLE" if status == "failed" else
+                        "LEXICALLY COMPLETE; MANUAL REVIEW REQUIRED" if expected and matched == expected else
+                        "INCOMPLETE" if expected else "MANUAL REVIEW REQUIRED")
+        context = json.dumps([{
+            "record_id": d.metadata["record_id"],
+            "product_id": d.metadata.get("product_id"),
+            "cosine_distance": float(score),
+            "content": d.page_content,
+        } for d, score in pairs], ensure_ascii=False)
         rows.append(dict(query_id=q["id"], query=q["question"], model=model_id,
                          retrieved_record_ids=json.dumps([d.metadata["record_id"] for d in docs]),
+                         retrieved_count=len(docs), retrieved_expected_records=retrieved_expected,
+                         retrieved_context=context,
                          expected_fields=json.dumps(q["expected_fields"], ensure_ascii=False),
                          answer=answer, verification=json.dumps(verification, ensure_ascii=False),
-                         status=status, error=error, generation_ms=(perf_counter()-started)*1000,
-                         manual_review="NOT REVIEWED"))
+                         status=status, error=error, citation_valid=citation_valid,
+                         fields_matched=matched, fields_expected=expected,
+                         completeness=completeness, retrieval_ms=retrieval_ms,
+                         generation_ms=(perf_counter()-started)*1000,
+                         total_latency_ms=(retrieval_ms or 0)+(perf_counter()-started)*1000,
+                         manual_review="REQUIRED"))
         pd.DataFrame(rows).to_csv(output / "final_answers.csv", index=False)
+    return pd.DataFrame(rows)
+
+
+def analyse_current_answers(answers):
+    """Classify only failures evidenced by the current run; never import historical labels."""
+    rows = []
+    for row in answers.to_dict("records"):
+        verification = json.loads(row.get("verification") or "{}")
+        categories = []
+        if int(row.get("retrieved_count", 0)) == 0:
+            categories.append("Retrieval failure")
+        if row.get("status") != "completed":
+            categories.append("Generation failure")
+        if verification.get("unknown_citations") or not bool(row.get("citation_valid")):
+            categories.append("Citation failure")
+        if int(row.get("fields_matched", 0)) < int(row.get("fields_expected", 0)):
+            categories.append("Missing expected fields")
+        if int(row.get("retrieved_expected_records", 0)) < len({
+                c.get("record_id") for c in verification.get("field_checks", [])}):
+            categories.append("Incomplete multi-record answer")
+        answer = str(row.get("answer", ""))
+        if not categories and "Insufficient context" in answer:
+            categories.append("Correct abstention")
+        categories.append("Manual review required")
+        rows.append({"query_id": row["query_id"], "categories": "; ".join(categories),
+                     "retrieved": row.get("retrieved_count"), "llm_status": row.get("status"),
+                     "citation_valid": row.get("citation_valid"),
+                     "fields_matched": row.get("fields_matched"),
+                     "fields_expected": row.get("fields_expected"),
+                     "completeness": row.get("completeness"), "error": row.get("error", "")})
     return pd.DataFrame(rows)

@@ -20,6 +20,7 @@ def preview_bytes(path, max_width=960):
 
 
 def comparison_grid(records, titles, destination, columns=3, root=LAB_ROOT):
+    """Render equally sized experiment images with short, non-cropped captions."""
     rows = math.ceil(len(records)/columns)
     fig, axes = plt.subplots(rows, columns, figsize=(4*columns, 4.35*rows), squeeze=False)
     for ax in axes.flat:
@@ -36,6 +37,7 @@ def comparison_grid(records, titles, destination, columns=3, root=LAB_ROOT):
 
 
 def build_figures(context, root=LAB_ROOT):
+    """Build all controlled galleries and the observed runtime plot."""
     groups = experiment_groups()
     figures = {}
     for name, specs in groups.items():
@@ -59,3 +61,4 @@ def build_figures(context, root=LAB_ROOT):
     fig.savefig(figures['runtime'], dpi=120)
     plt.close(fig)
     return figures
+"""Create lossless comparison figures from already verified generation records."""

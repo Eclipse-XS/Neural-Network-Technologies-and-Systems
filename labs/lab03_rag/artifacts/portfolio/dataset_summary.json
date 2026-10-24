@@ -1,0 +1,13 @@
+{
+  "rows": 185,
+  "columns_in_source": 24,
+  "categories": {
+    "dresses": 100,
+    "sports-shoes": 51,
+    "earrings": 34
+  },
+  "missing_discount": 32,
+  "unrated_rows": 22,
+  "price_conflicts": 29,
+  "duplicate_rows": 0
+}

@@ -1,0 +1,7 @@
+﻿query_id,kind,k,expected_count,returned,hit_at_k,first_relevant_rank,mrr,recall_at_k,coverage
+h01,exact_id,5,1,1,1.0,1.0,1.0,1.0,1.0
+h02,multi_record_comparison,5,2,2,1.0,1.0,1.0,1.0,1.0
+h03,numeric_aggregation,5,1,5,1.0,1.0,1.0,1.0,1.0
+h04,attribute_filter,5,9,5,1.0,1.0,1.0,0.5555555555555556,0.5555555555555556
+h05,numeric_aggregation,5,1,5,1.0,1.0,1.0,1.0,1.0
+h06,unsupported,5,0,0,,,,,

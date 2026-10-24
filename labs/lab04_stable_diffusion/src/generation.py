@@ -11,7 +11,15 @@ from PIL import Image
 from .config import LAB_ROOT
 
 
-def save_json(path, value):
+STATUS_LIVE = "LIVE_GENERATED"
+STATUS_CACHE = "CACHE_REUSED"
+STATUS_REPLAY = "HISTORICAL_REPLAY"
+STATUS_NOT_EXECUTED = "NOT_EXECUTED"
+STATUS_FAILED = "FAILED"
+
+
+def save_json(path: Path, value: object) -> None:
+    """Atomically persist JSON metadata without permitting NaN values."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     temp = path.with_suffix('.tmp')
@@ -20,16 +28,19 @@ def save_json(path, value):
 
 
 def identity(spec, context):
+    """Combine generation controls and runtime provenance into cache identity."""
     keys = ('model_id', 'revision', 'pipeline_class', 'scheduler', 'scheduler_config',
             'dtype', 'device_strategy', 'torch_version', 'diffusers_version', 'cuda_version', 'gpu_name')
     return {**spec.controls(), **{k: context[k] for k in keys}}
 
 
 def artifact_id(spec, context):
+    """Return a stable short hash for one fully specified generation."""
     return hashlib.sha256(json.dumps(identity(spec, context), sort_keys=True).encode()).hexdigest()[:16]
 
 
 def filename(spec, key):
+    """Create a filesystem-safe PNG name containing the primary controls."""
     label = spec.style or spec.experiment
     label = re.sub(r'[^A-Za-z0-9_-]', '_', label)
     cfg = str(float(spec.guidance_scale)).replace('.', 'p')
@@ -37,6 +48,7 @@ def filename(spec, key):
 
 
 def cached_result(spec, context, root=LAB_ROOT):
+    """Return metadata only when identity, hash, decoding and dimensions agree."""
     key = artifact_id(spec, context)
     sidecar = root / 'outputs/metadata' / f'{key}.json'
     if not sidecar.exists():
@@ -59,11 +71,27 @@ def cached_result(spec, context, root=LAB_ROOT):
         return None
 
 
-def generate_image(pipe, spec, context, root=LAB_ROOT):
-    cached = cached_result(spec, context, root)
-    if cached is not None:
-        print(f'Reuse {spec.case_id}: {cached["artifact_id"]}', flush=True)
-        return cached
+def generate_image(pipe, spec, context, root=LAB_ROOT, force_regenerate=False, run_id=None):
+    """Generate or safely reuse one image and persist its complete provenance.
+
+    The measured duration covers pipeline inference, not model loading. CUDA peak
+    memory is recorded when available. Failed inference writes a diagnostic
+    sidecar and re-raises the original exception.
+    """
+    if not force_regenerate:
+        cached = cached_result(spec, context, root)
+        if cached is not None:
+            print(f'Reuse {spec.case_id}: {cached["artifact_id"]}', flush=True)
+            return {
+                **cached,
+                'execution_status': STATUS_CACHE,
+                'status': STATUS_CACHE,
+                'generated_in_current_run': False,
+                'cache_hit': True,
+                'pipeline_loaded_now': pipe is not None,
+                'run_id': run_id or f'reuse_{cached["artifact_id"]}',
+                'verified_at': datetime.now(timezone.utc).isoformat()
+            }
     if pipe is None:
         raise RuntimeError('Missing valid artifact: load the pipeline before generation')
     import torch
@@ -71,7 +99,7 @@ def generate_image(pipe, spec, context, root=LAB_ROOT):
     path = root / 'outputs/images' / spec.experiment / filename(spec, key)
     path.parent.mkdir(parents=True, exist_ok=True)
     generator = torch.Generator(device='cpu').manual_seed(spec.seed)
-    cuda = context['cuda_available']
+    cuda = context.get('cuda_available', False)
     if cuda:
         torch.cuda.synchronize()
         torch.cuda.reset_peak_memory_stats()
@@ -86,26 +114,38 @@ def generate_image(pipe, spec, context, root=LAB_ROOT):
             torch.cuda.synchronize()
     except Exception as exc:
         save_json(root / 'outputs/metadata' / f'failure_{key}.json',
-                  {'spec': asdict(spec), 'error_type': type(exc).__name__, 'error': str(exc)})
+                  {'spec': asdict(spec), 'error_type': type(exc).__name__, 'error': str(exc),
+                   'execution_status': STATUS_FAILED})
         raise
     elapsed = time.perf_counter() - start
     image = result.images[0]
     temp = path.with_suffix('.tmp')
     image.save(temp, format='PNG')
     temp.replace(path)
-    record = {**context, **asdict(spec), 'artifact_id': key, 'identity': identity(spec, context),
-              'image_path': path.relative_to(root).as_posix(),
-              'image_sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
-              'generation_time_seconds': elapsed,
-              'created_at': datetime.now(timezone.utc).isoformat(),
-              'peak_cuda_memory_mb': torch.cuda.max_memory_allocated()/1024**2 if cuda else None,
-              'nsfw_content_detected': result.nsfw_content_detected}
+    current_run_id = run_id or f'run_{datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")}_{key}'
+    record = {
+        **context, **asdict(spec), 'artifact_id': key, 'identity': identity(spec, context),
+        'image_path': path.relative_to(root).as_posix(),
+        'image_sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
+        'generation_time_seconds': elapsed,
+        'created_at': datetime.now(timezone.utc).isoformat(),
+        'verified_at': datetime.now(timezone.utc).isoformat(),
+        'peak_cuda_memory_mb': torch.cuda.max_memory_allocated()/1024**2 if cuda else None,
+        'nsfw_content_detected': result.nsfw_content_detected,
+        'execution_status': STATUS_LIVE,
+        'status': STATUS_LIVE,
+        'generated_in_current_run': True,
+        'pipeline_loaded_now': True,
+        'cache_hit': False,
+        'run_id': current_run_id
+    }
     save_json(root / 'outputs/metadata' / f'{key}.json', record)
     print(f'Generated {spec.case_id}: {elapsed:.2f} s', flush=True)
     return record
 
 
 def audit_and_manifest(specs, context, root=LAB_ROOT):
+    """Validate every planned artifact and write the canonical CSV manifest."""
     records = [cached_result(s, context, root) for s in specs]
     if any(r is None for r in records):
         raise ValueError('Missing, mismatched or damaged artifact')

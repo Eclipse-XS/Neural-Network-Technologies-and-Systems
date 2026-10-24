@@ -1,0 +1,4 @@
+﻿scheduler,status,steps,reason
+PNDMScheduler,EXECUTED_BASELINE,30,Scheduler recorded in all 13 verified sidecars.
+EulerDiscreteScheduler,NOT_EXECUTED,30,No verified image or timing exists for this scheduler.
+DDIMScheduler,NOT_EXECUTED,30,No verified image or timing exists for this scheduler.

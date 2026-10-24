@@ -1,0 +1,145 @@
+query_id,query,model,retrieved_record_ids,expected_fields,answer,verification,status,error,generation_ms,manual_review
+q01,"What are the listed final_price, discount and rating of Lancer Men Navy Blue Textile Running Non-Marking Shoes (17745816)? Report any price inconsistency.",mistralai/ministral-3-3b,"[""sports-shoes.csv:0"", ""sports-shoes.csv:25"", ""sports-shoes.csv:15"", ""sports-shoes.csv:5"", ""sports-shoes.csv:47""]","[{""product_id"": ""17745816"", ""record_id"": ""sports-shoes.csv:0"", ""field"": ""title"", ""value"": ""Lancer""}, {""product_id"": ""17745816"", ""record_id"": ""sports-shoes.csv:0"", ""field"": ""final_price"", ""value"": ""\""₹1,999.00\""""}, {""product_id"": ""17745816"", ""record_id"": ""sports-shoes.csv:0"", ""field"": ""category"", ""value"": ""sports-shoes""}, {""product_id"": ""17745816"", ""record_id"": ""sports-shoes.csv:0"", ""field"": ""discount"", ""value"": ""40.0""}, {""product_id"": ""17745816"", ""record_id"": ""sports-shoes.csv:0"", ""field"": ""rating"", ""value"": ""4.0""}]","From the records provided:
+
+- **Final Price**: ₹1,999.00 ([sports-shoes.csv:0])
+- **Discount**: 40% ([sports-shoes.csv:0])
+- **Rating**: 4.0 ([sports-shoes.csv:0])
+
+**Inconsistency Note**:
+The initial price listed as **₹1,999.00** (final_price) does not match the recorded **initial_price of ₹1,999.00** in the same record—this appears to be a formatting discrepancy rather than an inconsistency. The discount and final price are consistent with the provided data.","{""citations"": [""sports-shoes.csv:0""], ""unknown_citations"": [], ""valid_citation_present"": true, ""field_checks"": [{""product_id"": ""17745816"", ""record_id"": ""sports-shoes.csv:0"", ""field"": ""title"", ""expected"": ""Lancer"", ""value_present"": false, ""expected_citation_present"": true, ""expected_record_retrieved"": true}, {""product_id"": ""17745816"", ""record_id"": ""sports-shoes.csv:0"", ""field"": ""final_price"", ""expected"": ""\""₹1,999.00\"""", ""value_present"": true, ""expected_citation_present"": true, ""expected_record_retrieved"": true}, {""product_id"": ""17745816"", ""record_id"": ""sports-shoes.csv:0"", ""field"": ""category"", ""expected"": ""sports-shoes"", ""value_present"": true, ""expected_citation_present"": true, ""expected_record_retrieved"": true}, {""product_id"": ""17745816"", ""record_id"": ""sports-shoes.csv:0"", ""field"": ""discount"", ""expected"": ""40.0"", ""value_present"": true, ""expected_citation_present"": true, ""expected_record_retrieved"": true}, {""product_id"": ""17745816"", ""record_id"": ""sports-shoes.csv:0"", ""field"": ""rating"", ""expected"": ""4.0"", ""value_present"": true, ""expected_citation_present"": true, ""expected_record_retrieved"": true}], ""note"": ""Lexical matches and citation validity only; manual attribution/semantic review required.""}",completed,,23223.995899999863,NOT REVIEWED
+q02,Find cotton maxi dresses suitable for casual wear.,mistralai/ministral-3-3b,"[""dresses.csv:29"", ""dresses.csv:88"", ""dresses.csv:94"", ""dresses.csv:0"", ""dresses.csv:71""]",[],"Here are the **cotton maxi dresses** from the records that are **suitable for casual wear**:
+
+1. **[THE SILHOUETTE STORE]**
+   - **Product ID:** `13379612`
+   - **Title:** Women Orange Solid Maxi Dress
+   - **Initial Price:** ₹1,399.00
+   - **Final Price:** ₹1,399.00 *(No discount)*
+   - **Rating:** 2.0 (ratings_count: 3)
+   - **Key Features:**
+     - Fabric: Cotton
+     - Neck: V-Neck
+     - Occasion: Casual
+     - Length: Maxi
+
+2. **[Curvy Clan]**
+   - **Product ID:** `21664722`
+   - **Title:** Colourblocked A-Line Cotton Maxi Dress *(Note: Pattern is ""Colourblocked,"" not strictly ""Solid"")*
+   - **Initial Price:** ₹2,999.00
+   - **Final Price:** ₹2,999.00 *(No discount)*
+   - **Rating:** 3.7 (ratings_count: 3)
+   - **Key Features:**
+     - Fabric: Cotton
+     - Neck: V-Neck
+     - Occasion: Casual
+     - Length: Maxi
+
+---
+**Insufficient context for other records:**
+- The **Curvy Clan** dress has a ""Colourblocked"" pattern, not strictly solid.
+- No other cotton maxi dresses in casual wear are listed.
+
+*Sources used:*
+[dresses.csv:94] (row 94)
+[dresses.csv:0]   (row 0)","{""citations"": [""dresses.csv:0"", ""dresses.csv:94""], ""unknown_citations"": [], ""valid_citation_present"": true, ""field_checks"": [], ""note"": ""Lexical matches and citation validity only; manual attribution/semantic review required.""}",completed,,42028.58620000188,NOT REVIEWED
+q03,Show silver-plated earrings and compare their listed prices.,mistralai/ministral-3-3b,"[""earrings.csv:5"", ""earrings.csv:21"", ""earrings.csv:11"", ""earrings.csv:17"", ""earrings.csv:10""]",[],"Here are the **silver-plated** earring records from your data:
+
+1. **[FemNmas]**
+   - **Price**: ₹249.00 (no discount recorded)
+   - [source: *earrings.csv:21*]
+   - Rating: 4.4 | Ratings Count: 5
+
+2. **[Saraf RS Jewellery]**
+   - **Initial Price**: ₹3795.00
+   - **Final Price**: ₹872.00 (discount of ₹77.0)
+   - [source: *earrings.csv:17*]
+   - Rating: 4.2 | Ratings Count: 99
+
+---
+**Note**:
+- The **FemNmas** earrings have no discount listed, while the others show a clear price reduction.
+- No inconsistency in prices/discounts was found between records.","{""citations"": [], ""unknown_citations"": [], ""valid_citation_present"": false, ""field_checks"": [], ""note"": ""Lexical matches and citation validity only; manual attribution/semantic review required.""}",completed,,24920.339099990088,NOT REVIEWED
+q04,Compare the listed prices and ratings of Trendyol Black Maxi Dress (21426422) and COVER STORY Embellished Shoulder Straps Velvet Sheath Dress (21238004). Which of these two has the lower listed final_price?,mistralai/ministral-3-3b,"[""dresses.csv:1"", ""dresses.csv:29"", ""dresses.csv:88"", ""dresses.csv:11"", ""dresses.csv:3""]","[{""product_id"": ""21426422"", ""record_id"": ""dresses.csv:1"", ""field"": ""title"", ""value"": ""Trendyol""}, {""product_id"": ""21426422"", ""record_id"": ""dresses.csv:1"", ""field"": ""final_price"", ""value"": ""\""₹2,419.00\""""}, {""product_id"": ""21426422"", ""record_id"": ""dresses.csv:1"", ""field"": ""category"", ""value"": ""dresses""}, {""product_id"": ""21426422"", ""record_id"": ""dresses.csv:1"", ""field"": ""discount"", ""value"": ""45.0""}, {""product_id"": ""21426422"", ""record_id"": ""dresses.csv:1"", ""field"": ""rating"", ""value"": ""4.1""}, {""product_id"": ""21238004"", ""record_id"": ""dresses.csv:2"", ""field"": ""title"", ""value"": ""COVER STORY""}, {""product_id"": ""21238004"", ""record_id"": ""dresses.csv:2"", ""field"": ""final_price"", ""value"": ""\""₹2,094.00\""""}, {""product_id"": ""21238004"", ""record_id"": ""dresses.csv:2"", ""field"": ""category"", ""value"": ""dresses""}, {""product_id"": ""21238004"", ""record_id"": ""dresses.csv:2"", ""field"": ""discount"", ""value"": ""40.0""}, {""product_id"": ""21238004"", ""record_id"": ""dresses.csv:2"", ""field"": ""rating"", ""value"": ""4.8""}]","Insufficient context: The record for **""COVER STORY Embellished Shoulder Straps Velvet Sheath Dress""** with product_id **21238004** is not present in the provided records. Only the following Black Maxi Dresses are available:
+
+- **Trendyol (21426422)**:
+  - Final Price: ₹2,419.00
+  - [source_file:dresses.csv, row_id:1]
+
+No comparison can be made without data for the second dress.","{""citations"": [], ""unknown_citations"": [], ""valid_citation_present"": false, ""field_checks"": [{""product_id"": ""21426422"", ""record_id"": ""dresses.csv:1"", ""field"": ""title"", ""expected"": ""Trendyol"", ""value_present"": true, ""expected_citation_present"": false, ""expected_record_retrieved"": true}, {""product_id"": ""21426422"", ""record_id"": ""dresses.csv:1"", ""field"": ""final_price"", ""expected"": ""\""₹2,419.00\"""", ""value_present"": true, ""expected_citation_present"": false, ""expected_record_retrieved"": true}, {""product_id"": ""21426422"", ""record_id"": ""dresses.csv:1"", ""field"": ""category"", ""expected"": ""dresses"", ""value_present"": true, ""expected_citation_present"": false, ""expected_record_retrieved"": true}, {""product_id"": ""21426422"", ""record_id"": ""dresses.csv:1"", ""field"": ""discount"", ""expected"": ""45.0"", ""value_present"": false, ""expected_citation_present"": false, ""expected_record_retrieved"": true}, {""product_id"": ""21426422"", ""record_id"": ""dresses.csv:1"", ""field"": ""rating"", ""expected"": ""4.1"", ""value_present"": false, ""expected_citation_present"": false, ""expected_record_retrieved"": true}, {""product_id"": ""21238004"", ""record_id"": ""dresses.csv:2"", ""field"": ""title"", ""expected"": ""COVER STORY"", ""value_present"": true, ""expected_citation_present"": false, ""expected_record_retrieved"": false}, {""product_id"": ""21238004"", ""record_id"": ""dresses.csv:2"", ""field"": ""final_price"", ""expected"": ""\""₹2,094.00\"""", ""value_present"": false, ""expected_citation_present"": false, ""expected_record_retrieved"": false}, {""product_id"": ""21238004"", ""record_id"": ""dresses.csv:2"", ""field"": ""category"", ""expected"": ""dresses"", ""value_present"": true, ""expected_citation_present"": false, ""expected_record_retrieved"": false}, {""product_id"": ""21238004"", ""record_id"": ""dresses.csv:2"", ""field"": ""discount"", ""expected"": ""40.0"", ""value_present"": false, ""expected_citation_present"": false, ""expected_record_retrieved"": false}, {""product_id"": ""21238004"", ""record_id"": ""dresses.csv:2"", ""field"": ""rating"", ""expected"": ""4.8"", ""value_present"": false, ""expected_citation_present"": false, ""expected_record_retrieved"": false}], ""note"": ""Lexical matches and citation validity only; manual attribution/semantic review required.""}",completed,,14757.396100001642,NOT REVIEWED
+q05,Find the lowest listed final_price among sports shoes with rating at least 4 and a stated positive discount. Compare the retrieved candidates and state the coverage limitation.,mistralai/ministral-3-3b,"[""sports-shoes.csv:30"", ""sports-shoes.csv:28"", ""sports-shoes.csv:16"", ""sports-shoes.csv:49"", ""sports-shoes.csv:15""]","[{""product_id"": ""11960808"", ""record_id"": ""sports-shoes.csv:25"", ""field"": ""title"", ""value"": ""Campus""}, {""product_id"": ""11960808"", ""record_id"": ""sports-shoes.csv:25"", ""field"": ""final_price"", ""value"": ""\""₹659.00\""""}, {""product_id"": ""11960808"", ""record_id"": ""sports-shoes.csv:25"", ""field"": ""category"", ""value"": ""sports-shoes""}, {""product_id"": ""11960808"", ""record_id"": ""sports-shoes.csv:25"", ""field"": ""discount"", ""value"": ""56.0""}, {""product_id"": ""11960808"", ""record_id"": ""sports-shoes.csv:25"", ""field"": ""rating"", ""value"": ""4.2""}]","From the provided records, the following sports shoes meet the criteria of having a **final_price**, a **rating ≥ 4**, and a **stated positive discount**:
+
+1. **[Duke – Men Black & Red Woven Design Running Shoes]**
+   - Final Price: ₹2,695.00
+   - Discount: **75%** (from initial price ₹2,695)
+   - Rating: 4.2 ([source_file:row_id 16])
+
+2. **[Puma – Unisex Grey Orange Flash Running Shoes]**
+   - Final Price: ₹2,474.00
+   - Discount: **45%** (from initial price ₹4,499)
+   - Rating: 4.7 ([source_file:row_id 49])
+
+---
+**Coverage Limitation**:
+- The records do not include any sports shoes with a final_price lower than ₹2,474.00 that meet all criteria.
+- **No global minimum exists** because only two eligible candidates were found in the dataset.
+
+*(Note: TRASE products [14208394 & 14208408] have no discount listed.)*","{""citations"": [], ""unknown_citations"": [], ""valid_citation_present"": false, ""field_checks"": [{""product_id"": ""11960808"", ""record_id"": ""sports-shoes.csv:25"", ""field"": ""title"", ""expected"": ""Campus"", ""value_present"": false, ""expected_citation_present"": false, ""expected_record_retrieved"": false}, {""product_id"": ""11960808"", ""record_id"": ""sports-shoes.csv:25"", ""field"": ""final_price"", ""expected"": ""\""₹659.00\"""", ""value_present"": false, ""expected_citation_present"": false, ""expected_record_retrieved"": false}, {""product_id"": ""11960808"", ""record_id"": ""sports-shoes.csv:25"", ""field"": ""category"", ""expected"": ""sports-shoes"", ""value_present"": false, ""expected_citation_present"": false, ""expected_record_retrieved"": false}, {""product_id"": ""11960808"", ""record_id"": ""sports-shoes.csv:25"", ""field"": ""discount"", ""expected"": ""56.0"", ""value_present"": false, ""expected_citation_present"": false, ""expected_record_retrieved"": false}, {""product_id"": ""11960808"", ""record_id"": ""sports-shoes.csv:25"", ""field"": ""rating"", ""expected"": ""4.2"", ""value_present"": true, ""expected_citation_present"": false, ""expected_record_retrieved"": false}], ""note"": ""Lexical matches and citation validity only; manual attribution/semantic review required.""}",completed,,31418.571700007305,NOT REVIEWED
+q06,"Compare Trendyol Black Maxi Dress (21426422) and Rubans Silver-Toned Dome Shaped Studs Earrings (15720652): category, listed price, discount and rating.",mistralai/ministral-3-3b,"[""earrings.csv:0"", ""earrings.csv:21"", ""dresses.csv:1"", ""earrings.csv:22"", ""earrings.csv:1""]","[{""product_id"": ""21426422"", ""record_id"": ""dresses.csv:1"", ""field"": ""title"", ""value"": ""Trendyol""}, {""product_id"": ""21426422"", ""record_id"": ""dresses.csv:1"", ""field"": ""final_price"", ""value"": ""\""₹2,419.00\""""}, {""product_id"": ""21426422"", ""record_id"": ""dresses.csv:1"", ""field"": ""category"", ""value"": ""dresses""}, {""product_id"": ""21426422"", ""record_id"": ""dresses.csv:1"", ""field"": ""discount"", ""value"": ""45.0""}, {""product_id"": ""21426422"", ""record_id"": ""dresses.csv:1"", ""field"": ""rating"", ""value"": ""4.1""}, {""product_id"": ""15720652"", ""record_id"": ""earrings.csv:0"", ""field"": ""title"", ""value"": ""Rubans""}, {""product_id"": ""15720652"", ""record_id"": ""earrings.csv:0"", ""field"": ""final_price"", ""value"": ""\""₹355.00\""""}, {""product_id"": ""15720652"", ""record_id"": ""earrings.csv:0"", ""field"": ""category"", ""value"": ""earrings""}, {""product_id"": ""15720652"", ""record_id"": ""earrings.csv:0"", ""field"": ""discount"", ""value"": ""76.0""}, {""product_id"": ""15720652"", ""record_id"": ""earrings.csv:0"", ""field"": ""rating"", ""value"": ""3.8""}]","Here is the comparison based on the provided records:
+
+### **Trendyol Black Maxi Dress** ([dresses.csv:1])
+- **Category**: dresses
+- **Final Price**: ₹2,419.00
+- **Discount**: 45.0% (on initial price ₹4,399.00)
+- **Rating**: 4.1
+
+### **Rubans Silver-Toned Dome Shaped Studs Earrings** ([earrings.csv:0])
+- **Category**: earrings
+- **Final Price**: ₹355.00 (after discount)
+- **Discount**: 76.0% (on initial price ₹1,480.00) – *Inconsistency*: The final price does not align with the calculated discounted value (₹1,480.00 × (1 - 0.76) = ₹352.00).
+- **Rating**: 3.8
+
+---
+**Note**:
+- The discount for Rubans was recorded as **76%** but does not match the final price of ₹355.00.
+- Trendyol’s dress is from a different category than earrings, so no direct comparison can be made beyond these fields.","{""citations"": [""dresses.csv:1"", ""earrings.csv:0""], ""unknown_citations"": [], ""valid_citation_present"": true, ""field_checks"": [{""product_id"": ""21426422"", ""record_id"": ""dresses.csv:1"", ""field"": ""title"", ""expected"": ""Trendyol"", ""value_present"": true, ""expected_citation_present"": true, ""expected_record_retrieved"": true}, {""product_id"": ""21426422"", ""record_id"": ""dresses.csv:1"", ""field"": ""final_price"", ""expected"": ""\""₹2,419.00\"""", ""value_present"": true, ""expected_citation_present"": true, ""expected_record_retrieved"": true}, {""product_id"": ""21426422"", ""record_id"": ""dresses.csv:1"", ""field"": ""category"", ""expected"": ""dresses"", ""value_present"": true, ""expected_citation_present"": true, ""expected_record_retrieved"": true}, {""product_id"": ""21426422"", ""record_id"": ""dresses.csv:1"", ""field"": ""discount"", ""expected"": ""45.0"", ""value_present"": true, ""expected_citation_present"": true, ""expected_record_retrieved"": true}, {""product_id"": ""21426422"", ""record_id"": ""dresses.csv:1"", ""field"": ""rating"", ""expected"": ""4.1"", ""value_present"": true, ""expected_citation_present"": true, ""expected_record_retrieved"": true}, {""product_id"": ""15720652"", ""record_id"": ""earrings.csv:0"", ""field"": ""title"", ""expected"": ""Rubans"", ""value_present"": true, ""expected_citation_present"": true, ""expected_record_retrieved"": true}, {""product_id"": ""15720652"", ""record_id"": ""earrings.csv:0"", ""field"": ""final_price"", ""expected"": ""\""₹355.00\"""", ""value_present"": true, ""expected_citation_present"": true, ""expected_record_retrieved"": true}, {""product_id"": ""15720652"", ""record_id"": ""earrings.csv:0"", ""field"": ""category"", ""expected"": ""earrings"", ""value_present"": true, ""expected_citation_present"": true, ""expected_record_retrieved"": true}, {""product_id"": ""15720652"", ""record_id"": ""earrings.csv:0"", ""field"": ""discount"", ""expected"": ""76.0"", ""value_present"": true, ""expected_citation_present"": true, ""expected_record_retrieved"": true}, {""product_id"": ""15720652"", ""record_id"": ""earrings.csv:0"", ""field"": ""rating"", ""expected"": ""3.8"", ""value_present"": true, ""expected_citation_present"": true, ""expected_record_retrieved"": true}], ""note"": ""Lexical matches and citation validity only; manual attribution/semantic review required.""}",completed,,36101.0324999952,NOT REVIEWED
+q07,Find comfortable walking shoes and compare the materials of the retrieved products.,mistralai/ministral-3-3b,"[""sports-shoes.csv:12"", ""sports-shoes.csv:1"", ""sports-shoes.csv:2"", ""sports-shoes.csv:21"", ""sports-shoes.csv:29""]",[],"Here are the **comfortable walking shoes** from the records (all have **""High"" or ""Medium"" cushioning**), along with their material details:
+
+### **1. UCLA Men’s Olive Green Mesh Walking Shoes**
+- **Cushioning:** High
+- **Material:** Mesh
+- **Sole Material:** EVA
+- **Discount:** 74% off (₹4,199 → ₹1,091)
+- **Rating:** 3.7 (3 ratings) [sports-shoes.csv:12]
+
+### **2. Campus Women’s White Mesh Walking Shoes**
+- **Cushioning:** High
+- **Material:** Mesh
+- **Sole Material:** Phylon
+- **Discount:** 6% off (₹799 → ₹751)
+- **Rating:** 4.1 (452 ratings) [sports-shoes.csv:2]
+
+### **3. FAUSTO Men’s Blue Mesh Walking Shoes**
+- **Cushioning:** Medium
+- **Material:** Mesh
+- **Sole Material:** EVA
+- **Discount:** 1% off (₹899 → ₹899, effectively no discount)
+- **Rating:** 4.3 (9 ratings) [sports-shoes.csv:21]
+
+---
+### **Comparison of Materials:**
+| Product               | Upper Material | Sole Material |
+|-----------------------|----------------|---------------|
+| UCLA Men’s Shoes       | Mesh           | EVA          |
+| Campus Women’s Shoes   | Mesh           | Phylon       |
+| FAUSTO Men’s Shoes     | Mesh           | EVA          |
+
+**Key Observations:**
+- **All products use mesh for the upper material**, which is breathable and lightweight.
+- **Sole materials vary:** Two use **EVA (UCLA, FAUSTO)**, while one uses **Phylon (Campus)**.
+
+*Note:* No product explicitly mentions a cushioning technology beyond ""High"" or ""Medium.""","{""citations"": [""sports-shoes.csv:12"", ""sports-shoes.csv:2"", ""sports-shoes.csv:21""], ""unknown_citations"": [], ""valid_citation_present"": true, ""field_checks"": [], ""note"": ""Lexical matches and citation validity only; manual attribution/semantic review required.""}",completed,,49367.30959999841,NOT REVIEWED
+q08,"Which of these products can be delivered to Kyiv tomorrow, and what is the exact shipping fee?",mistralai/ministral-3-3b,"[""dresses.csv:27"", ""dresses.csv:37"", ""dresses.csv:22"", ""dresses.csv:9"", ""sports-shoes.csv:29""]",[],"Insufficient context.
+The records from **dresses.csv** and **sports-shoes.csv** do not include any details about delivery locations (e.g., Kyiv), shipping fees, or estimated transit times. To answer this question, you would need:
+1. A record specifying the destination city (Kyiv) for each product.
+2. Shipping fee information tied to the product and location.
+
+No relevant data is provided in the supplied records.","{""citations"": [], ""unknown_citations"": [], ""valid_citation_present"": false, ""field_checks"": [], ""note"": ""Lexical matches and citation validity only; manual attribution/semantic review required.""}",completed,,9150.821199989878,NOT REVIEWED
