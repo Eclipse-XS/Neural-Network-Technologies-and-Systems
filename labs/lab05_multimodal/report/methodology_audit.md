@@ -1,56 +1,53 @@
-# Перевірка відповідності методиці
+# Аудит відповідності методиці ЛР5
 
-Перевірено після фактичного GPU-виконання, ручного зіставлення відповідей із зображенням та виконання notebook. PASS означає виконання експериментальної вимоги, а не правильність усіх відповідей моделі.
+Статус перевірено за кодом і версіонованими доказами, а не прийнято з попереднього
+аудиту. PASS означає наявність виконаного етапу, а не безпомилковість моделі.
 
-| Вимога | Статус | Доказ |
+| Вимога | Статус | Перевірений доказ |
 |---|---|---|
-| Використано LLaVA | PASS | llava-hf/llava-interleave-qwen-0.5b-hf, revision 1090956dd1c79bc93ae98dcf395590369435ec91; outputs/metadata/model.json |
-| Hugging Face pipeline/API | PASS | ImageTextToTextPipeline, task image-text-to-text; src/model.py, execution.log |
-| VQA зі зображенням і текстом | PASS | RGB + structured chat message; src/inference.py; 17 реальних генерацій |
-| Кілька запитань | PASS | 10 baseline-запитань і відповідей; questions.json, manifest.json |
-| Описові питання | PASS | desc_01–desc_03 виконано |
-| Фактологічні питання | PASS | fact_01–fact_03 виконано; 3 CORRECT |
-| Аналітичні питання | PASS | analysis_01–analysis_03 виконано; 1 supported, 2 partly supported |
-| Параметри генерації | PASS | temperature 0.2/0.7/1.0 та max_new_tokens 24/64/128; контрольовані матриці |
-| Аналіз якості | PASS | report/manual_evaluation.json: 17 ручних оцінок, точні відповіді, image SHA, обґрунтування |
-| Аналіз узгодженості | PASS | left/center/Left; семантична стабільність трьох температурних відповідей |
-| Приклади у звіті | PASS | report.md, розділи 11–17: дослівні питання/відповіді, параметри та оцінки |
-| П’ять контрольних запитань | PASS | defense_notes.md; відповіді підготовлено, усний захист виконує студент |
-| Код і результати | PASS | src/, notebook із 15 виконаними code cells, реальне зображення, таблиці та графік |
-| Саме GUI-скріншоти | FAIL — ручний крок | GUI-знімки не створювалися; screenshot_checklist.md указує потрібні блоки. Таблиці й графік не названо скріншотами |
+| LLaVA через Hugging Face pipeline | PASS | `src/model.py`; model/revision у `evidence/model_metadata.json` |
+| VQA для заданого зображення | PASS | 17 унікальних записів із тим самим image SHA |
+| Описові, фактологічні, аналітичні питання | PASS | 3+3+3 та 1 контроль у `questions.json` |
+| Вплив параметрів | PASS | temperature 0.2/0.7/1.0; budget 24/64/128 |
+| Узгодженість | PASS | три перефразування: left/center/Left |
+| Аналіз якості | PASS | 17 ручних reviews, прив’язаних до answer і SHA |
+| Код, результати, звіт | PASS | `src/`, виконаний notebook, `evidence/`, `report/` |
+| GUI-скріншоти | MANUAL | Не створювалися; точний перелік у `screenshot_checklist.md` |
 
-## Додаткові вимоги запиту
+## Перевірені інваріанти
 
-| Вимога | Статус | Доказ |
+- 19 експериментальних рядків, 17 фізичних генерацій.
+- Cache signature включає model ID/revision, image SHA, question, grounding,
+  generation config і execution context.
+- Пошкоджений, порожній або несумісний runtime cache відкидається.
+- Історичні GPU runtimes не називаються часом cache replay чи notebook execution.
+- Manual evaluation не переноситься на змінену відповідь або зображення.
+- Notebook відновлює аналітику без torch/transformers і не симулює inference.
+- Графіки будуються з validated evidence, не з ручно введених чисел.
+
+## Обмеження аудиту
+
+Повтор усіх 17 GPU-генерацій не був технічно необхідним: вихідні JSON містять текст,
+generation config, continuation count, EOS, timestamps, environment і точний image SHA.
+Новий CPU Run All перевірено окремо. Відсутність GUI-скріншотів лишається формальним
+ручним етапом, якщо викладач вимагає саме знімки інтерфейсу.
+
+## Фінальне приймання live notebook і CI
+
+| Перевірка | Статус | Фактичний результат |
 |---|---|---|
-| Первинний аудит без змін Lab 1–4 | PASS | repository_audit.md, git_status_before.txt; 113 зовнішніх неігнорованих файлів перевірено SHA-256 |
-| Реальне середовище | PASS | Python 3.13.5, torch 2.14.0+cu130, Transformers 5.17.0, CUDA 13.0, RTX 3050 4 ГБ; environment.json |
-| Збережено CUDA/PyTorch | PASS | Пакети не встановлювали й не оновлювали |
-| Вхід скопійовано та перевірено | PASS | assets/input/primary_image.png, source.json; 512×512, SHA-256 збігається |
-| Відсутня runtime-залежність Lab 4 | PASS | Власна PNG-копія; походження — metadata, не імпорт |
-| Smoke test без зайвого inference | PASS | Перший fact_01 збережено в baseline; execution.log |
-| Контроль відсутньої інформації | PASS | control_01 виконано, результат HALLUCINATED; поганий результат не приховано |
-| Параметри без змішування змінних | PASS | CPU-тести матриці; seed=42 перед кожним sampling; greedy без temperature |
-| Відновлення після переривання | PASS | Атомарний JSON на кожний успішний inference; підпис включає image/model/revision/prompt/config/environment |
-| Без зайвих повторів | PASS | 19 рядків експериментів, 17 унікальних run_id; повтор notebook використав кеш |
-| Реальна довжина та затримка | PASS | Continuation tokens, EOS, perf_counter + CUDA sync; loading окремо |
-| Notebook реально виконано | PASS | 15 code cells, execution_count заданий, 0 error outputs, nbformat validation |
-| Ручна оцінка без псевдометрик | PASS | Рубрика окрема для кожного типу; accuracy лише для 3 об’єктивних baseline-фактів |
-| Немає абсолютних шляхів у коді/звітах | PASS | Перевірено текстові deliverables; локальні журнали можуть містити шляхи середовища |
-| Зміни тільки в Lab 5 | PASS | Усі 113 файлів поза Lab 5 незмінні; нових неігнорованих файлів поза Lab 5 немає |
-| Без commit/push та force-add | PASS | Git використано лише для читання/перевірки; outputs залишаються ignored |
+| Notebook 01 CPU Run All | PASS | 13 code cells, 0 error outputs |
+| Notebook 01 HTML export | PASS | `nbconvert` створив непорожній HTML; 5 відрендерених фігур без перекривань |
+| Notebook 02 schema і Python syntax | PASS | 17 cells, 8 code cells; `nbformat.validate` та `ast.parse` |
+| Notebook 02 real pipeline path | PASS | Явний `pipe(text=messages, return_full_text=False, ...)`, processor inputs, token/EOS/runtime extraction |
+| Notebook 02 live GPU execution | PASS | RTX 3050 Laptop, FP16/cuda:0; 8 cells, 0 errors; `left`, 2 tokens, EOS=true, 10.529 с |
+| Історичний evidence | PASS | Git object hash `8ad5682aec1e9cf68a2878a778abb8db121770d0`; 17 unique runs / 19 rows |
+| CPU pytest | PASS | 14 tests; модель і torch не завантажуються |
+| Python compilation | PASS | `src/` і три Lab 5 build scripts |
+| GitHub Actions | PASS | `Lab 5 CPU CI / cpu-validation`, run 40103824918: 43 с на commit `56b17b3` |
 
-## Валідація
-
-| Перевірка | Результат |
-|---|---|
-| pytest labs/lab05_multimodal/tests -q | PASS: 7 passed in 5.05s; без inference/download |
-| python -m compileall -q labs/lab05_multimodal/src | PASS |
-| nbformat.validate | PASS |
-| Notebook execution | PASS: 15 code cells; немає error outputs |
-| Image SHA + повнота manifest + відповідність question IDs | PASS |
-| Manual review ↔ run_id ↔ answer ↔ image SHA | PASS |
-| git diff --check | PASS; лише інформаційне попередження Windows про LF/CRLF |
-| Порівняння файлів поза Lab 5 | PASS: 113/113 SHA-256 збігаються |
-
-Машинний підсумок: outputs/metadata/validation.json. Обчислювальну частину завершено. Для формальної здачі з вимогою GUI-скріншотів залишається ручне створення цих знімків та усний захист.
+Notebook 02 зберігає новий результат лише в ignored `outputs/live/` зі статусом
+`NOT_REVIEWED` і provenance `live_gpu_inference`. Це не змінює історичні 17 запусків.
+Live run ID: `4b58bcb6e6150990dc733c77654de010a97ace5caaaaabdb4c94c08af0c3026f`.
+Відповідь збережена як `NOT_REVIEWED`: працездатність pipeline і ручна оцінка
+конкретної відповіді залишаються різними контрактами.

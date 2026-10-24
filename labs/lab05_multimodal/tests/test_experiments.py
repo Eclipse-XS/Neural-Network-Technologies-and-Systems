@@ -3,6 +3,7 @@ import pytest
 from labs.lab05_multimodal.src.config import GenerationConfig
 from labs.lab05_multimodal.src.experiments import experiment_plan
 from labs.lab05_multimodal.src import inference
+from labs.lab05_multimodal.src.evidence import historical_experiment_rows, load_verified_runs
 
 
 def test_controlled_matrix():
@@ -57,3 +58,32 @@ def test_assistant_extraction():
     for output in [[], [{'generated_text': ''}], [{'generated_text': [{'role': 'user', 'content': 'Q?'}]}]]:
         with pytest.raises(ValueError):
             inference.extract_answer(output)
+
+
+def test_versioned_evidence_matrix():
+    runs = load_verified_runs()
+    rows = historical_experiment_rows()
+    assert len(runs) == 17
+    assert len(rows) == 19
+    assert len({row['run_id'] for row in rows}) == 17
+    assert {row['image_sha256'] for row in rows} == {inference.image_sha()}
+    assert sum(row['reached_token_limit'] for row in runs) == 1
+
+
+def test_corrupt_cache_is_ignored(tmp_path, monkeypatch):
+    monkeypatch.setattr(inference, 'OUTPUT_ROOT', tmp_path)
+    case = experiment_plan()[0]
+    context = {'version': 'test'}
+    path = tmp_path / f'responses/{inference.signature(case, context)}.json'
+    path.parent.mkdir(parents=True)
+    path.write_text('{broken', encoding='utf-8')
+    assert inference.cached_result(case, context) is None
+
+
+def test_unknown_output_schema_and_empty_assistant_parts():
+    with pytest.raises(ValueError):
+        inference.extract_answer([{'generated_text': 42}])
+    with pytest.raises(ValueError):
+        inference.extract_answer([{'generated_text': [
+            {'role': 'assistant', 'content': [{'type': 'image'}]}
+        ]}])
