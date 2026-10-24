@@ -72,6 +72,7 @@ chroma_db/
 /runs/
 labs/*/outputs/*
 !labs/*/outputs/.gitkeep
+!labs/lab05_multimodal/outputs/README.md
 
 # Curated, small, verified portfolio artifacts are versioned explicitly.
 !labs/lab03_rag/artifacts/

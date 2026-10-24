@@ -13,3 +13,8 @@ def test_executed_notebook():
         assert cell.execution_count is not None
         assert all(output.output_type != 'error' for output in cell.outputs)
     assert any('image/png' in o.get('data', {}) for c in cells for o in c.outputs)
+    source = '\n'.join(c.source for c in notebook.cells)
+    for concept in ['SigLIP', 'Qwen2', 'visual embeddings', 'continuation',
+                    'temperature', 'max_new_tokens', 'casefold']:
+        assert concept in source
+    assert sum('image/png' in o.get('data', {}) for c in cells for o in c.outputs) >= 4

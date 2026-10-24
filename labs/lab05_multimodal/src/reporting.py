@@ -2,6 +2,8 @@
 import json
 from .config import LAB_ROOT, OUTPUT_ROOT, MODEL_ID, MODEL_REVISION, GROUNDING_INSTRUCTION
 from .evaluation import evaluated_results, factual_summary, table, markdown_table
+from .evidence import historical_experiment_rows
+from .visualization import token_budget_figure
 
 THEORY = '''Мультимодальна модель використовує кілька типів даних та зв’язки між ними. У VQA зображення визначає доступні візуальні факти, а запитання визначає, які з них потрібні. Генерація відповіді залежить спільно від візуального та текстового входу. Captioning є загальним описом; тут він представлений лише описовою групою серед цільових питань.
 
@@ -39,35 +41,26 @@ CONCLUSIONS = '''LLaVA розпізнає головний зміст цього
 
 
 def build_figure(frame):
-    import matplotlib
-    matplotlib.use('Agg')
     import matplotlib.pyplot as plt
-    subset = frame[frame.experiment == 'max_tokens']
-    fig, ax = plt.subplots(figsize=(7.4, 4.2), layout='constrained')
-    bars = ax.bar(subset.max_new_tokens.astype(str), subset.generated_token_count,
-                  color=['#b44949', '#256d85', '#256d85'], width=.55)
-    for bar, row in zip(bars, subset.itertuples()):
-        ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 1,
-                f'{row.generated_token_count}\n' + ('без EOS' if row.reached_token_limit else 'EOS'),
-                ha='center', va='bottom')
-    ax.set(title='Фактична довжина відповіді за різних лімітів',
-           xlabel='max_new_tokens', ylabel='Токени продовження (включно з EOS)', ylim=(0, 64))
-    ax.spines[['top', 'right']].set_visible(False)
-    ax.grid(axis='y', alpha=.18)
-    ax.set_axisbelow(True)
+    fig = token_budget_figure(frame)
     path = OUTPUT_ROOT / 'figures/token_budget.png'
+    path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(path, dpi=160)
     plt.close(fig)
     return path
 
 
 def build_report():
-    rows = json.loads((OUTPUT_ROOT / 'metadata/manifest.json').read_text(encoding='utf-8'))
+    manifest = OUTPUT_ROOT / 'metadata/manifest.json'
+    rows = (json.loads(manifest.read_text(encoding='utf-8')) if manifest.exists()
+            else historical_experiment_rows())
     frame = evaluated_results(rows)
     if (frame.evaluation_label == 'NOT_REVIEWED').any():
         raise ValueError('Review new answers before rebuilding the written report')
-    env = json.loads((OUTPUT_ROOT / 'metadata/environment.json').read_text())
-    model = json.loads((OUTPUT_ROOT / 'metadata/model.json').read_text())
+    env_path = OUTPUT_ROOT / 'metadata/environment.json'
+    model_path = OUTPUT_ROOT / 'metadata/model.json'
+    env = json.loads((env_path if env_path.exists() else LAB_ROOT / 'evidence/environment.json').read_text())
+    model = json.loads((model_path if model_path.exists() else LAB_ROOT / 'evidence/model_metadata.json').read_text())
     source = json.loads((LAB_ROOT / 'assets/input/source.json').read_text())
     build_figure(frame)
     sections = [

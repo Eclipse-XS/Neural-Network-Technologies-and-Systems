@@ -1,0 +1,1033 @@
+{
+  "schema_version": 1,
+  "provenance": {
+    "kind": "historical_gpu_inference",
+    "source_manifest": "outputs/metadata/manifest.json",
+    "note": "Copied losslessly from the locally preserved run; runtimes are historical, not replay timings."
+  },
+  "runs": [
+    {
+      "run_id": "76dd14bbaa4d0508858d4df0cea1215efc49fab7cbf8e89de5167699eeadbe8f",
+      "question_id": "fact_01",
+      "question_type": "factual",
+      "question": "Is the cabin on the left, in the center, or on the right side of the image?",
+      "answerable": true,
+      "expected_facts": [
+        "left"
+      ],
+      "answer": "left",
+      "model_id": "llava-hf/llava-interleave-qwen-0.5b-hf",
+      "revision": "1090956dd1c79bc93ae98dcf395590369435ec91",
+      "image_path": "assets/input/primary_image.png",
+      "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+      "grounding_instruction": "Answer using only information visible in the image. If the answer cannot be determined from the image, explicitly say so. Answer concisely and do not invent details.",
+      "runtime_seconds": 2.0750054999953136,
+      "generated_token_count": 2,
+      "ended_with_eos": true,
+      "reached_token_limit": false,
+      "answer_word_count": 1,
+      "answer_character_count": 4,
+      "created_at": "2026-09-22T05:40:18.803477+00:00",
+      "execution_context": {
+        "python": "3.13.5",
+        "versions": {
+          "torch": "2.14.0+cu130",
+          "transformers": "5.17.0",
+          "accelerate": "1.15.0",
+          "Pillow": "12.3.0",
+          "safetensors": "0.8.0",
+          "pandas": "3.0.6",
+          "numpy": "2.5.3",
+          "matplotlib": "3.11.2",
+          "pytest": "9.1.1",
+          "nbformat": "5.11.1",
+          "ipykernel": "7.3.0",
+          "nbclient": "0.11.0"
+        },
+        "cuda_runtime": "13.0",
+        "gpu_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+        "dtype": "torch.float16",
+        "device_strategy": "cuda:0",
+        "attention": "sdpa",
+        "protocol_version": 1
+      },
+      "pipeline_output_schema": {
+        "input_text": "list",
+        "generated_text": "str",
+        "generated_token_count": "int",
+        "ended_with_eos": "bool"
+      },
+      "generation_config": {
+        "do_sample": false,
+        "max_new_tokens": 64,
+        "temperature": null,
+        "top_p": null,
+        "seed": null
+      }
+    },
+    {
+      "run_id": "183d0c1716cfd7fa50bcdd584a0616017e1eeb61c842d5a757004bea50281375",
+      "question_id": "desc_01",
+      "question_type": "descriptive",
+      "question": "Describe the main scene in this image in two sentences.",
+      "answerable": true,
+      "expected_facts": [
+        "a wooden cabin beside water",
+        "tall conifer trees",
+        "reflections in water"
+      ],
+      "answer": "The image shows a cabin nestled among trees on a lake, with a reflection of the cabin in the water. The cabin has a wooden roof and a small deck. The surrounding environment is lush with green trees and mountains in the background.",
+      "model_id": "llava-hf/llava-interleave-qwen-0.5b-hf",
+      "revision": "1090956dd1c79bc93ae98dcf395590369435ec91",
+      "image_path": "assets/input/primary_image.png",
+      "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+      "grounding_instruction": "Answer using only information visible in the image. If the answer cannot be determined from the image, explicitly say so. Answer concisely and do not invent details.",
+      "runtime_seconds": 2.7866931000025943,
+      "generated_token_count": 48,
+      "ended_with_eos": true,
+      "reached_token_limit": false,
+      "answer_word_count": 43,
+      "answer_character_count": 231,
+      "created_at": "2026-09-22T05:40:21.597316+00:00",
+      "execution_context": {
+        "python": "3.13.5",
+        "versions": {
+          "torch": "2.14.0+cu130",
+          "transformers": "5.17.0",
+          "accelerate": "1.15.0",
+          "Pillow": "12.3.0",
+          "safetensors": "0.8.0",
+          "pandas": "3.0.6",
+          "numpy": "2.5.3",
+          "matplotlib": "3.11.2",
+          "pytest": "9.1.1",
+          "nbformat": "5.11.1",
+          "ipykernel": "7.3.0",
+          "nbclient": "0.11.0"
+        },
+        "cuda_runtime": "13.0",
+        "gpu_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+        "dtype": "torch.float16",
+        "device_strategy": "cuda:0",
+        "attention": "sdpa",
+        "protocol_version": 1
+      },
+      "pipeline_output_schema": {
+        "input_text": "list",
+        "generated_text": "str",
+        "generated_token_count": "int",
+        "ended_with_eos": "bool"
+      },
+      "generation_config": {
+        "do_sample": false,
+        "max_new_tokens": 64,
+        "temperature": null,
+        "top_p": null,
+        "seed": null
+      }
+    },
+    {
+      "run_id": "028e00616502d9c5f8964d91ff70fc68a69d42fd39c4c2ab35f0c73d9f4ebcd4",
+      "question_id": "desc_02",
+      "question_type": "descriptive",
+      "question": "Describe the visible exterior of the cabin.",
+      "answerable": true,
+      "expected_facts": [
+        "brown wooden walls",
+        "dark sloping roof",
+        "railed porch or deck"
+      ],
+      "answer": "The cabin has a dark roof and a wooden frame.",
+      "model_id": "llava-hf/llava-interleave-qwen-0.5b-hf",
+      "revision": "1090956dd1c79bc93ae98dcf395590369435ec91",
+      "image_path": "assets/input/primary_image.png",
+      "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+      "grounding_instruction": "Answer using only information visible in the image. If the answer cannot be determined from the image, explicitly say so. Answer concisely and do not invent details.",
+      "runtime_seconds": 0.8325309000210837,
+      "generated_token_count": 12,
+      "ended_with_eos": true,
+      "reached_token_limit": false,
+      "answer_word_count": 10,
+      "answer_character_count": 45,
+      "created_at": "2026-09-22T05:40:22.437735+00:00",
+      "execution_context": {
+        "python": "3.13.5",
+        "versions": {
+          "torch": "2.14.0+cu130",
+          "transformers": "5.17.0",
+          "accelerate": "1.15.0",
+          "Pillow": "12.3.0",
+          "safetensors": "0.8.0",
+          "pandas": "3.0.6",
+          "numpy": "2.5.3",
+          "matplotlib": "3.11.2",
+          "pytest": "9.1.1",
+          "nbformat": "5.11.1",
+          "ipykernel": "7.3.0",
+          "nbclient": "0.11.0"
+        },
+        "cuda_runtime": "13.0",
+        "gpu_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+        "dtype": "torch.float16",
+        "device_strategy": "cuda:0",
+        "attention": "sdpa",
+        "protocol_version": 1
+      },
+      "pipeline_output_schema": {
+        "input_text": "list",
+        "generated_text": "str",
+        "generated_token_count": "int",
+        "ended_with_eos": "bool"
+      },
+      "generation_config": {
+        "do_sample": false,
+        "max_new_tokens": 64,
+        "temperature": null,
+        "top_p": null,
+        "seed": null
+      }
+    },
+    {
+      "run_id": "6de24b5b73ce7d7ebf05f0125b0903988db7b3d300740b233f64df179af171a6",
+      "question_id": "desc_03",
+      "question_type": "descriptive",
+      "question": "Describe how the water, cabin, and trees are arranged in the image.",
+      "answerable": true,
+      "expected_facts": [
+        "water in foreground",
+        "cabin on the left shore",
+        "trees behind the cabin"
+      ],
+      "answer": "The water is calm, reflecting the cabin and trees. The cabin is situated on a lake, surrounded by tall trees. The cabin is surrounded by a forest, with the lake reflecting the surrounding greenery.",
+      "model_id": "llava-hf/llava-interleave-qwen-0.5b-hf",
+      "revision": "1090956dd1c79bc93ae98dcf395590369435ec91",
+      "image_path": "assets/input/primary_image.png",
+      "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+      "grounding_instruction": "Answer using only information visible in the image. If the answer cannot be determined from the image, explicitly say so. Answer concisely and do not invent details.",
+      "runtime_seconds": 2.4116509000305086,
+      "generated_token_count": 42,
+      "ended_with_eos": true,
+      "reached_token_limit": false,
+      "answer_word_count": 34,
+      "answer_character_count": 197,
+      "created_at": "2026-09-22T05:40:24.855775+00:00",
+      "execution_context": {
+        "python": "3.13.5",
+        "versions": {
+          "torch": "2.14.0+cu130",
+          "transformers": "5.17.0",
+          "accelerate": "1.15.0",
+          "Pillow": "12.3.0",
+          "safetensors": "0.8.0",
+          "pandas": "3.0.6",
+          "numpy": "2.5.3",
+          "matplotlib": "3.11.2",
+          "pytest": "9.1.1",
+          "nbformat": "5.11.1",
+          "ipykernel": "7.3.0",
+          "nbclient": "0.11.0"
+        },
+        "cuda_runtime": "13.0",
+        "gpu_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+        "dtype": "torch.float16",
+        "device_strategy": "cuda:0",
+        "attention": "sdpa",
+        "protocol_version": 1
+      },
+      "pipeline_output_schema": {
+        "input_text": "list",
+        "generated_text": "str",
+        "generated_token_count": "int",
+        "ended_with_eos": "bool"
+      },
+      "generation_config": {
+        "do_sample": false,
+        "max_new_tokens": 64,
+        "temperature": null,
+        "top_p": null,
+        "seed": null
+      }
+    },
+    {
+      "run_id": "adec88d1e9e12ee4a0640a2316bd9eeeabf6f4ac892a1b055f626ff86fc568d4",
+      "question_id": "fact_02",
+      "question_type": "factual",
+      "question": "What is the dominant color of the cabin's wooden walls?",
+      "answerable": true,
+      "expected_facts": [
+        "brown"
+      ],
+      "answer": "Brown",
+      "model_id": "llava-hf/llava-interleave-qwen-0.5b-hf",
+      "revision": "1090956dd1c79bc93ae98dcf395590369435ec91",
+      "image_path": "assets/input/primary_image.png",
+      "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+      "grounding_instruction": "Answer using only information visible in the image. If the answer cannot be determined from the image, explicitly say so. Answer concisely and do not invent details.",
+      "runtime_seconds": 0.33901949995197356,
+      "generated_token_count": 2,
+      "ended_with_eos": true,
+      "reached_token_limit": false,
+      "answer_word_count": 1,
+      "answer_character_count": 5,
+      "created_at": "2026-09-22T05:40:25.202863+00:00",
+      "execution_context": {
+        "python": "3.13.5",
+        "versions": {
+          "torch": "2.14.0+cu130",
+          "transformers": "5.17.0",
+          "accelerate": "1.15.0",
+          "Pillow": "12.3.0",
+          "safetensors": "0.8.0",
+          "pandas": "3.0.6",
+          "numpy": "2.5.3",
+          "matplotlib": "3.11.2",
+          "pytest": "9.1.1",
+          "nbformat": "5.11.1",
+          "ipykernel": "7.3.0",
+          "nbclient": "0.11.0"
+        },
+        "cuda_runtime": "13.0",
+        "gpu_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+        "dtype": "torch.float16",
+        "device_strategy": "cuda:0",
+        "attention": "sdpa",
+        "protocol_version": 1
+      },
+      "pipeline_output_schema": {
+        "input_text": "list",
+        "generated_text": "str",
+        "generated_token_count": "int",
+        "ended_with_eos": "bool"
+      },
+      "generation_config": {
+        "do_sample": false,
+        "max_new_tokens": 64,
+        "temperature": null,
+        "top_p": null,
+        "seed": null
+      }
+    },
+    {
+      "run_id": "99afb78ad746fe7f0e9b9a3e2794cbf1c48123431f0312cd536d092d97c4c8ee",
+      "question_id": "fact_03",
+      "question_type": "factual",
+      "question": "Are reflections of trees visible in the water?",
+      "answerable": true,
+      "expected_facts": [
+        "yes"
+      ],
+      "answer": "Yes",
+      "model_id": "llava-hf/llava-interleave-qwen-0.5b-hf",
+      "revision": "1090956dd1c79bc93ae98dcf395590369435ec91",
+      "image_path": "assets/input/primary_image.png",
+      "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+      "grounding_instruction": "Answer using only information visible in the image. If the answer cannot be determined from the image, explicitly say so. Answer concisely and do not invent details.",
+      "runtime_seconds": 0.24315440002828836,
+      "generated_token_count": 2,
+      "ended_with_eos": true,
+      "reached_token_limit": false,
+      "answer_word_count": 1,
+      "answer_character_count": 3,
+      "created_at": "2026-09-22T05:40:25.454058+00:00",
+      "execution_context": {
+        "python": "3.13.5",
+        "versions": {
+          "torch": "2.14.0+cu130",
+          "transformers": "5.17.0",
+          "accelerate": "1.15.0",
+          "Pillow": "12.3.0",
+          "safetensors": "0.8.0",
+          "pandas": "3.0.6",
+          "numpy": "2.5.3",
+          "matplotlib": "3.11.2",
+          "pytest": "9.1.1",
+          "nbformat": "5.11.1",
+          "ipykernel": "7.3.0",
+          "nbclient": "0.11.0"
+        },
+        "cuda_runtime": "13.0",
+        "gpu_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+        "dtype": "torch.float16",
+        "device_strategy": "cuda:0",
+        "attention": "sdpa",
+        "protocol_version": 1
+      },
+      "pipeline_output_schema": {
+        "input_text": "list",
+        "generated_text": "str",
+        "generated_token_count": "int",
+        "ended_with_eos": "bool"
+      },
+      "generation_config": {
+        "do_sample": false,
+        "max_new_tokens": 64,
+        "temperature": null,
+        "top_p": null,
+        "seed": null
+      }
+    },
+    {
+      "run_id": "fc0727189997dc6da13c8934270c7c509ad1039c81329db1e01ad4232e4525f5",
+      "question_id": "analysis_01",
+      "question_type": "analytical",
+      "question": "Does the water appear calm or rough, and what visible evidence supports your answer?",
+      "answerable": true,
+      "expected_facts": [
+        "relatively calm",
+        "recognizable reflections",
+        "no large waves"
+      ],
+      "answer": "The water appears calm, and there is visible evidence of a calm lake.",
+      "model_id": "llava-hf/llava-interleave-qwen-0.5b-hf",
+      "revision": "1090956dd1c79bc93ae98dcf395590369435ec91",
+      "image_path": "assets/input/primary_image.png",
+      "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+      "grounding_instruction": "Answer using only information visible in the image. If the answer cannot be determined from the image, explicitly say so. Answer concisely and do not invent details.",
+      "runtime_seconds": 0.9437966999830678,
+      "generated_token_count": 16,
+      "ended_with_eos": true,
+      "reached_token_limit": false,
+      "answer_word_count": 13,
+      "answer_character_count": 69,
+      "created_at": "2026-09-22T05:40:26.405514+00:00",
+      "execution_context": {
+        "python": "3.13.5",
+        "versions": {
+          "torch": "2.14.0+cu130",
+          "transformers": "5.17.0",
+          "accelerate": "1.15.0",
+          "Pillow": "12.3.0",
+          "safetensors": "0.8.0",
+          "pandas": "3.0.6",
+          "numpy": "2.5.3",
+          "matplotlib": "3.11.2",
+          "pytest": "9.1.1",
+          "nbformat": "5.11.1",
+          "ipykernel": "7.3.0",
+          "nbclient": "0.11.0"
+        },
+        "cuda_runtime": "13.0",
+        "gpu_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+        "dtype": "torch.float16",
+        "device_strategy": "cuda:0",
+        "attention": "sdpa",
+        "protocol_version": 1
+      },
+      "pipeline_output_schema": {
+        "input_text": "list",
+        "generated_text": "str",
+        "generated_token_count": "int",
+        "ended_with_eos": "bool"
+      },
+      "generation_config": {
+        "do_sample": false,
+        "max_new_tokens": 64,
+        "temperature": null,
+        "top_p": null,
+        "seed": null
+      }
+    },
+    {
+      "run_id": "51c48744ba59c55d4d9c26612e80b530c628d04478a0c3f261ab4dab4421297f",
+      "question_id": "analysis_02",
+      "question_type": "analytical",
+      "question": "Does this scene appear urban or natural, and which visible features support that interpretation?",
+      "answerable": true,
+      "expected_facts": [
+        "predominantly natural setting",
+        "dense trees and water",
+        "only a small cabin visible"
+      ],
+      "answer": "This scene appears natural, and the visible features that support this interpretation include the presence of a lake, a forest, and a mountain in the background.",
+      "model_id": "llava-hf/llava-interleave-qwen-0.5b-hf",
+      "revision": "1090956dd1c79bc93ae98dcf395590369435ec91",
+      "image_path": "assets/input/primary_image.png",
+      "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+      "grounding_instruction": "Answer using only information visible in the image. If the answer cannot be determined from the image, explicitly say so. Answer concisely and do not invent details.",
+      "runtime_seconds": 2.524977699969895,
+      "generated_token_count": 31,
+      "ended_with_eos": true,
+      "reached_token_limit": false,
+      "answer_word_count": 26,
+      "answer_character_count": 161,
+      "created_at": "2026-09-22T05:40:28.937473+00:00",
+      "execution_context": {
+        "python": "3.13.5",
+        "versions": {
+          "torch": "2.14.0+cu130",
+          "transformers": "5.17.0",
+          "accelerate": "1.15.0",
+          "Pillow": "12.3.0",
+          "safetensors": "0.8.0",
+          "pandas": "3.0.6",
+          "numpy": "2.5.3",
+          "matplotlib": "3.11.2",
+          "pytest": "9.1.1",
+          "nbformat": "5.11.1",
+          "ipykernel": "7.3.0",
+          "nbclient": "0.11.0"
+        },
+        "cuda_runtime": "13.0",
+        "gpu_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+        "dtype": "torch.float16",
+        "device_strategy": "cuda:0",
+        "attention": "sdpa",
+        "protocol_version": 1
+      },
+      "pipeline_output_schema": {
+        "input_text": "list",
+        "generated_text": "str",
+        "generated_token_count": "int",
+        "ended_with_eos": "bool"
+      },
+      "generation_config": {
+        "do_sample": false,
+        "max_new_tokens": 64,
+        "temperature": null,
+        "top_p": null,
+        "seed": null
+      }
+    },
+    {
+      "run_id": "24a0cc04753744a9191804a4b0e7a408a8ff7463f1f6f6dd7cd37abe8d00f963",
+      "question_id": "analysis_03",
+      "question_type": "analytical",
+      "question": "Why do the shapes in the lower half of the image look like reflections rather than additional upright trees? Cite visible clues.",
+      "answerable": true,
+      "expected_facts": [
+        "inverted forms below the shoreline",
+        "correspondence to trees above the water",
+        "distortion on water surface"
+      ],
+      "answer": "The shapes in the lower half of the image are reflections of the trees because the image is a photograph of a forest with a lake. The reflection of the trees is the reflection of the trees themselves, not additional upright trees.",
+      "model_id": "llava-hf/llava-interleave-qwen-0.5b-hf",
+      "revision": "1090956dd1c79bc93ae98dcf395590369435ec91",
+      "image_path": "assets/input/primary_image.png",
+      "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+      "grounding_instruction": "Answer using only information visible in the image. If the answer cannot be determined from the image, explicitly say so. Answer concisely and do not invent details.",
+      "runtime_seconds": 2.7981385000166483,
+      "generated_token_count": 46,
+      "ended_with_eos": true,
+      "reached_token_limit": false,
+      "answer_word_count": 42,
+      "answer_character_count": 230,
+      "created_at": "2026-09-22T05:40:31.742680+00:00",
+      "execution_context": {
+        "python": "3.13.5",
+        "versions": {
+          "torch": "2.14.0+cu130",
+          "transformers": "5.17.0",
+          "accelerate": "1.15.0",
+          "Pillow": "12.3.0",
+          "safetensors": "0.8.0",
+          "pandas": "3.0.6",
+          "numpy": "2.5.3",
+          "matplotlib": "3.11.2",
+          "pytest": "9.1.1",
+          "nbformat": "5.11.1",
+          "ipykernel": "7.3.0",
+          "nbclient": "0.11.0"
+        },
+        "cuda_runtime": "13.0",
+        "gpu_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+        "dtype": "torch.float16",
+        "device_strategy": "cuda:0",
+        "attention": "sdpa",
+        "protocol_version": 1
+      },
+      "pipeline_output_schema": {
+        "input_text": "list",
+        "generated_text": "str",
+        "generated_token_count": "int",
+        "ended_with_eos": "bool"
+      },
+      "generation_config": {
+        "do_sample": false,
+        "max_new_tokens": 64,
+        "temperature": null,
+        "top_p": null,
+        "seed": null
+      }
+    },
+    {
+      "run_id": "cf0c78a34f44fc0d7f47a3cc6c5c094e85f425d9073b97510c6b2fac786a300c",
+      "question_id": "control_01",
+      "question_type": "unanswerable",
+      "question": "What are the exact geographic coordinates of this cabin?",
+      "answerable": false,
+      "expected_facts": [],
+      "answer": "[0.542,0.544,0.856,0.731]",
+      "model_id": "llava-hf/llava-interleave-qwen-0.5b-hf",
+      "revision": "1090956dd1c79bc93ae98dcf395590369435ec91",
+      "image_path": "assets/input/primary_image.png",
+      "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+      "grounding_instruction": "Answer using only information visible in the image. If the answer cannot be determined from the image, explicitly say so. Answer concisely and do not invent details.",
+      "runtime_seconds": 1.4971363000222482,
+      "generated_token_count": 26,
+      "ended_with_eos": true,
+      "reached_token_limit": false,
+      "answer_word_count": 1,
+      "answer_character_count": 25,
+      "created_at": "2026-09-22T05:40:33.246760+00:00",
+      "execution_context": {
+        "python": "3.13.5",
+        "versions": {
+          "torch": "2.14.0+cu130",
+          "transformers": "5.17.0",
+          "accelerate": "1.15.0",
+          "Pillow": "12.3.0",
+          "safetensors": "0.8.0",
+          "pandas": "3.0.6",
+          "numpy": "2.5.3",
+          "matplotlib": "3.11.2",
+          "pytest": "9.1.1",
+          "nbformat": "5.11.1",
+          "ipykernel": "7.3.0",
+          "nbclient": "0.11.0"
+        },
+        "cuda_runtime": "13.0",
+        "gpu_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+        "dtype": "torch.float16",
+        "device_strategy": "cuda:0",
+        "attention": "sdpa",
+        "protocol_version": 1
+      },
+      "pipeline_output_schema": {
+        "input_text": "list",
+        "generated_text": "str",
+        "generated_token_count": "int",
+        "ended_with_eos": "bool"
+      },
+      "generation_config": {
+        "do_sample": false,
+        "max_new_tokens": 64,
+        "temperature": null,
+        "top_p": null,
+        "seed": null
+      }
+    },
+    {
+      "run_id": "49843402a64f6ecc9042352edce62991764f7fa9a91c75a06ecc8417e22b2dfd",
+      "question_id": "analysis_01",
+      "question_type": "analytical",
+      "question": "Does the water appear calm or rough, and what visible evidence supports your answer?",
+      "answerable": true,
+      "expected_facts": [
+        "relatively calm",
+        "recognizable reflections",
+        "no large waves"
+      ],
+      "answer": "The water appears calm, and the reflection of the cabin and the surrounding trees is visible.",
+      "model_id": "llava-hf/llava-interleave-qwen-0.5b-hf",
+      "revision": "1090956dd1c79bc93ae98dcf395590369435ec91",
+      "image_path": "assets/input/primary_image.png",
+      "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+      "grounding_instruction": "Answer using only information visible in the image. If the answer cannot be determined from the image, explicitly say so. Answer concisely and do not invent details.",
+      "runtime_seconds": 1.8470521999988705,
+      "generated_token_count": 19,
+      "ended_with_eos": true,
+      "reached_token_limit": false,
+      "answer_word_count": 16,
+      "answer_character_count": 93,
+      "created_at": "2026-09-22T05:40:35.119926+00:00",
+      "execution_context": {
+        "python": "3.13.5",
+        "versions": {
+          "torch": "2.14.0+cu130",
+          "transformers": "5.17.0",
+          "accelerate": "1.15.0",
+          "Pillow": "12.3.0",
+          "safetensors": "0.8.0",
+          "pandas": "3.0.6",
+          "numpy": "2.5.3",
+          "matplotlib": "3.11.2",
+          "pytest": "9.1.1",
+          "nbformat": "5.11.1",
+          "ipykernel": "7.3.0",
+          "nbclient": "0.11.0"
+        },
+        "cuda_runtime": "13.0",
+        "gpu_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+        "dtype": "torch.float16",
+        "device_strategy": "cuda:0",
+        "attention": "sdpa",
+        "protocol_version": 1
+      },
+      "pipeline_output_schema": {
+        "input_text": "list",
+        "generated_text": "str",
+        "generated_token_count": "int",
+        "ended_with_eos": "bool"
+      },
+      "generation_config": {
+        "do_sample": true,
+        "max_new_tokens": 64,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "seed": 42
+      }
+    },
+    {
+      "run_id": "1ee29e1f209666d93e02f4786a05de2cad537037534b9aacfac645e33f6ac77c",
+      "question_id": "analysis_01",
+      "question_type": "analytical",
+      "question": "Does the water appear calm or rough, and what visible evidence supports your answer?",
+      "answerable": true,
+      "expected_facts": [
+        "relatively calm",
+        "recognizable reflections",
+        "no large waves"
+      ],
+      "answer": "The water appears calm, and visible evidence of calmness is the reflection of the cabin and the surrounding trees.",
+      "model_id": "llava-hf/llava-interleave-qwen-0.5b-hf",
+      "revision": "1090956dd1c79bc93ae98dcf395590369435ec91",
+      "image_path": "assets/input/primary_image.png",
+      "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+      "grounding_instruction": "Answer using only information visible in the image. If the answer cannot be determined from the image, explicitly say so. Answer concisely and do not invent details.",
+      "runtime_seconds": 1.4282570999930613,
+      "generated_token_count": 23,
+      "ended_with_eos": true,
+      "reached_token_limit": false,
+      "answer_word_count": 19,
+      "answer_character_count": 114,
+      "created_at": "2026-09-22T05:40:36.558128+00:00",
+      "execution_context": {
+        "python": "3.13.5",
+        "versions": {
+          "torch": "2.14.0+cu130",
+          "transformers": "5.17.0",
+          "accelerate": "1.15.0",
+          "Pillow": "12.3.0",
+          "safetensors": "0.8.0",
+          "pandas": "3.0.6",
+          "numpy": "2.5.3",
+          "matplotlib": "3.11.2",
+          "pytest": "9.1.1",
+          "nbformat": "5.11.1",
+          "ipykernel": "7.3.0",
+          "nbclient": "0.11.0"
+        },
+        "cuda_runtime": "13.0",
+        "gpu_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+        "dtype": "torch.float16",
+        "device_strategy": "cuda:0",
+        "attention": "sdpa",
+        "protocol_version": 1
+      },
+      "pipeline_output_schema": {
+        "input_text": "list",
+        "generated_text": "str",
+        "generated_token_count": "int",
+        "ended_with_eos": "bool"
+      },
+      "generation_config": {
+        "do_sample": true,
+        "max_new_tokens": 64,
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "seed": 42
+      }
+    },
+    {
+      "run_id": "5ab9d15008935d93f01877691575241546788fd5267d96862f75e83c2d0e08f2",
+      "question_id": "analysis_01",
+      "question_type": "analytical",
+      "question": "Does the water appear calm or rough, and what visible evidence supports your answer?",
+      "answerable": true,
+      "expected_facts": [
+        "relatively calm",
+        "recognizable reflections",
+        "no large waves"
+      ],
+      "answer": "The water appears calm. This is evident from the reflection of the cabin and trees on the water's surface.",
+      "model_id": "llava-hf/llava-interleave-qwen-0.5b-hf",
+      "revision": "1090956dd1c79bc93ae98dcf395590369435ec91",
+      "image_path": "assets/input/primary_image.png",
+      "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+      "grounding_instruction": "Answer using only information visible in the image. If the answer cannot be determined from the image, explicitly say so. Answer concisely and do not invent details.",
+      "runtime_seconds": 1.3918984000338241,
+      "generated_token_count": 23,
+      "ended_with_eos": true,
+      "reached_token_limit": false,
+      "answer_word_count": 19,
+      "answer_character_count": 106,
+      "created_at": "2026-09-22T05:40:37.959231+00:00",
+      "execution_context": {
+        "python": "3.13.5",
+        "versions": {
+          "torch": "2.14.0+cu130",
+          "transformers": "5.17.0",
+          "accelerate": "1.15.0",
+          "Pillow": "12.3.0",
+          "safetensors": "0.8.0",
+          "pandas": "3.0.6",
+          "numpy": "2.5.3",
+          "matplotlib": "3.11.2",
+          "pytest": "9.1.1",
+          "nbformat": "5.11.1",
+          "ipykernel": "7.3.0",
+          "nbclient": "0.11.0"
+        },
+        "cuda_runtime": "13.0",
+        "gpu_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+        "dtype": "torch.float16",
+        "device_strategy": "cuda:0",
+        "attention": "sdpa",
+        "protocol_version": 1
+      },
+      "pipeline_output_schema": {
+        "input_text": "list",
+        "generated_text": "str",
+        "generated_token_count": "int",
+        "ended_with_eos": "bool"
+      },
+      "generation_config": {
+        "do_sample": true,
+        "max_new_tokens": 64,
+        "temperature": 1.0,
+        "top_p": 0.9,
+        "seed": 42
+      }
+    },
+    {
+      "run_id": "58c3114a5c6ff379df262e35322269c955c48cc8a2cdbd4148026af8d4870e02",
+      "question_id": "desc_01",
+      "question_type": "descriptive",
+      "question": "Describe the main scene in this image in two sentences.",
+      "answerable": true,
+      "expected_facts": [
+        "a wooden cabin beside water",
+        "tall conifer trees",
+        "reflections in water"
+      ],
+      "answer": "The image shows a cabin nestled among trees on a lake, with a reflection of the cabin in the water. The cabin",
+      "model_id": "llava-hf/llava-interleave-qwen-0.5b-hf",
+      "revision": "1090956dd1c79bc93ae98dcf395590369435ec91",
+      "image_path": "assets/input/primary_image.png",
+      "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+      "grounding_instruction": "Answer using only information visible in the image. If the answer cannot be determined from the image, explicitly say so. Answer concisely and do not invent details.",
+      "runtime_seconds": 1.3792266999953426,
+      "generated_token_count": 24,
+      "ended_with_eos": false,
+      "reached_token_limit": true,
+      "answer_word_count": 22,
+      "answer_character_count": 109,
+      "created_at": "2026-09-22T05:40:39.346675+00:00",
+      "execution_context": {
+        "python": "3.13.5",
+        "versions": {
+          "torch": "2.14.0+cu130",
+          "transformers": "5.17.0",
+          "accelerate": "1.15.0",
+          "Pillow": "12.3.0",
+          "safetensors": "0.8.0",
+          "pandas": "3.0.6",
+          "numpy": "2.5.3",
+          "matplotlib": "3.11.2",
+          "pytest": "9.1.1",
+          "nbformat": "5.11.1",
+          "ipykernel": "7.3.0",
+          "nbclient": "0.11.0"
+        },
+        "cuda_runtime": "13.0",
+        "gpu_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+        "dtype": "torch.float16",
+        "device_strategy": "cuda:0",
+        "attention": "sdpa",
+        "protocol_version": 1
+      },
+      "pipeline_output_schema": {
+        "input_text": "list",
+        "generated_text": "str",
+        "generated_token_count": "int",
+        "ended_with_eos": "bool"
+      },
+      "generation_config": {
+        "do_sample": false,
+        "max_new_tokens": 24,
+        "temperature": null,
+        "top_p": null,
+        "seed": null
+      }
+    },
+    {
+      "run_id": "286c314bb432b0e54ec20fb6882e3bbb0f92ac46eedc35b5ae5199bb33bc29bb",
+      "question_id": "desc_01",
+      "question_type": "descriptive",
+      "question": "Describe the main scene in this image in two sentences.",
+      "answerable": true,
+      "expected_facts": [
+        "a wooden cabin beside water",
+        "tall conifer trees",
+        "reflections in water"
+      ],
+      "answer": "The image shows a cabin nestled among trees on a lake, with a reflection of the cabin in the water. The cabin has a wooden roof and a small deck. The surrounding environment is lush with green trees and mountains in the background.",
+      "model_id": "llava-hf/llava-interleave-qwen-0.5b-hf",
+      "revision": "1090956dd1c79bc93ae98dcf395590369435ec91",
+      "image_path": "assets/input/primary_image.png",
+      "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+      "grounding_instruction": "Answer using only information visible in the image. If the answer cannot be determined from the image, explicitly say so. Answer concisely and do not invent details.",
+      "runtime_seconds": 2.613787299953401,
+      "generated_token_count": 48,
+      "ended_with_eos": true,
+      "reached_token_limit": false,
+      "answer_word_count": 43,
+      "answer_character_count": 231,
+      "created_at": "2026-09-22T05:40:41.973284+00:00",
+      "execution_context": {
+        "python": "3.13.5",
+        "versions": {
+          "torch": "2.14.0+cu130",
+          "transformers": "5.17.0",
+          "accelerate": "1.15.0",
+          "Pillow": "12.3.0",
+          "safetensors": "0.8.0",
+          "pandas": "3.0.6",
+          "numpy": "2.5.3",
+          "matplotlib": "3.11.2",
+          "pytest": "9.1.1",
+          "nbformat": "5.11.1",
+          "ipykernel": "7.3.0",
+          "nbclient": "0.11.0"
+        },
+        "cuda_runtime": "13.0",
+        "gpu_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+        "dtype": "torch.float16",
+        "device_strategy": "cuda:0",
+        "attention": "sdpa",
+        "protocol_version": 1
+      },
+      "pipeline_output_schema": {
+        "input_text": "list",
+        "generated_text": "str",
+        "generated_token_count": "int",
+        "ended_with_eos": "bool"
+      },
+      "generation_config": {
+        "do_sample": false,
+        "max_new_tokens": 128,
+        "temperature": null,
+        "top_p": null,
+        "seed": null
+      }
+    },
+    {
+      "run_id": "ab48c819f9280ce6cc8d979ec48fd9aaa95533a6aa7b1b8dd99d907a2eccbc23",
+      "question_id": "fact_01",
+      "question_type": "factual",
+      "question": "Where is the cabin located horizontally in the image: left, center, or right?",
+      "answerable": true,
+      "expected_facts": [
+        "left"
+      ],
+      "answer": "center",
+      "model_id": "llava-hf/llava-interleave-qwen-0.5b-hf",
+      "revision": "1090956dd1c79bc93ae98dcf395590369435ec91",
+      "image_path": "assets/input/primary_image.png",
+      "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+      "grounding_instruction": "Answer using only information visible in the image. If the answer cannot be determined from the image, explicitly say so. Answer concisely and do not invent details.",
+      "runtime_seconds": 0.28206309996312484,
+      "generated_token_count": 2,
+      "ended_with_eos": true,
+      "reached_token_limit": false,
+      "answer_word_count": 1,
+      "answer_character_count": 6,
+      "created_at": "2026-09-22T05:40:42.265340+00:00",
+      "execution_context": {
+        "python": "3.13.5",
+        "versions": {
+          "torch": "2.14.0+cu130",
+          "transformers": "5.17.0",
+          "accelerate": "1.15.0",
+          "Pillow": "12.3.0",
+          "safetensors": "0.8.0",
+          "pandas": "3.0.6",
+          "numpy": "2.5.3",
+          "matplotlib": "3.11.2",
+          "pytest": "9.1.1",
+          "nbformat": "5.11.1",
+          "ipykernel": "7.3.0",
+          "nbclient": "0.11.0"
+        },
+        "cuda_runtime": "13.0",
+        "gpu_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+        "dtype": "torch.float16",
+        "device_strategy": "cuda:0",
+        "attention": "sdpa",
+        "protocol_version": 1
+      },
+      "pipeline_output_schema": {
+        "input_text": "list",
+        "generated_text": "str",
+        "generated_token_count": "int",
+        "ended_with_eos": "bool"
+      },
+      "generation_config": {
+        "do_sample": false,
+        "max_new_tokens": 64,
+        "temperature": null,
+        "top_p": null,
+        "seed": null
+      }
+    },
+    {
+      "run_id": "cf22ad74fcc692769d4de6cd1d3e183c42d551be3c6f7daeb956f77a6b6df760",
+      "question_id": "fact_01",
+      "question_type": "factual",
+      "question": "Which horizontal part of the image contains the cabin: left, center, or right?",
+      "answerable": true,
+      "expected_facts": [
+        "left"
+      ],
+      "answer": "Left",
+      "model_id": "llava-hf/llava-interleave-qwen-0.5b-hf",
+      "revision": "1090956dd1c79bc93ae98dcf395590369435ec91",
+      "image_path": "assets/input/primary_image.png",
+      "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+      "grounding_instruction": "Answer using only information visible in the image. If the answer cannot be determined from the image, explicitly say so. Answer concisely and do not invent details.",
+      "runtime_seconds": 0.23347620002459735,
+      "generated_token_count": 2,
+      "ended_with_eos": true,
+      "reached_token_limit": false,
+      "answer_word_count": 1,
+      "answer_character_count": 4,
+      "created_at": "2026-09-22T05:40:42.506521+00:00",
+      "execution_context": {
+        "python": "3.13.5",
+        "versions": {
+          "torch": "2.14.0+cu130",
+          "transformers": "5.17.0",
+          "accelerate": "1.15.0",
+          "Pillow": "12.3.0",
+          "safetensors": "0.8.0",
+          "pandas": "3.0.6",
+          "numpy": "2.5.3",
+          "matplotlib": "3.11.2",
+          "pytest": "9.1.1",
+          "nbformat": "5.11.1",
+          "ipykernel": "7.3.0",
+          "nbclient": "0.11.0"
+        },
+        "cuda_runtime": "13.0",
+        "gpu_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+        "dtype": "torch.float16",
+        "device_strategy": "cuda:0",
+        "attention": "sdpa",
+        "protocol_version": 1
+      },
+      "pipeline_output_schema": {
+        "input_text": "list",
+        "generated_text": "str",
+        "generated_token_count": "int",
+        "ended_with_eos": "bool"
+      },
+      "generation_config": {
+        "do_sample": false,
+        "max_new_tokens": 64,
+        "temperature": null,
+        "top_p": null,
+        "seed": null
+      }
+    }
+  ]
+}
