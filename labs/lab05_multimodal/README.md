@@ -24,9 +24,19 @@ py -3.13 -m pytest labs/lab05_multimodal/tests -q
 py -3.13 -m compileall -q labs/lab05_multimodal/src
 ```
 
+### Notebook 01: аналіз історичних результатів
+
 Відкрити [`notebooks/01_llava_vqa.ipynb`](notebooks/01_llava_vqa.ipynb) і виконати
 Run All. Notebook читає `evidence/verified_runs.json`, перевіряє image SHA, будує
-таблиці й три графіки заново. Він не потребує PyTorch, Transformers, ваг або GPU.
+таблиці й графіки заново. Він не потребує PyTorch, Transformers, ваг або GPU.
+
+### Notebook 02: новий live inference
+
+[`notebooks/02_llava_live_inference.ipynb`](notebooks/02_llava_live_inference.ipynb)
+показує весь практичний шлях: CUDA preflight, RGB/provenance, одноразове завантаження
+processor і pipeline, chat template, `input_ids`/`pixel_values`, generation config,
+прямий виклик `pipe(...)`, continuation tokens, EOS, runtime і окремий unreviewed output.
+Він не читає historical evidence і не виконується в CPU CI.
 
 ## Новий inference
 
@@ -34,6 +44,13 @@ Run All. Notebook читає `evidence/verified_runs.json`, перевіряє i
 python -m pip install -r labs/lab05_multimodal/requirements.txt
 python -m labs.lab05_multimodal.src.run
 ```
+
+У Windows/Jupyter вибрати kernel того середовища, де `torch.cuda.is_available()`
+повертає `True`, відкрити notebook 02 та виконувати згори вниз. Не перевстановлювати
+PyTorch командою з `requirements.txt`: CUDA-збірка має бути встановлена й перевірена
+окремо. Зафіксований запуск використовував RTX 3050 Laptop із 4 ГБ VRAM, FP16,
+batch size 1 та SDPA. 4 ГБ є перевіреною конфігурацією цього checkpoint, але не
+універсальною гарантією: доступна VRAM залежить від інших процесів і версій kernels.
 
 CLI показує етап, режим `INFERENCE`, `CACHE HIT` або `REUSED RESULT`, параметри,
 питання, відповідь, token count і EOS. Для cache/reuse історичний час маркується як
@@ -57,6 +74,8 @@ CLI показує етап, режим `INFERENCE`, `CACHE HIT` або `REUSED 
 - `report/manual_evaluation.json`: ручні оцінки, прив’язані до run ID, answer та SHA.
 - `src/evidence.py`: сувора schema/image/model validation.
 - `src/visualization.py`: графіки тільки з перевірених рядків.
+- `src/live.py`: payload, CUDA guard та ізольоване збереження нового `NOT_REVIEWED` run.
+- `.github/workflows/lab5-ci.yml`: чиста CPU-перевірка evidence, tests, notebook 01 та HTML.
 - `report/report.md`, `methodology_audit.md`, `defense_notes.md`: письмовий звіт,
   аудит методики й тези для захисту.
 
