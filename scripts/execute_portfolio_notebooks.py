@@ -1,4 +1,4 @@
-"""Execute and verify both portfolio notebooks with a real Jupyter kernel."""
+"""Execute notebooks whose declared runtime dependencies match the selected mode."""
 from __future__ import annotations
 
 import argparse
@@ -45,6 +45,13 @@ def main() -> None:
         targets = [NOTEBOOKS[0]]
     elif args.lab == "4":
         targets = [NOTEBOOKS[1]]
+    elif args.mode == "replay":
+        # Lab 3 is deliberately live-only: executing it without Redis and LM
+        # Studio would either fail honestly or require fabricated replay paths.
+        targets = [NOTEBOOKS[1]]
+        print(f"{NOTEBOOKS[0].relative_to(ROOT)}: SKIPPED mode=replay reason=live-only")
+    if args.mode == "replay" and args.lab == "3":
+        raise SystemExit("Lab 3 has no replay mode; start Redis and LM Studio, then use --mode full --lab 3")
     for path in targets:
         cells, errors = execute(path, args.mode)
         print(f"{path.relative_to(ROOT)}: EXECUTED mode={args.mode} code_cells={cells} errors={errors}")

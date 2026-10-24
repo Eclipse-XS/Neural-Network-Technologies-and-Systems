@@ -77,7 +77,8 @@ from labs.lab04_stable_diffusion.src.pipeline_inspection import *
 model_config = ModelConfig()
 groups = experiment_groups()
 plan = unique_plan()
-env = environment()
+env = (environment() if MODE == "full" else
+       json.loads((PORTFOLIO / "historical_environment.json").read_text(encoding="utf-8")))
 
 config_rows = [
     {"category": "Runtime", "parameter": "Python Version", "value": env["python_version"]},
