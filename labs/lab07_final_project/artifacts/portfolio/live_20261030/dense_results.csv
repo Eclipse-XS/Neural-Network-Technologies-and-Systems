@@ -1,0 +1,212 @@
+query_id,query,rank,source,section,chunk_id,score_or_distance,preview,text,runtime_ms
+q01,Which Stable Diffusion model was used in Lab 4?,1,lab04,Модель і середовище,chunk-0fceabd8decbcb78,0.400467574596,"## Модель і середовище  
+Методичка називає `runwayml/stable-diffusion-v1-5`. Фактичний API цього ID перенаправляє на `stable-diffusion-v1-5/stable-diffusion-v1-5`; використано цей еквівалент **Stable Diffusion v1.5**, без зміни сімейства. Revision: `451f4fe16113bff5a5d2269ed5ad43b0592e9a14`. Є safet","## Модель і середовище  
+Методичка називає `runwayml/stable-diffusion-v1-5`. Фактичний API цього ID перенаправляє на `stable-diffusion-v1-5/stable-diffusion-v1-5`; використано цей еквівалент **Stable Diffusion v1.5**, без зміни сімейства. Revision: `451f4fe16113bff5a5d2269ed5ad43b0592e9a14`. Є safetensors FP16",23.782499993103556
+q01,Which Stable Diffusion model was used in Lab 4?,2,lab04,Джерела,chunk-63c4288e6feda75a,0.504884123802,"## Джерела  
+Надана «ЛАБ 4.docx», НУ «Львівська політехніка», 2025, Варіант 1. [SD 1.5 model card](https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5), [Diffusers memory](https://huggingface.co/docs/diffusers/optimization/memory), [Diffusers reproducibility](https://huggingface.co/do","## Джерела  
+Надана «ЛАБ 4.docx», НУ «Львівська політехніка», 2025, Варіант 1. [SD 1.5 model card](https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5), [Diffusers memory](https://huggingface.co/docs/diffusers/optimization/memory), [Diffusers reproducibility](https://huggingface.co/docs/diffusers/using-diffusers/reusing_seeds).",23.782499993103556
+q01,Which Stable Diffusion model was used in Lab 4?,3,lab06,Зауваження до кожної відповіді фінальної серії,chunk-dd4fe488bab8f594,0.622760355473,"## Зауваження до кожної відповіді фінальної серії  
+- **role**: Пряма відповідь про роль, нуль викликів; зайві дії відсутні.  
+- **lab4**: Правильно визначено Stable Diffusion v1.5, наведено lab04_report.md. Checkpoint скорочено до назви сімейства; твердження підтверджує прочитаний model-card рядок.","## Зауваження до кожної відповіді фінальної серії  
+- **role**: Пряма відповідь про роль, нуль викликів; зайві дії відсутні.  
+- **lab4**: Правильно визначено Stable Diffusion v1.5, наведено lab04_report.md. Checkpoint скорочено до назви сімейства; твердження підтверджує прочитаний model-card рядок.  
+- **lab5**: Точний checkpoint, revision і кількість",23.782499993103556
+q01,Which Stable Diffusion model was used in Lab 4?,4,lab05,9. Вхідне зображення,chunk-eb92f806a802fff2,0.639279961586,"## 9. Вхідне зображення  
+![Вхідне зображення](../assets/input/primary_image.png)  
+primary_image.png: 512×512, PNG. Джерело: `labs/lab04_stable_diffusion/outputs/images/styles/photorealistic_seed42_steps30_cfg7p5_df410b01ba0eea49.png`; скопійовано без зміни оригіналу. SHA-256:","## 9. Вхідне зображення  
+![Вхідне зображення](../assets/input/primary_image.png)  
+primary_image.png: 512×512, PNG. Джерело: `labs/lab04_stable_diffusion/outputs/images/styles/photorealistic_seed42_steps30_cfg7p5_df410b01ba0eea49.png`; скопійовано без зміни оригіналу. SHA-256:",23.782499993103556
+q01,Which Stable Diffusion model was used in Lab 4?,5,lab04,Лабораторна робота №4,chunk-1407dd0be2d2fcd0,0.658331394196,"# Лабораторна робота №4  
+**Тема:** Генерування зображень за допомогою Stable Diffusion.
+**Мета:** дослідити параметри локального text-to-image inference у контрольованих порівняннях.
+**Варіант:** 1. Модель не навчалась і не донавчалась.","# Лабораторна робота №4  
+**Тема:** Генерування зображень за допомогою Stable Diffusion.
+**Мета:** дослідити параметри локального text-to-image inference у контрольованих порівняннях.
+**Варіант:** 1. Модель не навчалась і не донавчалась.",23.782499993103556
+q02,What approach kept chat context between user messages?,1,lab06,Пам'ять та ізоляція,chunk-ce0ead7993a742f9,0.728224754333,"## Пам'ять та ізоляція  
+SQLiteSession зберігає conversation items в outputs/sessions/agent_memory.sqlite. Це контекст діалогу, не семантична довготривала пам'ять. Перед другим запитом Runner отримує попередні items. Перевірено збережений текст alias у A та його відсутність у B. Повні items після се","## Пам'ять та ізоляція  
+SQLiteSession зберігає conversation items в outputs/sessions/agent_memory.sqlite. Це контекст діалогу, не семантична довготривала пам'ять. Перед другим запитом Runner отримує попередні items. Перевірено збережений текст alias у A та його відсутність у B. Повні items після серії наведені в metadata/memory_<batch>.json та notebook.  
+Session A, встановлення: Understood.",22.386700002243742
+q02,What approach kept chat context between user messages?,2,lab06,Середовище та модель,chunk-971df631d76ed623,0.750488877296,"## Середовище та модель  
+Python 3.13.5; openai-agents 0.22.3; openai 3.17.0; pydantic 2.13.5; transport httpx2 2.13.0.  
+Endpoint: `http://localhost:1234/v1`. Фактично виявлена модель: `mistralai/ministral-3-3b`. API — Chat Completions, temperature=0.0,","## Середовище та модель  
+Python 3.13.5; openai-agents 0.22.3; openai 3.17.0; pydantic 2.13.5; transport httpx2 2.13.0.  
+Endpoint: `http://localhost:1234/v1`. Фактично виявлена модель: `mistralai/ministral-3-3b`. API — Chat Completions, temperature=0.0,",22.386700002243742
+q02,What approach kept chat context between user messages?,3,lab06,System instructions,chunk-9feb89f61735b5f9,0.783975303173,"not stated in the retrieved evidence. Treat tool errors as observations to correct.
+Do not repeat identical calls without new information. Stop when sufficient evidence
+exists and provide a concise final answer. Do not reveal private reasoning.
+```  
+Очікувані факти зі scenarios.json читає лише eval","not stated in the retrieved evidence. Treat tool errors as observations to correct.
+Do not repeat identical calls without new information. Stop when sufficient evidence
+exists and provide a concise final answer. Do not reveal private reasoning.
+```  
+Очікувані факти зі scenarios.json читає лише evaluator. В агент передається виключно user_input; відповіді не вбудовані в інструкції.",22.386700002243742
+q02,What approach kept chat context between user messages?,4,lab05,10. Організація VQA-експерименту,chunk-b2c9638fc2ea13e5,0.791030406952,"редовище. Manifest відділяє участь в експериментах від унікальних генерацій: повторно використано fact_01 та desc_01.  
+Ключовий виклик із src/inference.py:  
+```python
+output = pipe(text=messages, return_full_text=False,","редовище. Manifest відділяє участь в експериментах від унікальних генерацій: повторно використано fact_01 та desc_01.  
+Ключовий виклик із src/inference.py:  
+```python
+output = pipe(text=messages, return_full_text=False,",22.386700002243742
+q02,What approach kept chat context between user messages?,5,lab06,Теоретичні відомості та архітектура,chunk-09f367b6e0c82db6,0.804295003414,"## Теоретичні відомості та архітектура  
+LLM формує текст або запит функції на основі system instructions, user input, історії та JSON-схем інструментів. Runner виконує функцію, додає","## Теоретичні відомості та архітектура  
+LLM формує текст або запит функції на основі system instructions, user input, історії та JSON-схем інструментів. Runner виконує функцію, додає",22.386700002243742
+q03,What limitation of vector retrieval was demonstrated in Lab 3?,1,lab03,Реалізація,chunk-0cadcd4745da0b77,0.6741502285,venance мають залишатися однією логічною одиницею. `all-MiniLM-L6-v2` формує нормалізовані 384-вимірні embeddings. Redis Stack зберігає `FLOAT32` vectors у `FLAT`-індексі та виконує пошук за cosine distance. Grounded prompt передає локальній моделі в LM Studio,venance мають залишатися однією логічною одиницею. `all-MiniLM-L6-v2` формує нормалізовані 384-вимірні embeddings. Redis Stack зберігає `FLOAT32` vectors у `FLAT`-індексі та виконує пошук за cosine distance. Grounded prompt передає локальній моделі в LM Studio,22.628899998380803
+q03,What limitation of vector retrieval was demonstrated in Lab 3?,2,lab06,Багатокрокове виконання,chunk-8ddbb2b7f3688f21,0.680050611496,"## Багатокрокове виконання  
+Еталон, отриманий з джерел: Lab 4 — 13 унікальних генерацій (lab04_report.md:41), Lab 5 — 17 унікальних inference, 19 рядків через повторне використання (lab05_report.md:13). Правильна різниця 17−13=4 на користь Lab 5. Еталон не передавався моделі.  
+Фактична траєкторія ","## Багатокрокове виконання  
+Еталон, отриманий з джерел: Lab 4 — 13 унікальних генерацій (lab04_report.md:41), Lab 5 — 17 унікальних inference, 19 рядків через повторне використання (lab05_report.md:13). Правильна різниця 17−13=4 на користь Lab 5. Еталон не передавався моделі.  
+Фактична траєкторія multi: list_workspace_files → search_workspace → search_workspace →",22.628899998380803
+q03,What limitation of vector retrieval was demonstrated in Lab 3?,3,lab06,Пам'ять та ізоляція,chunk-bbd0197442c96a3e,0.684609055519,"серії наведені в metadata/memory_<batch>.json та notebook.  
+Session A, встановлення: Understood. I will use **""Vision Lab""** as an alias for **Lab 5** throughout this conversation.  
+Session A, запит моделі: The search did not reveal a direct mention of the **model ID** in JSON files or metadata. S","серії наведені в metadata/memory_<batch>.json та notebook.  
+Session A, встановлення: Understood. I will use **""Vision Lab""** as an alias for **Lab 5** throughout this conversation.  
+Session A, запит моделі: The search did not reveal a direct mention of the **model ID** in JSON files or metadata. Since the report references LLaVA architecture and mentions `SHA-підпис` includes `model/revision`, I will assume that the model is part of an existing LLaVA checkpoint (e.g., from Hugging Face).",22.628899998380803
+q03,What limitation of vector retrieval was demonstrated in Lab 3?,4,lab06,Фактичні помилки та застрягання,chunk-208f2e8aab6028b8,0.702632546425,"Початкова memory_recall передала filename=""Lab 5"", захист відхилив шлях, Runner завершився UserError. Початкові multi та comparison_tools не знайшли загальне число Lab 4, зробили","Початкова memory_recall передала filename=""Lab 5"", захист відхилив шлях, Runner завершився UserError. Початкові multi та comparison_tools не знайшли загальне число Lab 4, зробили",22.628899998380803
+q03,What limitation of vector retrieval was demonstrated in Lab 3?,5,lab06,Керована діагностика калькулятора,chunk-dc7c28c8c55f4686,0.703115224838,"orkspace → search_workspace → calculate.  
+The sum of the inferred counts is **20** (Lab 4: 3, Lab 5: 17).  
+**Note:** The count for Lab 4 remains uncertain without explicit uniqueness data. If you need further clarification or additional evidence, let me know.  
+---
+**Final Answer:**
+- **Lab 4**: 3","orkspace → search_workspace → calculate.  
+The sum of the inferred counts is **20** (Lab 4: 3, Lab 5: 17).  
+**Note:** The count for Lab 4 remains uncertain without explicit uniqueness data. If you need further clarification or additional evidence, let me know.  
+---
+**Final Answer:**
+- **Lab 4**: 3 inference runs (no unique output count explicitly stated).
+- **Lab 5**: 17 unique generated/inference outputs.
+- **Sum**: **20** (calculated from available data).",22.628899998380803
+q04,Stable Diffusion seed CFG negative prompt,1,lab04,Джерела,chunk-63c4288e6feda75a,0.502390146255,"## Джерела  
+Надана «ЛАБ 4.docx», НУ «Львівська політехніка», 2025, Варіант 1. [SD 1.5 model card](https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5), [Diffusers memory](https://huggingface.co/docs/diffusers/optimization/memory), [Diffusers reproducibility](https://huggingface.co/do","## Джерела  
+Надана «ЛАБ 4.docx», НУ «Львівська політехніка», 2025, Варіант 1. [SD 1.5 model card](https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5), [Diffusers memory](https://huggingface.co/docs/diffusers/optimization/memory), [Diffusers reproducibility](https://huggingface.co/docs/diffusers/using-diffusers/reusing_seeds).",21.751099993707612
+q04,Stable Diffusion seed CFG negative prompt,2,lab04,Модель і середовище,chunk-0fceabd8decbcb78,0.583479940891,"## Модель і середовище  
+Методичка називає `runwayml/stable-diffusion-v1-5`. Фактичний API цього ID перенаправляє на `stable-diffusion-v1-5/stable-diffusion-v1-5`; використано цей еквівалент **Stable Diffusion v1.5**, без зміни сімейства. Revision: `451f4fe16113bff5a5d2269ed5ad43b0592e9a14`. Є safet","## Модель і середовище  
+Методичка називає `runwayml/stable-diffusion-v1-5`. Фактичний API цього ID перенаправляє на `stable-diffusion-v1-5/stable-diffusion-v1-5`; використано цей еквівалент **Stable Diffusion v1.5**, без зміни сімейства. Revision: `451f4fe16113bff5a5d2269ed5ad43b0592e9a14`. Є safetensors FP16",21.751099993707612
+q04,Stable Diffusion seed CFG negative prompt,3,lab05,9. Вхідне зображення,chunk-eb92f806a802fff2,0.744582533836,"## 9. Вхідне зображення  
+![Вхідне зображення](../assets/input/primary_image.png)  
+primary_image.png: 512×512, PNG. Джерело: `labs/lab04_stable_diffusion/outputs/images/styles/photorealistic_seed42_steps30_cfg7p5_df410b01ba0eea49.png`; скопійовано без зміни оригіналу. SHA-256:","## 9. Вхідне зображення  
+![Вхідне зображення](../assets/input/primary_image.png)  
+primary_image.png: 512×512, PNG. Джерело: `labs/lab04_stable_diffusion/outputs/images/styles/photorealistic_seed42_steps30_cfg7p5_df410b01ba0eea49.png`; скопійовано без зміни оригіналу. SHA-256:",21.751099993707612
+q04,Stable Diffusion seed CFG negative prompt,4,lab04,"Negative prompt, seed 123",chunk-5f8719c3da69fa11,0.767275869846,"## Negative prompt, seed 123  
+![Negative prompt, seed 123](../artifacts/portfolio/negative_prompt_seed123_comparison.png)  
+Для seed 123 з negative prompt видно більше людей та автомобілів; великі вертикальні","## Negative prompt, seed 123  
+![Negative prompt, seed 123](../artifacts/portfolio/negative_prompt_seed123_comparison.png)  
+Для seed 123 з negative prompt видно більше людей та автомобілів; великі вертикальні",21.751099993707612
+q04,Stable Diffusion seed CFG negative prompt,5,lab04,Організація контрольованих експериментів,chunk-6a1069fdfb36fbd7,0.782559871674,"|---|---|---|---|
+| Seed | seed | 42, 123, 777, 2026 | prompt, negative, steps, CFG, model, scheduler, resolution |
+| Steps | num_inference_steps | 20, 30, 50 | prompt, negative, seed, CFG, model, scheduler, resolution |
+| CFG | guidance_scale | 5, 7.5, 10 | prompt, negative, seed, steps, model, sch","|---|---|---|---|
+| Seed | seed | 42, 123, 777, 2026 | prompt, negative, steps, CFG, model, scheduler, resolution |
+| Steps | num_inference_steps | 20, 30, 50 | prompt, negative, seed, CFG, model, scheduler, resolution |
+| CFG | guidance_scale | 5, 7.5, 10 | prompt, negative, seed, steps, model, scheduler, resolution |
+| Negative | negative_prompt | None / configured, дві пари | усе інше всередині кожної пари |
+| Styles | стильовий suffix | watercolor, isometric, photorealistic | друга сцена, seed, steps, CFG, negative, model, scheduler, resolution |",21.751099993707612
+q05,What hallucination behavior was observed in the Lab 5 VQA experiment?,1,lab06,Пам'ять та ізоляція,chunk-fb5811c46acbb347,0.578707158566,"clarification: **Was this experiment using a pre-trained LLaVA checkpoint (e.g., from Hugging Face), or was it a custom model?** If you have access to the codebase or inference outputs, please provide details about the model ID.  
+Otherwise, based on the architecture description, the model is likely","clarification: **Was this experiment using a pre-trained LLaVA checkpoint (e.g., from Hugging Face), or was it a custom model?** If you have access to the codebase or inference outputs, please provide details about the model ID.  
+Otherwise, based on the architecture description, the model is likely an LLaVA variant.  
+Session B, той самий запит: The Vision Lab corresponds to one of the following reports: **lab03_report.md**, **lab04_report.md**, or **lab05_report.md**. Which specific lab are you referring to?  
+Оцінка пам'яті: PASS; ізоляції: PASS.",23.271800004295073
+q05,What hallucination behavior was observed in the Lab 5 VQA experiment?,2,lab06,Пам'ять та ізоляція,chunk-bbd0197442c96a3e,0.659350395203,"серії наведені в metadata/memory_<batch>.json та notebook.  
+Session A, встановлення: Understood. I will use **""Vision Lab""** as an alias for **Lab 5** throughout this conversation.  
+Session A, запит моделі: The search did not reveal a direct mention of the **model ID** in JSON files or metadata. S","серії наведені в metadata/memory_<batch>.json та notebook.  
+Session A, встановлення: Understood. I will use **""Vision Lab""** as an alias for **Lab 5** throughout this conversation.  
+Session A, запит моделі: The search did not reveal a direct mention of the **model ID** in JSON files or metadata. Since the report references LLaVA architecture and mentions `SHA-підпис` includes `model/revision`, I will assume that the model is part of an existing LLaVA checkpoint (e.g., from Hugging Face).",23.271800004295073
+q05,What hallucination behavior was observed in the Lab 5 VQA experiment?,3,lab06,Багатокрокове виконання,chunk-51d03e4a81ec24d0,0.668808341026,"лькість генерацій/інференсів у таблиці або тексті. Однако в **Lab 5** явно зазначено:  
+- **Lab 5**: ""19 рядків та 17 унікальних inference"" (згідно з лінією 13).
+Цей текст підтверджує, що було виконано **17 інференсів**.  
+В **Lab 4** в таблиці наведено:
+- **13 унікальних генерацій** (лінія 41).  
+-","лькість генерацій/інференсів у таблиці або тексті. Однако в **Lab 5** явно зазначено:  
+- **Lab 5**: ""19 рядків та 17 унікальних inference"" (згідно з лінією 13).
+Цей текст підтверджує, що було виконано **17 інференсів**.  
+В **Lab 4** в таблиці наведено:
+- **13 унікальних генерацій** (лінія 41).  
+---",23.271800004295073
+q05,What hallucination behavior was observed in the Lab 5 VQA experiment?,4,lab06,Пам'ять та ізоляція,chunk-b52f1090c748266e,0.681279480457,"To confirm, I will check if there are any **inference outputs** (JSON files) in the workspace under a directory like `outputs/results/` or similar. If no such file exists, I will assume that the model is loaded locally without an explicit ID.  
+Since the workspace listing does not show relevant JSON","To confirm, I will check if there are any **inference outputs** (JSON files) in the workspace under a directory like `outputs/results/` or similar. If no such file exists, I will assume that the model is loaded locally without an explicit ID.  
+Since the workspace listing does not show relevant JSON files, I will instead ask for clarification: **Was this experiment using a pre-trained LLaVA checkpoint (e.g., from Hugging Face), or was it",23.271800004295073
+q05,What hallucination behavior was observed in the Lab 5 VQA experiment?,5,lab06,Додаткова арифметична перевірка,chunk-b61b787ddb8b8689,0.691995859146,", CFG та стилів).  
+Згідно з цим, **Lab 4 має 13 унікальних інференсних виходів**.  
+---  
+**Lab 5** на **лінії 13** в `lab05_report.md` зазначає:  
+> **""17 унікальних inference""** (згадується також у контексті ""19 рядків та 17 унікальних inference"").  
+---",", CFG та стилів).  
+Згідно з цим, **Lab 4 має 13 унікальних інференсних виходів**.  
+---  
+**Lab 5** на **лінії 13** в `lab05_report.md` зазначає:  
+> **""17 унікальних inference""** (згадується також у контексті ""19 рядків та 17 унікальних inference"").  
+---",23.271800004295073
+q06,SQLiteSession пам’ять інструменти агента,1,lab06,Теоретичні відомості та архітектура,chunk-bf39f0820ad96dd0,0.488970518112,"аних локального диска без явної передачі. Агентна програма доповнює модель зовнішніми діями та станом.  
+```text
+Запит → Agent / Runner → локальна LLM у LM Studio
+├── SQLiteSession → локальна історія
+└── function_tool → list / search /","аних локального диска без явної передачі. Агентна програма доповнює модель зовнішніми діями та станом.  
+```text
+Запит → Agent / Runner → локальна LLM у LM Studio
+├── SQLiteSession → локальна історія
+└── function_tool → list / search /",24.660199997015297
+q06,SQLiteSession пам’ять інструменти агента,2,lab06,"Тема, мета та варіант",chunk-38b40e50e883243b,0.539145946503,"# Лабораторна робота №6  
+## Тема, мета та варіант  
+Розробка agent-based асистента. Мета — реалізувати локального LLM-агента з пам'яттю, інструментами та багатокроковими рішеннями. **Варіант 3 — OpenAI Agents","# Лабораторна робота №6  
+## Тема, мета та варіант  
+Розробка agent-based асистента. Мета — реалізувати локального LLM-агента з пам'яттю, інструментами та багатокроковими рішеннями. **Варіант 3 — OpenAI Agents",24.660199997015297
+q06,SQLiteSession пам’ять інструменти агента,3,lab04,Базова генерація,chunk-5d60f0bb0ff6dbaa,0.569429039955,"## Базова генерація  
+![Baseline](../artifacts/portfolio/baseline.png)  
+Це перший реальний inference і офіційний baseline, а не окреме тестове зображення. Фактичні параметри наведено у таблиці нижче.","## Базова генерація  
+![Baseline](../artifacts/portfolio/baseline.png)  
+Це перший реальний inference і офіційний baseline, а не окреме тестове зображення. Фактичні параметри наведено у таблиці нижче.",24.660199997015297
+q06,SQLiteSession пам’ять інструменти агента,4,lab05,21. Висновки,chunk-7cbb6dd0b83dd0ec,0.582406044006,"## 21. Висновки  
+LLaVA розпізнає головний зміст цього зображення та відповідає правильно на три базові факти, але аналітичні пояснення часто поверхові. Контроль координат виявив непідтверджену числову","## 21. Висновки  
+LLaVA розпізнає головний зміст цього зображення та відповідає правильно на три базові факти, але аналітичні пояснення часто поверхові. Контроль координат виявив непідтверджену числову",24.660199997015297
+q06,SQLiteSession пам’ять інструменти агента,5,lab05,19. Аналіз узгодженості,chunk-2bec48f51ac17208,0.587095379829,"## 19. Аналіз узгодженості  
+Три рівнозначні запитання про горизонтальне положення дали left, center, Left. Перше й третє семантично узгоджені й правильні; друге хибне. Повної узгодженості","## 19. Аналіз узгодженості  
+Три рівнозначні запитання про горизонтальне положення дали left, center, Left. Перше й третє семантично узгоджені й правильні; друге хибне. Повної узгодженості",24.660199997015297
+q07,Compare Stable Diffusion and LLaVA model roles,1,lab04,Модель і середовище,chunk-0fceabd8decbcb78,0.607910692692,"## Модель і середовище  
+Методичка називає `runwayml/stable-diffusion-v1-5`. Фактичний API цього ID перенаправляє на `stable-diffusion-v1-5/stable-diffusion-v1-5`; використано цей еквівалент **Stable Diffusion v1.5**, без зміни сімейства. Revision: `451f4fe16113bff5a5d2269ed5ad43b0592e9a14`. Є safet","## Модель і середовище  
+Методичка називає `runwayml/stable-diffusion-v1-5`. Фактичний API цього ID перенаправляє на `stable-diffusion-v1-5/stable-diffusion-v1-5`; використано цей еквівалент **Stable Diffusion v1.5**, без зміни сімейства. Revision: `451f4fe16113bff5a5d2269ed5ad43b0592e9a14`. Є safetensors FP16",22.633400003542192
+q07,Compare Stable Diffusion and LLaVA model roles,2,lab04,Джерела,chunk-63c4288e6feda75a,0.649362444878,"## Джерела  
+Надана «ЛАБ 4.docx», НУ «Львівська політехніка», 2025, Варіант 1. [SD 1.5 model card](https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5), [Diffusers memory](https://huggingface.co/docs/diffusers/optimization/memory), [Diffusers reproducibility](https://huggingface.co/do","## Джерела  
+Надана «ЛАБ 4.docx», НУ «Львівська політехніка», 2025, Варіант 1. [SD 1.5 model card](https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5), [Diffusers memory](https://huggingface.co/docs/diffusers/optimization/memory), [Diffusers reproducibility](https://huggingface.co/docs/diffusers/using-diffusers/reusing_seeds).",22.633400003542192
+q07,Compare Stable Diffusion and LLaVA model roles,3,lab06,Пам'ять та ізоляція,chunk-bbd0197442c96a3e,0.712678790092,"серії наведені в metadata/memory_<batch>.json та notebook.  
+Session A, встановлення: Understood. I will use **""Vision Lab""** as an alias for **Lab 5** throughout this conversation.  
+Session A, запит моделі: The search did not reveal a direct mention of the **model ID** in JSON files or metadata. S","серії наведені в metadata/memory_<batch>.json та notebook.  
+Session A, встановлення: Understood. I will use **""Vision Lab""** as an alias for **Lab 5** throughout this conversation.  
+Session A, запит моделі: The search did not reveal a direct mention of the **model ID** in JSON files or metadata. Since the report references LLaVA architecture and mentions `SHA-підпис` includes `model/revision`, I will assume that the model is part of an existing LLaVA checkpoint (e.g., from Hugging Face).",22.633400003542192
+q07,Compare Stable Diffusion and LLaVA model roles,4,lab04,Лабораторна робота №4,chunk-1407dd0be2d2fcd0,0.755035281181,"# Лабораторна робота №4  
+**Тема:** Генерування зображень за допомогою Stable Diffusion.
+**Мета:** дослідити параметри локального text-to-image inference у контрольованих порівняннях.
+**Варіант:** 1. Модель не навчалась і не донавчалась.","# Лабораторна робота №4  
+**Тема:** Генерування зображень за допомогою Stable Diffusion.
+**Мета:** дослідити параметри локального text-to-image inference у контрольованих порівняннях.
+**Варіант:** 1. Модель не навчалась і не донавчалась.",22.633400003542192
+q07,Compare Stable Diffusion and LLaVA model roles,5,lab06,Пам'ять та ізоляція,chunk-b52f1090c748266e,0.763795137405,"To confirm, I will check if there are any **inference outputs** (JSON files) in the workspace under a directory like `outputs/results/` or similar. If no such file exists, I will assume that the model is loaded locally without an explicit ID.  
+Since the workspace listing does not show relevant JSON","To confirm, I will check if there are any **inference outputs** (JSON files) in the workspace under a directory like `outputs/results/` or similar. If no such file exists, I will assume that the model is loaded locally without an explicit ID.  
+Since the workspace listing does not show relevant JSON files, I will instead ask for clarification: **Was this experiment using a pre-trained LLaVA checkpoint (e.g., from Hugging Face), or was it",22.633400003542192
+q08,Exact outdoor temperature during execution of Lab 4,1,lab06,Невідома інформація,chunk-cbb35c1cbba9c283,0.425628662109,"## Невідома інформація  
+The report does not contain any explicit mention of the outdoor temperature in Lviv during Lab 4 execution. The available data focuses on model parameters, prompts, and inference results but does not reference environmental conditions like temperature.  
+If you need this inf","## Невідома інформація  
+The report does not contain any explicit mention of the outdoor temperature in Lviv during Lab 4 execution. The available data focuses on model parameters, prompts, and inference results but does not reference environmental conditions like temperature.  
+If you need this information for a specific experiment or context, it may be missing from the provided reports. Would you like to check another report file or clarify if there is additional metadata elsewhere?  
+Не вигадує температуру й повідомляє про відсутність даних; пошук і читання доречні. Фінальна відповідь не цитує filename.",19.633199990494177
+q08,Exact outdoor temperature during execution of Lab 4,2,lab05,10. Організація VQA-експерименту,chunk-e146e9d021793414,0.609245598316,"e image. If the answer cannot be determined from the image, explicitly say so. Answer concisely and do not invent details.  
+Baseline: do_sample=False, max_new_tokens=64, temperature/top_p/seed відсутні. Temperature: analysis_01, do_sample=True, top_p=0.9, max_new_tokens=64, seed=42 перед кожним зап","e image. If the answer cannot be determined from the image, explicitly say so. Answer concisely and do not invent details.  
+Baseline: do_sample=False, max_new_tokens=64, temperature/top_p/seed відсутні. Temperature: analysis_01, do_sample=True, top_p=0.9, max_new_tokens=64, seed=42 перед кожним запуском, temperature=0.2/0.7/1.0. Ліміт: desc_01, greedy, 24/64/128. Перефразування: fact_01, три рівнозначні формулювання, однаковий baseline.",19.633199990494177
+q08,Exact outdoor temperature during execution of Lab 4,3,lab06,Обмеження та висновки,chunk-d7731983f05646a8,0.644889831543,"перевищити контекст. Низька temperature не є доказом побітової відтворюваності. Чотири інструменти не мають shell, вебу та прав модифікації звітів; журнали пише runtime.  
+Робота демонструє справжній SDK-цикл і показує, чому правильне отримання даних слід оцінювати","перевищити контекст. Низька temperature не є доказом побітової відтворюваності. Чотири інструменти не мають shell, вебу та прав модифікації звітів; журнали пише runtime.  
+Робота демонструє справжній SDK-цикл і показує, чому правильне отримання даних слід оцінювати",19.633199990494177
+q08,Exact outdoor temperature during execution of Lab 4,4,lab06,Зауваження до кожної відповіді фінальної серії,chunk-ab7d6715d9bc1bb1,0.68251490593,"три рядки таблиці Lab 5 помилково прийнято за загальну кількість outputs. Результат 13 проти 3, різниця 10 та переможець неправильні. Числа 24/64/128 — параметри max_new_tokens, не temperature. Calculate пропущено; номери рядків названо сторінками. Пошук inference|output помилково використано як reg","три рядки таблиці Lab 5 помилково прийнято за загальну кількість outputs. Результат 13 проти 3, різниця 10 та переможець неправильні. Числа 24/64/128 — параметри max_new_tokens, не temperature. Calculate пропущено; номери рядків названо сторінками. Пошук inference|output помилково використано як regex, хоча інструмент literal.",19.633199990494177
+q08,Exact outdoor temperature during execution of Lab 4,5,lab06,Без інструментів і з інструментами,chunk-11dceaf8c4c49fae,0.696776747704,"## Без інструментів і з інструментами  
+| agent_variant | answer_correctness | grounding | tool_call_count | runtime_seconds |
+| --- | --- | --- | --- | --- |
+| without_tools | INCORRECT | UNSUPPORTED | 0 | 16.462 |
+| with_tools | INCORRECT | PARTIAL | 7 | 191.978 |  
+Без інструментів:  
+From worksp","## Без інструментів і з інструментами  
+| agent_variant | answer_correctness | grounding | tool_call_count | runtime_seconds |
+| --- | --- | --- | --- | --- |
+| without_tools | INCORRECT | UNSUPPORTED | 0 | 16.462 |
+| with_tools | INCORRECT | PARTIAL | 7 | 191.978 |  
+Без інструментів:  
+From workspace files, here are the relevant reports:  
+- **Lab 4**: `lab_4_results.csv` (lines 1–60)
+- Total",19.633199990494177

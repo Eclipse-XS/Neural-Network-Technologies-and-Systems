@@ -1,0 +1,526 @@
+{
+  "mode": "lexical",
+  "query_count": 30,
+  "evaluated_queries": 28,
+  "unsupported_queries": 2,
+  "source_hit_at_5": 0.9285714285714286,
+  "evidence_recall_at_1": 0.5179,
+  "evidence_recall_at_3": 0.625,
+  "evidence_recall_at_5": 0.7143,
+  "evidence_hit_at_1": 0.5357,
+  "evidence_hit_at_3": 0.6429,
+  "evidence_hit_at_5": 0.75,
+  "evidence_mrr": 0.6042,
+  "avg_latency_ms": 0.87,
+  "queries": [
+    {
+      "query_id": "ho_01",
+      "query": "What exact model checkpoint was used for Stable Diffusion in Lab 4?",
+      "question_type": "exact_model_id",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "evidence_ranks": [
+        1
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "runtime_ms": 0.8214000117732212
+    },
+    {
+      "query_id": "ho_02",
+      "query": "Який чекпоїнт мультимодальної моделі досліджувався у лабораторній роботі 5?",
+      "question_type": "exact_model_id",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "evidence_ranks": [
+        null
+      ],
+      "recall_at_1": 0.0,
+      "recall_at_3": 0.0,
+      "recall_at_5": 0.0,
+      "hit_at_1": false,
+      "hit_at_3": false,
+      "hit_at_5": false,
+      "runtime_ms": 1.556900009745732
+    },
+    {
+      "query_id": "ho_03",
+      "query": "Which model was connected via LM Studio in Lab 6?",
+      "question_type": "exact_model_id",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "evidence_ranks": [
+        1
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "runtime_ms": 0.3259000077378005
+    },
+    {
+      "query_id": "ho_04",
+      "query": "Яка модель ембеддингів використовувалася в Лабораторній роботі 3?",
+      "question_type": "exact_model_id",
+      "hit_at_k": false,
+      "all_sources_hit": false,
+      "evidence_ranks": [
+        null
+      ],
+      "recall_at_1": 0.0,
+      "recall_at_3": 0.0,
+      "recall_at_5": 0.0,
+      "hit_at_1": false,
+      "hit_at_3": false,
+      "hit_at_5": false,
+      "runtime_ms": 1.335499997367151
+    },
+    {
+      "query_id": "ho_05",
+      "query": "What Git commit hash or revision was specified for Stable Diffusion v1.5 in Lab 4?",
+      "question_type": "version_revision",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "evidence_ranks": [
+        1
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "runtime_ms": 0.5794999888166785
+    },
+    {
+      "query_id": "ho_06",
+      "query": "Який локальний порт та endpoint використовувалися для LM Studio в лабораторній роботі №6?",
+      "question_type": "version_revision",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "evidence_ranks": [
+        1
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "runtime_ms": 1.492099996539764
+    },
+    {
+      "query_id": "ho_07",
+      "query": "How many unique generated outputs were produced in the Lab 4 experiment?",
+      "question_type": "numerical_count",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "evidence_ranks": [
+        1
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "runtime_ms": 0.6493999972008169
+    },
+    {
+      "query_id": "ho_08",
+      "query": "Скільки унікальних інференсів VQA було виконано в лабораторній роботі №5?",
+      "question_type": "numerical_count",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "evidence_ranks": [
+        1
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "runtime_ms": 1.6330000071320683
+    },
+    {
+      "query_id": "ho_09",
+      "query": "How many long documents or records were truncated by MiniLM in Lab 3?",
+      "question_type": "numerical_count",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "evidence_ranks": [
+        1
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "runtime_ms": 0.19640001119114459
+    },
+    {
+      "query_id": "ho_10",
+      "query": "Скільки рядків таблиці результатів містив звіт лабораторної роботи 5?",
+      "question_type": "numerical_count",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "evidence_ranks": [
+        1
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "runtime_ms": 0.7917000039014965
+    },
+    {
+      "query_id": "ho_11",
+      "query": "Which vision encoder component extracts visual features in LLaVA according to Lab 5?",
+      "question_type": "architectural_details",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "evidence_ranks": [
+        1
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "runtime_ms": 0.8406999986618757
+    },
+    {
+      "query_id": "ho_12",
+      "query": "Який планувальник (scheduler) використовувався в пайплайні Stable Diffusion у Лабораторній 4?",
+      "question_type": "architectural_details",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "evidence_ranks": [
+        1
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "runtime_ms": 0.8270999969681725
+    },
+    {
+      "query_id": "ho_13",
+      "query": "What mechanism provides session state and persistence in Lab 6 agents?",
+      "question_type": "architectural_details",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "evidence_ranks": [
+        null
+      ],
+      "recall_at_1": 0.0,
+      "recall_at_3": 0.0,
+      "recall_at_5": 0.0,
+      "hit_at_1": false,
+      "hit_at_3": false,
+      "hit_at_5": false,
+      "runtime_ms": 0.13040000339969993
+    },
+    {
+      "query_id": "ho_14",
+      "query": "Яка векторна база даних використовувалася для індексації знань у лабораторній роботі 3?",
+      "question_type": "architectural_details",
+      "hit_at_k": false,
+      "all_sources_hit": false,
+      "evidence_ranks": [
+        null
+      ],
+      "recall_at_1": 0.0,
+      "recall_at_3": 0.0,
+      "recall_at_5": 0.0,
+      "hit_at_1": false,
+      "hit_at_3": false,
+      "hit_at_5": false,
+      "runtime_ms": 0.7290000066859648
+    },
+    {
+      "query_id": "ho_15",
+      "query": "What guidance scale or CFG parameter was investigated in Lab 4?",
+      "question_type": "parameters",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "evidence_ranks": [
+        4
+      ],
+      "recall_at_1": 0.0,
+      "recall_at_3": 0.0,
+      "recall_at_5": 1.0,
+      "hit_at_1": false,
+      "hit_at_3": false,
+      "hit_at_5": true,
+      "runtime_ms": 0.2803999959724024
+    },
+    {
+      "query_id": "ho_16",
+      "query": "Які значення температури генерації аналізувалися для LLaVA в Лабораторній роботі 5?",
+      "question_type": "parameters",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "evidence_ranks": [
+        null
+      ],
+      "recall_at_1": 0.0,
+      "recall_at_3": 0.0,
+      "recall_at_5": 0.0,
+      "hit_at_1": false,
+      "hit_at_3": false,
+      "hit_at_5": false,
+      "runtime_ms": 0.5997000116622075
+    },
+    {
+      "query_id": "ho_17",
+      "query": "What values of max_new_tokens were tested for generation length in Lab 5?",
+      "question_type": "parameters",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "evidence_ranks": [
+        1
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "runtime_ms": 0.49619999481365085
+    },
+    {
+      "query_id": "ho_18",
+      "query": "What invented bounding box coordinates or hallucinated data were output by LLaVA in Lab 5?",
+      "question_type": "hallucination",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "evidence_ranks": [
+        1
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "runtime_ms": 0.5039999959990382
+    },
+    {
+      "query_id": "ho_19",
+      "query": "Чому LLaVA згенерувала неіснуючі координати в експерименті контролю галюцинацій у Lab 5?",
+      "question_type": "hallucination",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "evidence_ranks": [
+        3
+      ],
+      "recall_at_1": 0.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "hit_at_1": false,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "runtime_ms": 0.48380000225733966
+    },
+    {
+      "query_id": "ho_20",
+      "query": "What behavioral flaw or failure mode occurred with auto tool selection in Lab 6?",
+      "question_type": "failure_analysis",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "evidence_ranks": [
+        null
+      ],
+      "recall_at_1": 0.0,
+      "recall_at_3": 0.0,
+      "recall_at_5": 0.0,
+      "hit_at_1": false,
+      "hit_at_3": false,
+      "hit_at_5": false,
+      "runtime_ms": 0.3482000029180199
+    },
+    {
+      "query_id": "ho_21",
+      "query": "Яке обмеження роздільної здатності зображення було зафіксовано для Stable Diffusion у Lab 4?",
+      "question_type": "negative_result",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "evidence_ranks": [
+        1
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "runtime_ms": 0.5832000024383888
+    },
+    {
+      "query_id": "ho_22",
+      "query": "What token truncation limit occurred for long texts with MiniLM in Lab 3?",
+      "question_type": "negative_result",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "evidence_ranks": [
+        1
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "runtime_ms": 0.16370000957977027
+    },
+    {
+      "query_id": "ho_23",
+      "query": "Compare the text-to-image pipeline in Lab 4 with the multimodal VQA pipeline in Lab 5.",
+      "question_type": "cross_document",
+      "hit_at_k": true,
+      "all_sources_hit": false,
+      "evidence_ranks": [
+        null,
+        null
+      ],
+      "recall_at_1": 0.0,
+      "recall_at_3": 0.0,
+      "recall_at_5": 0.0,
+      "hit_at_1": false,
+      "hit_at_3": false,
+      "hit_at_5": false,
+      "runtime_ms": 1.7017999925883487
+    },
+    {
+      "query_id": "ho_24",
+      "query": "Які апаратні обмеження GPU RTX 3050 Laptop спостерігалися в лабораторних роботах 4 та 5?",
+      "question_type": "cross_document",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "evidence_ranks": [
+        null,
+        1
+      ],
+      "recall_at_1": 0.5,
+      "recall_at_3": 0.5,
+      "recall_at_5": 0.5,
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "runtime_ms": 1.608099992154166
+    },
+    {
+      "query_id": "ho_25",
+      "query": "How do document tools in Lab 6 differ from Redis vector retrieval in Lab 3?",
+      "question_type": "cross_document",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "evidence_ranks": [
+        4,
+        null
+      ],
+      "recall_at_1": 0.0,
+      "recall_at_3": 0.0,
+      "recall_at_5": 0.5,
+      "hit_at_1": false,
+      "hit_at_3": false,
+      "hit_at_5": true,
+      "runtime_ms": 1.553299996885471
+    },
+    {
+      "query_id": "ho_26",
+      "query": "Вплив відʼємних підказок на якість генерації зображень у Лабораторній 4",
+      "question_type": "paraphrase",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "evidence_ranks": [
+        3
+      ],
+      "recall_at_1": 0.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "hit_at_1": false,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "runtime_ms": 1.4411999873118475
+    },
+    {
+      "query_id": "ho_27",
+      "query": "Consistency of answers to rephrased questions in visual question answering",
+      "question_type": "paraphrase",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "evidence_ranks": [
+        4
+      ],
+      "recall_at_1": 0.0,
+      "recall_at_3": 0.0,
+      "recall_at_5": 1.0,
+      "hit_at_1": false,
+      "hit_at_3": false,
+      "hit_at_5": true,
+      "runtime_ms": 1.3306000037118793
+    },
+    {
+      "query_id": "ho_28",
+      "query": "Дослідження фіксованого зерна випадковості seed у генерації Stable Diffusion",
+      "question_type": "paraphrase",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "evidence_ranks": [
+        2
+      ],
+      "recall_at_1": 0.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "hit_at_1": false,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "runtime_ms": 1.4293999993242323
+    },
+    {
+      "query_id": "ho_29",
+      "query": "What was the ambient room temperature during the Lab 4 execution run?",
+      "question_type": "unsupported",
+      "hit_at_k": null,
+      "all_sources_hit": null,
+      "evidence_ranks": [],
+      "recall_at_1": null,
+      "recall_at_3": null,
+      "recall_at_5": null,
+      "hit_at_1": null,
+      "hit_at_3": null,
+      "hit_at_5": null,
+      "runtime_ms": 0.7257000106619671
+    },
+    {
+      "query_id": "ho_30",
+      "query": "Хто є автором зовнішнього датасету COCO для тестування Лабораторної 5?",
+      "question_type": "unsupported",
+      "hit_at_k": null,
+      "all_sources_hit": null,
+      "evidence_ranks": [],
+      "recall_at_1": null,
+      "recall_at_3": null,
+      "recall_at_5": null,
+      "hit_at_1": null,
+      "hit_at_3": null,
+      "hit_at_5": null,
+      "runtime_ms": 0.848100011353381
+    }
+  ]
+}

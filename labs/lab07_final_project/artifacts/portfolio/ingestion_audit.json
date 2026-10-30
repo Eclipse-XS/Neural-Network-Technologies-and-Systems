@@ -1,0 +1,14 @@
+{
+  "artifact_type": "offline_ingestion_audit",
+  "created_at": "2026-10-30",
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "embedding_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+  "model_max_sequence_length": 256,
+  "configured_chunk_token_budget": 240,
+  "chunk_count": 210,
+  "maximum_observed_tokens": 240,
+  "chunks_over_budget": 0,
+  "quoted_model_output_chunks_excluded": 16,
+  "verification": "Executed load_chunks with the cached model tokenizer and local_files_only=true. Redis and the chat model were not involved.",
+  "limitations": "This proves input-length control, not retrieval or answer quality."
+}

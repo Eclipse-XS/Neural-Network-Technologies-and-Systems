@@ -22,13 +22,24 @@ Python 3.13.5, openai-agents 0.22.3, openai 3.17.0. Фактично виявл�
 З кореня репозиторію у PowerShell:
 
 ```powershell
-.\.venv\Scripts\python.exe -m pip install -r labs/lab06_agents/requirements.txt
+uv venv .venv-lab06 --python 3.13
+uv pip install --python .venv-lab06\Scripts\python.exe -r labs/lab06_agents/requirements.txt
 lms server start
 lms ls
 lms ps
-.\.venv\Scripts\python.exe -m labs.lab06_agents.src.preflight
-.\.venv\Scripts\python.exe -m labs.lab06_agents.src.experiments
+.\.venv-lab06\Scripts\python.exe -m labs.lab06_agents.src.preflight
+.\.venv-lab06\Scripts\python.exe -m labs.lab06_agents.src.experiments
 ```
+
+Notebook має чіткі режими LIVE і REPLAY. За замовчуванням він виконує endpoint preflight та один реальний `Runner.run` smoke. Повна матриця навмисно opt-in:
+
+```powershell
+$env:LAB06_RUN_FULL_LIVE = "1"
+```
+
+Після встановлення змінної перезапустіть kernel і виконайте **Run All** у PyCharm або Jupyter.
+
+Нові notebook-запуски пишуться окремо в `outputs/notebook_live/` і не перезаписують історичні evidence.
 
 Якщо lms відсутній у PATH: LM Studio → Developer → Start Server на порту 1234. Потрібна локальна chat-модель зі structured tool calling. Перший запит може завантажити її через JIT loading; інакше використайте LM Studio або `lms load <local-model-id>`.
 

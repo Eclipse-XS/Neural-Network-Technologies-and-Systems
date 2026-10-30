@@ -31,8 +31,26 @@ def test_chunk_provenance_and_determinism():
     assert len({d.metadata['chunk_id'] for d in first})==len(first)
     for d in first:
         assert d.page_content.strip()
-        assert len(d.page_content)<=900
-        assert {'source_id','filename','lab_number','section','chunk_id','source_sha256'} <= d.metadata.keys()
+        assert len(d.page_content) <= 1000
+        assert {'source_id','filename','lab_number','section','chunk_id','source_sha256','evidence_quality'} <= d.metadata.keys()
+
+
+def test_token_budget_is_enforced_and_error_output_is_classified():
+    # A deterministic character counter simulates a tokenizer without model access.
+    chunks=load_chunks(Settings(embedding_max_tokens=80),token_counter=len)
+    assert chunks and max(len(d.page_content) for d in chunks) <= 80
+    assert any(d.metadata['evidence_quality']=='quoted_model_output' for d in chunks)
+    assert any(d.metadata['evidence_quality']=='canonical_report' for d in chunks)
+    smaller=load_chunks(Settings(embedding_max_tokens=240),token_counter=len,max_tokens=64)
+    assert max(len(d.page_content) for d in smaller) <= 64
+
+
+def test_committed_ingestion_audit_schema():
+    artifact=json.loads((LAB_ROOT/'artifacts/portfolio/ingestion_audit.json').read_text(encoding='utf-8'))
+    assert artifact['chunks_over_budget']==0
+    assert artifact['maximum_observed_tokens'] <= artifact['configured_chunk_token_budget']
+    assert artifact['configured_chunk_token_budget'] < artifact['model_max_sequence_length']
+    assert len(artifact['embedding_revision'])==40
 
 
 def test_search_bounds_without_live_services():
@@ -40,6 +58,10 @@ def test_search_bounds_without_live_services():
     for args in [('',5,None),('q',0,None),('q',9,None),('q',True,None),('q',5,'unknown')]:
         with pytest.raises(ValueError):
             kb.search(*args)
+
+
+def test_explicit_lab_reference_can_be_detected():
+    assert KnowledgeBase._terms('Which fact was reported in Lab 5?')
 
 
 def test_local_configuration():

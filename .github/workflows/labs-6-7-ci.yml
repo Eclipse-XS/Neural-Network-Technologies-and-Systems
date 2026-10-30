@@ -1,0 +1,42 @@
+name: Labs 6 and 7 offline CI
+
+on:
+  push:
+    paths:
+      - "labs/lab06_agents/**"
+      - "labs/lab07_final_project/**"
+      - "pyproject.toml"
+      - ".github/workflows/labs-6-7-ci.yml"
+  pull_request:
+    paths:
+      - "labs/lab06_agents/**"
+      - "labs/lab07_final_project/**"
+      - "pyproject.toml"
+
+jobs:
+  offline-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: python -m pip install -r labs/lab07_final_project/requirements-ci.txt
+      - run: python -m compileall -q labs/lab06_agents/src labs/lab07_final_project/src labs/lab07_final_project/app.py labs/lab07_final_project/web_app.py
+      - run: python -m pytest labs/lab06_agents/tests labs/lab07_final_project/tests -q
+      - name: Verify notebook and committed artifact schemas
+        run: python -m pytest labs/lab06_agents/tests/test_notebook.py labs/lab07_final_project/tests/test_notebook.py -q
+      - name: Reject committed secrets
+        shell: bash
+        run: |
+          if git grep -nE '(sk-[A-Za-z0-9_-]{20,}|OPENAI_API_KEY\s*=\s*[^[:space:]]+)' -- ':!*.example'; then
+            exit 1
+          fi
+
+  live-e2e:
+    if: ${{ false }}
+    runs-on: self-hosted
+    steps:
+      - run: echo "MANUAL gate: requires Redis Stack, LM Studio, cached embeddings and a tool-capable local model."

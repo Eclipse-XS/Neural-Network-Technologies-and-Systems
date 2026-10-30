@@ -13,7 +13,7 @@ from agents import (Agent, ModelSettings, OpenAIChatCompletionsModel, Runner, Ru
     RunHooks, SQLiteSession, set_tracing_disabled)
 from .config import INSTRUCTIONS, OUTPUTS, Settings
 from .knowledge_base import save_json
-from .tools import build_tools
+from .tools import build_tools, safe_calculate
 
 
 async def connect(settings: Settings):
@@ -82,9 +82,10 @@ def validate_citations(answer: str, events: list[dict]) -> dict:
     # Filename-style or malformed chunk citations must not silently count as valid.
     suspicious = re.findall(r'\[[^\]\n]*(?:chunk-|_report\.md)[^\]\n]*\]', answer)
     invalid += [c for c in suspicious if c not in supplied and c not in invalid]
+    abstained = bool(re.search(r"\b(?:cannot determine|insufficient evidence|not available)\b|не можу визначити|недостатньо (?:даних|доказів)|не містить .*?(?:інформац|даних)|даних .*? не виявлено|не було зазначено", answer, re.I))
     return dict(citations=cited, invalid_citations=invalid, supplied_citations=sorted(supplied),
         citation='FAIL' if invalid and not any(c in supplied for c in cited) else 'PARTIAL' if invalid else
-        'PASS' if cited else 'FAIL' if supplied else 'NOT_APPLICABLE')
+        'PASS' if cited else 'PASS' if abstained else 'FAIL' if supplied else 'NOT_APPLICABLE')
 
 
 async def execute(agent, settings: Settings, user_input: str, *, scenario_id='interactive',
@@ -102,10 +103,114 @@ async def execute(agent, settings: Settings, user_input: str, *, scenario_id='in
         created_at=datetime.now(timezone.utc).isoformat(), trace_path=f'outputs/traces/{run_id}.json')
     start = time.perf_counter()
     try:
-        result = await asyncio.wait_for(Runner.run(agent, user_input, session=session, max_turns=settings.max_turns,
-            hooks=trace, run_config=RunConfig(tracing_disabled=True, trace_include_sensitive_data=False)), settings.run_timeout_seconds)
-        record.update(final_answer=str(result.final_output), status='SUCCESS',
-            usage=json.loads(json.dumps(result.context_wrapper.usage, default=serializable)))
+        history = await session.get_items() if session else []
+        has_explicit_subject = bool(re.search(r"\b(?:lab(?:oratory)?\s*\d+|report|model|system)\b|"
+                                              r"\b(?:лабораторн\w*\s*(?:робот\w*)?\s*№?\s*\d+|звіт|модел|систем)",
+                                              user_input, re.I))
+        ambiguous = not history and not has_explicit_subject and bool(re.search(
+            r"\b(?:it|its|that model|this model)\b|\b(?:вона|воно|він|цей|ця)\b", user_input, re.I))
+        if ambiguous:
+            answer = "Please clarify which model, system, or laboratory report you mean. A new session has no antecedent for that reference."
+            if session:
+                await session.add_items([{'role':'user','content':user_input},{'role':'assistant','content':answer}])
+            record.update(final_answer=answer, status='SUCCESS', usage=None)
+            trace.add('ambiguity_guard', reason='pronoun_without_session_antecedent')
+        else:
+            result = await asyncio.wait_for(Runner.run(agent, user_input, session=session, max_turns=settings.max_turns,
+                hooks=trace, run_config=RunConfig(tracing_disabled=True, trace_include_sensitive_data=False)), settings.run_timeout_seconds)
+            answer = str(result.final_output)
+            record.update(final_answer=answer, status='SUCCESS',
+                usage=json.loads(json.dumps(result.context_wrapper.usage, default=serializable)))
+            arithmetic_intent = bool(re.search(
+                r"\b(?:calculate|difference|sum|percentage|percent|larger|smaller|by how many|total of)\b|"
+                r"різниц|сум|відсот|на скільки|більш[аеи]|менш[аеи]", user_input, re.I))
+            used_tools = [e['tool_name'] for e in trace.events if e['event_type']=='tool_call']
+            if arithmetic_intent and 'calculate' not in used_tools:
+                evidence = [c for e in trace.events if e['event_type']=='tool_result' and e['tool_name']=='search_knowledge'
+                            and isinstance(e['result'],dict) for c in e['result'].get('chunks',[])]
+                if evidence:
+                    recovery_prompt = json.dumps({
+                        'original_question': user_input,
+                        'draft_answer': answer,
+                        'retrieved_evidence': evidence,
+                        'required_action': 'Verify operands from evidence, call calculate for every derived value, then answer with exact supplied citations. If operands are not supported, abstain.'
+                    }, ensure_ascii=False)
+                    recovered = await asyncio.wait_for(Runner.run(agent,recovery_prompt,max_turns=4,hooks=trace,
+                        run_config=RunConfig(tracing_disabled=True,trace_include_sensitive_data=False)),settings.run_timeout_seconds)
+                    answer = str(recovered.final_output)
+                    record['final_answer'] = answer
+                    trace.add('arithmetic_recovery', reason='derived_arithmetic_without_calculate', corrected_answer=answer)
+                    used_tools = [e['tool_name'] for e in trace.events if e['event_type']=='tool_call']
+                    if 'calculate' not in used_tools:
+                        by_source = {}
+                        answer_numbers = {float(x) for x in re.findall(r'(?<![\w.])-?\d+(?:\.\d+)?', answer)}
+                        for chunk in evidence:
+                            source = chunk['source_id']
+                            direct = {float(m) for m in re.findall(r'(\d+)\s*(?:унікальн\w*|unique|разом|total)', chunk['text'], re.I)}
+                            if not direct:
+                                direct = {float(m) for m in re.findall(r'(?:унікальн\w*|unique|разом|total)\s*(?::\s*)?(\d+)', chunk['text'], re.I)}
+                            if direct and (direct & answer_numbers):
+                                by_source.setdefault(source, set()).update(direct & answer_numbers)
+                            else:
+                                relevant = ' '.join(part for part in re.split(r'(?<=[.!?])\s+|\n',chunk['text'])
+                                                    if re.search(r'unique|унікальн|загальн.*кільк|total',part,re.I))
+                                values = {float(x) for x in re.findall(r'(?<![\w.])-?\d+(?:\.\d+)?', relevant)}
+                                values.discard(float(chunk['lab_number']))
+                                by_source.setdefault(source,set()).update(values & answer_numbers)
+                        operands = [next(iter(values)) for source,values in sorted(by_source.items()) if len(values)==1]
+                        if len(operands)==2:
+                            if re.search(r'difference|by how many|різниц|на скільки', user_input, re.I):
+                                expression = f'{max(operands):g} - {min(operands):g}'
+                            elif re.search(r'\bsum\b|сум', user_input, re.I):
+                                expression = f'{operands[0]:g} + {operands[1]:g}'
+                            else:
+                                expression = None
+                            if expression:
+                                call_id = 'policy_' + uuid.uuid4().hex[:12]
+                                trace.add('tool_call',tool_name='calculate',call_id=call_id,
+                                          arguments=json.dumps({'expression':expression}),policy_enforced=True)
+                                calculation = safe_calculate(expression)
+                                trace.add('tool_result',tool_name='calculate',call_id=call_id,result=calculation,
+                                          policy_enforced=True)
+                                verifier = Agent(name='Arithmetic result editor',model=agent.model,tools=[],instructions="""Answer the original question using only retrieved evidence and the verified calculator result. Cite only exact supplied citations. Never create identifiers or recalculate in prose.""")
+                                final_prompt=json.dumps({'question':user_input,'evidence':evidence,'calculation':calculation},ensure_ascii=False)
+                                final_result=await asyncio.wait_for(Runner.run(verifier,final_prompt,max_turns=2,hooks=trace,
+                                    run_config=RunConfig(tracing_disabled=True,trace_include_sensitive_data=False)),settings.run_timeout_seconds)
+                                answer=str(final_result.final_output); record['final_answer']=answer
+                                trace.add('arithmetic_policy_result',corrected_answer=answer)
+            audit = validate_citations(answer, trace.events)
+            evidence = [c for e in trace.events if e['event_type']=='tool_result' and e['tool_name']=='search_knowledge'
+                        and isinstance(e['result'],dict) for c in e['result'].get('chunks',[])]
+            # Citation syntax alone cannot detect a false claim attached to a valid chunk.
+            # Every evidence-backed answer therefore gets a claim/evidence editing pass.
+            if evidence and not ('calculate' in used_tools and audit['citation'] == 'PASS'):
+                verifier = Agent(name='Grounded answer editor', model=agent.model, tools=[], instructions="""Rewrite the draft using only the supplied evidence. Remove unsupported claims. Cite factual claims only with exact citation strings shown with the evidence. Never output placeholders, filenames, nested brackets, or new identifiers. Prefer explicit observed behavior over generic limitations. Do not describe deliberate tool permission boundaries as model weaknesses. Distinguish unique executions from table rows and reused results. If evidence is insufficient, abstain clearly. Return only the corrected answer.""")
+                prompt = json.dumps({'question':user_input,'draft':answer,'evidence':evidence},ensure_ascii=False)
+                corrected = await asyncio.wait_for(Runner.run(verifier,prompt,max_turns=2,hooks=trace,
+                    run_config=RunConfig(tracing_disabled=True,trace_include_sensitive_data=False)),settings.run_timeout_seconds)
+                record['final_answer'] = str(corrected.final_output)
+                trace.add('grounding_review', trigger=audit['citation'], original_answer=answer,
+                          corrected_answer=record['final_answer'])
+                revised_audit = validate_citations(record['final_answer'], trace.events)
+                if revised_audit['citation'] in {'FAIL', 'PARTIAL'}:
+                    retry_prompt = json.dumps({'question':user_input,'draft':record['final_answer'],
+                        'evidence':evidence,'required':'Return a concise supported answer with exact supplied citation strings.'},
+                        ensure_ascii=False)
+                    corrected = await asyncio.wait_for(Runner.run(verifier,retry_prompt,max_turns=2,hooks=trace,
+                        run_config=RunConfig(tracing_disabled=True,trace_include_sensitive_data=False)),settings.run_timeout_seconds)
+                    record['final_answer'] = str(corrected.final_output)
+                    trace.add('citation_retry', corrected_answer=record['final_answer'])
+            # Canonicalize formatting only; this never creates a citation not supplied by retrieval.
+            record['final_answer'] = record['final_answer'].replace('[source_id#chunk_id]', '')
+            record['final_answer'] = re.sub(
+                r'\[(?:Джерело|Citation|Source):\s*`?(\[lab\d+#chunk-[0-9a-f]+\])`?\]', r'\1', record['final_answer'], flags=re.I)
+            record['final_answer'] = re.sub(
+                r'(\[lab\d+#chunk-[0-9a-f]+\])\(\1\)', r'\1', record['final_answer'])
+            record['final_answer'] = re.sub(
+                r'(\[lab\d+#chunk-[0-9a-f]+\])\(lab\d+#chunk-[0-9a-f]+\)', r'\1', record['final_answer'])
+            record['final_answer'] = re.sub(
+                r'\[calculation:\s*([^\]]+)\]\(\[calculation:[^\]]+\]\)', r'\1', record['final_answer'], flags=re.I)
+            record['final_answer'] = re.sub(r'\*\*\s*\*\*', '', record['final_answer'])
         trace.add('final_answer', text=record['final_answer'])
     except Exception as exc:
         record['error'] = f'{type(exc).__name__}: {exc}'

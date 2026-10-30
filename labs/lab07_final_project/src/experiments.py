@@ -35,10 +35,16 @@ def environment(settings, kb):
             packages[name] = importlib.metadata.version(name)
         except importlib.metadata.PackageNotFoundError:
             packages[name] = None
+    def command_output(command):
+        try:
+            return subprocess.check_output(command,text=True,stderr=subprocess.STDOUT,timeout=15).strip()
+        except (OSError, subprocess.SubprocessError) as exc:
+            return f'UNAVAILABLE: {type(exc).__name__}: {exc}'
+
     return dict(python=sys.version, executable=sys.executable, platform=platform.platform(), packages=packages,
         cuda=torch.version.cuda, cuda_available=torch.cuda.is_available(), gpu=torch.cuda.get_device_name(0) if torch.cuda.is_available() else None,
-        docker=subprocess.check_output(['docker','version','--format','{{.Server.Version}}'],text=True).strip(),
-        compose=subprocess.check_output(['docker','compose','version'],text=True).strip(),
+        docker=command_output(['docker','version','--format','{{.Server.Version}}']),
+        compose=command_output(['docker','compose','version']),
         redis_server=kb.info['redis_version'], lm_studio_url=settings.base_url, model_id=settings.model_id,
         embedding_model=settings.embedding_model, embedding_device='cpu', cloud_tracing=False)
 
@@ -52,18 +58,32 @@ def retrieval_experiment(kb):
         elapsed = (time.perf_counter() - start) * 1000
         found = {c.source_id for c in chunks}
         expected = set(q['expected_source_ids'])
+        passages = [c.text.casefold() for c in chunks]
+        expected_evidence = q.get('expected_evidence', [])
+        evidence_ranks = [next((rank for rank,text in enumerate(passages,1) if evidence.casefold() in text), None)
+                          for evidence in expected_evidence]
         summary.append(dict(query_id=q['query_id'], hit_at_k=bool(found & expected) if expected else None,
             all_sources_hit=expected <= found if expected else None, expected=sorted(expected), retrieved=sorted(found),
-            first_expected_rank=next((i for i,c in enumerate(chunks,1) if c.source_id in expected),None),runtime_ms=elapsed))
+            first_expected_rank=next((i for i,c in enumerate(chunks,1) if c.source_id in expected),None),
+            evidence_ranks=evidence_ranks, evidence_recall=(sum(rank is not None for rank in evidence_ranks)/len(evidence_ranks)
+                if evidence_ranks else None), split=q.get('split','evaluation'), question_type=q.get('question_type','unspecified'),
+            runtime_ms=elapsed))
         for rank,c in enumerate(chunks,1):
             rows.append(dict(query_id=q['query_id'],query=q['query'],rank=rank,source=c.source_id,section=c.section,
                 chunk_id=c.chunk_id,score_or_distance=c.cosine_distance,preview=c.text[:300], text=c.text, runtime_ms=elapsed))
     pd.DataFrame(rows).to_csv(OUTPUTS / 'retrieval/retrieval_results.csv',index=False)
     eligible = [x for x in summary if x['hit_at_k'] is not None]
+    judged = [x for x in summary if x['evidence_recall'] is not None]
+    evaluation = [x for x in judged if x['split']=='evaluation']
+    reciprocal_ranks = [1/min(rank for rank in x['evidence_ranks'] if rank is not None)
+                        if any(rank is not None for rank in x['evidence_ranks']) else 0 for x in judged]
     result = dict(query_count=len(queries),k=kb.settings.top_k,eligible=len(eligible),
         source_hits=sum(x['hit_at_k'] for x in eligible),all_source_hits=sum(x['all_sources_hit'] for x in eligible),
         source_hit_at_k=sum(x['hit_at_k'] for x in eligible)/len(eligible),queries=summary,
-        interpretation='Source-level diagnostic only; does not test answer-bearing chunk coverage.')
+        evidence_recall_at_k=sum(x['evidence_recall'] for x in judged)/len(judged),
+        evaluation_evidence_recall_at_k=sum(x['evidence_recall'] for x in evaluation)/len(evaluation),
+        evidence_mrr=sum(reciprocal_ranks)/len(reciprocal_ranks),
+        interpretation='Evidence metrics require the annotated literal passage; source hit remains diagnostic only.')
     save_json(OUTPUTS / 'retrieval/metrics.json',result)
     return result
 
