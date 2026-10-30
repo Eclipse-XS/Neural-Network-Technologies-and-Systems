@@ -1,0 +1,12 @@
+# Preserve exact line endings for knowledge base & workspace reports checked by sha256 manifests
+labs/lab03_rag/report/report.md text eol=lf
+labs/lab04_stable_diffusion/report/report.md text eol=crlf
+labs/lab05_multimodal/report/report.md text eol=crlf
+labs/lab06_agents/report/report.md text eol=crlf
+labs/lab06_agents/assets/workspace/lab03_report.md text eol=lf
+labs/lab06_agents/assets/workspace/lab04_report.md text eol=crlf
+labs/lab06_agents/assets/workspace/lab05_report.md text eol=crlf
+labs/lab07_final_project/assets/knowledge/lab03_rag_report.md text eol=lf
+labs/lab07_final_project/assets/knowledge/lab04_stable_diffusion_report.md text eol=crlf
+labs/lab07_final_project/assets/knowledge/lab05_multimodal_report.md text eol=crlf
+labs/lab07_final_project/assets/knowledge/lab06_agents_report.md text eol=crlf
