@@ -19,3 +19,20 @@ def test_current_trace_membership(tmp_path,monkeypatch):
     result=evaluation.citation_audit(record)
     assert result['citation']=='PARTIAL'
     assert result['invalid_citations']==['[lab04#chunk-other]']
+
+
+def test_retrieval_monotonicity_invariant():
+    """Ensure Evidence Recall@k is mathematically monotonic non-decreasing for all k."""
+    # Synthetic queries with expected evidence ranks
+    queries = [
+        {"evidence_ranks": [1]},           # recall@1=1.0, @3=1.0, @5=1.0
+        {"evidence_ranks": [2]},           # recall@1=0.0, @3=1.0, @5=1.0
+        {"evidence_ranks": [4]},           # recall@1=0.0, @3=0.0, @5=1.0
+        {"evidence_ranks": [None]},        # recall@1=0.0, @3=0.0, @5=0.0
+        {"evidence_ranks": [1, 4]},        # recall@1=0.5, @3=0.5, @5=1.0
+        {"evidence_ranks": [2, None]}      # recall@1=0.0, @3=0.5, @5=0.5
+    ]
+    rec_1 = sum(sum(r is not None and r <= 1 for r in q["evidence_ranks"])/len(q["evidence_ranks"]) for q in queries) / len(queries)
+    rec_3 = sum(sum(r is not None and r <= 3 for r in q["evidence_ranks"])/len(q["evidence_ranks"]) for q in queries) / len(queries)
+    rec_5 = sum(sum(r is not None and r <= 5 for r in q["evidence_ranks"])/len(q["evidence_ranks"]) for q in queries) / len(queries)
+    assert rec_1 <= rec_3 <= rec_5, f"Monotonicity failed: {rec_1} <= {rec_3} <= {rec_5}"

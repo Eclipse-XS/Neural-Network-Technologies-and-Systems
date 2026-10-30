@@ -12,6 +12,20 @@ def test_executed_notebook():
         ast.parse(cell.source)
         assert cell.execution_count is not None
         assert all(o.output_type != 'error' for o in cell.outputs)
-    assert any('load_verified' in c.source for c in cells)
-    assert any('baseline' in c.source and 'comparison_tools' in c.source for c in cells)
-    assert any('numeric_extended' in c.source for c in cells)
+    source = '\n'.join(c.source for c in cells)
+    assert 'Agent(' in source
+    assert 'await Runner.run(' in source
+    assert 'SQLiteSession(' in source
+    assert 'RUN_FULL_LIVE' in source
+    assert 'BLOCKED_BY_ENVIRONMENT' in source
+    assert 'provenance' in source
+    assert 'load_verified' in source
+    assert 'baseline' in source and 'comparison_tools' in source
+
+
+def test_live_and_replay_are_not_conflated():
+    notebook = nbformat.read(LAB_ROOT / 'notebooks/01_openai_agents_sdk.ipynb', as_version=4)
+    source = '\n'.join(c.source for c in notebook.cells)
+    assert '"provenance": "LIVE"' in source
+    assert 'REPLAY_UNVERIFIED_WORKSPACE_MISMATCH' in source
+    assert 'outputs/notebook_live/' in source

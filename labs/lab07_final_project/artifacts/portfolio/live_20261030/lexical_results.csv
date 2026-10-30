@@ -1,0 +1,259 @@
+query_id,query,rank,source,section,chunk_id,score_or_distance,preview,text,runtime_ms
+q01,Which Stable Diffusion model was used in Lab 4?,1,lab06,Пам'ять та ізоляція,chunk-fb5811c46acbb347,-12.47999684943377,"clarification: **Was this experiment using a pre-trained LLaVA checkpoint (e.g., from Hugging Face), or was it a custom model?** If you have access to the codebase or inference outputs, please provide details about the model ID.  
+Otherwise, based on the architecture description, the model is likely","clarification: **Was this experiment using a pre-trained LLaVA checkpoint (e.g., from Hugging Face), or was it a custom model?** If you have access to the codebase or inference outputs, please provide details about the model ID.  
+Otherwise, based on the architecture description, the model is likely an LLaVA variant.  
+Session B, той самий запит: The Vision Lab corresponds to one of the following reports: **lab03_report.md**, **lab04_report.md**, or **lab05_report.md**. Which specific lab are you referring to?  
+Оцінка пам'яті: PASS; ізоляції: PASS.",2.525999996578321
+q01,Which Stable Diffusion model was used in Lab 4?,2,lab04,Модель і середовище,chunk-0fceabd8decbcb78,-9.523317691586701,"## Модель і середовище  
+Методичка називає `runwayml/stable-diffusion-v1-5`. Фактичний API цього ID перенаправляє на `stable-diffusion-v1-5/stable-diffusion-v1-5`; використано цей еквівалент **Stable Diffusion v1.5**, без зміни сімейства. Revision: `451f4fe16113bff5a5d2269ed5ad43b0592e9a14`. Є safet","## Модель і середовище  
+Методичка називає `runwayml/stable-diffusion-v1-5`. Фактичний API цього ID перенаправляє на `stable-diffusion-v1-5/stable-diffusion-v1-5`; використано цей еквівалент **Stable Diffusion v1.5**, без зміни сімейства. Revision: `451f4fe16113bff5a5d2269ed5ad43b0592e9a14`. Є safetensors FP16",2.525999996578321
+q01,Which Stable Diffusion model was used in Lab 4?,3,lab06,System instructions,chunk-75d8614dcd8ca78a,-8.848257845085122,"If search is unhelpful, read a bounded section of the relevant report.
+For report-specific questions, reading the opening 60 lines is often more reliable
+than guessing English search terms in Ukrainian text. Follow next_line when needed.
+Find the actual model/checkpoint ID when asked which model was","If search is unhelpful, read a bounded section of the relevant report.
+For report-specific questions, reading the opening 60 lines is often more reliable
+than guessing English search terms in Ukrainian text. Follow next_line when needed.
+Find the actual model/checkpoint ID when asked which model was used.
+Distinguish unique generated/inference outputs from reused experiment table rows.
+Never infer a total count from a partial parameter table. Find the explicit total
+in each relevant report before comparing. For numeric comparisons, use calculate
+with the retrieved values and include both original counts and the difference.
+Before finalizing, check that each report fact has a filename citation and that
+the requested result is actually present. Do not add model versions or details
+not stated in the retrieved evidence. Treat tool errors as observations to correct.",2.525999996578321
+q01,Which Stable Diffusion model was used in Lab 4?,4,lab06,Пам'ять та ізоляція,chunk-b52f1090c748266e,-8.463666804822154,"To confirm, I will check if there are any **inference outputs** (JSON files) in the workspace under a directory like `outputs/results/` or similar. If no such file exists, I will assume that the model is loaded locally without an explicit ID.  
+Since the workspace listing does not show relevant JSON","To confirm, I will check if there are any **inference outputs** (JSON files) in the workspace under a directory like `outputs/results/` or similar. If no such file exists, I will assume that the model is loaded locally without an explicit ID.  
+Since the workspace listing does not show relevant JSON files, I will instead ask for clarification: **Was this experiment using a pre-trained LLaVA checkpoint (e.g., from Hugging Face), or was it",2.525999996578321
+q01,Which Stable Diffusion model was used in Lab 4?,5,lab06,Зауваження до кожної відповіді фінальної серії,chunk-dd4fe488bab8f594,-8.178404415649702,"## Зауваження до кожної відповіді фінальної серії  
+- **role**: Пряма відповідь про роль, нуль викликів; зайві дії відсутні.  
+- **lab4**: Правильно визначено Stable Diffusion v1.5, наведено lab04_report.md. Checkpoint скорочено до назви сімейства; твердження підтверджує прочитаний model-card рядок.","## Зауваження до кожної відповіді фінальної серії  
+- **role**: Пряма відповідь про роль, нуль викликів; зайві дії відсутні.  
+- **lab4**: Правильно визначено Stable Diffusion v1.5, наведено lab04_report.md. Checkpoint скорочено до назви сімейства; твердження підтверджує прочитаний model-card рядок.  
+- **lab5**: Точний checkpoint, revision і кількість",2.525999996578321
+q02,What approach kept chat context between user messages?,1,lab06,Теоретичні відомості та архітектура,chunk-09f367b6e0c82db6,-5.863768275046411,"## Теоретичні відомості та архітектура  
+LLM формує текст або запит функції на основі system instructions, user input, історії та JSON-схем інструментів. Runner виконує функцію, додає","## Теоретичні відомості та архітектура  
+LLM формує текст або запит функції на основі system instructions, user input, історії та JSON-схем інструментів. Runner виконує функцію, додає",2.3710000095888972
+q02,What approach kept chat context between user messages?,2,lab05,10. Організація VQA-експерименту,chunk-5994128bc0cf315c,-5.193394171357092,"on
+output = pipe(text=messages, return_full_text=False,
+generate_kwargs=case.generation.kwargs())
+```  
+Повний код: [model.py](../src/model.py), [inference.py](../src/inference.py), [experiments.py](../src/experiments.py), [run.py](../src/run.py). [Офіційний pipeline](https://huggingface.co/docs/tra","on
+output = pipe(text=messages, return_full_text=False,
+generate_kwargs=case.generation.kwargs())
+```  
+Повний код: [model.py](../src/model.py), [inference.py](../src/inference.py), [experiments.py](../src/experiments.py), [run.py](../src/run.py). [Офіційний pipeline](https://huggingface.co/docs/transformers/tasks/image_text_to_text).",2.3710000095888972
+q02,What approach kept chat context between user messages?,3,lab05,10. Організація VQA-експерименту,chunk-b2c9638fc2ea13e5,-5.193394171357092,"редовище. Manifest відділяє участь в експериментах від унікальних генерацій: повторно використано fact_01 та desc_01.  
+Ключовий виклик із src/inference.py:  
+```python
+output = pipe(text=messages, return_full_text=False,","редовище. Manifest відділяє участь в експериментах від унікальних генерацій: повторно використано fact_01 та desc_01.  
+Ключовий виклик із src/inference.py:  
+```python
+output = pipe(text=messages, return_full_text=False,",2.3710000095888972
+q02,What approach kept chat context between user messages?,4,lab06,Середовище та модель,chunk-971df631d76ed623,-4.29350757306299,"## Середовище та модель  
+Python 3.13.5; openai-agents 0.22.3; openai 3.17.0; pydantic 2.13.5; transport httpx2 2.13.0.  
+Endpoint: `http://localhost:1234/v1`. Фактично виявлена модель: `mistralai/ministral-3-3b`. API — Chat Completions, temperature=0.0,","## Середовище та модель  
+Python 3.13.5; openai-agents 0.22.3; openai 3.17.0; pydantic 2.13.5; transport httpx2 2.13.0.  
+Endpoint: `http://localhost:1234/v1`. Фактично виявлена модель: `mistralai/ministral-3-3b`. API — Chat Completions, temperature=0.0,",2.3710000095888972
+q02,What approach kept chat context between user messages?,5,lab05,12. Фактологічні питання,chunk-f4c27e779dd1f46e,-3.967302286347529,"| fact_02 | What is the dominant color of the cabin's wooden walls? | Brown | CORRECT | Видимі дерев’яні стіни коричневі; оцінюється колір стін, не даху. |
+| fact_03 | Are reflections of trees visible in the water? | Yes | CORRECT | У","| fact_02 | What is the dominant color of the cabin's wooden walls? | Brown | CORRECT | Видимі дерев’яні стіни коричневі; оцінюється колір стін, не даху. |
+| fact_03 | Are reflections of trees visible in the water? | Yes | CORRECT | У",2.3710000095888972
+q03,What limitation of vector retrieval was demonstrated in Lab 3?,1,lab05,12. Фактологічні питання,chunk-f4c27e779dd1f46e,-9.464863719320718,"| fact_02 | What is the dominant color of the cabin's wooden walls? | Brown | CORRECT | Видимі дерев’яні стіни коричневі; оцінюється колір стін, не даху. |
+| fact_03 | Are reflections of trees visible in the water? | Yes | CORRECT | У","| fact_02 | What is the dominant color of the cabin's wooden walls? | Brown | CORRECT | Видимі дерев’яні стіни коричневі; оцінюється колір стін, не даху. |
+| fact_03 | Are reflections of trees visible in the water? | Yes | CORRECT | У",2.8923000063514337
+q03,What limitation of vector retrieval was demonstrated in Lab 3?,2,lab05,12. Фактологічні питання,chunk-34dce88ab5ef5c54,-7.997053219894878,"## 12. Фактологічні питання  
+| question_id | question | answer | evaluation_label | notes |
+| --- | --- | --- | --- | --- |
+| fact_01 | Is the cabin on the left, in the center, or on the right side of the image? | left | CORRECT | Будиночок чітко розташований у лівій половині кадру. |
+| fact_02 | W","## 12. Фактологічні питання  
+| question_id | question | answer | evaluation_label | notes |
+| --- | --- | --- | --- | --- |
+| fact_01 | Is the cabin on the left, in the center, or on the right side of the image? | left | CORRECT | Будиночок чітко розташований у лівій половині кадру. |
+| fact_02 | What is the dominant color of the cabin's wooden walls? | Brown | CORRECT | Видимі",2.8923000063514337
+q03,What limitation of vector retrieval was demonstrated in Lab 3?,3,lab03,Мета,chunk-6d54a08806f8969d,-7.945421158124206,"# Звіт до лабораторної роботи №3  
+## Мета  
+Побудувати відтворювану RAG-систему над трьома CSV-каталогами, розмежувати indexing, retrieval і generation та окремо оцінити якість пошуку й відповідей локальної LLM.","# Звіт до лабораторної роботи №3  
+## Мета  
+Побудувати відтворювану RAG-систему над трьома CSV-каталогами, розмежувати indexing, retrieval і generation та окремо оцінити якість пошуку й відповідей локальної LLM.",2.8923000063514337
+q03,What limitation of vector retrieval was demonstrated in Lab 3?,4,lab06,Пам'ять та ізоляція,chunk-fb5811c46acbb347,-7.5641591986546155,"clarification: **Was this experiment using a pre-trained LLaVA checkpoint (e.g., from Hugging Face), or was it a custom model?** If you have access to the codebase or inference outputs, please provide details about the model ID.  
+Otherwise, based on the architecture description, the model is likely","clarification: **Was this experiment using a pre-trained LLaVA checkpoint (e.g., from Hugging Face), or was it a custom model?** If you have access to the codebase or inference outputs, please provide details about the model ID.  
+Otherwise, based on the architecture description, the model is likely an LLaVA variant.  
+Session B, той самий запит: The Vision Lab corresponds to one of the following reports: **lab03_report.md**, **lab04_report.md**, or **lab05_report.md**. Which specific lab are you referring to?  
+Оцінка пам'яті: PASS; ізоляції: PASS.",2.8923000063514337
+q03,What limitation of vector retrieval was demonstrated in Lab 3?,5,lab06,Керована діагностика калькулятора,chunk-dc7c28c8c55f4686,-6.964779586329017,"orkspace → search_workspace → calculate.  
+The sum of the inferred counts is **20** (Lab 4: 3, Lab 5: 17).  
+**Note:** The count for Lab 4 remains uncertain without explicit uniqueness data. If you need further clarification or additional evidence, let me know.  
+---
+**Final Answer:**
+- **Lab 4**: 3","orkspace → search_workspace → calculate.  
+The sum of the inferred counts is **20** (Lab 4: 3, Lab 5: 17).  
+**Note:** The count for Lab 4 remains uncertain without explicit uniqueness data. If you need further clarification or additional evidence, let me know.  
+---
+**Final Answer:**
+- **Lab 4**: 3 inference runs (no unique output count explicitly stated).
+- **Lab 5**: 17 unique generated/inference outputs.
+- **Sum**: **20** (calculated from available data).",2.8923000063514337
+q04,Stable Diffusion seed CFG negative prompt,1,lab04,Організація контрольованих експериментів,chunk-6a1069fdfb36fbd7,-16.278963309900583,"|---|---|---|---|
+| Seed | seed | 42, 123, 777, 2026 | prompt, negative, steps, CFG, model, scheduler, resolution |
+| Steps | num_inference_steps | 20, 30, 50 | prompt, negative, seed, CFG, model, scheduler, resolution |
+| CFG | guidance_scale | 5, 7.5, 10 | prompt, negative, seed, steps, model, sch","|---|---|---|---|
+| Seed | seed | 42, 123, 777, 2026 | prompt, negative, steps, CFG, model, scheduler, resolution |
+| Steps | num_inference_steps | 20, 30, 50 | prompt, negative, seed, CFG, model, scheduler, resolution |
+| CFG | guidance_scale | 5, 7.5, 10 | prompt, negative, seed, steps, model, scheduler, resolution |
+| Negative | negative_prompt | None / configured, дві пари | усе інше всередині кожної пари |
+| Styles | стильовий suffix | watercolor, isometric, photorealistic | друга сцена, seed, steps, CFG, negative, model, scheduler, resolution |",2.261400004499592
+q04,Stable Diffusion seed CFG negative prompt,2,lab04,"Negative prompt, seed 42",chunk-b1844fabb03bdcb5,-13.82332004043314,"## Negative prompt, seed 42  
+![Negative prompt, seed 42](../artifacts/portfolio/negative_prompt_seed42_comparison.png)  
+Для seed 42 negative prompt змінив фасади, центральну башту та","## Negative prompt, seed 42  
+![Negative prompt, seed 42](../artifacts/portfolio/negative_prompt_seed42_comparison.png)  
+Для seed 42 negative prompt змінив фасади, центральну башту та",2.261400004499592
+q04,Stable Diffusion seed CFG negative prompt,3,lab04,Організація контрольованих експериментів,chunk-56231b6c0a7fab19,-13.669435447603393,"## Організація контрольованих експериментів  
+Baseline: seed 42, steps 30, CFG 7.5, negative=None. Positive prompt незмінний для baseline, seed, steps, CFG і negative-пар:  
+> a futuristic city street at sunset, neon signs, wet pavement reflections, detailed architecture, cinematic lighting, pedestr","## Організація контрольованих експериментів  
+Baseline: seed 42, steps 30, CFG 7.5, negative=None. Positive prompt незмінний для baseline, seed, steps, CFG і negative-пар:  
+> a futuristic city street at sunset, neon signs, wet pavement reflections, detailed architecture, cinematic lighting, pedestrians in the distance  
+Negative prompt:  
+> blurry, low quality, watermark, text, distorted architecture,",2.261400004499592
+q04,Stable Diffusion seed CFG negative prompt,4,lab04,"Negative prompt, seed 123",chunk-5f8719c3da69fa11,-13.571213287855063,"## Negative prompt, seed 123  
+![Negative prompt, seed 123](../artifacts/portfolio/negative_prompt_seed123_comparison.png)  
+Для seed 123 з negative prompt видно більше людей та автомобілів; великі вертикальні","## Negative prompt, seed 123  
+![Negative prompt, seed 123](../artifacts/portfolio/negative_prompt_seed123_comparison.png)  
+Для seed 123 з negative prompt видно більше людей та автомобілів; великі вертикальні",2.261400004499592
+q04,Stable Diffusion seed CFG negative prompt,5,lab04,Організація контрольованих експериментів,chunk-292533acc4b020c4,-12.952915059593424,"in the distance  
+Negative prompt:  
+> blurry, low quality, watermark, text, distorted architecture, deformed objects, artifacts  
+Друга семантична сцена: `a small mountain cabin beside a calm lake, surrounded by pine trees, soft morning light`. До неї додається лише стильовий suffix із config.py. Ф","in the distance  
+Negative prompt:  
+> blurry, low quality, watermark, text, distorted architecture, deformed objects, artifacts  
+Друга семантична сцена: `a small mountain cabin beside a calm lake, surrounded by pine trees, soft morning light`. До неї додається лише стильовий suffix із config.py. Фіксовані seed 42, steps 30, CFG 7.5, negative=None.  
+| Серія | Змінний фактор | Значення | Сталі фактори |
+|---|---|---|---|
+| Seed | seed | 42, 123, 777, 2026 | prompt, negative, steps, CFG, model, scheduler, resolution |",2.261400004499592
+q05,What hallucination behavior was observed in the Lab 5 VQA experiment?,1,lab06,Пам'ять та ізоляція,chunk-fb5811c46acbb347,-11.682576908609558,"clarification: **Was this experiment using a pre-trained LLaVA checkpoint (e.g., from Hugging Face), or was it a custom model?** If you have access to the codebase or inference outputs, please provide details about the model ID.  
+Otherwise, based on the architecture description, the model is likely","clarification: **Was this experiment using a pre-trained LLaVA checkpoint (e.g., from Hugging Face), or was it a custom model?** If you have access to the codebase or inference outputs, please provide details about the model ID.  
+Otherwise, based on the architecture description, the model is likely an LLaVA variant.  
+Session B, той самий запит: The Vision Lab corresponds to one of the following reports: **lab03_report.md**, **lab04_report.md**, or **lab05_report.md**. Which specific lab are you referring to?  
+Оцінка пам'яті: PASS; ізоляції: PASS.",3.040400013560429
+q05,What hallucination behavior was observed in the Lab 5 VQA experiment?,2,lab06,Пам'ять та ізоляція,chunk-b52f1090c748266e,-11.577235116584983,"To confirm, I will check if there are any **inference outputs** (JSON files) in the workspace under a directory like `outputs/results/` or similar. If no such file exists, I will assume that the model is loaded locally without an explicit ID.  
+Since the workspace listing does not show relevant JSON","To confirm, I will check if there are any **inference outputs** (JSON files) in the workspace under a directory like `outputs/results/` or similar. If no such file exists, I will assume that the model is loaded locally without an explicit ID.  
+Since the workspace listing does not show relevant JSON files, I will instead ask for clarification: **Was this experiment using a pre-trained LLaVA checkpoint (e.g., from Hugging Face), or was it",3.040400013560429
+q05,What hallucination behavior was observed in the Lab 5 VQA experiment?,3,lab05,12. Фактологічні питання,chunk-f4c27e779dd1f46e,-9.308722340151213,"| fact_02 | What is the dominant color of the cabin's wooden walls? | Brown | CORRECT | Видимі дерев’яні стіни коричневі; оцінюється колір стін, не даху. |
+| fact_03 | Are reflections of trees visible in the water? | Yes | CORRECT | У","| fact_02 | What is the dominant color of the cabin's wooden walls? | Brown | CORRECT | Видимі дерев’яні стіни коричневі; оцінюється колір стін, не даху. |
+| fact_03 | Are reflections of trees visible in the water? | Yes | CORRECT | У",3.040400013560429
+q05,What hallucination behavior was observed in the Lab 5 VQA experiment?,4,lab06,System instructions,chunk-75d8614dcd8ca78a,-9.282697269982792,"If search is unhelpful, read a bounded section of the relevant report.
+For report-specific questions, reading the opening 60 lines is often more reliable
+than guessing English search terms in Ukrainian text. Follow next_line when needed.
+Find the actual model/checkpoint ID when asked which model was","If search is unhelpful, read a bounded section of the relevant report.
+For report-specific questions, reading the opening 60 lines is often more reliable
+than guessing English search terms in Ukrainian text. Follow next_line when needed.
+Find the actual model/checkpoint ID when asked which model was used.
+Distinguish unique generated/inference outputs from reused experiment table rows.
+Never infer a total count from a partial parameter table. Find the explicit total
+in each relevant report before comparing. For numeric comparisons, use calculate
+with the retrieved values and include both original counts and the difference.
+Before finalizing, check that each report fact has a filename citation and that
+the requested result is actually present. Do not add model versions or details
+not stated in the retrieved evidence. Treat tool errors as observations to correct.",3.040400013560429
+q05,What hallucination behavior was observed in the Lab 5 VQA experiment?,5,lab05,12. Фактологічні питання,chunk-34dce88ab5ef5c54,-8.601169828657103,"## 12. Фактологічні питання  
+| question_id | question | answer | evaluation_label | notes |
+| --- | --- | --- | --- | --- |
+| fact_01 | Is the cabin on the left, in the center, or on the right side of the image? | left | CORRECT | Будиночок чітко розташований у лівій половині кадру. |
+| fact_02 | W","## 12. Фактологічні питання  
+| question_id | question | answer | evaluation_label | notes |
+| --- | --- | --- | --- | --- |
+| fact_01 | Is the cabin on the left, in the center, or on the right side of the image? | left | CORRECT | Будиночок чітко розташований у лівій половині кадру. |
+| fact_02 | What is the dominant color of the cabin's wooden walls? | Brown | CORRECT | Видимі",3.040400013560429
+q06,SQLiteSession пам’ять інструменти агента,1,lab06,Пам'ять та ізоляція,chunk-ce0ead7993a742f9,-11.785498015179247,"## Пам'ять та ізоляція  
+SQLiteSession зберігає conversation items в outputs/sessions/agent_memory.sqlite. Це контекст діалогу, не семантична довготривала пам'ять. Перед другим запитом Runner отримує попередні items. Перевірено збережений текст alias у A та його відсутність у B. Повні items після се","## Пам'ять та ізоляція  
+SQLiteSession зберігає conversation items в outputs/sessions/agent_memory.sqlite. Це контекст діалогу, не семантична довготривала пам'ять. Перед другим запитом Runner отримує попередні items. Перевірено збережений текст alias у A та його відсутність у B. Повні items після серії наведені в metadata/memory_<batch>.json та notebook.  
+Session A, встановлення: Understood.",2.25569999020081
+q06,SQLiteSession пам’ять інструменти агента,2,lab06,Обмеження та висновки,chunk-0156248bdf9977e4,-11.403055946389436,"t_line дає змогу продовжити, але рішення залежить від моделі. Схема auto допускає і пропущені, і зайві виклики. Пам'ять ізольована за ID, однак довга історія може перевищити контекст. Низька temperature не є доказом побітової відтворюваності. Чотири інструменти не мають","t_line дає змогу продовжити, але рішення залежить від моделі. Схема auto допускає і пропущені, і зайві виклики. Пам'ять ізольована за ID, однак довга історія може перевищити контекст. Низька temperature не є доказом побітової відтворюваності. Чотири інструменти не мають",2.25569999020081
+q06,SQLiteSession пам’ять інструменти агента,3,lab06,Теоретичні відомості та архітектура,chunk-bf39f0820ad96dd0,-4.4182415163980036,"аних локального диска без явної передачі. Агентна програма доповнює модель зовнішніми діями та станом.  
+```text
+Запит → Agent / Runner → локальна LLM у LM Studio
+├── SQLiteSession → локальна історія
+└── function_tool → list / search /","аних локального диска без явної передачі. Агентна програма доповнює модель зовнішніми діями та станом.  
+```text
+Запит → Agent / Runner → локальна LLM у LM Studio
+├── SQLiteSession → локальна історія
+└── function_tool → list / search /",2.25569999020081
+q06,SQLiteSession пам’ять інструменти агента,4,lab06,Обмеження та висновки,chunk-e1100b22f72d0982,-4.0505674082709,"SDK-цикл і показує, чому правильне отримання даних слід оцінювати окремо від якості остаточної відповіді. Повні фінальні відповіді, observable trajectories, token usage, історія SQLiteSession і порівняння доступні у виконаному notebook. Формальна відповідність вимогам наведена в methodology_audit.md","SDK-цикл і показує, чому правильне отримання даних слід оцінювати окремо від якості остаточної відповіді. Повні фінальні відповіді, observable trajectories, token usage, історія SQLiteSession і порівняння доступні у виконаному notebook. Формальна відповідність вимогам наведена в methodology_audit.md. Скріншоти GUI залишаються ручним пунктом.",2.25569999020081
+q06,SQLiteSession пам’ять інструменти агента,5,lab06,"Тема, мета та варіант",chunk-38b40e50e883243b,-3.9070814767309927,"# Лабораторна робота №6  
+## Тема, мета та варіант  
+Розробка agent-based асистента. Мета — реалізувати локального LLM-агента з пам'яттю, інструментами та багатокроковими рішеннями. **Варіант 3 — OpenAI Agents","# Лабораторна робота №6  
+## Тема, мета та варіант  
+Розробка agent-based асистента. Мета — реалізувати локального LLM-агента з пам'яттю, інструментами та багатокроковими рішеннями. **Варіант 3 — OpenAI Agents",2.25569999020081
+q07,Compare Stable Diffusion and LLaVA model roles,1,lab04,Модель і середовище,chunk-0fceabd8decbcb78,-9.523317691586701,"## Модель і середовище  
+Методичка називає `runwayml/stable-diffusion-v1-5`. Фактичний API цього ID перенаправляє на `stable-diffusion-v1-5/stable-diffusion-v1-5`; використано цей еквівалент **Stable Diffusion v1.5**, без зміни сімейства. Revision: `451f4fe16113bff5a5d2269ed5ad43b0592e9a14`. Є safet","## Модель і середовище  
+Методичка називає `runwayml/stable-diffusion-v1-5`. Фактичний API цього ID перенаправляє на `stable-diffusion-v1-5/stable-diffusion-v1-5`; використано цей еквівалент **Stable Diffusion v1.5**, без зміни сімейства. Revision: `451f4fe16113bff5a5d2269ed5ad43b0592e9a14`. Є safetensors FP16",2.6529999886406586
+q07,Compare Stable Diffusion and LLaVA model roles,2,lab06,Пам'ять та ізоляція,chunk-bbd0197442c96a3e,-8.745181191092406,"серії наведені в metadata/memory_<batch>.json та notebook.  
+Session A, встановлення: Understood. I will use **""Vision Lab""** as an alias for **Lab 5** throughout this conversation.  
+Session A, запит моделі: The search did not reveal a direct mention of the **model ID** in JSON files or metadata. S","серії наведені в metadata/memory_<batch>.json та notebook.  
+Session A, встановлення: Understood. I will use **""Vision Lab""** as an alias for **Lab 5** throughout this conversation.  
+Session A, запит моделі: The search did not reveal a direct mention of the **model ID** in JSON files or metadata. Since the report references LLaVA architecture and mentions `SHA-підпис` includes `model/revision`, I will assume that the model is part of an existing LLaVA checkpoint (e.g., from Hugging Face).",2.6529999886406586
+q07,Compare Stable Diffusion and LLaVA model roles,3,lab06,Зауваження до кожної відповіді фінальної серії,chunk-dd4fe488bab8f594,-8.178404415649702,"## Зауваження до кожної відповіді фінальної серії  
+- **role**: Пряма відповідь про роль, нуль викликів; зайві дії відсутні.  
+- **lab4**: Правильно визначено Stable Diffusion v1.5, наведено lab04_report.md. Checkpoint скорочено до назви сімейства; твердження підтверджує прочитаний model-card рядок.","## Зауваження до кожної відповіді фінальної серії  
+- **role**: Пряма відповідь про роль, нуль викликів; зайві дії відсутні.  
+- **lab4**: Правильно визначено Stable Diffusion v1.5, наведено lab04_report.md. Checkpoint скорочено до назви сімейства; твердження підтверджує прочитаний model-card рядок.  
+- **lab5**: Точний checkpoint, revision і кількість",2.6529999886406586
+q07,Compare Stable Diffusion and LLaVA model roles,4,lab06,Пам'ять та ізоляція,chunk-fb5811c46acbb347,-7.3056779160474985,"clarification: **Was this experiment using a pre-trained LLaVA checkpoint (e.g., from Hugging Face), or was it a custom model?** If you have access to the codebase or inference outputs, please provide details about the model ID.  
+Otherwise, based on the architecture description, the model is likely","clarification: **Was this experiment using a pre-trained LLaVA checkpoint (e.g., from Hugging Face), or was it a custom model?** If you have access to the codebase or inference outputs, please provide details about the model ID.  
+Otherwise, based on the architecture description, the model is likely an LLaVA variant.  
+Session B, той самий запит: The Vision Lab corresponds to one of the following reports: **lab03_report.md**, **lab04_report.md**, or **lab05_report.md**. Which specific lab are you referring to?  
+Оцінка пам'яті: PASS; ізоляції: PASS.",2.6529999886406586
+q07,Compare Stable Diffusion and LLaVA model roles,5,lab06,System instructions,chunk-75d8614dcd8ca78a,-5.175307334073768,"If search is unhelpful, read a bounded section of the relevant report.
+For report-specific questions, reading the opening 60 lines is often more reliable
+than guessing English search terms in Ukrainian text. Follow next_line when needed.
+Find the actual model/checkpoint ID when asked which model was","If search is unhelpful, read a bounded section of the relevant report.
+For report-specific questions, reading the opening 60 lines is often more reliable
+than guessing English search terms in Ukrainian text. Follow next_line when needed.
+Find the actual model/checkpoint ID when asked which model was used.
+Distinguish unique generated/inference outputs from reused experiment table rows.
+Never infer a total count from a partial parameter table. Find the explicit total
+in each relevant report before comparing. For numeric comparisons, use calculate
+with the retrieved values and include both original counts and the difference.
+Before finalizing, check that each report fact has a filename citation and that
+the requested result is actually present. Do not add model versions or details
+not stated in the retrieved evidence. Treat tool errors as observations to correct.",2.6529999886406586
+q08,Exact outdoor temperature during execution of Lab 4,1,lab06,Невідома інформація,chunk-cbb35c1cbba9c283,-11.945725305252491,"## Невідома інформація  
+The report does not contain any explicit mention of the outdoor temperature in Lviv during Lab 4 execution. The available data focuses on model parameters, prompts, and inference results but does not reference environmental conditions like temperature.  
+If you need this inf","## Невідома інформація  
+The report does not contain any explicit mention of the outdoor temperature in Lviv during Lab 4 execution. The available data focuses on model parameters, prompts, and inference results but does not reference environmental conditions like temperature.  
+If you need this information for a specific experiment or context, it may be missing from the provided reports. Would you like to check another report file or clarify if there is additional metadata elsewhere?  
+Не вигадує температуру й повідомляє про відсутність даних; пошук і читання доречні. Фінальна відповідь не цитує filename.",2.5870999961625785
+q08,Exact outdoor temperature during execution of Lab 4,2,lab06,Керована діагностика калькулятора,chunk-dc7c28c8c55f4686,-6.6713649491162705,"orkspace → search_workspace → calculate.  
+The sum of the inferred counts is **20** (Lab 4: 3, Lab 5: 17).  
+**Note:** The count for Lab 4 remains uncertain without explicit uniqueness data. If you need further clarification or additional evidence, let me know.  
+---
+**Final Answer:**
+- **Lab 4**: 3","orkspace → search_workspace → calculate.  
+The sum of the inferred counts is **20** (Lab 4: 3, Lab 5: 17).  
+**Note:** The count for Lab 4 remains uncertain without explicit uniqueness data. If you need further clarification or additional evidence, let me know.  
+---
+**Final Answer:**
+- **Lab 4**: 3 inference runs (no unique output count explicitly stated).
+- **Lab 5**: 17 unique generated/inference outputs.
+- **Sum**: **20** (calculated from available data).",2.5870999961625785
+q08,Exact outdoor temperature during execution of Lab 4,3,lab05,15. Вплив temperature,chunk-87322d43bfdeed7e,-6.284185853766925,"## 15. Вплив temperature  
+| temperature | answer | runtime_seconds | generated_token_count | evaluation_label |
+| --- | --- | --- | --- | --- |
+| 0.200 | The water appears calm, and the reflection of the cabin and the surrounding trees is visible. | 1.847 | 19 | SUPPORTED_BY_VISIBLE_EVIDENCE |
+| 0.","## 15. Вплив temperature  
+| temperature | answer | runtime_seconds | generated_token_count | evaluation_label |
+| --- | --- | --- | --- | --- |
+| 0.200 | The water appears calm, and the reflection of the cabin and the surrounding trees is visible. | 1.847 | 19 | SUPPORTED_BY_VISIBLE_EVIDENCE |
+| 0.700 | The water appears calm, and visible evidence of calmness is the reflection of the cabin and the surrounding trees. | 1.428 | 23 | SUPPORTED_BY_VISIBLE_EVIDENCE |
+| 1.000 | The water appears calm. This is evident from the reflection of the cabin and trees on the water's surface. | 1.392 | 23 | SUPPORTED_BY_VISIBLE_EVIDENCE |",2.5870999961625785
+q08,Exact outdoor temperature during execution of Lab 4,4,lab05,14. Контроль на галюцинації,chunk-bc67df96f1f11d04,-5.837362914921665,"## 14. Контроль на галюцинації  
+| question_id | question | answer | evaluation_label | notes |
+| --- | --- | --- | --- | --- |
+| control_01 | What are the exact geographic coordinates of this cabin? | [0.542,0.544,0.856,0.731] | HALLUCINATED | Замість визнання невизначеності подано чотири числа без","## 14. Контроль на галюцинації  
+| question_id | question | answer | evaluation_label | notes |
+| --- | --- | --- | --- | --- |
+| control_01 | What are the exact geographic coordinates of this cabin? | [0.542,0.544,0.856,0.731] | HALLUCINATED | Замість визнання невизначеності подано чотири числа без джерела. Вони нагадують координати рамки, але їх значення невідоме; це не",2.5870999961625785
+q08,Exact outdoor temperature during execution of Lab 4,5,lab06,Керована діагностика калькулятора,chunk-8cbe8607201b8bee,-5.407328260915378,"## Керована діагностика калькулятора  
+Запит прямо називає calculate, тому цей запуск не є доказом автономного вибору цього інструмента. Дані з файлів не передані у запиті; пошук обирає агент.  
+Траєкторія: list_workspace_files → search_workspace → search_workspace → search_workspace → search_worksp","## Керована діагностика калькулятора  
+Запит прямо називає calculate, тому цей запуск не є доказом автономного вибору цього інструмента. Дані з файлів не передані у запиті; пошук обирає агент.  
+Траєкторія: list_workspace_files → search_workspace → search_workspace → search_workspace → search_workspace → calculate.  
+The sum of the inferred counts is **20** (Lab 4:",2.5870999961625785

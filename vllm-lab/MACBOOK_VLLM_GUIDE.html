@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ЛР №2. Запуск vLLM на MacBook Pro M3 Max</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* --- CSS Reset & Print Variables --- */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --color-bg: #ffffff;
+      --color-text: #1e293b;
+      --color-text-muted: #64748b;
+      --color-heading: #0f172a;
+      --color-accent: #1e3a8a;
+      --color-accent-subtle: #eff6ff;
+      --color-border: #e2e8f0;
+      --color-border-dark: #cbd5e1;
+      --color-code-bg: #f8fafc;
+      --color-input-bg: #f0f7ff;
+      --color-input-border: #bfdbfe;
+      --color-input-text: #1e3a8a;
+      --color-callout-bg: #f8fafc;
+      --color-callout-border: #94a3b8;
+      --color-callout-warn-border: #d97706;
+      --color-callout-warn-bg: #fffbeb;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 11mm 15mm 12mm 15mm;
+      @bottom-left {
+        content: "ЛР №2 • Запуск vLLM на MacBook Pro M3 Max";
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 7.75pt;
+        color: #94a3b8;
+      }
+      @bottom-right {
+        content: "Сторінка " counter(page) " з " counter(pages);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 7.75pt;
+        color: #94a3b8;
+      }
+    }
+
+    body {
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-sans);
+      font-size: 9.15pt;
+      line-height: 1.44;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .doc-container {
+      max-width: 100%;
+      margin: 0 auto;
+    }
+
+    /* --- Typography & Headings --- */
+    h1, h2, h3, h4 {
+      color: var(--color-heading);
+      font-weight: 700;
+      line-height: 1.25;
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+
+    p {
+      margin-bottom: 5px;
+      orphans: 3;
+      widows: 3;
+    }
+
+    p:last-child {
+      margin-bottom: 0;
+    }
+
+    strong {
+      font-weight: 600;
+      color: var(--color-heading);
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 8.35pt;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      padding: 1px 4px;
+      border-radius: 3px;
+      border: 1px solid #e2e8f0;
+      word-break: normal;
+      overflow-wrap: break-word;
+    }
+
+    .nobr {
+      white-space: nowrap;
+    }
+
+    /* --- Document Header (Page 1) --- */
+    .header-block {
+      border-bottom: 2px solid var(--color-heading);
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+    }
+
+    .header-badge {
+      display: inline-block;
+      font-size: 7.5pt;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-accent);
+      background-color: var(--color-accent-subtle);
+      border: 1px solid #dbeafe;
+      padding: 2.5px 8px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+    }
+
+    .main-title {
+      font-size: 18.5pt;
+      letter-spacing: -0.02em;
+      margin-bottom: 2px;
+      color: var(--color-heading);
+    }
+
+    .main-subtitle {
+      font-size: 11pt;
+      font-weight: 500;
+      font-style: italic;
+      color: var(--color-accent);
+      margin-bottom: 9px;
+    }
+
+    .lead-box {
+      background-color: #f8fafc;
+      border-left: 3.5px solid var(--color-accent);
+      padding: 9px 13px;
+      border-radius: 0 4px 4px 0;
+      font-size: 9.15pt;
+      color: #334155;
+    }
+
+    .lead-box p {
+      margin-bottom: 4px;
+    }
+
+    .lead-box p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* --- Step Sections --- */
+    .step-section {
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    /* Generous spacing for Page 1 & Page 4 to eliminate excessive whitespace */
+    .page-1 .step-section {
+      margin-top: 13px;
+      margin-bottom: 13px;
+    }
+
+    .page-4 .step-section {
+      margin-top: 11px;
+      margin-bottom: 11px;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 6px;
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: 3.5px;
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+
+    .step-tag {
+      font-size: 7.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #ffffff;
+      background-color: var(--color-accent);
+      padding: 2px 6.5px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+
+    .step-title {
+      font-size: 11.5pt;
+      font-weight: 700;
+      color: var(--color-heading);
+    }
+
+    /* --- Substep (Step 6) --- */
+    .substep-card {
+      background-color: #ffffff;
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      padding: 6.5px 9.5px;
+      margin-top: 5px;
+      margin-bottom: 5px;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .substep-title {
+      font-size: 9.75pt;
+      font-weight: 700;
+      color: var(--color-accent);
+      margin-bottom: 3.5px;
+    }
+
+    /* --- Terminal Code Blocks --- */
+    .code-container {
+      margin: 4.5px 0;
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      background-color: var(--color-code-bg);
+      overflow: hidden;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .page-1 .code-container {
+      margin: 6px 0;
+    }
+
+    .code-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #f1f5f9;
+      padding: 2.5px 8px;
+      border-bottom: 1px solid var(--color-border);
+      font-size: 7pt;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .code-bar .target-tag {
+      font-family: var(--font-mono);
+      font-size: 6.5pt;
+      color: #475569;
+      background: #e2e8f0;
+      padding: 1px 4px;
+      border-radius: 2px;
+      text-transform: none;
+    }
+
+    pre {
+      padding: 5px 9px;
+      font-family: var(--font-mono);
+      font-size: 8.2pt;
+      line-height: 1.36;
+      color: #0f172a;
+      white-space: pre-wrap;
+      word-break: normal;
+      overflow-wrap: break-word;
+    }
+
+    .page-1 pre {
+      padding: 6px 10px;
+    }
+
+    pre code {
+      background: transparent;
+      border: none;
+      padding: 0;
+      font-family: inherit;
+      font-size: inherit;
+      color: inherit;
+      border-radius: 0;
+    }
+
+    /* --- User Input / Query Blocks --- */
+    .user-query-card {
+      margin: 4.5px 0;
+      border: 1px solid var(--color-input-border);
+      border-left: 3px solid #2563eb;
+      border-radius: 0 4px 4px 0;
+      background-color: var(--color-input-bg);
+      padding: 4.5px 8.5px;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .user-query-header {
+      font-size: 7pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #1d4ed8;
+      margin-bottom: 2px;
+    }
+
+    .user-query-text {
+      font-family: var(--font-mono);
+      font-size: 8.2pt;
+      color: #0f172a;
+      font-weight: 500;
+      white-space: pre-wrap;
+      word-break: normal;
+      overflow-wrap: break-word;
+    }
+
+    /* --- Callouts & Notes --- */
+    .callout {
+      margin: 5px 0;
+      padding: 5px 9px;
+      border-radius: 3px;
+      font-size: 8.5pt;
+      line-height: 1.38;
+      border-left: 3px solid var(--color-callout-border);
+      background-color: var(--color-callout-bg);
+      color: #334155;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .page-1 .callout {
+      margin: 6px 0;
+      padding: 5.5px 10px;
+    }
+
+    .callout-warn {
+      border-left-color: var(--color-callout-warn-border);
+      background-color: var(--color-callout-warn-bg);
+      color: #92400e;
+    }
+
+    .callout-accent {
+      border-left-color: var(--color-accent);
+      background-color: #f8fafc;
+      color: #1e293b;
+    }
+
+    /* --- Lists --- */
+    .custom-list {
+      margin: 4px 0 4px 15px;
+    }
+
+    .custom-list li {
+      margin-bottom: 2.5px;
+      padding-left: 2px;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .custom-list li::marker {
+      color: var(--color-accent);
+      font-weight: 700;
+    }
+
+    .numbered-demo-list {
+      margin: 6px 0;
+      list-style: none;
+      counter-reset: demo-counter;
+      display: grid;
+      grid-gap: 5px;
+    }
+
+    .numbered-demo-list li {
+      counter-increment: demo-counter;
+      position: relative;
+      padding: 5.5px 10px 5.5px 32px;
+      background-color: #f8fafc;
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      font-size: 8.85pt;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .numbered-demo-list li::before {
+      content: counter(demo-counter);
+      position: absolute;
+      left: 8px;
+      top: 5.5px;
+      width: 16px;
+      height: 16px;
+      background-color: var(--color-accent);
+      color: #ffffff;
+      font-size: 7.25pt;
+      font-weight: 700;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* --- Result Block --- */
+    .result-box {
+      margin-top: 8px;
+      background-color: #f8fafc;
+      border: 1px solid var(--color-border);
+      border-top: 3px solid var(--color-accent);
+      border-radius: 4px;
+      padding: 8px 12px;
+      font-size: 8.85pt;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .result-title {
+      font-weight: 700;
+      color: var(--color-heading);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* --- Summary Table --- */
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 6px;
+      font-size: 8.15pt;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .summary-table th, .summary-table td {
+      border: 1px solid var(--color-border);
+      padding: 5.5px 8px;
+      text-align: left;
+      vertical-align: middle;
+      line-height: 1.34;
+    }
+
+    .summary-table th {
+      background-color: #f1f5f9;
+      font-weight: 600;
+      color: var(--color-heading);
+      font-size: 7.75pt;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .summary-table tr:nth-child(even) {
+      background-color: #f8fafc;
+    }
+
+    .summary-table code {
+      font-size: 7.6pt;
+      padding: 1px 3px;
+      white-space: pre-wrap;
+      word-break: normal;
+      overflow-wrap: normal;
+    }
+
+    /* --- Page Break Utilities --- */
+    .page-break-before {
+      break-before: page;
+      page-break-before: always;
+    }
+  </style>
+</head>
+<body>
+  <div class="doc-container">
+
+    <!-- PAGE 1: Підготовка оточення та запуск сервера vLLM -->
+    <div class="page-block page-1">
+      <!-- Document Header -->
+      <header class="header-block">
+        <div class="header-badge">Швидкий старт • Практичний посібник</div>
+        <h1 class="main-title">Лабораторна робота №2</h1>
+        <div class="main-subtitle">Запуск vLLM на MacBook Pro M3 Max</div>
+        <div class="lead-box">
+          <p>Інструкція для MacBook Pro M3 Max. Потрібно запустити мовну модель локально, підключити до неї Python-програму <code>cli.py</code> та продемонструвати роботу через Terminal.</p>
+          <p>Для цього використовуватимуться два вікна Terminal: в одному працюватиме сервер vLLM, в іншому — Python CLI.</p>
+        </div>
+      </header>
+
+      <!-- Крок 1 -->
+      <section class="step-section">
+        <div class="step-header">
+          <span class="step-tag">Крок 1</span>
+          <h2 class="step-title">Встановлення vLLM-Metal</h2>
+        </div>
+        <p>Для запуску vLLM на MacBook з Apple Silicon використовується vLLM-Metal.</p>
+        <p>У Terminal послідовно виконай:</p>
+        
+        <div class="code-container">
+          <div class="code-bar">
+            <span>Terminal</span>
+            <span class="target-tag">brew tap</span>
+          </div>
+          <pre><code>brew tap vllm-project/vllm-metal https://github.com/vllm-project/vllm-metal</code></pre>
+        </div>
+
+        <div class="code-container">
+          <div class="code-bar">
+            <span>Terminal</span>
+            <span class="target-tag">brew install</span>
+          </div>
+          <pre><code>brew install vllm-project/vllm-metal/vllm-metal</code></pre>
+        </div>
+
+        <p>Після завершення встановлення перевір, чи доступна команда:</p>
+        <div class="code-container">
+          <div class="code-bar">
+            <span>Terminal</span>
+            <span class="target-tag">перевірка версії</span>
+          </div>
+          <pre><code>vllm --version</code></pre>
+        </div>
+
+        <p>Якщо версія відображається, можна переходити до запуску моделі.</p>
+        <div class="callout">
+          <em>Команди підготовлені для macOS, але на конкретному MacBook ще не перевірялися.</em>
+        </div>
+      </section>
+
+      <!-- Крок 2 -->
+      <section class="step-section">
+        <div class="step-header">
+          <span class="step-tag">Крок 2</span>
+          <h2 class="step-title">Завантаження та запуск мовної моделі</h2>
+        </div>
+        <p>Для лабораторної обрано модель <code>Qwen/Qwen2.5-1.5B-Instruct-AWQ</code>, яка має менше ніж 3 мільярди параметрів.</p>
+        <p>Введи:</p>
+
+        <div class="code-container">
+          <div class="code-bar">
+            <span>Terminal 1 (Сервер vLLM)</span>
+            <span class="target-tag">vllm serve</span>
+          </div>
+          <pre><code>vllm serve Qwen/Qwen2.5-1.5B-Instruct-AWQ \
+  --port 8000 \
+  --max-model-len 2048 \
+  --gpu-memory-utilization 0.50</code></pre>
+        </div>
+
+        <p>Під час першого запуску vLLM завантажить модель із Hugging Face, після чого запустить локальний API-сервер на порту <code>8000</code>.</p>
+        <p>Завантаження може зайняти кілька хвилин. Дочекайся повідомлення про готовність сервера.</p>
+
+        <div class="callout callout-accent">
+          <strong>Це вікно Terminal залиш відкритим.</strong> Сервер повинен працювати протягом усієї демонстрації.
+        </div>
+
+        <div class="callout callout-warn">
+          Якщо vLLM повідомляє про несумісність моделі, спочатку потрібно підібрати підтримуваний checkpoint. Цю конфігурацію ще не перевірено на M3 Max.
+        </div>
+      </section>
+    </div>
+
+    <div class="page-break-before"></div>
+
+    <!-- PAGE 2: Перевірка сервера та підготовка клієнта -->
+    <div class="page-block page-2">
+      <!-- Крок 3 -->
+      <section class="step-section">
+        <div class="step-header">
+          <span class="step-tag">Крок 3</span>
+          <h2 class="step-title">Перевірка роботи сервера</h2>
+        </div>
+        <p>Відкрий друге вікно Terminal і виконай:</p>
+
+        <div class="code-container">
+          <div class="code-bar">
+            <span>Terminal 2 (Клієнт)</span>
+            <span class="target-tag">curl GET /v1/models</span>
+          </div>
+          <pre><code>curl http://127.0.0.1:8000/v1/models</code></pre>
+        </div>
+
+        <p>У відповіді має з'явитися JSON з інформацією про завантажену модель. Знайди поле <code>id</code>, наприклад:</p>
+
+        <div class="code-container">
+          <div class="code-bar">
+            <span>Очікуваний фрагмент відповіді JSON</span>
+            <span class="target-tag">JSON</span>
+          </div>
+          <pre><code>"id": "Qwen/Qwen2.5-1.5B-Instruct-AWQ"</code></pre>
+        </div>
+
+        <p>Цей ідентифікатор потрібно використовувати під час запуску <code>cli.py</code>.</p>
+
+        <div class="callout">
+          Якщо виникає <code>Connection refused</code>, перевір, чи завершилося завантаження моделі в першому Terminal.
+        </div>
+      </section>
+
+      <!-- Крок 4 -->
+      <section class="step-section">
+        <div class="step-header">
+          <span class="step-tag">Крок 4</span>
+          <h2 class="step-title">Підготовка Python CLI</h2>
+        </div>
+        <p>Для лабораторної тобі передадуть два файли:</p>
+        <ul class="custom-list">
+          <li><code>cli.py</code> — програма для надсилання запитань моделі через API.</li>
+          <li><code>requirements.txt</code> — залежності Python.</li>
+        </ul>
+        <p>Розмісти їх у папці <code>lab2_vllm</code> на робочому столі.</p>
+        <p>У другому Terminal перейди до цієї папки:</p>
+
+        <div class="code-container">
+          <div class="code-bar">
+            <span>Terminal 2</span>
+            <span class="target-tag">перехід до каталогу</span>
+          </div>
+          <pre><code>cd ~/Desktop/lab2_vllm</code></pre>
+        </div>
+
+        <p>Створи та активуй віртуальне середовище:</p>
+        <div class="code-container">
+          <div class="code-bar">
+            <span>Terminal 2</span>
+            <span class="target-tag">створення та активація venv</span>
+          </div>
+          <pre><code>python3 -m venv .venv
+source .venv/bin/activate</code></pre>
+        </div>
+
+        <p>Встанови залежності:</p>
+        <div class="code-container">
+          <div class="code-bar">
+            <span>Terminal 2</span>
+            <span class="target-tag">pip install</span>
+          </div>
+          <pre><code>python -m pip install -r requirements.txt</code></pre>
+        </div>
+
+        <p>Це початкове налаштування. Під час наступних запусків достатньо перейти до папки й активувати <code>.venv</code>.</p>
+      </section>
+
+      <!-- Крок 5 -->
+      <section class="step-section">
+        <div class="step-header">
+          <span class="step-tag">Крок 5</span>
+          <h2 class="step-title">Запуск CLI та перевірка діалогу</h2>
+        </div>
+        <p>У другому Terminal запусти:</p>
+
+        <div class="code-container">
+          <div class="code-bar">
+            <span>Terminal 2</span>
+            <span class="target-tag">запуск cli.py</span>
+          </div>
+          <pre><code>python cli.py --model Qwen/Qwen2.5-1.5B-Instruct-AWQ</code></pre>
+        </div>
+
+        <p>Після підключення до сервера з'явиться запрошення <code>You:</code>.</p>
+        <p>Введи перше запитання:</p>
+
+        <div class="user-query-card">
+          <div class="user-query-header">Введення запитання (You):</div>
+          <div class="user-query-text">What is machine learning? Explain in two sentences.</div>
+        </div>
+
+        <p>Дочекайся відповіді та постав друге:</p>
+
+        <div class="user-query-card">
+          <div class="user-query-header">Введення запитання (You):</div>
+          <div class="user-query-text">Give me one real-world example of it.</div>
+        </div>
+
+        <p>Друге запитання пов'язане з першим. Так можна перевірити, чи програма передає моделі історію розмови.</p>
+        <p>Для завершення введи:</p>
+
+        <div class="code-container">
+          <div class="code-bar">
+            <span>Terminal 2</span>
+            <span class="target-tag">вихід з діалогу</span>
+          </div>
+          <pre><code>exit</code></pre>
+        </div>
+
+        <p>Після виходу діалог автоматично збережеться у папці <code>outputs/dialogs</code> у форматі Markdown.</p>
+      </section>
+    </div>
+
+    <div class="page-break-before"></div>
+
+    <!-- PAGE 3: Експерименти з параметрами -->
+    <div class="page-block page-3">
+      <!-- Крок 6 -->
+      <section class="step-section">
+        <div class="step-header">
+          <span class="step-tag">Крок 6</span>
+          <h2 class="step-title">Експерименти з параметрами генерації</h2>
+        </div>
+        <p>Для лабораторної потрібно продемонструвати, як змінюється поведінка моделі залежно від параметрів.</p>
+
+        <!-- 6.1 -->
+        <div class="substep-card">
+          <h3 class="substep-title">6.1. System prompt</h3>
+          <p>System prompt задає інструкцію щодо стилю або правил відповіді.</p>
+          <p>Запусти:</p>
+
+          <div class="code-container">
+            <div class="code-bar">
+              <span>Terminal 2</span>
+              <span class="target-tag">--system-prompt</span>
+            </div>
+            <pre><code>python cli.py \
+  --model Qwen/Qwen2.5-1.5B-Instruct-AWQ \
+  --system-prompt "You are a machine learning teacher. Explain concepts in simple English."</code></pre>
+          </div>
+
+          <p>Постав запитання:</p>
+          <div class="user-query-card">
+            <div class="user-query-header">Введення запитання (You):</div>
+            <div class="user-query-text">What is overfitting?</div>
+          </div>
+
+          <p>Перевір, чи модель дотримується заданого стилю. Заверши діалог через <code>exit</code>.</p>
+        </div>
+
+        <!-- 6.2 -->
+        <div class="substep-card">
+          <h3 class="substep-title">6.2. Temperature</h3>
+          <p>Temperature регулює випадковість генерації: нижчі значення зазвичай дають більш передбачувані відповіді, вищі — різноманітніші.</p>
+          <p>Спочатку запусти:</p>
+
+          <div class="code-container">
+            <div class="code-bar">
+              <span>Terminal 2</span>
+              <span class="target-tag">temperature = 0.2</span>
+            </div>
+            <pre><code>python cli.py --model Qwen/Qwen2.5-1.5B-Instruct-AWQ --temperature 0.2</code></pre>
+          </div>
+
+          <p>Постав запитання:</p>
+          <div class="user-query-card">
+            <div class="user-query-header">Введення запитання (You):</div>
+            <div class="user-query-text">Suggest three names for an AI assistant for students.</div>
+          </div>
+
+          <p>Заверши діалог і повторно запусти програму:</p>
+          <div class="code-container">
+            <div class="code-bar">
+              <span>Terminal 2</span>
+              <span class="target-tag">temperature = 1.2</span>
+            </div>
+            <pre><code>python cli.py --model Qwen/Qwen2.5-1.5B-Instruct-AWQ --temperature 1.2</code></pre>
+          </div>
+
+          <p>Постав <strong>те саме запитання</strong>.</p>
+          <p>Порівняй результати. Вища temperature може дати незвичнішу відповідь, хоча це не гарантується для кожного запиту.</p>
+        </div>
+
+        <!-- 6.3 -->
+        <div class="substep-card">
+          <h3 class="substep-title">6.3. Max tokens</h3>
+          <p><code>max_tokens</code> обмежує максимальну кількість токенів у згенерованій відповіді.</p>
+          <p>Спочатку:</p>
+
+          <div class="code-container">
+            <div class="code-bar">
+              <span>Terminal 2</span>
+              <span class="target-tag">max-tokens = 30</span>
+            </div>
+            <pre><code>python cli.py --model Qwen/Qwen2.5-1.5B-Instruct-AWQ --max-tokens 30</code></pre>
+          </div>
+
+          <p>Питання:</p>
+          <div class="user-query-card">
+            <div class="user-query-header">Введення запитання (You):</div>
+            <div class="user-query-text">Explain five advantages of machine learning.</div>
+          </div>
+
+          <p>Потім:</p>
+          <div class="code-container">
+            <div class="code-bar">
+              <span>Terminal 2</span>
+              <span class="target-tag">max-tokens = 200</span>
+            </div>
+            <pre><code>python cli.py --model Qwen/Qwen2.5-1.5B-Instruct-AWQ --max-tokens 200</code></pre>
+          </div>
+
+          <p>Повтори те саме питання.</p>
+          <p>Порівняй довжину відповідей. За меншого ліміту модель може не встигнути завершити пояснення.</p>
+        </div>
+      </section>
+    </div>
+
+    <div class="page-break-before"></div>
+
+    <!-- PAGE 4: Демонстрація, фінал та зведена пам'ятка -->
+    <div class="page-block page-4">
+      <!-- Крок 7 -->
+      <section class="step-section">
+        <div class="step-header">
+          <span class="step-tag">Крок 7</span>
+          <h2 class="step-title">Демонстрація викладачу</h2>
+        </div>
+        <p>Під час захисту потрібно показати:</p>
+        
+        <ol class="numbered-demo-list">
+          <li>Запущений сервер vLLM у першому Terminal.</li>
+          <li>Перевірку моделі командою <code>curl http://127.0.0.1:8000/v1/models</code>.</li>
+          <li>Запуск <code>cli.py</code> у другому Terminal.</li>
+          <li>Два послідовні запитання, щоб показати роботу моделі та збереження контексту.</li>
+          <li>Повторний запуск із <code>--system-prompt</code>, <code>--temperature</code> або <code>--max-tokens</code>.</li>
+          <li>Файли збережених діалогів у <code>outputs/dialogs</code>.</li>
+        </ol>
+      </section>
+
+      <!-- Завершення роботи -->
+      <section class="step-section">
+        <div class="step-header">
+          <span class="step-tag" style="background-color: #334155;">Фінал</span>
+          <h2 class="step-title">Завершення роботи</h2>
+        </div>
+        <p>Після демонстрації введи <code>exit</code> у Python CLI.</p>
+        <p>Потім повернися до першого Terminal і натисни <code>Ctrl + C</code>, щоб зупинити сервер vLLM.</p>
+
+        <div class="result-box">
+          <div class="result-title">
+            <span>Підсумок виконання</span>
+          </div>
+          <p><strong>Результат:</strong> локально запущена мовна модель, працюючий Python CLI, експерименти з параметрами генерації та збережені діалоги.</p>
+        </div>
+      </section>
+
+      <!-- Зведена пам'ятка команд лабораторної -->
+      <section class="step-section">
+        <div class="step-header">
+          <span class="step-tag" style="background-color: #0f172a;">Пам'ятка</span>
+          <h2 class="step-title">Зведені команди та параметри</h2>
+        </div>
+        <table class="summary-table">
+          <thead>
+            <tr>
+              <th style="width: 19%;">Етап / Термінал</th>
+              <th style="width: 55%;">Команда</th>
+              <th style="width: 26%;">Призначення</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Terminal 1 (Сервер)</strong></td>
+              <td><code>vllm serve <span class="nobr">Qwen/Qwen2.5-1.5B-Instruct-AWQ</span> \
+  --port 8000 <span class="nobr">--max-model-len 2048</span> <span class="nobr">--gpu-memory-utilization 0.50</span></code></td>
+              <td>Локальний запуск vLLM API</td>
+            </tr>
+            <tr>
+              <td><strong>Terminal 2 (Перевірка)</strong></td>
+              <td><code>curl http://127.0.0.1:8000/v1/models</code></td>
+              <td>Перевірка готовності API</td>
+            </tr>
+            <tr>
+              <td><strong>Terminal 2 (Базовий запуск)</strong></td>
+              <td><code>python cli.py --model <span class="nobr">Qwen/Qwen2.5-1.5B-Instruct-AWQ</span></code></td>
+              <td>Діалог зі збереженням контексту</td>
+            </tr>
+            <tr>
+              <td><strong>Terminal 2 (Стиль відповіді)</strong></td>
+              <td><code>python cli.py --model <span class="nobr">Qwen/Qwen2.5-1.5B-Instruct-AWQ</span> \
+  <span class="nobr">--system-prompt</span> "You are a machine learning teacher. Explain concepts in simple English."</code></td>
+              <td>Завдання інструкції стилю</td>
+            </tr>
+            <tr>
+              <td><strong>Terminal 2 (Випадковість)</strong></td>
+              <td><code>python cli.py --model <span class="nobr">Qwen/Qwen2.5-1.5B-Instruct-AWQ</span> <span class="nobr">--temperature 0.2</span></code> (та <code>1.2</code>)</td>
+              <td>Порівняння варіативності відповідей</td>
+            </tr>
+            <tr>
+              <td><strong>Terminal 2 (Ліміт довжини)</strong></td>
+              <td><code>python cli.py --model <span class="nobr">Qwen/Qwen2.5-1.5B-Instruct-AWQ</span> <span class="nobr">--max-tokens 30</span></code> (та <code>200</code>)</td>
+              <td>Порівняння довжини генерації</td>
+            </tr>
+            <tr>
+              <td><strong>Зупинка процесів</strong></td>
+              <td><code>exit</code> (у CLI) / <code>Ctrl + C</code> (у Terminal 1)</td>
+              <td>Коректне завершення роботи</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+  </div>
+</body>
+</html>

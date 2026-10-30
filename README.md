@@ -1,43 +1,83 @@
 # Neural Network Technologies and Systems
 
-Репозиторій лабораторних робіт із дисципліни «Технології та системи нейронних мереж». Кожна лабораторна має окремі `src/`, notebook, залежності, результати та звіт.
+Seven engineering-focused laboratory projects progressing from transformer fundamentals to a local tool-using RAG application. The repository emphasizes reproducible experiments, explicit failure analysis, offline tests, and inspectable evidence without presenting mocks as live inference.
 
-| № | Тема | Основні технології | Матеріали |
-|---:|---|---|---|
-| 1 | Transformer з нуля | PyTorch, encoder/decoder, training loops | [README](labs/lab01_transformer/README.md) |
-| 2 | Локальна LLM через API | LM Studio, OpenAI-compatible API | [README](labs/lab02_llm_api/README.md) |
-| 3 | RAG над CSV | LangChain, MiniLM, Redis, LM Studio | [README](labs/lab03_rag/README.md), [notebook](labs/lab03_rag/notebooks/01_redis_csv_rag.ipynb) |
-| 4 | Stable Diffusion Text-to-Image | PyTorch, Diffusers, SD 1.5 | [README](labs/lab04_stable_diffusion/README.md), [notebook](labs/lab04_stable_diffusion/notebooks/01_text_to_image.ipynb) |
-| 5 | Visual Question Answering | LLaVA, Transformers | [README](labs/lab05_multimodal/README.md) |
-| 6 | Агентний асистент | OpenAI Agents SDK, LM Studio, SQLite | [README](labs/lab06_agents/README.md) |
-| 7 | Підсумковий RAG-асистент | Redis, MiniLM, Agents SDK | [README](labs/lab07_final_project/README.md) |
+## Engineering progression
 
-## Структура
+| Stage | Project | Capability |
+|---|---|---|
+| 1 | [Transformer from scratch](labs/lab01_transformer/README.md) | Attention, encoder–decoder internals, training loops |
+| 2 | [Local LLM API](labs/lab02_llm_api/README.md) | OpenAI-compatible inference and controlled generation |
+| 3 | [Redis RAG](labs/lab03_rag/README.md) | Loading, embeddings, vector search, grounded prompts |
+| 4 | [Stable Diffusion](labs/lab04_stable_diffusion/README.md) | GPU inference, controlled experiments, provenance |
+| 5 | [LLaVA VQA](labs/lab05_multimodal/README.md) | Vision-language inference, hallucination analysis |
+| 6 | [Tool-using agent](labs/lab06_agents/README.md) | Agents SDK, local tools, SQLite memory, traces |
+| 7 | [Knowledge assistant](labs/lab07_final_project/README.md) | Token-safe hybrid RAG, citations, CLI and web UI |
 
-- `labs/` — код, notebooks, тести та звіти окремих лабораторних;
-- `scripts/` — відтворення артефактів і виконання notebook;
-- `docs/` — спільні методичні та audit-документи;
-- `shared/` — заготовка для коду, спільного для кількох лабораторних;
-- `tests/` — репозиторні тести.
+## Featured final project
 
-Датасети, ваги моделей, checkpoints, локальні vector databases, повні outputs, віртуальні середовища та IDE metadata не зберігаються в Git. Невеликі перевірені матеріали для відтворення ЛР3 і ЛР4 розміщені в `artifacts/portfolio/` відповідної лабораторної.
+Lab 7 combines Redis dense retrieval, BM25, reciprocal-rank fusion, a bounded calculator, OpenAI Agents SDK, SQLite sessions, LM Studio, CLI, and Streamlit. Deterministic IDs, source hashes, namespace isolation, tool traces, and citation checks make failures auditable.
 
-## Запуск
-
-Залежності й зовнішні сервіси відрізняються між роботами. Команди встановлення наведено у README відповідної лабораторної. Notebook запускаються з кореня репозиторію, щоб імпорти `labs.<lab>.src` були доступні.
-
-CPU-only replay виконує ЛР4 без CUDA та завантаження моделі. ЛР3 навмисно не має replay-режиму: її notebook перевіряється статично й тестами, а повне виконання потребує Redis, MiniLM і LM Studio.
-
-```powershell
-python scripts/execute_portfolio_notebooks.py --mode replay
+```mermaid
+flowchart LR
+  Reports --> Chunking[Token-aware chunking]
+  Chunking --> Hybrid[Dense + BM25 + RRF]
+  Hybrid --> Agent[Local tool-using agent]
+  Agent --> CLI
+  Agent --> Web[Streamlit]
+  Agent --> Evidence[Traces and citations]
 ```
 
-Команда пропускає live-only notebook ЛР3 із явним статусом `SKIPPED` і виконує всі 21 code cells ЛР4 через `nbclient`. Повний експеримент потребує сервісів, моделей і обладнання, зазначених у README відповідної лабораторної.
+The historical experiment exposed serious retrieval and orchestration failures; they are documented rather than erased. Current code removes uncontrolled embedding truncation and adds evidence-level evaluation, but new live quality targets are not claimed before rerunning the full stack.
 
-## Результати
+## GPU Environment Setup
 
-- notebook містять обчислення та проміжні таблиці;
-- `report/` містить академічний звіт і матеріали для захисту;
-- `outputs/` призначений для локальних результатів і не версіонується;
-- `artifacts/portfolio/` містить обмежений набір результатів для replay та перегляду в GitHub;
-- [docs/audits](docs/audits/) містить технічні перевірки структури й відтворюваності ЛР3–ЛР4.
+GPU workloads in this repository run on Windows 11 with the **NVIDIA GeForce RTX 3050 Laptop GPU (4 GB VRAM)**. Dedicated Jupyter kernels and Python environments are mapped to each lab to avoid cross-environment conflicts and ensure reproducible CUDA execution.
+
+| Lab | Purpose | Environment | Jupyter Kernel | Backend |
+|---|---|---|---|---|
+| **Lab 01** | Transformer Encoder / Decoder | `.venv-lab04` | `lab01-transformer` | CUDA (RTX 3050) |
+| **Lab 02** | LLM API Client | `.venv-lab06` | `lab06-agents` | CPU / WSL2 vLLM |
+| **Lab 03** | Redis CSV RAG | `labs/lab03_rag/.venv` | `lab03-rag` | CPU (Embeddings) |
+| **Lab 04** | Stable Diffusion 1.5 | `.venv-lab04` | `lab04-cuda` | CUDA (RTX 3050) |
+| **Lab 05** | LLaVA Multimodal VQA | `labs/lab05_multimodal/.venv` | `lab05-cuda` | CUDA (RTX 3050) |
+| **Lab 06** | OpenAI Agents SDK | `.venv-lab06` | `lab06-agents` | CPU / LM Studio |
+| **Lab 07** | Agentic RAG Final Project | `labs/lab07_final_project/.venv` | `lab07` | CUDA (RTX 3050) |
+
+To verify and maintain your environment:
+
+```powershell
+# Verify real CUDA GPU tensor compute across all environments
+powershell -ExecutionPolicy Bypass -File scripts/verify_cuda.ps1
+
+# Run full project-wide environment and Jupyter kernel audit
+& ".venv-lab04\Scripts\python.exe" scripts/check_ml_environments.py
+
+# Re-register Jupyter kernels and normalize notebook metadata
+powershell -ExecutionPolicy Bypass -File scripts/setup_jupyter_kernels.ps1
+```
+
+> [!NOTE]
+> Detailed forensic findings and verified benchmarks are documented in [CUDA Baseline Audit](docs/audits/PROJECT_WIDE_CUDA_BASELINE.md) and [CUDA Final Report](docs/audits/PROJECT_WIDE_CUDA_FINAL.md).
+
+## Stack, testing, and reproducibility
+
+Python, PyTorch, Transformers, Diffusers, LangChain, Redis Stack, sentence-transformers, OpenAI Agents SDK, LM Studio, SQLite, Streamlit, pytest, nbclient, Docker Compose, and GitHub Actions.
+
+Each lab has isolated dependencies. Offline repository checks use import-isolated discovery:
+
+```powershell
+py -3.13 -m pytest
+```
+
+Large models, caches, vector databases, private sessions, and generated outputs are not committed. CPU CI validates code and offline behavior; it does not claim live LLM/CUDA E2E. Hardware timings are observations, not general benchmarks. No license was added because licensing is an owner decision.
+
+```text
+labs/                 isolated laboratory projects
+docs/audits/          cross-project QA and acceptance records
+.github/workflows/    offline CI; live tests are separately gated
+scripts/              reproducibility helpers
+tests/                repository-level structural checks
+```
+
+Use the [Lab 7 README](labs/lab07_final_project/README.md) and [acceptance audit](docs/audits/FINAL_PORTFOLIO_ACCEPTANCE.md) for exact Windows commands and current limitations.

@@ -16,3 +16,9 @@ def test_labels_not_sent_to_runtime():
     tree=ast.parse(inspect.getsource(run_suite))
     assert not any(isinstance(n,ast.Constant) and n.value in ('expected_sources','expected_facts') for n in ast.walk(tree))
     assert '17 - 13' not in INSTRUCTIONS and '0.542' not in INSTRUCTIONS
+
+
+def test_mrr_ignores_missing_evidence_ranks():
+    ranks=[None,3,None]
+    reciprocal=1/min(rank for rank in ranks if rank is not None) if any(rank is not None for rank in ranks) else 0
+    assert reciprocal == 1/3

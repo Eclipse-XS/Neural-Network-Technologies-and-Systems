@@ -15,6 +15,7 @@ dist/
 
 # Virtual environments
 .venv/
+.venv*/
 venv/
 env/
 ENV/
@@ -64,6 +65,8 @@ vector_store/
 chroma/
 chroma_db/
 *.faiss
+*.rdb
+dump.rdb
 
 # Generated artifacts
 /outputs/
@@ -81,9 +84,20 @@ labs/*/outputs/*
 !labs/lab04_stable_diffusion/artifacts/
 !labs/lab04_stable_diffusion/artifacts/portfolio/
 !labs/lab04_stable_diffusion/artifacts/portfolio/**
+!labs/lab07_final_project/artifacts/
+!labs/lab07_final_project/artifacts/portfolio/
+!labs/lab07_final_project/artifacts/portfolio/**
+
+# Logs and temporary archives
+*.log
+*.zip
 
 # Operating-system files
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Isolated student work
+/max/
+/NNTS_VARIANT_2/
 

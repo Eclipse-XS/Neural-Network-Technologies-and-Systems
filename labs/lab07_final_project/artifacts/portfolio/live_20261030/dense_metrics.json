@@ -1,0 +1,173 @@
+{
+  "query_count": 8,
+  "k": 5,
+  "eligible": 7,
+  "source_hits": 6,
+  "all_source_hits": 5,
+  "source_hit_at_k": 0.8571428571428571,
+  "queries": [
+    {
+      "query_id": "q01",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "expected": [
+        "lab04"
+      ],
+      "retrieved": [
+        "lab04",
+        "lab05",
+        "lab06"
+      ],
+      "first_expected_rank": 1,
+      "evidence_ranks": [
+        1
+      ],
+      "evidence_recall": 1.0,
+      "split": "development",
+      "question_type": "exact_fact",
+      "runtime_ms": 23.782499993103556
+    },
+    {
+      "query_id": "q02",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "expected": [
+        "lab06"
+      ],
+      "retrieved": [
+        "lab05",
+        "lab06"
+      ],
+      "first_expected_rank": 1,
+      "evidence_ranks": [
+        1
+      ],
+      "evidence_recall": 1.0,
+      "split": "evaluation",
+      "question_type": "semantic_paraphrase",
+      "runtime_ms": 22.386700002243742
+    },
+    {
+      "query_id": "q03",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "expected": [
+        "lab03"
+      ],
+      "retrieved": [
+        "lab03",
+        "lab06"
+      ],
+      "first_expected_rank": 1,
+      "evidence_ranks": [
+        null
+      ],
+      "evidence_recall": 0.0,
+      "split": "evaluation",
+      "question_type": "ukrainian_semantic",
+      "runtime_ms": 22.628899998380803
+    },
+    {
+      "query_id": "q04",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "expected": [
+        "lab04"
+      ],
+      "retrieved": [
+        "lab04",
+        "lab05"
+      ],
+      "first_expected_rank": 1,
+      "evidence_ranks": [
+        5
+      ],
+      "evidence_recall": 1.0,
+      "split": "development",
+      "question_type": "keyword",
+      "runtime_ms": 21.751099993707612
+    },
+    {
+      "query_id": "q05",
+      "hit_at_k": false,
+      "all_sources_hit": false,
+      "expected": [
+        "lab05"
+      ],
+      "retrieved": [
+        "lab06"
+      ],
+      "first_expected_rank": null,
+      "evidence_ranks": [
+        null
+      ],
+      "evidence_recall": 0.0,
+      "split": "evaluation",
+      "question_type": "failure_analysis",
+      "runtime_ms": 23.271800004295073
+    },
+    {
+      "query_id": "q06",
+      "hit_at_k": true,
+      "all_sources_hit": true,
+      "expected": [
+        "lab06"
+      ],
+      "retrieved": [
+        "lab04",
+        "lab05",
+        "lab06"
+      ],
+      "first_expected_rank": 1,
+      "evidence_ranks": [
+        1
+      ],
+      "evidence_recall": 1.0,
+      "split": "development",
+      "question_type": "ukrainian_keyword",
+      "runtime_ms": 24.660199997015297
+    },
+    {
+      "query_id": "q07",
+      "hit_at_k": true,
+      "all_sources_hit": false,
+      "expected": [
+        "lab04",
+        "lab05"
+      ],
+      "retrieved": [
+        "lab04",
+        "lab06"
+      ],
+      "first_expected_rank": 1,
+      "evidence_ranks": [
+        4,
+        null
+      ],
+      "evidence_recall": 0.5,
+      "split": "evaluation",
+      "question_type": "cross_document",
+      "runtime_ms": 22.633400003542192
+    },
+    {
+      "query_id": "q08",
+      "hit_at_k": null,
+      "all_sources_hit": null,
+      "expected": [],
+      "retrieved": [
+        "lab05",
+        "lab06"
+      ],
+      "first_expected_rank": null,
+      "evidence_ranks": [],
+      "evidence_recall": null,
+      "split": "evaluation",
+      "question_type": "unsupported",
+      "runtime_ms": 19.633199990494177
+    }
+  ],
+  "evidence_recall_at_k": 0.6428571428571429,
+  "evaluation_evidence_recall_at_k": 0.375,
+  "evidence_mrr": 0.4928571428571429,
+  "interpretation": "Evidence metrics require the annotated literal passage; source hit remains diagnostic only."
+}

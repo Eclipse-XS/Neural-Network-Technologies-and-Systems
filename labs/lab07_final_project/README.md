@@ -1,93 +1,116 @@
-# Coursework Knowledge Assistant — Lab 7
+# Local Coursework Knowledge Assistant
 
-Варіант 1: локальний інтерактивний асистент для аналізу звітів із нейромережевих технологій. Об’єднує **Lab 3: LangChain + Redis RAG** та **Lab 6: OpenAI Agents SDK + tools + SQLiteSession**. LM Studio виконує inference; код попередніх лабораторних не імпортується.
+An offline-first assistant for querying and comparing verified reports from Labs 3–6. It retrieves report passages, exposes tool calls, validates citation IDs against the current run, performs bounded arithmetic, and keeps isolated SQLite conversation sessions. It is a coursework system, not a production service.
 
-Користувач → CLI → Agent/Runner ↔ LM Studio. Агент має три інструменти: пошук фрагментів у Redis через MiniLM, каталог джерел та AST-калькулятор. SQLiteSession зберігає діалог. Пошук не викликає другу LLM. Повна схема й аналіз — у [звіті](report/report.md).
+Historical results exposed weak Ukrainian retrieval and incorrect multi-step synthesis. The current revision addresses ingestion and retrieval defects, but new live quality claims remain unverified until Redis, LM Studio, and the evaluation suite run together.
 
-## Швидкий запуск із кореня репозиторію
+## Architecture
 
-Перевірене середовище: Windows, Python 3.13.5, torch 2.14.0+cu130; Docker Desktop із Linux containers, LM Studio із наявною tool-capable chat-моделлю. На інших системах setup.ps1 замінюється звичайним venv із сумісним PyTorch. Python ≥3.11 очікується за залежностями, але фактично перевірено лише 3.13.5.
-
-```powershell
-# Створює Lab 7 .venv, захищаючи наявні torch, transformers, openai та SDK.
-.\labs\lab07_final_project\setup.ps1 -Python .\.venv\Scripts\python.exe
-docker compose -f labs/lab07_final_project/docker-compose.yml up -d
-docker compose -f labs/lab07_final_project/docker-compose.yml ps
+```mermaid
+flowchart LR
+  U[CLI or Streamlit] --> A[OpenAI Agents SDK]
+  A <--> L[Local LLM in LM Studio]
+  A --> S[search_knowledge]
+  A --> C[AST calculator]
+  A --> M[(SQLiteSession)]
+  S --> R[Dense + BM25 + RRF]
+  R --> V[(Redis Stack)]
+  D[Hash-verified Markdown] --> T[Tokenizer-aware chunking]
+  T --> Q[Evidence-quality filter]
+  Q --> R
 ```
 
-У LM Studio завантажте наявну chat-модель і ввімкніть Local Server. У цьому запуску виявлено `mistralai/ministral-3-3b` на `http://localhost:1234/v1`; інша модель повинна пройти preflight із native function calling. API key хмарного OpenAI не потрібний.
+```mermaid
+sequenceDiagram
+  participant User
+  participant Agent
+  participant Search
+  participant Calc
+  User->>Agent: Compare two measured totals
+  Agent->>Search: retrieve source A evidence
+  Search-->>Agent: passage + citation ID
+  Agent->>Search: retrieve source B evidence
+  Search-->>Agent: passage + citation ID
+  Agent->>Calc: verified operands
+  Calc-->>Agent: result
+  Agent-->>User: answer + citations
+```
+
+| Component | Responsibility |
+|---|---|
+| `src/knowledge_base.py` | Corpus hashes, deterministic IDs, token budget, Redis dense search, BM25, RRF |
+| `src/agent.py` | Local model, SDK Runner, SQLite sessions, traces, citation membership |
+| `src/tools.py` | Bounded retrieval, source listing, AST-only arithmetic |
+| `src/experiments.py` | Fixed splits, evidence Recall@k, MRR, latency, live comparisons |
+| `app.py` / `web_app.py` | CLI and Streamlit interfaces over the same services |
+
+## Ingestion and retrieval
+
+```mermaid
+flowchart TD
+  A[Validate SHA-256] --> B[Split by Markdown headings]
+  B --> C[Character pre-split]
+  C --> D[Tokenizer count]
+  D -->|over budget| E[Deterministic subdivision]
+  E --> D
+  D -->|within budget| F[Deterministic chunk ID]
+  F --> G[Canonical report or quoted output]
+  G --> H[Dense Redis index]
+  G --> I[BM25 index]
+  H --> J[RRF]
+  I --> J
+```
+
+Quoted model responses under result sections remain in the academic report but are excluded from retrieval candidates. This conservative rule is not a semantic truth classifier.
+
+## Windows 11 setup
+
+Requirements: Python 3.11+, an existing compatible PyTorch environment, Docker Desktop with Linux containers, LM Studio, and a tool-capable local chat model. The historical model was `mistralai/ministral-3-3b`; availability must be checked locally.
 
 ```powershell
+cd C:\path\to\neural-network-technologies-and-systems
+.\labs\lab07_final_project\setup.ps1 -Python .\path\to\working-python.exe
+docker compose -f labs/lab07_final_project/docker-compose.yml up -d
 Invoke-RestMethod http://localhost:1234/v1/models
 $env:LM_STUDIO_MODEL = "mistralai/ministral-3-3b"
-$env:PYTHONUTF8 = "1"
-$env:HF_HUB_DISABLE_PROGRESS_BARS = "1"
-.\labs\lab07_final_project\.venv\Scripts\python.exe labs/lab07_final_project/app.py
 ```
 
-Перший запуск на новій машині потребує ваг невеликого embedding encoder у Hugging Face cache. У поточному середовищі вони вже були. Одноразове завантаження, якщо кеш порожній:
+MiniLM remains the historical baseline. A multilingual candidate can be configured with exact model and revision, then compared on the same evaluation split. No improvement is claimed before measurement.
+
+## Run and verify
 
 ```powershell
-.\labs\lab07_final_project\.venv\Scripts\python.exe -c "from huggingface_hub import snapshot_download; snapshot_download('sentence-transformers/all-MiniLM-L6-v2', revision='1110a243fdf4706b3f48f1d95db1a4f5529b4d41')"
-```
-
-Після цього застосунок завантажує embeddings із `local_files_only=True`. `.env.example` — довідка, файл автоматично не читається: значення експортуються в shell/PyCharm. Індекс із відповідним fingerprint повторно використовується; автоматичне додавання дублікатів відсутнє. Redis URL за замовчуванням — `redis://localhost:6380`, окремо від Lab 3 на 6379.
-
-## CLI та експерименти
-
-Команди: `/help`, `/sources`, `/new`, `/session`, `/exit`. `/new` зберігає стару історію та створює новий ID. `--session ID` відновлює сесію; `--debug` показує імена tools, latency та перевірку citation IDs.
-
-```powershell
-# Індексація та 8 retrieval-запитів
+# CLI
+.\labs\lab07_final_project\.venv\Scripts\python.exe labs/lab07_final_project/app.py --debug
+# Web UI
+.\labs\lab07_final_project\.venv\Scripts\python.exe -m streamlit run labs/lab07_final_project/web_app.py
+# Retrieval evaluation
 .\labs\lab07_final_project\.venv\Scripts\python.exe -m labs.lab07_final_project.src.experiments --retrieval-only
-# Повна серія, або перевірене повторне читання сумісного batch
-.\labs\lab07_final_project\.venv\Scripts\python.exe -m labs.lab07_final_project.src.experiments
-# Свідомо нові inference-запуски з новими сесіями
+# Live agent suite
 .\labs\lab07_final_project\.venv\Scripts\python.exe -m labs.lab07_final_project.src.experiments --force
-```
-
-Для нової серії потрібно заново вручну оцінити її run IDs у `experiments/reviews.json`. Evaluator навмисно не переносить оцінки старих відповідей на нові й не підміняє review пошуком ключових слів.
-
-Відкрийте [виконаний notebook](notebooks/01_final_project.ipynb) у PyCharm/Jupyter з interpreter Lab 7. Він перевіряє хеші реальних run/trace артефактів і fingerprint конфігурації, повторно відкриває Redis та виконує один свіжий retrieval. Усі 15 генерацій не повторюються. За відсутніх outputs спочатку виконайте серію й оцінювання.
-
-## Структура
-
-```text
-app.py                         інтерактивний CLI
-src/config.py                  налаштування та system instructions
-src/knowledge_base.py           corpus → chunks → embeddings → Redis
-src/tools.py, agent.py          функції, локальна LLM, SQLite, traces
-src/experiments.py              фіксовані retrieval/agent/baseline запуски
-src/evaluation.py, reporting.py оцінювання й артефакти
-assets/knowledge/              чотири незмінені звіти + manifest
-experiments/                   запити, сценарії, ручні reviews за run_id
-notebooks/                     виконана демонстрація українською
-tests/                         offline corpus/tool/memory/notebook тести
-report/                        звіт, аудит методички, захист, скриншоти
-outputs/                       локальні згенеровані докази, ігноруються Git
-```
-
-## Фактичний результат
-
-- 4 документи, 121 chunk, 900 символів/overlap 120; MiniLM CPU, normalized, 384 dimensions.
-- Redis Stack: COSINE, FLAT, FLOAT32; FT.INFO підтвердив кількість, повторний запуск додав 0.
-- Source Hit@5: **6/7**, 8 запитів загалом. Це наявність звіту, не гарантія знаходження факту.
-- **15/15** основних запусків завершили Runner; 10 сценаріїв включають 11 assistant turns і 4 plain baseline.
-- Ручні оцінки 11 assistant turns: **3 CORRECT, 3 PARTIAL, 4 INCORRECT, 1 NOT_SCORABLE**. Це не універсальна accuracy.
-- Пам’ять зберегла Lab 6 у follow-up; нова сесія попросила уточнення. Сам початковий модельний факт у memory-сценарії не знайдено.
-- Multi: три search_knowledge, calculate пропущено, число Lab 5 не знайдено; фінального правильного порівняння немає. Калькулятор окремо перевірений реальним SDK preflight.
-- Plain baseline вигадала температуру +18°C; асистент відмовився її визначати. Інші порівняння не дають підстав оголошувати повну перемогу RAG.
-
-**Обмеження:** 76/121 chunks перевищують 256-token limit MiniLM й обрізаються для embedding. Повний текст лишається у Redis. Англомовний encoder на українських звітах дає слабкий retrieval. Звіти також містять цитати хибних відповідей, які модель може переплутати з фактами. Валідні citation IDs не гарантують підтримки тверджень. GUI-скриншоти залишені ручними за [checklist](report/screenshot_checklist.md).
-
-## Докази та перевірки
-
-`outputs/runs/runs.jsonl` — усі реальні відповіді, включно з невдачами, preflight і CLI; `batch.json` відокремлює основні 15. `traces/<run_id>.json` — спостережувані виклики; `summary.csv` і `baseline_comparison.csv` — ручні оцінки та порівняння. `retrieval/retrieval_results.csv`, `metadata/environment.json`, `index.json`, `embedding.json`, `chunks.json` фіксують середовище й пошук. `sessions/assistant_memory.sqlite` — локальна пам’ять. Outputs і віртуальні середовища не додаються до Git.
-
-```powershell
+# Offline tests
 .\labs\lab07_final_project\.venv\Scripts\python.exe -m pytest labs/lab07_final_project/tests -q
-.\labs\lab07_final_project\.venv\Scripts\python.exe -m compileall -q labs/lab07_final_project/src labs/lab07_final_project/app.py
-git diff --check
 ```
 
-Фінальна перевірка: **27 passed**, compileall і git diff --check успішні; notebook виконав **18 кодових комірок без error outputs**. Тести не потребують LM Studio, Docker, Redis чи GPU. Окремі живі перевірки виконано під час експериментів і CLI-демо. Початковий Git state, hashes попередніх робіт і кінцевий аудит лежать у outputs/metadata. Перевірено 100 файлів попередніх лабораторних: змін немає; кореневі Python-пакети також незмінні. Комітів і push не виконувалось.
+## Demonstration
+
+1. Document Q&A: request the exact Lab 4 Stable Diffusion checkpoint and revision; inspect the passage and citation.
+2. Cross-document arithmetic: request the difference and sum of Lab 4 unique generations and Lab 5 unique inference runs; the trace must show both retrievals and a real `calculate` call.
+3. Unsupported information and memory: request an undocumented outdoor temperature, then test a follow-up in the same session and a fresh session.
+
+Screenshots are `MANUAL`: capture the answer, expanded tool/evidence panel, Redis health, LM Studio model list, and unsupported-query refusal. Do not substitute mocks.
+
+## Verified status and limitations
+
+The historical batch reported Source Hit@5 `6/7`, with assistant answers `3 CORRECT`, `3 PARTIAL`, `4 INCORRECT`, `1 NOT_SCORABLE`; 76/121 MiniLM chunks exceeded its token limit. These results remain historical evidence.
+
+Current offline checks cover deterministic chunking, token budgets, corpus hashes, arithmetic restrictions, citation membership, memory isolation, notebook schema, and UI syntax. Current live evidence Recall@5, correctness, orchestration, and latency are `NOT_VERIFIED` because Docker/Redis and LM Studio were unavailable during this revision. Offline tests are not live E2E.
+
+- RRF adds lexical robustness for model IDs and numbers without a reranker.
+- Literal evidence labels are transparent but miss valid paraphrases.
+- Citation membership blocks fabricated IDs; it does not prove entailment.
+- The section filter may exclude useful diagnostic prose.
+- SQLite is suitable for a single-user demo, not multi-tenant deployment.
+- No shell, arbitrary filesystem tool, cloud fallback, or remote endpoint is exposed.
+
+See [the acceptance audit](../../docs/audits/FINAL_PORTFOLIO_ACCEPTANCE.md).

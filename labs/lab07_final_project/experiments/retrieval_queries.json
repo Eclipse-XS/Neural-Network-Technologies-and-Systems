@@ -5,6 +5,9 @@
     "expected_source_ids": [
       "lab04"
     ],
+    "expected_evidence": ["stable-diffusion-v1-5/stable-diffusion-v1-5"],
+    "split": "development",
+    "question_type": "exact_fact",
     "notes": "exact model fact"
   },
   {
@@ -13,6 +16,9 @@
     "expected_source_ids": [
       "lab06"
     ],
+    "expected_evidence": ["SQLiteSession"],
+    "split": "evaluation",
+    "question_type": "semantic_paraphrase",
     "notes": "semantic paraphrase"
   },
   {
@@ -21,6 +27,9 @@
     "expected_source_ids": [
       "lab03"
     ],
+    "expected_evidence": ["MiniLM обрізає 17 довгих записів"],
+    "split": "evaluation",
+    "question_type": "ukrainian_semantic",
     "notes": "Lab 3"
   },
   {
@@ -29,6 +38,9 @@
     "expected_source_ids": [
       "lab04"
     ],
+    "expected_evidence": ["seed, steps, CFG"],
+    "split": "development",
+    "question_type": "keyword",
     "notes": "Lab 4"
   },
   {
@@ -37,6 +49,9 @@
     "expected_source_ids": [
       "lab05"
     ],
+    "expected_evidence": ["модель не визнала відсутність інформації"],
+    "split": "evaluation",
+    "question_type": "failure_analysis",
     "notes": "Lab 5 English"
   },
   {
@@ -45,6 +60,9 @@
     "expected_source_ids": [
       "lab06"
     ],
+    "expected_evidence": ["SQLiteSession → локальна історія"],
+    "split": "development",
+    "question_type": "ukrainian_keyword",
     "notes": "Lab 6 Ukrainian"
   },
   {
@@ -54,12 +72,18 @@
       "lab04",
       "lab05"
     ],
+    "expected_evidence": ["Генерування зображень за допомогою Stable Diffusion", "SigLIP Vision виділяє ознаки"],
+    "split": "evaluation",
+    "question_type": "cross_document",
     "notes": "cross-source; require all expected sources as secondary metric"
   },
   {
     "query_id": "q08",
     "query": "Exact outdoor temperature during execution of Lab 4",
     "expected_source_ids": [],
+    "expected_evidence": [],
+    "split": "evaluation",
+    "question_type": "unsupported",
     "notes": "unsupported: no hit metric"
   }
 ]

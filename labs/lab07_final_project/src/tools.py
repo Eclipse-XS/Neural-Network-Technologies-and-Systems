@@ -44,7 +44,9 @@ def build_tools(kb):
             k: Number of neighboring chunks, 1–8; normally 5.
             source_id: Optional exact lab03, lab04, lab05 or lab06 to restrict to that report.
         """
-        chunks = kb.search(query, k, source_id)
+        # Small local models often choose k=1 despite requesting comparisons or totals.
+        # Five remains bounded and was selected by evidence Recall@5 evaluation.
+        chunks = kb.search(query, max(k, 5), source_id)
         return dict(chunks=[c.to_dict() for c in chunks],
             evidence_note='Top-k candidates are not proof of relevance. Use only text that supports the claim; otherwise state insufficient evidence.',
             score_semantics='cosine distance; lower is closer', empty=not chunks)

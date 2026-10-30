@@ -20,7 +20,7 @@ def test_reject_unsafe_arithmetic(expression):
 
 class FakeKB:
     def search(self,query,k,source_id):
-        return [RetrievedChunk('lab04','lab04_report.md','4','Model','chunk-ab','Evidence',.3)]
+        return [RetrievedChunk('lab04','lab04_report.md','4','Model','chunk-ab','canonical_report','Evidence',.3)]
     def sources(self):
         return [dict(source_id='lab04',lab_number=4,title='Lab 4',workspace_filename='lab04_report.md')]
 
@@ -45,3 +45,8 @@ def test_citations_require_evidence_from_current_run():
     assert validate_citations('Claim [lab04#chunk-ab]',[])['citation']=='FAIL'
     assert validate_citations('Claim without citation',events)['citation']=='FAIL'
     assert validate_citations('Hello',[])['citation']=='NOT_APPLICABLE'
+    assert validate_citations('I cannot determine this from the reports.',events)['citation']=='PASS'
+    assert validate_citations('Недостатньо даних у проаналізованих звітах для відповіді.',events)['citation']=='PASS'
+    assert validate_citations('Claim [lab04#chunk-ab-near-match]',events)['citation']=='FAIL'
+    res = validate_citations('Claim [lab04#chunk-ab]',events)
+    assert res['citations'] == ['[lab04#chunk-ab]'] and not res['invalid_citations']
