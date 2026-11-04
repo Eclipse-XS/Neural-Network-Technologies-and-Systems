@@ -84,7 +84,7 @@ class RedisVectorAdapter:
 
     def index_chunks(self, chunks: List[Chunk], embeddings) -> int:
         """Atomically index chunks into Redis without duplicating vectors."""
-        if not chunks:
+        if not chunks or not self.ping():
             return 0
         if self._store is None:
             self.initialize_store(embeddings)
@@ -123,6 +123,8 @@ class RedisVectorAdapter:
 
     def delete_document_chunks(self, document_id: str) -> int:
         """Remove all indexed chunks belonging to a document so they no longer appear in search."""
+        if not self.ping():
+            return 0
         client = self.get_client()
         keys = list(client.scan_iter(match=f"{self.key_prefix}:*"))
         to_delete = []
@@ -150,8 +152,8 @@ class RedisVectorAdapter:
         filter_quoted_outputs: bool = True,
     ) -> List[Tuple[Chunk, float]]:
         """Return (Chunk, cosine_distance) sorted by distance asc (lower is closer)."""
-        if not self._store:
-            raise RuntimeError("RedisVectorStore is not initialized.")
+        if not self.ping() or self._store is None:
+            return []
         from redisvl.query.filter import Tag
 
         expr = None
