@@ -1,0 +1,34 @@
+```mermaid
+flowchart TD
+    Dataset["Frozen 100-Query Benchmark (frozen_eval_100.json)"] --> Split[Categorize Queries]
+    
+    Split --> Exact["Exact Technical Facts (25)"]
+    Split --> Para["Semantic Paraphrase (20)"]
+    Split --> Cross["Cross-Document Comparison (20)"]
+    Split --> Num["Numerical Reasoning (20)"]
+    Split --> Neg["Unsupported Controls (15)"]
+    
+    Exact --> Engine["Hybrid Retrieval Engine (Redis + BM25 + RRF)"]
+    Para --> Engine
+    Cross --> Engine
+    Num --> Engine
+    Neg --> Engine
+    
+    Engine --> RRF["Reciprocal Rank Fusion (k=60)"]
+    RRF --> TopK["Ranked Top-5 Evidence Chunks"]
+    
+    TopK --> Metrics["Evaluation Metrics Engine"]
+    Metrics --> Rec1["Recall@1 (Target >= 0.65)"]
+    Metrics --> Rec3["Recall@3 (Target >= 0.80)"]
+    Metrics --> Rec5["Recall@5 (Target >= 0.85)"]
+    Metrics --> Hit5["Hit@5 (Target >= 0.92)"]
+    Metrics --> MRR["MRR (Target >= 0.75)"]
+    Metrics --> Trunc["Truncation Violations (Target == 0)"]
+    
+    TopK --> AgentSim["Agent & AST Arithmetic Verification"]
+    AgentSim --> GroundCheck["Citation Grounding & Abstention Validation"]
+    
+    Metrics --> ReportGen["Report & Artifact Serializer"]
+    GroundCheck --> ReportGen
+    ReportGen --> JSON["benchmark_results.json & Markdown Audit Table"]
+```
