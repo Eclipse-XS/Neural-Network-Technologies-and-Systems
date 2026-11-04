@@ -158,7 +158,7 @@ class RedisVectorAdapter:
         if document_id:
             expr = (Tag("document_id") == document_id) | (Tag("source_id") == document_id)
         if filter_quoted_outputs:
-            quality_filter = Tag("evidence_quality") == "canonical_report"
+            quality_filter = (Tag("evidence_quality") == "canonical_report") | (Tag("evidence_quality") == "user_document")
             expr = expr & quality_filter if expr is not None else quality_filter
 
         raw_results = self._store.similarity_search_with_score(query, k=k, filter=expr)

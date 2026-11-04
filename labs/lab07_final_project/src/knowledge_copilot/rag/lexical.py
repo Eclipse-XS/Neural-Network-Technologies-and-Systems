@@ -8,6 +8,14 @@ from ..domain.enums import EvidenceQuality
 from ..domain.models import Chunk
 
 
+STOPWORDS = {
+    "what", "is", "the", "of", "in", "and", "a", "an", "for", "to", "how", "why", "which",
+    "are", "do", "does", "did", "from", "with", "between", "when", "where", "that", "this",
+    "що", "як", "яка", "який", "яке", "які", "яку", "яких", "якому", "у", "в", "на", "та",
+    "і", "із", "з", "до", "про", "для", "чи", "це", "було", "була", "був", "були", "між"
+}
+
+
 class BM25Retriever:
     def __init__(self, k1: float = 1.5, b: float = 0.75):
         self.k1 = k1
@@ -38,7 +46,8 @@ class BM25Retriever:
         if not self.chunks:
             return []
         
-        q_terms = self.tokenize(query)
+        all_q_terms = self.tokenize(query)
+        q_terms = [t for t in all_q_terms if t not in STOPWORDS] or all_q_terms
         if not q_terms:
             return []
         

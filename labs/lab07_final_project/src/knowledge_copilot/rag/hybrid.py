@@ -30,8 +30,33 @@ def reciprocal_rank_fusion(
     sorted_items = sorted(scores.items(), key=lambda item: (-item[1], item[0]))
     
     evidence_chunks: List[EvidenceChunk] = []
-    for rank, (chunk_id, rrf_score) in enumerate(sorted_items[:k], 1):
+    doc_counts: Dict[str, int] = {}
+    max_per_doc = max(2, (k // 2) + 1)  # For k=5, allow at most 3 from same document for diversity
+
+    deferred: List[Tuple[str, float]] = []
+    for chunk_id, rrf_score in sorted_items:
         chunk = chunk_map[chunk_id]
+        doc_id = chunk.document_id
+        if doc_counts.get(doc_id, 0) < max_per_doc:
+            doc_counts[doc_id] = doc_counts.get(doc_id, 0) + 1
+            rank = len(evidence_chunks) + 1
+            score_obj = Score(
+                retrieval_method="hybrid",
+                score_type=ScoreType.RRF_SCORE,
+                score_value=rrf_score,
+                ranking_position=rank,
+            )
+            evidence_chunks.append(EvidenceChunk(chunk=chunk, score=score_obj))
+            if len(evidence_chunks) >= k:
+                break
+        else:
+            deferred.append((chunk_id, rrf_score))
+
+    # Fill remainder from deferred items if fewer than k documents available
+    while len(evidence_chunks) < k and deferred:
+        chunk_id, rrf_score = deferred.pop(0)
+        chunk = chunk_map[chunk_id]
+        rank = len(evidence_chunks) + 1
         score_obj = Score(
             retrieval_method="hybrid",
             score_type=ScoreType.RRF_SCORE,

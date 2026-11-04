@@ -4,7 +4,7 @@ import sqlite3
 from pathlib import Path
 from typing import List, Optional
 
-from ..domain.enums import DocumentStatus, GroundingStatus
+from ..domain.enums import DocumentStatus, EvidenceQuality, GroundingStatus
 from ..domain.models import Document, Session, Turn, ClaimSupport, ToolExecutionRecord, EvidenceChunk, Chunk, Score
 
 
@@ -64,8 +64,22 @@ class SQLiteRepository:
                     FOREIGN KEY(session_id) REFERENCES sessions(session_id) ON DELETE CASCADE
                 );
 
+                CREATE TABLE IF NOT EXISTS chunks (
+                    chunk_id TEXT PRIMARY KEY,
+                    document_id TEXT NOT NULL,
+                    ordinal INTEGER NOT NULL,
+                    text TEXT NOT NULL,
+                    section TEXT NOT NULL,
+                    token_count INTEGER NOT NULL,
+                    sha256 TEXT NOT NULL,
+                    evidence_quality TEXT NOT NULL,
+                    metadata_json TEXT,
+                    FOREIGN KEY(document_id) REFERENCES documents(document_id) ON DELETE CASCADE
+                );
+
                 CREATE INDEX IF NOT EXISTS idx_turns_session_id ON turns(session_id);
                 CREATE INDEX IF NOT EXISTS idx_docs_collection ON documents(collection);
+                CREATE INDEX IF NOT EXISTS idx_chunks_document_id ON chunks(document_id);
             """)
 
     # ------------------ Document Operations ------------------ #
@@ -147,6 +161,80 @@ class SQLiteRepository:
                 updated_at=row["updated_at"],
                 metadata=json.loads(row["metadata_json"] or "{}"),
             )
+
+    def save_chunks(self, chunks: List[Chunk]) -> None:
+        """Persist chunks for a document into SQLite."""
+        if not chunks:
+            return
+        with self._get_connection() as conn:
+            conn.executemany(
+                """
+                INSERT OR REPLACE INTO chunks (
+                    chunk_id, document_id, ordinal, text, section,
+                    token_count, sha256, evidence_quality, metadata_json
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                [
+                    (
+                        c.chunk_id,
+                        c.document_id,
+                        c.ordinal,
+                        c.text,
+                        c.section,
+                        c.token_count,
+                        c.sha256,
+                        c.evidence_quality.value if isinstance(c.evidence_quality, EvidenceQuality) else str(c.evidence_quality),
+                        json.dumps(c.metadata, ensure_ascii=False),
+                    )
+                    for c in chunks
+                ],
+            )
+
+    def get_all_chunks(self) -> List[Chunk]:
+        """Retrieve all stored chunks across all documents."""
+        with self._get_connection() as conn:
+            rows = conn.execute("SELECT * FROM chunks ORDER BY document_id, ordinal ASC").fetchall()
+            return [
+                Chunk(
+                    chunk_id=r["chunk_id"],
+                    document_id=r["document_id"],
+                    ordinal=r["ordinal"],
+                    text=r["text"],
+                    section=r["section"],
+                    token_count=r["token_count"],
+                    sha256=r["sha256"],
+                    evidence_quality=EvidenceQuality(r["evidence_quality"]),
+                    metadata=json.loads(r["metadata_json"] or "{}"),
+                )
+                for r in rows
+            ]
+
+    def get_chunks_for_document(self, document_id: str) -> List[Chunk]:
+        """Retrieve chunks for a single document."""
+        with self._get_connection() as conn:
+            rows = conn.execute(
+                "SELECT * FROM chunks WHERE document_id = ? ORDER BY ordinal ASC", (document_id,)
+            ).fetchall()
+            return [
+                Chunk(
+                    chunk_id=r["chunk_id"],
+                    document_id=r["document_id"],
+                    ordinal=r["ordinal"],
+                    text=r["text"],
+                    section=r["section"],
+                    token_count=r["token_count"],
+                    sha256=r["sha256"],
+                    evidence_quality=EvidenceQuality(r["evidence_quality"]),
+                    metadata=json.loads(r["metadata_json"] or "{}"),
+                )
+                for r in rows
+            ]
+
+    def delete_chunks_for_document(self, document_id: str) -> int:
+        """Delete all chunks for a document."""
+        with self._get_connection() as conn:
+            cur = conn.execute("DELETE FROM chunks WHERE document_id = ?", (document_id,))
+            return cur.rowcount
 
     def list_documents(self, collection: Optional[str] = None) -> List[Document]:
         with self._get_connection() as conn:

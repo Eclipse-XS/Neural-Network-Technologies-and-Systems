@@ -58,7 +58,9 @@ class IngestionService:
         
         # Idempotency check: prevent duplicate vectors for identical content
         existing_doc = self.sqlite_repo.get_document_by_sha256(sha256_hash, collection=collection)
-        if existing_doc and existing_doc.status == DocumentStatus.INDEXED:
+        existing_chunks = self.sqlite_repo.get_chunks_for_document(existing_doc.document_id) if existing_doc else []
+        if existing_doc and existing_doc.status == DocumentStatus.INDEXED and existing_chunks:
+            self._cached_chunks[existing_doc.document_id] = existing_chunks
             return existing_doc
 
         content_type = Path(clean_name).suffix.lstrip(".").lower()
@@ -92,12 +94,13 @@ class IngestionService:
                 token_counter=self.embeddings.count_tokens if self.embeddings else None,
             )
             
-            # Atomic indexing into Redis
+            # Atomic indexing into Redis and SQLite
             self.redis_adapter.delete_document_chunks(doc_id)
             if self.redis_adapter.ping():
                 self.redis_adapter.index_chunks(chunks, self.embeddings)
                 
             self._cached_chunks[doc_id] = chunks
+            self.sqlite_repo.save_chunks(chunks)
             
             doc.status = DocumentStatus.INDEXED
             doc.chunk_count = len(chunks)
@@ -126,8 +129,9 @@ class IngestionService:
         if not doc:
             raise DocumentNotFoundError(f"Document '{document_id}' not found.")
             
-        # Remove from Redis
+        # Remove from Redis and SQLite
         self.redis_adapter.delete_document_chunks(document_id)
+        self.sqlite_repo.delete_chunks_for_document(document_id)
         self._cached_chunks.pop(document_id, None)
         
         # Remove from SQLite
@@ -142,7 +146,10 @@ class IngestionService:
         return self.sqlite_repo.get_document(document_id)
 
     def get_all_indexed_chunks(self) -> List[Chunk]:
-        """Aggregate in-memory chunks for lexical retrieval."""
+        """Aggregate chunks for lexical retrieval from SQLite or memory."""
+        stored = self.sqlite_repo.get_all_chunks()
+        if stored:
+            return stored
         all_chunks: List[Chunk] = []
         for chunks in self._cached_chunks.values():
             all_chunks.extend(chunks)

@@ -114,7 +114,7 @@ def build_chunks_from_document(
                 "session a,", "session b,", "to confirm, i will check", "otherwise, based on",
                 "final answer:", "the sum of the inferred", "lab_4_results.csv",
             )
-            is_quoted = doc.document_id == "lab06" and (
+            is_quoted = doc.document_id.startswith("lab06") and (
                 any(marker in section.casefold() for marker in transcript_sections)
                 or any(marker in b_doc.page_content.casefold() for marker in raw_output_markers)
             )
