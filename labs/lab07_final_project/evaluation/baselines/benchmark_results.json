@@ -1,51 +1,215 @@
 {
+  "modes": {
+    "dense": {
+      "total_evaluated_queries": 100,
+      "supported_queries": 85,
+      "evidence_recall_1": 0.49411764705882355,
+      "evidence_recall_3": 0.6823529411764706,
+      "evidence_recall_5": 0.7941176470588235,
+      "hit_at_5": 0.8705882352941177,
+      "mrr": 0.638235294117647,
+      "truncation_violations": 0,
+      "category_breakdown": {
+        "exact_fact": {
+          "count": 25,
+          "hit_5": 0.88,
+          "mrr": 0.75,
+          "recall_1": 0.64,
+          "recall_5": 0.88
+        },
+        "semantic_paraphrase": {
+          "count": 20,
+          "hit_5": 0.85,
+          "mrr": 0.5233333333333333,
+          "recall_1": 0.35,
+          "recall_5": 0.85
+        },
+        "cross_document": {
+          "count": 20,
+          "hit_5": 0.8,
+          "mrr": 0.40166666666666667,
+          "recall_1": 0.2,
+          "recall_5": 0.475
+        },
+        "numerical_reasoning": {
+          "count": 20,
+          "hit_5": 0.95,
+          "mrr": 0.85,
+          "recall_1": 0.75,
+          "recall_5": 0.95
+        }
+      },
+      "latency": {
+        "p50_ms": 92.09714998723939,
+        "p90_ms": 315.4740599915387,
+        "p95_ms": 415.0654899800429,
+        "p99_ms": 511.02652402769337,
+        "mean_ms": 132.5128309999127,
+        "min_ms": 40.89960001874715,
+        "max_ms": 563.9740999904461
+      },
+      "benchmark_config": {
+        "mode": "dense",
+        "top_k": 5,
+        "queries_count": 100
+      }
+    },
+    "lexical": {
+      "total_evaluated_queries": 100,
+      "supported_queries": 85,
+      "evidence_recall_1": 0.4588235294117647,
+      "evidence_recall_3": 0.6588235294117647,
+      "evidence_recall_5": 0.7235294117647059,
+      "hit_at_5": 0.788235294117647,
+      "mrr": 0.5949019607843137,
+      "truncation_violations": 0,
+      "category_breakdown": {
+        "exact_fact": {
+          "count": 25,
+          "hit_5": 0.84,
+          "mrr": 0.6666666666666665,
+          "recall_1": 0.52,
+          "recall_5": 0.84
+        },
+        "semantic_paraphrase": {
+          "count": 20,
+          "hit_5": 0.75,
+          "mrr": 0.44333333333333325,
+          "recall_1": 0.25,
+          "recall_5": 0.75
+        },
+        "cross_document": {
+          "count": 20,
+          "hit_5": 0.55,
+          "mrr": 0.32666666666666666,
+          "recall_1": 0.2,
+          "recall_5": 0.3
+        },
+        "numerical_reasoning": {
+          "count": 20,
+          "hit_5": 1.0,
+          "mrr": 0.925,
+          "recall_1": 0.85,
+          "recall_5": 0.975
+        }
+      },
+      "latency": {
+        "p50_ms": 19.096150004770607,
+        "p90_ms": 23.001730005489662,
+        "p95_ms": 25.458379977499128,
+        "p99_ms": 37.77514100947884,
+        "mean_ms": 19.90645900310483,
+        "min_ms": 14.8738999851048,
+        "max_ms": 39.61069998331368
+      },
+      "benchmark_config": {
+        "mode": "lexical",
+        "top_k": 5,
+        "queries_count": 100
+      }
+    },
+    "hybrid": {
+      "total_evaluated_queries": 100,
+      "supported_queries": 85,
+      "evidence_recall_1": 0.5176470588235295,
+      "evidence_recall_3": 0.6941176470588235,
+      "evidence_recall_5": 0.7764705882352941,
+      "hit_at_5": 0.8588235294117647,
+      "mrr": 0.6431372549019608,
+      "truncation_violations": 0,
+      "category_breakdown": {
+        "exact_fact": {
+          "count": 25,
+          "hit_5": 0.88,
+          "mrr": 0.7833333333333333,
+          "recall_1": 0.72,
+          "recall_5": 0.88
+        },
+        "semantic_paraphrase": {
+          "count": 20,
+          "hit_5": 0.8,
+          "mrr": 0.45166666666666655,
+          "recall_1": 0.25,
+          "recall_5": 0.8
+        },
+        "cross_document": {
+          "count": 20,
+          "hit_5": 0.75,
+          "mrr": 0.38583333333333336,
+          "recall_1": 0.2,
+          "recall_5": 0.4
+        },
+        "numerical_reasoning": {
+          "count": 20,
+          "hit_5": 1.0,
+          "mrr": 0.9166666666666666,
+          "recall_1": 0.85,
+          "recall_5": 1.0
+        }
+      },
+      "latency": {
+        "p50_ms": 146.91949999541976,
+        "p90_ms": 453.1118899642027,
+        "p95_ms": 559.4089399965012,
+        "p99_ms": 1455.037240016973,
+        "mean_ms": 241.24803400307428,
+        "min_ms": 64.06830000923946,
+        "max_ms": 1554.8232999863103
+      },
+      "benchmark_config": {
+        "mode": "hybrid",
+        "top_k": 5,
+        "queries_count": 100
+      }
+    }
+  },
   "summary": {
     "total_evaluated_queries": 100,
     "supported_queries": 85,
-    "evidence_recall_1": 0.6705882352941176,
-    "evidence_recall_3": 0.8117647058823529,
-    "evidence_recall_5": 0.8764705882352941,
-    "hit_at_5": 0.9294117647058824,
-    "mrr": 0.7713725490196078,
+    "evidence_recall_1": 0.5176470588235295,
+    "evidence_recall_3": 0.6941176470588235,
+    "evidence_recall_5": 0.7764705882352941,
+    "hit_at_5": 0.8588235294117647,
+    "mrr": 0.6431372549019608,
     "truncation_violations": 0,
     "category_breakdown": {
       "exact_fact": {
         "count": 25,
-        "hit_5": 0.96,
-        "mrr": 0.87,
-        "recall_1": 0.8,
-        "recall_5": 0.96
+        "hit_5": 0.88,
+        "mrr": 0.7833333333333333,
+        "recall_1": 0.72,
+        "recall_5": 0.88
       },
       "semantic_paraphrase": {
         "count": 20,
-        "hit_5": 0.9,
-        "mrr": 0.7291666666666666,
-        "recall_1": 0.6,
-        "recall_5": 0.875
+        "hit_5": 0.8,
+        "mrr": 0.45166666666666655,
+        "recall_1": 0.25,
+        "recall_5": 0.8
       },
       "cross_document": {
         "count": 20,
-        "hit_5": 0.85,
-        "mrr": 0.5199999999999999,
-        "recall_1": 0.35,
-        "recall_5": 0.65
+        "hit_5": 0.75,
+        "mrr": 0.38583333333333336,
+        "recall_1": 0.2,
+        "recall_5": 0.4
       },
       "numerical_reasoning": {
         "count": 20,
         "hit_5": 1.0,
-        "mrr": 0.9416666666666667,
-        "recall_1": 0.9,
+        "mrr": 0.9166666666666666,
+        "recall_1": 0.85,
         "recall_5": 1.0
       }
     },
     "latency": {
-      "p50_ms": 90.8309500082396,
-      "p90_ms": 200.39317003102053,
-      "p95_ms": 268.6936300044181,
-      "p99_ms": 381.6058160149266,
-      "mean_ms": 113.74847900064196,
-      "min_ms": 46.64349998347461,
-      "max_ms": 502.60519998846576
+      "p50_ms": 146.91949999541976,
+      "p90_ms": 453.1118899642027,
+      "p95_ms": 559.4089399965012,
+      "p99_ms": 1455.037240016973,
+      "mean_ms": 241.24803400307428,
+      "min_ms": 64.06830000923946,
+      "max_ms": 1554.8232999863103
     },
     "benchmark_config": {
       "mode": "hybrid",
@@ -53,7 +217,7 @@
       "queries_count": 100
     }
   },
-  "targets_passed": true,
+  "targets_passed": false,
   "itemized_results": [
     {
       "query_id": "eval_001",
@@ -130,7 +294,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 106.27339995699003
+      "latency_ms": 93.36060000350699
     },
     {
       "query_id": "eval_002",
@@ -207,7 +371,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 112.85259999567643
+      "latency_ms": 101.443899970036
     },
     {
       "query_id": "eval_003",
@@ -284,7 +448,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 103.75279997242615
+      "latency_ms": 67.48629995854571
     },
     {
       "query_id": "eval_004",
@@ -361,7 +525,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 131.30080001428723
+      "latency_ms": 64.75510000018403
     },
     {
       "query_id": "eval_005",
@@ -438,7 +602,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 119.18799998238683
+      "latency_ms": 97.58410003269091
     },
     {
       "query_id": "eval_006",
@@ -515,7 +679,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 78.40070000384003
+      "latency_ms": 104.48049998376518
     },
     {
       "query_id": "eval_007",
@@ -592,7 +756,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 72.78590003261343
+      "latency_ms": 72.62380002066493
     },
     {
       "query_id": "eval_008",
@@ -669,7 +833,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 77.57100003072992
+      "latency_ms": 69.60529997013509
     },
     {
       "query_id": "eval_009",
@@ -746,7 +910,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 64.25220001256093
+      "latency_ms": 95.89989995583892
     },
     {
       "query_id": "eval_010",
@@ -823,7 +987,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 60.970500053372234
+      "latency_ms": 79.77160002337769
     },
     {
       "query_id": "eval_011",
@@ -900,7 +1064,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 72.58560002082959
+      "latency_ms": 94.1521999775432
     },
     {
       "query_id": "eval_012",
@@ -977,7 +1141,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 73.3955999603495
+      "latency_ms": 107.20189998392016
     },
     {
       "query_id": "eval_013",
@@ -1054,7 +1218,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 67.87690002238378
+      "latency_ms": 85.6202999711968
     },
     {
       "query_id": "eval_014",
@@ -1131,7 +1295,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 167.352500022389
+      "latency_ms": 192.6740999915637
     },
     {
       "query_id": "eval_015",
@@ -1208,7 +1372,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 71.51580002391711
+      "latency_ms": 102.55840001627803
     },
     {
       "query_id": "eval_016",
@@ -1285,7 +1449,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 57.232199993450195
+      "latency_ms": 80.77260002028197
     },
     {
       "query_id": "eval_017",
@@ -1362,7 +1526,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 67.22399999853224
+      "latency_ms": 88.88830000068992
     },
     {
       "query_id": "eval_018",
@@ -1439,7 +1603,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 75.89390000794083
+      "latency_ms": 85.76049999101087
     },
     {
       "query_id": "eval_019",
@@ -1516,7 +1680,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 96.7899999814108
+      "latency_ms": 76.3448000070639
     },
     {
       "query_id": "eval_020",
@@ -1593,7 +1757,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 129.96520003071055
+      "latency_ms": 176.19140003807843
     },
     {
       "query_id": "eval_021",
@@ -1670,7 +1834,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 128.3553999965079
+      "latency_ms": 70.200800022576
     },
     {
       "query_id": "eval_022",
@@ -1749,7 +1913,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 126.30419997731224
+      "latency_ms": 64.06830000923946
     },
     {
       "query_id": "eval_023",
@@ -1826,7 +1990,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 124.66589995892718
+      "latency_ms": 82.69780001137406
     },
     {
       "query_id": "eval_024",
@@ -1903,7 +2067,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 138.27820000005886
+      "latency_ms": 81.88910002354532
     },
     {
       "query_id": "eval_025",
@@ -1980,7 +2144,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 102.79109998373315
+      "latency_ms": 113.24289999902248
     },
     {
       "query_id": "eval_026",
@@ -2058,7 +2222,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 76.3569000409916
+      "latency_ms": 142.3816999886185
     },
     {
       "query_id": "eval_027",
@@ -2135,7 +2299,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 62.29359999997541
+      "latency_ms": 157.9193000216037
     },
     {
       "query_id": "eval_028",
@@ -2212,7 +2376,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 71.91100000636652
+      "latency_ms": 170.7186999847181
     },
     {
       "query_id": "eval_029",
@@ -2289,7 +2453,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 91.91620000638068
+      "latency_ms": 212.2726000379771
     },
     {
       "query_id": "eval_030",
@@ -2366,7 +2530,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 85.21039999322966
+      "latency_ms": 444.48930001817644
     },
     {
       "query_id": "eval_031",
@@ -2443,7 +2607,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 74.40839998889714
+      "latency_ms": 217.6154000335373
     },
     {
       "query_id": "eval_032",
@@ -2520,7 +2684,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 66.43860001349822
+      "latency_ms": 221.83840000070632
     },
     {
       "query_id": "eval_033",
@@ -2598,7 +2762,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 110.57439999422058
+      "latency_ms": 321.2542000110261
     },
     {
       "query_id": "eval_034",
@@ -2675,7 +2839,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 119.22649998450652
+      "latency_ms": 309.95200003962964
     },
     {
       "query_id": "eval_035",
@@ -2752,7 +2916,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 145.92810004251078
+      "latency_ms": 445.27389999711886
     },
     {
       "query_id": "eval_036",
@@ -2829,7 +2993,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 122.76980001479387
+      "latency_ms": 555.3671999950893
     },
     {
       "query_id": "eval_037",
@@ -2906,7 +3070,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 215.1187999988906
+      "latency_ms": 386.40670001041144
     },
     {
       "query_id": "eval_038",
@@ -2983,7 +3147,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 133.21679999353364
+      "latency_ms": 270.8993999985978
     },
     {
       "query_id": "eval_039",
@@ -3060,7 +3224,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 97.58060000604019
+      "latency_ms": 404.91929999552667
     },
     {
       "query_id": "eval_040",
@@ -3137,7 +3301,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 322.5389000144787
+      "latency_ms": 648.3655000338331
     },
     {
       "query_id": "eval_041",
@@ -3215,7 +3379,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 274.8464000178501
+      "latency_ms": 246.42869998933747
     },
     {
       "query_id": "eval_042",
@@ -3293,7 +3457,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 104.5663999975659
+      "latency_ms": 390.3703999822028
     },
     {
       "query_id": "eval_043",
@@ -3370,7 +3534,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 117.90299997664988
+      "latency_ms": 295.5679999431595
     },
     {
       "query_id": "eval_044",
@@ -3447,7 +3611,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 65.73620002018288
+      "latency_ms": 200.5866999970749
     },
     {
       "query_id": "eval_045",
@@ -3524,7 +3688,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 67.36599997384474
+      "latency_ms": 190.3790000360459
     },
     {
       "query_id": "eval_046",
@@ -3602,7 +3766,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 292.5923999864608
+      "latency_ms": 483.6559999966994
     },
     {
       "query_id": "eval_047",
@@ -3680,7 +3844,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 164.89700000965968
+      "latency_ms": 521.3804999948479
     },
     {
       "query_id": "eval_048",
@@ -3758,7 +3922,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 137.1250999509357
+      "latency_ms": 389.74330003838986
     },
     {
       "query_id": "eval_049",
@@ -3836,7 +4000,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 149.08880001166835
+      "latency_ms": 366.74959998345
     },
     {
       "query_id": "eval_050",
@@ -3915,7 +4079,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 138.9937000349164
+      "latency_ms": 394.7442999924533
     },
     {
       "query_id": "eval_051",
@@ -3993,7 +4157,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 268.36980000371113
+      "latency_ms": 377.53300002077594
     },
     {
       "query_id": "eval_052",
@@ -4071,7 +4235,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 245.63949997536838
+      "latency_ms": 636.2020000233315
     },
     {
       "query_id": "eval_053",
@@ -4150,7 +4314,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 380.3836000151932
+      "latency_ms": 357.00710001401603
     },
     {
       "query_id": "eval_054",
@@ -4229,7 +4393,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 199.18480003252625
+      "latency_ms": 285.2981999749318
     },
     {
       "query_id": "eval_055",
@@ -4308,7 +4472,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 502.60519998846576
+      "latency_ms": 449.71809996059164
     },
     {
       "query_id": "eval_056",
@@ -4386,7 +4550,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 211.2685000174679
+      "latency_ms": 517.4649000400677
     },
     {
       "query_id": "eval_057",
@@ -4465,7 +4629,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 132.94199999654666
+      "latency_ms": 402.37209998304024
     },
     {
       "query_id": "eval_058",
@@ -4543,7 +4707,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 149.8522000038065
+      "latency_ms": 263.82390002254397
     },
     {
       "query_id": "eval_059",
@@ -4621,7 +4785,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 121.38640001649037
+      "latency_ms": 508.9859000290744
     },
     {
       "query_id": "eval_060",
@@ -4699,7 +4863,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 244.92850003298372
+      "latency_ms": 996.0215999744833
     },
     {
       "query_id": "eval_061",
@@ -4777,7 +4941,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 96.78060002624989
+      "latency_ms": 1454.0293000172824
     },
     {
       "query_id": "eval_062",
@@ -4855,7 +5019,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 107.0674000075087
+      "latency_ms": 1554.8232999863103
     },
     {
       "query_id": "eval_063",
@@ -4933,7 +5097,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 132.94049998512492
+      "latency_ms": 356.7856000154279
     },
     {
       "query_id": "eval_064",
@@ -5011,7 +5175,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 155.70840000873432
+      "latency_ms": 134.93499998003244
     },
     {
       "query_id": "eval_065",
@@ -5090,7 +5254,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 155.9086999623105
+      "latency_ms": 124.07309998525307
     },
     {
       "query_id": "eval_066",
@@ -5168,7 +5332,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 165.76120001263916
+      "latency_ms": 137.4408000265248
     },
     {
       "query_id": "eval_067",
@@ -5245,7 +5409,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 78.26499996008351
+      "latency_ms": 89.18800001265481
     },
     {
       "query_id": "eval_068",
@@ -5322,7 +5486,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 66.75820000236854
+      "latency_ms": 69.72420000238344
     },
     {
       "query_id": "eval_069",
@@ -5399,7 +5563,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 117.54399997880682
+      "latency_ms": 70.49499999266118
     },
     {
       "query_id": "eval_070",
@@ -5477,7 +5641,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 123.92420001560822
+      "latency_ms": 131.27760001225397
     },
     {
       "query_id": "eval_071",
@@ -5554,7 +5718,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 89.46439996361732
+      "latency_ms": 90.0767000275664
     },
     {
       "query_id": "eval_072",
@@ -5631,7 +5795,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 126.52230000821874
+      "latency_ms": 85.96640004543588
     },
     {
       "query_id": "eval_073",
@@ -5708,7 +5872,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 93.44019996933639
+      "latency_ms": 100.49330000765622
     },
     {
       "query_id": "eval_074",
@@ -5784,7 +5948,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 67.76520004495978
+      "latency_ms": 79.96139995520934
     },
     {
       "query_id": "eval_075",
@@ -5860,7 +6024,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 84.2932999948971
+      "latency_ms": 82.11050002137199
     },
     {
       "query_id": "eval_076",
@@ -5937,7 +6101,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 86.46270004101098
+      "latency_ms": 111.8945000343956
     },
     {
       "query_id": "eval_077",
@@ -6014,7 +6178,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 71.68460002867505
+      "latency_ms": 80.51830000476912
     },
     {
       "query_id": "eval_078",
@@ -6091,7 +6255,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 63.022400019690394
+      "latency_ms": 65.73809997644275
     },
     {
       "query_id": "eval_079",
@@ -6168,7 +6332,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 65.65509998472407
+      "latency_ms": 75.42700000340119
     },
     {
       "query_id": "eval_080",
@@ -6245,7 +6409,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 79.030699969735
+      "latency_ms": 67.85230000969023
     },
     {
       "query_id": "eval_081",
@@ -6321,7 +6485,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 78.63859995268285
+      "latency_ms": 82.94970000861213
     },
     {
       "query_id": "eval_082",
@@ -6397,7 +6561,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 66.5959999896586
+      "latency_ms": 82.84160000039265
     },
     {
       "query_id": "eval_083",
@@ -6474,7 +6638,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 55.20010000327602
+      "latency_ms": 106.47930001141503
     },
     {
       "query_id": "eval_084",
@@ -6550,7 +6714,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 51.54529999708757
+      "latency_ms": 138.54899996658787
     },
     {
       "query_id": "eval_085",
@@ -6627,7 +6791,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 59.36009995639324
+      "latency_ms": 114.60400000214577
     },
     {
       "query_id": "eval_086",
@@ -6699,7 +6863,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 89.74570001009852
+      "latency_ms": 102.00499999336898
     },
     {
       "query_id": "eval_087",
@@ -6771,7 +6935,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 59.84689999604598
+      "latency_ms": 166.93649999797344
     },
     {
       "query_id": "eval_088",
@@ -6843,7 +7007,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 51.59990000538528
+      "latency_ms": 317.02350004343316
     },
     {
       "query_id": "eval_089",
@@ -6915,7 +7079,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 49.1150000016205
+      "latency_ms": 299.29519997676834
     },
     {
       "query_id": "eval_090",
@@ -6987,7 +7151,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 47.84740001196042
+      "latency_ms": 175.51980004645884
     },
     {
       "query_id": "eval_091",
@@ -7059,7 +7223,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 48.1656999909319
+      "latency_ms": 183.67609998676926
     },
     {
       "query_id": "eval_092",
@@ -7131,7 +7295,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 48.518800002057105
+      "latency_ms": 116.09309999039397
     },
     {
       "query_id": "eval_093",
@@ -7203,7 +7367,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 59.583199967164546
+      "latency_ms": 125.22579997312278
     },
     {
       "query_id": "eval_094",
@@ -7275,7 +7439,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 52.772800030652434
+      "latency_ms": 109.53369998605922
     },
     {
       "query_id": "eval_095",
@@ -7347,7 +7511,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 52.628899982664734
+      "latency_ms": 151.45730000222102
     },
     {
       "query_id": "eval_096",
@@ -7419,7 +7583,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 47.705199976917356
+      "latency_ms": 193.6384000000544
     },
     {
       "query_id": "eval_097",
@@ -7491,7 +7655,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 52.98370000673458
+      "latency_ms": 270.20620001712814
     },
     {
       "query_id": "eval_098",
@@ -7563,7 +7727,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 46.64349998347461
+      "latency_ms": 282.98100002575666
     },
     {
       "query_id": "eval_099",
@@ -7635,7 +7799,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 54.16719999630004
+      "latency_ms": 191.16480002412573
     },
     {
       "query_id": "eval_100",
@@ -7707,7 +7871,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 81.4459000248462
+      "latency_ms": 418.8315999926999
     }
   ]
 }

@@ -47,11 +47,17 @@ class CopilotTraceHooks(RunHooks):
     async def on_tool_start(self, context, agent, tool):
         call_id = context.tool_call_id
         self._start_times[call_id] = time.perf_counter()
+        raw_args = context.tool_arguments
+        if isinstance(raw_args, str):
+            try:
+                raw_args = json.loads(raw_args)
+            except Exception:
+                pass
         self.tracer.add_event(
             "tool_call",
             tool_name=tool.name,
             call_id=call_id,
-            arguments=context.tool_arguments,
+            arguments=raw_args if isinstance(raw_args, dict) else {},
             origin=ToolCallOrigin.MODEL_REQUESTED.value,
         )
 
@@ -66,10 +72,19 @@ class CopilotTraceHooks(RunHooks):
                 parsed_result = json.loads(result)
             except Exception:
                 pass
+
+        parsed_args = context.tool_arguments
+        if isinstance(parsed_args, str):
+            try:
+                parsed_args = json.loads(parsed_args)
+            except Exception:
+                pass
+        if not isinstance(parsed_args, dict):
+            parsed_args = {}
                 
         record = ToolExecutionRecord(
             tool_name=tool.name,
-            arguments=context.tool_arguments if isinstance(context.tool_arguments, dict) else {},
+            arguments=parsed_args,
             result=parsed_result,
             origin=ToolCallOrigin.MODEL_REQUESTED,
             execution_time_ms=exec_ms,
@@ -107,11 +122,15 @@ class AgentOrchestrator:
         self.max_tokens = max_tokens
         set_tracing_disabled(True)
 
-    def _build_tools(self, current_evidence_accumulator: List[EvidenceChunk]):
+    def _build_tools(
+        self,
+        current_evidence_accumulator: List[EvidenceChunk],
+        retrieval_mode: Optional[Any] = None,
+    ):
         @function_tool
         def search_knowledge(query: str, k: int = 5, document_id: Optional[str] = None) -> Dict[str, Any]:
             """Retrieve evidence chunks from the local document vector index."""
-            chunks = self.search_fn(query=query, k=k, document_id=document_id)
+            chunks = self.search_fn(query=query, k=k, document_id=document_id, mode=retrieval_mode)
             current_evidence_accumulator.extend(chunks)
             return {
                 "chunks": [c.to_dict() for c in chunks],
@@ -137,6 +156,7 @@ class AgentOrchestrator:
         session_id: str,
         history_messages: Optional[List[Dict[str, str]]] = None,
         tracer: Optional[ExecutionTracer] = None,
+        retrieval_mode: Optional[Any] = None,
     ) -> Turn:
         start_time = time.perf_counter()
         turn_id = f"turn_{uuid.uuid4().hex[:12]}"
@@ -146,63 +166,69 @@ class AgentOrchestrator:
             
         tracer.add_event("user_input", text=user_input, session_id=session_id)
         
-        # Check pronoun ambiguity on empty history
-        has_history = bool(history_messages)
-        has_subject = bool(re.search(
-            r"\b(?:lab(?:oratory)?\s*\d+|report|model|document|system|paper|file)\b|"
-            r"\b(?:лабораторн\w*\s*(?:робот\w*)?\s*№?\s*\d+|звіт|модел|документ|систем|статт|файл)",
-            user_input,
-            re.IGNORECASE,
-        ))
-        ambiguous = not has_history and not has_subject and bool(re.search(
-            r"\b(?:it|its|that model|this model|that file)\b|\b(?:вона|воно|він|цей|ця|те)\b",
-            user_input,
-            re.IGNORECASE,
-        ))
-        
-        if ambiguous:
-            clarification = (
-                "Please clarify which document, model, or report you are referring to. "
-                "A new session does not have context for that pronoun."
-            )
-            tracer.add_event("ambiguity_guard", reason="pronoun_without_session_antecedent")
-            return Turn(
-                turn_id=turn_id,
-                session_id=session_id,
-                user_input=user_input,
-                raw_answer=clarification,
-                canonical_answer=clarification,
-                grounding_status=GroundingStatus.INSUFFICIENT_EVIDENCE,
-                tool_executions=[],
-                citations=[],
-                invalid_citations=[],
-                claims=[],
-                evidence=[],
-                runtime_seconds=round(time.perf_counter() - start_time, 3),
-            )
-
-        evidence_accum: List[EvidenceChunk] = []
-        tools = self._build_tools(evidence_accum)
-        trace_hooks = CopilotTraceHooks(tracer)
-        
-        client = self.llm_client.get_client()
-        model_id = self.llm_client.model_id
-        
-        agent = Agent(
-            name="Knowledge Copilot",
-            instructions=SYSTEM_INSTRUCTIONS,
-            model=OpenAIChatCompletionsModel(model_id, client),
-            tools=tools,
-            model_settings=ModelSettings(
-                temperature=self.temperature,
-                max_tokens=self.max_tokens,
-                tool_choice="auto",
-                parallel_tool_calls=False,
-            ),
-        )
-
         sdk_session = SQLiteSession(session_id=session_id, db_path=self.db_path)
         try:
+            existing_items = await sdk_session.get_items()
+            if not existing_items and history_messages:
+                items_to_seed = [{"role": m["role"], "content": m["content"]} for m in history_messages]
+                await sdk_session.add_items(items_to_seed)
+                existing_items = await sdk_session.get_items()
+
+            # Check pronoun ambiguity on empty history
+            has_history = bool(history_messages) or bool(existing_items)
+            has_subject = bool(re.search(
+                r"\b(?:lab(?:oratory)?\s*\d+|report|model|document|system|paper|file)\b|"
+                r"\b(?:лабораторн\w*\s*(?:робот\w*)?\s*№?\s*\d+|звіт|модел|документ|систем|статт|файл)",
+                user_input,
+                re.IGNORECASE,
+            ))
+            ambiguous = not has_history and not has_subject and bool(re.search(
+                r"\b(?:it|its|that model|this model|that file)\b|\b(?:вона|воно|він|цей|ця|те)\b",
+                user_input,
+                re.IGNORECASE,
+            ))
+            
+            if ambiguous:
+                clarification = (
+                    "Please clarify which document, model, or report you are referring to. "
+                    "A new session does not have context for that pronoun."
+                )
+                tracer.add_event("ambiguity_guard", reason="pronoun_without_session_antecedent")
+                return Turn(
+                    turn_id=turn_id,
+                    session_id=session_id,
+                    user_input=user_input,
+                    raw_answer=clarification,
+                    canonical_answer=clarification,
+                    grounding_status=GroundingStatus.INSUFFICIENT_EVIDENCE,
+                    tool_executions=[],
+                    citations=[],
+                    invalid_citations=[],
+                    claims=[],
+                    evidence=[],
+                    runtime_seconds=round(time.perf_counter() - start_time, 3),
+                )
+
+            evidence_accum: List[EvidenceChunk] = []
+            tools = self._build_tools(evidence_accum, retrieval_mode=retrieval_mode)
+            trace_hooks = CopilotTraceHooks(tracer)
+            
+            client = self.llm_client.get_client()
+            model_id = self.llm_client.model_id
+            
+            agent = Agent(
+                name="Knowledge Copilot",
+                instructions=SYSTEM_INSTRUCTIONS,
+                model=OpenAIChatCompletionsModel(model_id, client),
+                tools=tools,
+                model_settings=ModelSettings(
+                    temperature=self.temperature,
+                    max_tokens=self.max_tokens,
+                    tool_choice="auto",
+                    parallel_tool_calls=False,
+                ),
+            )
+
             # Execute runner with model-visible multi-turn conversation memory
             result = await asyncio.wait_for(
                 Runner.run(
@@ -234,7 +260,27 @@ class AgentOrchestrator:
                     )
             
             # Clean formatting: remove literal placeholder strings
-            canonical_answer = canonical_answer.replace("[source_id#chunk_id]", "").strip()
+            canonical_answer = re.sub(r"\s*\[source_id#chunk_id\]", "", canonical_answer).strip()
+            canonical_answer = re.sub(r"\s+([.,;:!?])", r"\1", canonical_answer)
+
+            # Prevent divergence between OpenAI Agents SDK session and authoritative canonical answer
+            if canonical_answer != raw_answer:
+                try:
+                    items = await sdk_session.get_items()
+                    if items:
+                        last_item = items[-1]
+                        if isinstance(last_item, dict) and last_item.get("role") == "assistant":
+                            await sdk_session.pop_item()
+                            updated_item = dict(last_item)
+                            if isinstance(updated_item.get("content"), list):
+                                updated_item["content"] = [
+                                    {"annotations": [], "text": canonical_answer, "type": "output_text", "logprobs": []}
+                                ]
+                            else:
+                                updated_item["content"] = canonical_answer
+                            await sdk_session.add_items([updated_item])
+                except Exception as sync_err:
+                    tracer.add_event("session_sync_warning", error=str(sync_err))
             
             # Semantic Grounding Verification (DEFECT-02)
             grounding_status, cited, invalid_cited, claims = verify_grounding(

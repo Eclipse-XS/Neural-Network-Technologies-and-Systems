@@ -11,7 +11,8 @@ root_dir = Path(__file__).resolve().parents[4]
 if str(root_dir) not in sys.path:
     sys.path.insert(0, str(root_dir))
 
-from ..api.dependencies import (
+import httpx
+from labs.lab07_final_project.src.knowledge_copilot.api.dependencies import (
     get_embeddings,
     get_ingestion_service,
     get_llm_client,
@@ -20,7 +21,7 @@ from ..api.dependencies import (
     get_session_service,
     get_sqlite_repo,
 )
-from ..domain.enums import GroundingStatus, RetrievalMode
+from labs.lab07_final_project.src.knowledge_copilot.domain.enums import GroundingStatus, RetrievalMode
 
 
 st.set_page_config(
@@ -215,19 +216,53 @@ with tab_chat:
         with st.chat_message("assistant"):
             with st.spinner("Analyzing query, retrieving evidence, and verifying claims..."):
                 try:
-                    mode_enum = RetrievalMode(st.session_state.retrieval_mode)
-                    turn = asyncio.run(
-                        query_service.execute_query(
-                            query=user_query,
-                            session_id=st.session_state.session_id,
-                            retrieval_mode=mode_enum,
+                    mode_str = st.session_state.retrieval_mode.lower()
+                    api_url = os.getenv("COPILOT_API_URL", "http://127.0.0.1:8000")
+                    chat_payload = {
+                        "session_id": st.session_state.session_id,
+                        "query": user_query,
+                        "retrieval_mode": mode_str,
+                    }
+
+                    use_http = True
+                    http_resp_data = None
+                    try:
+                        with httpx.Client(base_url=api_url, timeout=120.0) as http_client:
+                            resp = http_client.post("/api/v1/chat", json=chat_payload)
+                            if resp.status_code == 200:
+                                http_resp_data = resp.json()
+                            else:
+                                st.warning(f"FastAPI HTTP {resp.status_code}: Falling back to direct service execution.")
+                                use_http = False
+                    except Exception:
+                        use_http = False
+
+                    if use_http and http_resp_data:
+                        ans_text = http_resp_data["answer"]
+                        status_val = http_resp_data["grounding_status"]
+                        evidence_list = http_resp_data.get("evidence", [])
+                        tools_list = http_resp_data.get("tools_used", [])
+                        citations = http_resp_data.get("citations", [])
+                        invalid_citations = http_resp_data.get("invalid_citations", [])
+                    else:
+                        mode_enum = RetrievalMode(st.session_state.retrieval_mode)
+                        turn = asyncio.run(
+                            query_service.execute_query(
+                                query=user_query,
+                                session_id=st.session_state.session_id,
+                                retrieval_mode=mode_enum,
+                            )
                         )
-                    )
+                        ans_text = turn.canonical_answer
+                        status_val = turn.grounding_status.value
+                        evidence_list = [e.to_dict() for e in turn.evidence]
+                        tools_list = [t.to_dict() for t in turn.tool_executions]
+                        citations = turn.citations
+                        invalid_citations = turn.invalid_citations
                     
-                    st.markdown(turn.canonical_answer)
+                    st.markdown(ans_text)
                     
                     # Display Status Badge
-                    status_val = turn.grounding_status.value
                     badge_color = {
                         "GROUNDED": "green",
                         "PARTIALLY_SUPPORTED": "orange",
@@ -238,31 +273,31 @@ with tab_chat:
                     st.caption(f":{badge_color}[● Grounding Status: {status_val}]")
 
                     # Evidence Viewer
-                    if turn.evidence:
-                        with st.expander(f"📑 Supporting Evidence ({len(turn.evidence)} passages retrieved)"):
-                            for idx, ev in enumerate(turn.evidence, 1):
-                                st.markdown(f"**[{idx}] {ev.source_id} — {ev.section}** `(Citation: {ev.citation})`")
-                                st.info(ev.text)
-                                score_info = f"Method: `{ev.score.retrieval_method}` | Score: `{round(ev.score.score_value, 4)}` ({ev.score.score_type.value}) | Rank: `#{ev.score.ranking_position}`"
+                    if evidence_list:
+                        with st.expander(f"📑 Supporting Evidence ({len(evidence_list)} passages retrieved)"):
+                            for idx, ev in enumerate(evidence_list, 1):
+                                st.markdown(f"**[{idx}] {ev.get('source_id', '')} — {ev.get('section', '')}** `(Citation: {ev.get('citation', '')})`")
+                                st.info(ev.get("text", ""))
+                                score_info = f"Method: `{ev.get('retrieval_method', '')}` | Score: `{round(ev.get('score_value', 0.0), 4)}` ({ev.get('score_type', '')}) | Rank: `#{ev.get('ranking_position', '')}`"
                                 st.caption(score_info)
                                 st.divider()
 
                     # Tool Traces
-                    if turn.tool_executions:
-                        with st.expander(f"🛠️ Tool Execution Trace ({len(turn.tool_executions)} calls)"):
-                            for t in turn.tool_executions:
-                                st.write(f"- Tool: **`{t.tool_name}`** (`Origin: {t.origin.value}` | `{round(t.execution_time_ms, 1)}ms`)")
-                                st.json(t.arguments)
+                    if tools_list:
+                        with st.expander(f"🛠️ Tool Execution Trace ({len(tools_list)} calls)"):
+                            for t in tools_list:
+                                st.write(f"- Tool: **`{t.get('tool_name')}`** (`Origin: {t.get('origin')}` | `{round(float(t.get('execution_time_ms', 0.0)), 1)}ms`)")
+                                st.json(t.get("arguments", {}))
 
                     # Append to session state
                     st.session_state.messages.append({
                         "role": "assistant",
-                        "content": turn.canonical_answer,
-                        "grounding_status": turn.grounding_status.value,
-                        "citations": turn.citations,
-                        "invalid_citations": turn.invalid_citations,
-                        "tools": [tool.to_dict() for tool in turn.tool_executions],
-                        "evidence": [e.to_dict() for e in turn.evidence],
+                        "content": ans_text,
+                        "grounding_status": status_val,
+                        "citations": citations,
+                        "invalid_citations": invalid_citations,
+                        "tools": tools_list,
+                        "evidence": evidence_list,
                     })
 
                 except Exception as exc:

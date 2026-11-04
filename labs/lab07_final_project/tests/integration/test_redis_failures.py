@@ -62,15 +62,17 @@ def test_redis_offline_prevents_false_indexed_status(tmp_path: Path, sqlite_repo
         sqlite_repo=sqlite_repo,
         redis_adapter=offline_redis,
         embeddings_model=MockFastEmbeddings(),
+        require_vector_store=True,
     )
 
     content = b"# Document Title\nImportant technical content."
-    doc = svc.ingest_file("offline_test.md", content, document_id="doc_offline_1")
+    with pytest.raises(IndexingError, match="Vector store unreachable"):
+        svc.ingest_file("offline_test.md", content, document_id="doc_offline_1")
 
-    # In degraded/offline mode, SQLite records document, but Redis vector indexing was skipped (0 chunks in Redis)
     stored = sqlite_repo.get_document("doc_offline_1")
     assert stored is not None
-    assert offline_redis.delete_document_chunks("doc_offline_1") == 0
+    assert stored.status == DocumentStatus.FAILED, f"Expected FAILED status, got {stored.status}"
+    assert "Vector store unreachable" in (stored.error_message or "")
 
 
 # ============================================================================

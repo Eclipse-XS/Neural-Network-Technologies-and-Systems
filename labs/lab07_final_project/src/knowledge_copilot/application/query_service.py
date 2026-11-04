@@ -1,4 +1,5 @@
 """RAG and Agent Query Coordination Service."""
+import contextvars
 import re
 import time
 from pathlib import Path
@@ -17,6 +18,10 @@ from ..observability.metrics import (
 from ..rag.hybrid import reciprocal_rank_fusion
 from ..rag.lexical import BM25Retriever
 from .ingestion_service import IngestionService
+
+ACTIVE_RETRIEVAL_MODE: contextvars.ContextVar[Optional[RetrievalMode]] = contextvars.ContextVar(
+    "active_retrieval_mode", default=None
+)
 
 
 class QueryService:
@@ -52,7 +57,7 @@ class QueryService:
     ) -> List[EvidenceChunk]:
         """Perform multi-mode retrieval with explicit score semantics (DEFECT-06)."""
         k = k or self.top_k
-        active_mode = mode or self.default_retrieval_mode
+        active_mode = mode or ACTIVE_RETRIEVAL_MODE.get() or self.default_retrieval_mode
         start_time = time.perf_counter()
 
         # Dynamic document routing based on indexed catalog
@@ -242,11 +247,16 @@ class QueryService:
         if not self.orchestrator:
             raise RuntimeError("AgentOrchestrator is not configured on QueryService.")
 
-        turn = await self.orchestrator.execute_turn(
-            user_input=query,
-            session_id=session_id,
-            history_messages=history_messages,
-        )
+        token = ACTIVE_RETRIEVAL_MODE.set(retrieval_mode)
+        try:
+            turn = await self.orchestrator.execute_turn(
+                user_input=query,
+                session_id=session_id,
+                history_messages=history_messages,
+                retrieval_mode=retrieval_mode,
+            )
+        finally:
+            ACTIVE_RETRIEVAL_MODE.reset(token)
 
         # Transactional SQLite canonical synchronization
         self.sqlite_repo.save_canonical_turn(turn)

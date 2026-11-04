@@ -16,7 +16,12 @@ async def liveness(
 ):
     """Liveness probe: verifies process is alive and basic services respond."""
     redis_ok = redis_adapter.ping()
-    sqlite_ok = sqlite_repo.db_path.exists() or True
+    try:
+        with sqlite_repo._get_connection() as conn:
+            conn.execute("SELECT 1").fetchone()
+        sqlite_ok = True
+    except Exception:
+        sqlite_ok = False
     llm_ok = await llm_client.is_available()
     
     return HealthResponse(
@@ -30,17 +35,25 @@ async def liveness(
 
 @router.get("/api/v1/health/ready", response_model=HealthResponse)
 async def readiness(
+    response: Response,
     sqlite_repo=Depends(get_sqlite_repo),
     redis_adapter=Depends(get_redis_adapter),
     llm_client=Depends(get_llm_client),
 ):
     """Readiness probe: verifies all infrastructure dependencies are ready."""
     redis_ok = redis_adapter.ping()
-    sqlite_ok = sqlite_repo.db_path.exists()
+    try:
+        with sqlite_repo._get_connection() as conn:
+            conn.execute("SELECT 1").fetchone()
+        sqlite_ok = True
+    except Exception:
+        sqlite_ok = False
     llm_ok = await llm_client.is_available()
     
     ready = redis_ok and sqlite_ok
     status_str = "ready" if ready else "degraded"
+    if not ready:
+        response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
     
     return HealthResponse(
         status=status_str,

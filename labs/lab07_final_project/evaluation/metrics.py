@@ -35,12 +35,29 @@ def is_chunk_relevant(chunk: dict, gold_query: dict) -> bool:
     clean_section = re.sub(r'[`*_]', '', section)
     clean_terms = [re.sub(r'[`*_]', '', g) for g in gold_terms]
 
+    # Distinctive evidence span matching with stopword filtering
+    STOPWORDS = {
+        "the", "and", "for", "that", "this", "with", "from", "are", "was",
+        "were", "has", "have", "had", "not", "but", "what", "which", "who",
+        "how", "why", "when", "where", "can", "could", "will", "would",
+        "should", "all", "any", "some", "such", "than", "then", "into",
+        "over", "also", "used", "uses", "using", "more", "most", "about",
+    }
+
     for term in clean_terms:
         if term in clean_content or term in clean_section:
             return True
-        words = [w for w in re.findall(r"[\w.-]+", term) if len(w) >= 3]
-        if words and any(w in clean_content for w in words):
-            return True
+        # Multi-word substantive evidence overlap (>= 75% non-stopwords)
+        words = [w for w in re.findall(r"[\w.-]+", term) if len(w) >= 3 and w not in STOPWORDS]
+        if len(words) >= 2:
+            matched_words = [w for w in words if w in clean_content]
+            if len(matched_words) / len(words) >= 0.75:
+                return True
+        elif len(words) == 1:
+            # Single distinctive keyword must match as a complete token
+            pattern = r"\b" + re.escape(words[0]) + r"\b"
+            if re.search(pattern, clean_content):
+                return True
     return False
 
 

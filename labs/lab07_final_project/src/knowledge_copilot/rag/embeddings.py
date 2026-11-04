@@ -11,7 +11,7 @@ class CopilotEmbeddings(Embeddings):
         revision: str = "614241f622f53c4eeff9890bdc4f31cfecc418b3",
         device: str = "cpu",
         local_files_only: bool = True,
-        offline_fallback: bool = True,
+        offline_fallback: bool = False,
     ):
         self.model_name = model_name
         self.revision = revision
@@ -32,9 +32,12 @@ class CopilotEmbeddings(Embeddings):
             )
             self.tokenizer = self._hf_embeddings._client.tokenizer
             self.max_seq_length = self._hf_embeddings._client.max_seq_length
-        except Exception:
+        except Exception as exc:
             if not offline_fallback:
-                raise
+                raise RuntimeError(
+                    f"Configured embedding model '{model_name}' (rev {revision}) could not be loaded: {exc}. "
+                    f"Silent synthetic fallback is disabled in production and benchmark modes."
+                ) from exc
             self._offline = True
 
     def count_tokens(self, text: str) -> int:

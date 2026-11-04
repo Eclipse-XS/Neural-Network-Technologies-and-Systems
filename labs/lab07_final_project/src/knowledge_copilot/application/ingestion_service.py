@@ -28,6 +28,7 @@ class IngestionService:
         chunk_size: int = 900,
         chunk_overlap: int = 120,
         max_tokens: int = 240,
+        require_vector_store: bool = True,
     ):
         self.sqlite_repo = sqlite_repo
         self.redis_adapter = redis_adapter
@@ -35,6 +36,7 @@ class IngestionService:
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
         self.max_tokens = max_tokens
+        self.require_vector_store = require_vector_store
         self._cached_chunks: Dict[str, List[Chunk]] = {}
         self._reload_metrics()
 
@@ -96,7 +98,11 @@ class IngestionService:
             
             # Atomic indexing into Redis and SQLite
             self.redis_adapter.delete_document_chunks(doc_id)
-            if self.redis_adapter.ping():
+            if self.require_vector_store:
+                if not self.redis_adapter.ping():
+                    raise IndexingError(f"Vector store unreachable at {self.redis_adapter.redis_url}; indexing aborted to prevent false INDEXED state.")
+                self.redis_adapter.index_chunks(chunks, self.embeddings)
+            elif self.redis_adapter.ping():
                 self.redis_adapter.index_chunks(chunks, self.embeddings)
                 
             self._cached_chunks[doc_id] = chunks
@@ -129,6 +135,9 @@ class IngestionService:
         if not doc:
             raise DocumentNotFoundError(f"Document '{document_id}' not found.")
             
+        if self.require_vector_store and not self.redis_adapter.ping():
+            raise IndexingError(f"Vector store unreachable at {self.redis_adapter.redis_url}; cannot reliably delete vectors for '{document_id}'.")
+
         # Remove from Redis and SQLite
         self.redis_adapter.delete_document_chunks(document_id)
         self.sqlite_repo.delete_chunks_for_document(document_id)
