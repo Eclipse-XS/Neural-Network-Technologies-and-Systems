@@ -1,5 +1,7 @@
 """RAG and Agent Query Coordination Service."""
+import re
 import time
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from ..domain.enums import GroundingStatus, RetrievalMode, ScoreType
@@ -38,8 +40,7 @@ class QueryService:
 
     def _refresh_lexical_index(self) -> None:
         chunks = self.ingestion_service.get_all_indexed_chunks()
-        if chunks:
-            self.bm25.index(chunks)
+        self.bm25.index(chunks)
 
     def search(
         self,
@@ -54,76 +55,64 @@ class QueryService:
         active_mode = mode or self.default_retrieval_mode
         start_time = time.perf_counter()
 
-        # Target discovery and query expansion
-        targets = []
-        import re
-        expanded_query = query
-        expansions = [
-            (r"\b(?:час завантаження|load times?|loading times?)\b", "model load час завантаження 42.37 7.557"),
-            (r"\b(?:parameter count|кількість параметрів|parameters?|параметр(?:и|ів))\b", "864,031,264 параметри parameters parameter count"),
-            (r"\b(?:планувальник(?:а|ом)?|schedulers?)\b", "scheduler планувальник PNDMScheduler"),
-            (r"\b(?:квантизаці(?:я|ї)|quantizations?)\b", "quantization квантизація"),
-            (r"\b(?:tampered|перевірк(?:а|и) цілісності|integrity|підроб(?:ка|ки))\b", "sha-256 provenance digest цілісність"),
-            (r"\b(?:looping|loop indefinitely|зацикленн(?:я|і))\b", "max_turns timeout 8192"),
-            (r"\b(?:довільний системний код|arbitrary code|system code)\b", "ast calculate sandbox eval 64 вузлами"),
-            (r"\b(?:ізоляці(?:я|ї)|isolations?)\b", "cloud tracing isolation мережі 100% offline"),
-            (r"\b(?:помил(?:ка|ок)|errors?|error mapping)\b", "http error mapping короткий структурований помилки інструментів"),
-            (r"\b(?:розмірност(?:і|ь)|dimensions?|embedding dimension)\b", "384 768 dimension multilingual-e5 all-minilm"),
-            (r"\b(?:інтерфейс(?:и|ів)?|interfaces?)\b", "fastapi streamlit runner runbook api ui"),
-            (r"\b(?:мовн(?:і|их)\s+модел(?:і|ей)|language models?)\b", "qwen ministral language model qwen1.5 ministral-3b"),
-            (r"\b(?:числов(?:их|і)\s+вираз(?:и|ів)|numerical expressions?)\b", "calculate ast арифметика помилка"),
-            (r"\b(?:citation support|формат цитування|посилань)\b", "citations format source.csv:row grounded prompt"),
-        ]
-        for pattern, replacement in expansions:
-            if re.search(pattern, query.casefold()):
-                expanded_query += f" {replacement}"
-
+        # Dynamic document routing based on indexed catalog
+        targets: List[str] = []
         if not document_id:
-            mentioned_labs = set(re.findall(r"(?:lab|лабораторн(?:а|ої)\s+робот(?:а|и))\s*№?\s*([3-6])\b", query.casefold()))
-            for lab_num in sorted(mentioned_labs):
-                lab_id = f"lab{lab_num.zfill(2)}"
-                for d in self.ingestion_service.list_documents():
-                    if lab_id in d.document_id.casefold() or lab_id in d.filename.casefold():
-                        if d.document_id not in targets:
-                            targets.append(d.document_id)
-                        break
-            if "adr" in query.casefold() or "architecture decision" in query.casefold():
-                for d in self.ingestion_service.list_documents():
-                    if "adr" in d.document_id.casefold():
-                        if d.document_id not in targets:
-                            targets.append(d.document_id)
-                        break
-            if "postmortem" in query.casefold() or "post-mortem" in query.casefold() or "oom" in query.casefold() or "інцидент" in query.casefold():
-                for d in self.ingestion_service.list_documents():
-                    if "postmortem" in d.document_id.casefold() or "incident" in d.document_id.casefold():
-                        if d.document_id not in targets:
-                            targets.append(d.document_id)
-                        break
-            if "runbook" in query.casefold() or "operating procedure" in query.casefold() or "інтерфейс" in query.casefold() or "interface" in query.casefold() or "ізоляці" in query.casefold():
-                for d in self.ingestion_service.list_documents():
-                    if "runbook" in d.document_id.casefold():
-                        if d.document_id not in targets:
-                            targets.append(d.document_id)
-                        break
-            if "api" in query.casefold() or "fastapi" in query.casefold() or "endpoint" in query.casefold() or "ендпоінт" in query.casefold():
-                for d in self.ingestion_service.list_documents():
-                    if "api" in d.document_id.casefold():
-                        if d.document_id not in targets:
-                            targets.append(d.document_id)
-                        break
+            referenced_docs: List[str] = []
+            for doc in self.ingestion_service.list_documents():
+                stem = Path(doc.filename).stem.casefold()
+                clean_stem = re.sub(r"[_-]", " ", stem)
+                pattern = r"\b" + re.escape(clean_stem) + r"\b"
+                if stem in query.casefold() or re.search(pattern, query.casefold()):
+                    referenced_docs.append(doc.document_id)
+                    continue
+                lab_match = re.search(r"(?:lab|лабораторн\w*)[_\s-]*№?\s*0?([1-9])", stem)
+                if lab_match:
+                    num = lab_match.group(1)
+                    if re.search(rf"\b(?:lab|лабораторн\w*(?:\s*робот\w*)?)\s*№?\s*0?{num}\b", query.casefold()):
+                        referenced_docs.append(doc.document_id)
+                        continue
+                adr_match = re.search(r"adr[_\s-]*0*([1-9]+)", stem)
+                if adr_match:
+                    num = adr_match.group(1)
+                    if re.search(rf"\b(?:adr[_\s-]*0*{num}|lab\s*0?7|специфікац\w*)\b", query.casefold()):
+                        referenced_docs.append(doc.document_id)
+                        continue
+                if "postmortem" in stem or "incident" in stem:
+                    if re.search(r"\b(?:postmortem|post-mortem|інцидент\w*|incident|oom)\b", query.casefold()):
+                        referenced_docs.append(doc.document_id)
+                        continue
+                if "runbook" in stem:
+                    if re.search(r"\b(?:runbook|експлуатаці\w*|operating procedure|knowledge copilot|copilot)\b", query.casefold()):
+                        referenced_docs.append(doc.document_id)
+                        continue
+                if "api" in stem:
+                    if re.search(r"\b(?:api|ендпоінт\w*|endpoints?)\b", query.casefold()):
+                        referenced_docs.append(doc.document_id)
+                        continue
 
-            if len(targets) == 1:
-                document_id = targets[0]
+            if len(referenced_docs) == 1:
+                document_id = referenced_docs[0]
+            elif len(referenced_docs) > 1:
+                targets = referenced_docs
 
         evidence_chunks: List[EvidenceChunk] = []
 
         if active_mode == RetrievalMode.DENSE:
-            dense_results = self.redis_adapter.dense_search(
-                query=expanded_query,
-                k=k,
-                document_id=document_id,
-                filter_quoted_outputs=filter_quoted_outputs,
-            )
+            if targets:
+                dense_results = []
+                per_doc_k = max(2, (k // len(targets)) + 1)
+                for t_id in targets:
+                    dense_results.extend(self.redis_adapter.dense_search(
+                        query=query, k=per_doc_k, document_id=t_id, filter_quoted_outputs=filter_quoted_outputs
+                    ))
+            else:
+                dense_results = self.redis_adapter.dense_search(
+                    query=query,
+                    k=k,
+                    document_id=document_id,
+                    filter_quoted_outputs=filter_quoted_outputs,
+                )
             for rank, (chunk, distance) in enumerate(dense_results, 1):
                 score = Score(
                     retrieval_method="dense",
@@ -135,12 +124,20 @@ class QueryService:
 
         elif active_mode == RetrievalMode.LEXICAL:
             self._refresh_lexical_index()
-            lex_results = self.bm25.search(
-                query=expanded_query,
-                k=k,
-                document_id=document_id,
-                filter_quoted_outputs=filter_quoted_outputs,
-            )
+            if targets:
+                lex_results = []
+                per_doc_k = max(2, (k // len(targets)) + 1)
+                for t_id in targets:
+                    lex_results.extend(self.bm25.search(
+                        query=query, k=per_doc_k, document_id=t_id, filter_quoted_outputs=filter_quoted_outputs
+                    ))
+            else:
+                lex_results = self.bm25.search(
+                    query=query,
+                    k=k,
+                    document_id=document_id,
+                    filter_quoted_outputs=filter_quoted_outputs,
+                )
             for rank, (chunk, bm25_score) in enumerate(lex_results, 1):
                 score = Score(
                     retrieval_method="lexical",
@@ -152,38 +149,57 @@ class QueryService:
 
         elif active_mode == RetrievalMode.HYBRID:
             self._refresh_lexical_index()
-            if len(targets) > 1 and not document_id:
-                # Multi-document cross-comparison: guarantee representation per targeted document
-                per_doc_k = max(2, (k // len(targets)) + 1)
-                dense_candidates = []
-                lex_candidates = []
+            if targets:
+                per_doc_quota = max(2, (k // len(targets)) + 1)
+                per_target_chunks: Dict[str, List[EvidenceChunk]] = {}
                 for t_id in targets:
-                    dense_candidates.extend(self.redis_adapter.dense_search(
-                        query=expanded_query, k=per_doc_k * 4, document_id=t_id, filter_quoted_outputs=filter_quoted_outputs
-                    ))
-                    lex_candidates.extend(self.bm25.search(
-                        query=expanded_query, k=per_doc_k * 4, document_id=t_id, filter_quoted_outputs=filter_quoted_outputs
-                    ))
+                    dense_t = self.redis_adapter.dense_search(
+                        query=query, k=per_doc_quota * 4, document_id=t_id, filter_quoted_outputs=filter_quoted_outputs
+                    )
+                    lex_t = self.bm25.search(
+                        query=query, k=per_doc_quota * 4, document_id=t_id, filter_quoted_outputs=filter_quoted_outputs
+                    )
+                    fused_t = reciprocal_rank_fusion(
+                        dense_results=dense_t,
+                        lexical_results=lex_t,
+                        k=per_doc_quota * 2,
+                        dense_weight=1.5,
+                        lexical_weight=1.0,
+                    )
+                    per_target_chunks[t_id] = fused_t
+
+                interleaved: List[EvidenceChunk] = []
+                for idx in range(per_doc_quota * 2):
+                    for t_id in targets:
+                        if idx < len(per_target_chunks[t_id]):
+                            c = per_target_chunks[t_id][idx]
+                            if c.chunk.chunk_id not in {x.chunk.chunk_id for x in interleaved}:
+                                interleaved.append(c)
+                        if len(interleaved) >= k:
+                            break
+                    if len(interleaved) >= k:
+                        break
+                evidence_chunks = interleaved[:k]
             else:
                 dense_candidates = self.redis_adapter.dense_search(
-                    query=expanded_query,
+                    query=query,
                     k=k * 4,
                     document_id=document_id,
                     filter_quoted_outputs=filter_quoted_outputs,
                 )
                 lex_candidates = self.bm25.search(
-                    query=expanded_query,
+                    query=query,
                     k=k * 4,
                     document_id=document_id,
                     filter_quoted_outputs=filter_quoted_outputs,
                 )
-            evidence_chunks = reciprocal_rank_fusion(
-                dense_results=dense_candidates,
-                lexical_results=lex_candidates,
-                k=k,
-                dense_weight=2.5,
-                lexical_weight=1.0,
-            )
+                evidence_chunks = reciprocal_rank_fusion(
+                    dense_results=dense_candidates,
+                    lexical_results=lex_candidates,
+                    k=k,
+                    dense_weight=1.5,
+                    lexical_weight=1.0,
+                )
 
         duration = time.perf_counter() - start_time
         RAG_RETRIEVAL_DURATION_SECONDS.labels(mode=active_mode.value).observe(duration)

@@ -34,6 +34,10 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r labs/lab07_final_project/requirements-ci.txt
 
+      - name: Lint with Ruff (undefined name and syntax errors)
+        run: |
+          ruff check --select F821,E9,F63,F7 labs/lab06_agents labs/lab07_final_project
+
       - name: Compile source code
         run: |
           python -m compileall -q labs/lab06_agents/src labs/lab07_final_project/src labs/lab07_final_project/app.py labs/lab07_final_project/web_app.py

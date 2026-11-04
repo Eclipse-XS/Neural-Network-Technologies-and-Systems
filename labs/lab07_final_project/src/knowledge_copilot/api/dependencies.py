@@ -107,6 +107,7 @@ def get_query_service() -> QueryService:
             llm_client=llm,
             search_fn=_QUERY_SERVICE.search,
             list_sources_fn=_QUERY_SERVICE.list_sources,
+            db_path=repo.db_path,
             max_turns=int(os.getenv("AGENT_MAX_TURNS", "10")),
         )
         _QUERY_SERVICE.orchestrator = _ORCHESTRATOR

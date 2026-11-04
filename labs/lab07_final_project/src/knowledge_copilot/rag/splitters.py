@@ -49,7 +49,7 @@ def build_chunks_from_document(
     bounded_docs: List[LCDocument] = []
     
     for c_doc in candidates:
-        heading = " / ".join(c_doc.metadata[k] for k in ("h2", "h3") if k in c_doc.metadata)
+        heading = " / ".join(c_doc.metadata[k] for k in ("h1", "h2", "h3") if k in c_doc.metadata)
         if heading and heading.casefold() not in c_doc.page_content[:200].casefold():
             c_doc = LCDocument(
                 page_content=f"## {heading}\n{c_doc.page_content}",
@@ -78,6 +78,10 @@ def build_chunks_from_document(
             if not left or not right or left == txt or right == txt:
                 raise ValueError(f"Unable to split text within token budget of {max_tokens} tokens")
             
+            heading_prefix = f"## {heading}\n" if heading else ""
+            if heading_prefix and not right.startswith(heading_prefix):
+                right = f"{heading_prefix}{right}"
+
             pending[:0] = [
                 LCDocument(page_content=left, metadata=curr.metadata),
                 LCDocument(page_content=right, metadata=curr.metadata),
@@ -86,7 +90,7 @@ def build_chunks_from_document(
     chunks: List[Chunk] = []
     for ordinal, b_doc in enumerate(bounded_docs):
         section = (
-            " / ".join(b_doc.metadata[k] for k in ("h2", "h3") if k in b_doc.metadata)
+            " / ".join(b_doc.metadata[k] for k in ("h1", "h2", "h3") if k in b_doc.metadata)
             or b_doc.metadata.get("h1", "General")
         )
         normalized_content = " ".join(b_doc.page_content.split())

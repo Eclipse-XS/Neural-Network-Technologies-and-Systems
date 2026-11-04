@@ -4,6 +4,7 @@ import json
 import re
 import time
 import uuid
+from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from agents import (
@@ -13,6 +14,7 @@ from agents import (
     RunConfig,
     RunHooks,
     Runner,
+    SQLiteSession,
     function_tool,
     set_tracing_disabled,
 )
@@ -89,6 +91,7 @@ class AgentOrchestrator:
         llm_client,
         search_fn: Callable[..., List[EvidenceChunk]],
         list_sources_fn: Callable[[], List[Dict[str, Any]]],
+        db_path: Optional[Path] = None,
         max_turns: int = 10,
         timeout_seconds: float = 180.0,
         temperature: float = 0.0,
@@ -97,6 +100,7 @@ class AgentOrchestrator:
         self.llm_client = llm_client
         self.search_fn = search_fn
         self.list_sources_fn = list_sources_fn
+        self.db_path = db_path or Path("outputs/sessions/assistant_memory.sqlite")
         self.max_turns = max_turns
         self.timeout_seconds = timeout_seconds
         self.temperature = temperature
@@ -197,12 +201,14 @@ class AgentOrchestrator:
             ),
         )
 
+        sdk_session = SQLiteSession(session_id=session_id, db_path=self.db_path)
         try:
-            # Execute runner
+            # Execute runner with model-visible multi-turn conversation memory
             result = await asyncio.wait_for(
                 Runner.run(
                     agent,
                     user_input,
+                    session=sdk_session,
                     max_turns=self.max_turns,
                     hooks=trace_hooks,
                     run_config=RunConfig(tracing_disabled=True, trace_include_sensitive_data=False),
@@ -275,3 +281,8 @@ class AgentOrchestrator:
                 evidence=evidence_accum,
                 runtime_seconds=round(time.perf_counter() - start_time, 3),
             )
+        finally:
+            try:
+                sdk_session.close()
+            except Exception:
+                pass
