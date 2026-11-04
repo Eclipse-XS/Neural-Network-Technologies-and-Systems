@@ -100,7 +100,8 @@ class IngestionService:
             self.redis_adapter.delete_document_chunks(doc_id)
             if self.require_vector_store:
                 if not self.redis_adapter.ping():
-                    raise IndexingError(f"Vector store unreachable at {self.redis_adapter.redis_url}; indexing aborted to prevent false INDEXED state.")
+                    r_url = getattr(self.redis_adapter, "redis_url", "configured endpoint")
+                    raise IndexingError(f"Vector store unreachable at {r_url}; indexing aborted to prevent false INDEXED state.")
                 self.redis_adapter.index_chunks(chunks, self.embeddings)
             elif self.redis_adapter.ping():
                 self.redis_adapter.index_chunks(chunks, self.embeddings)
@@ -136,7 +137,8 @@ class IngestionService:
             raise DocumentNotFoundError(f"Document '{document_id}' not found.")
             
         if self.require_vector_store and not self.redis_adapter.ping():
-            raise IndexingError(f"Vector store unreachable at {self.redis_adapter.redis_url}; cannot reliably delete vectors for '{document_id}'.")
+            r_url = getattr(self.redis_adapter, "redis_url", "configured endpoint")
+            raise IndexingError(f"Vector store unreachable at {r_url}; cannot reliably delete vectors for '{document_id}'.")
 
         # Remove from Redis and SQLite
         self.redis_adapter.delete_document_chunks(document_id)

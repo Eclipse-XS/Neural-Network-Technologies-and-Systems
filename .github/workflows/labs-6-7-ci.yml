@@ -21,6 +21,16 @@ jobs:
   offline-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    services:
+      redis:
+        image: redis/redis-stack:7.4.0-v1
+        ports:
+          - 6380:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v4
 
@@ -43,6 +53,9 @@ jobs:
           python -m compileall -q labs/lab06_agents/src labs/lab07_final_project/src labs/lab07_final_project/app.py labs/lab07_final_project/web_app.py
 
       - name: Run offline test suite
+        env:
+          ALLOW_OFFLINE_EMBEDDINGS: "1"
+          REDIS_URL: "redis://localhost:6380"
         run: |
           python -m pytest labs/lab06_agents/tests labs/lab07_final_project/tests -v -q
 

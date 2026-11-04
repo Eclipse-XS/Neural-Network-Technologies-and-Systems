@@ -11,8 +11,11 @@ class CopilotEmbeddings(Embeddings):
         revision: str = "614241f622f53c4eeff9890bdc4f31cfecc418b3",
         device: str = "cpu",
         local_files_only: bool = True,
-        offline_fallback: bool = False,
+        offline_fallback: Optional[bool] = None,
     ):
+        if offline_fallback is None:
+            import os
+            offline_fallback = os.getenv("ALLOW_OFFLINE_EMBEDDINGS", "0") in {"1", "true", "True"}
         self.model_name = model_name
         self.revision = revision
         self.device = device

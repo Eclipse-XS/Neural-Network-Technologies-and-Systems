@@ -52,8 +52,6 @@ async def readiness(
     
     ready = redis_ok and sqlite_ok
     status_str = "ready" if ready else "degraded"
-    if not ready:
-        response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
     
     return HealthResponse(
         status=status_str,
