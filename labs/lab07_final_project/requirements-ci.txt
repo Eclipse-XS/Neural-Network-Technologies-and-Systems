@@ -4,6 +4,7 @@ cryptography>=43.0.0
 pyjwt>=2.8.0
 langchain-core==1.6.13
 langchain-text-splitters==1.1.2
+langchain-redis==0.2.6
 numpy>=1.26,<3
 redis==8.1.0
 redisvl==0.27.2
