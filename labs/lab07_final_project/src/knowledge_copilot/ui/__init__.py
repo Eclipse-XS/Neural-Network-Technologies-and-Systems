@@ -1,0 +1,1 @@
+"""Knowledge Copilot UI layer."""
