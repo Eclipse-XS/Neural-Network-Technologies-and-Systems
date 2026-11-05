@@ -1,6 +1,7 @@
 """Loopback LM Studio client adapter with preflight verification."""
 from dataclasses import dataclass, field
 from enum import Enum
+import re
 from typing import List, Optional, Tuple
 from urllib.parse import urlparse
 import httpx
@@ -40,7 +41,7 @@ def validate_loopback_url(url: str) -> None:
 def probe_lm_studio_readiness(
     base_url: str = "http://localhost:1234/v1",
     required_model: Optional[str] = None,
-    timeout: float = 3.0,
+    timeout: float = 15.0,
 ) -> LMStudioProbeResult:
     """Perform granular pre-flight probe of local LM Studio instance."""
     try:
@@ -83,10 +84,34 @@ def probe_lm_studio_readiness(
     # 3. Model discovery / matching
     chosen_model: Optional[str] = None
     if required_model:
+        # Exact match
         for m in available_models:
-            if required_model.casefold() == m.casefold() or required_model.casefold() in m.casefold():
+            if required_model.casefold() == m.casefold():
                 chosen_model = m
                 break
+        # Substring match
+        if not chosen_model:
+            for m in available_models:
+                if required_model.casefold() in m.casefold() or m.casefold() in required_model.casefold():
+                    chosen_model = m
+                    break
+        # Alphanumeric normalized match
+        if not chosen_model:
+            norm_req = re.sub(r"[^a-z0-9]", "", required_model.casefold())
+            for m in available_models:
+                norm_m = re.sub(r"[^a-z0-9]", "", m.casefold())
+                if norm_req in norm_m:
+                    chosen_model = m
+                    break
+        # Substantive stem match (excluding generic model vocabulary)
+        if not chosen_model:
+            generic = {"model", "chat", "instruct", "base", "text", "v1", "v2", "embed", "embedding", "ai"}
+            req_stems = [w for w in re.split(r"[-_/]", required_model.casefold()) if len(w) >= 4 and w not in generic]
+            if req_stems:
+                for m in available_models:
+                    if any(s in m.casefold() for s in req_stems):
+                        chosen_model = m
+                        break
         if not chosen_model:
             return LMStudioProbeResult(
                 status=LMStudioStatus.MODEL_NOT_FOUND,
@@ -133,33 +158,90 @@ def probe_lm_studio_readiness(
             detail=f"Inference probe failed: {exc}",
         )
 
-    # 5. Probe tool calling capability
+    # 5. Probe tool calling capability with controlled request and structure validation
     try:
         tool_payload = {
             "model": chosen_model,
-            "messages": [{"role": "user", "content": "test tool availability"}],
+            "messages": [
+                {"role": "user", "content": "Calculate 2+2 using the add tool."}
+            ],
             "tools": [{
                 "type": "function",
                 "function": {
-                    "name": "test_probe",
-                    "description": "Probe tool support",
-                    "parameters": {"type": "object", "properties": {}},
+                    "name": "add",
+                    "description": "Add two numbers",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "a": {"type": "number"},
+                            "b": {"type": "number"},
+                        },
+                        "required": ["a", "b"],
+                    },
                 },
             }],
-            "max_tokens": 1,
+            "tool_choice": "required",
+            "max_tokens": 100,
         }
-        t_res = httpx.post(f"{base_url}/chat/completions", json=tool_payload, timeout=timeout)
+        tool_timeout = min(15.0, max(5.0, timeout * 2))
+        t_res = httpx.post(f"{base_url}/chat/completions", json=tool_payload, timeout=tool_timeout)
         if t_res.status_code != 200:
-            err_t = t_res.text.casefold()
-            if any(w in err_t for w in ["tool", "function", "not supported", "unrecognized"]):
-                return LMStudioProbeResult(
-                    status=LMStudioStatus.TOOL_CALLING_UNSUPPORTED,
-                    model_id=chosen_model,
-                    available_models=available_models,
-                    detail=f"Model '{chosen_model}' does not support OpenAI-compatible tool calling: {t_res.text}",
-                )
-    except Exception:
-        pass
+            return LMStudioProbeResult(
+                status=LMStudioStatus.TOOL_CALLING_UNSUPPORTED,
+                model_id=chosen_model,
+                available_models=available_models,
+                detail=f"Model '{chosen_model}' tool probe returned HTTP {t_res.status_code}: {t_res.text}",
+            )
+
+        # Strict tool_calls structure validation
+        res_data = t_res.json()
+        choices = res_data.get("choices", [])
+        if not choices:
+            return LMStudioProbeResult(
+                status=LMStudioStatus.TOOL_CALLING_UNSUPPORTED,
+                model_id=chosen_model,
+                available_models=available_models,
+                detail=f"Model '{chosen_model}' tool probe returned HTTP 200 but empty choices: {res_data}",
+            )
+        msg = choices[0].get("message", {})
+        tool_calls = msg.get("tool_calls")
+        if not tool_calls or not isinstance(tool_calls, list):
+            return LMStudioProbeResult(
+                status=LMStudioStatus.TOOL_CALLING_UNSUPPORTED,
+                model_id=chosen_model,
+                available_models=available_models,
+                detail=f"Model '{chosen_model}' tool probe returned HTTP 200 but missing or invalid tool_calls structure: {msg}",
+            )
+        first_call = tool_calls[0]
+        if not isinstance(first_call, dict) or first_call.get("type") != "function":
+            return LMStudioProbeResult(
+                status=LMStudioStatus.TOOL_CALLING_UNSUPPORTED,
+                model_id=chosen_model,
+                available_models=available_models,
+                detail=f"Model '{chosen_model}' tool probe returned tool_calls without function type: {first_call}",
+            )
+        fn_call = first_call.get("function", {})
+        if fn_call.get("name") != "add":
+            return LMStudioProbeResult(
+                status=LMStudioStatus.TOOL_CALLING_UNSUPPORTED,
+                model_id=chosen_model,
+                available_models=available_models,
+                detail=f"Model '{chosen_model}' tool probe invoked unexpected function '{fn_call.get('name')}', expected 'add'",
+            )
+    except (httpx.ConnectError, httpx.ConnectTimeout) as exc:
+        return LMStudioProbeResult(
+            status=LMStudioStatus.SERVER_UNREACHABLE,
+            model_id=chosen_model,
+            available_models=available_models,
+            detail=f"Connection error during tool calling probe: {exc}",
+        )
+    except Exception as exc:
+        return LMStudioProbeResult(
+            status=LMStudioStatus.TOOL_CALLING_UNSUPPORTED,
+            model_id=chosen_model,
+            available_models=available_models,
+            detail=f"Tool calling probe failed: {exc}",
+        )
 
     return LMStudioProbeResult(
         status=LMStudioStatus.READY,

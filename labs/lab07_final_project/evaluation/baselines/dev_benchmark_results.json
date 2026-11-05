@@ -4,13 +4,13 @@
       "total_evaluated_queries": 50,
       "supported_queries": 43,
       "refusal_queries": 7,
-      "evidence_recall_1": 0.4883720930232558,
-      "evidence_recall_3": 0.7209302325581395,
-      "evidence_recall_5": 0.7790697674418605,
+      "evidence_recall_1": 0.4418604651162791,
+      "evidence_recall_3": 0.6666666666666666,
+      "evidence_recall_5": 0.7713178294573643,
       "hit_at_5": 0.8604651162790697,
       "mrr": 0.6674418604651162,
       "truncation_violations": 0,
-      "failed_query_count": 13,
+      "failed_query_count": 14,
       "failed_queries": [
         {
           "query_id": "eval_003",
@@ -27,6 +27,23 @@
             "Лабораторна робота №4 / Організація контрольованих експериментів",
             "Лабораторна робота №4 / Відповідність методичці",
             "Лабораторна робота №4 / Таблиця параметрів генерації"
+          ]
+        },
+        {
+          "query_id": "eval_007",
+          "category": "exact_fact",
+          "query": "Яка версія бібліотеки openai-agents використовувалася в Lab 6?",
+          "recall_1": 0.0,
+          "recall_5": 0.6666666666666666,
+          "hit_5": 1.0,
+          "mrr": 0.5,
+          "relevant_doc_ids": [
+            "lab06_agents_report.md"
+          ],
+          "top_retrieved_sections": [
+            "Лабораторна робота №6 / Тема, мета та варіант",
+            "Лабораторна робота №6 / Середовище та модель",
+            "Лабораторна робота №6 / Середовище та модель"
           ]
         },
         {
@@ -248,14 +265,14 @@
           "count": 13,
           "hit_5": 0.7692307692307693,
           "mrr": 0.6538461538461539,
-          "recall_1": 0.5384615384615384,
-          "recall_5": 0.7692307692307693
+          "recall_1": 0.46153846153846156,
+          "recall_5": 0.7435897435897435
         },
         "semantic_paraphrase": {
           "count": 10,
           "hit_5": 0.9,
           "mrr": 0.5499999999999999,
-          "recall_1": 0.3,
+          "recall_1": 0.25,
           "recall_5": 0.9
         },
         "cross_document": {
@@ -269,18 +286,18 @@
           "count": 10,
           "hit_5": 0.9,
           "mrr": 0.9,
-          "recall_1": 0.9,
+          "recall_1": 0.85,
           "recall_5": 0.9
         }
       },
       "latency": {
-        "p50_ms": 28.290250018471852,
-        "p90_ms": 53.89093999983743,
-        "p95_ms": 55.072180010029115,
-        "p99_ms": 57.297177022555836,
-        "mean_ms": 33.469346007332206,
-        "min_ms": 24.57409998169169,
-        "max_ms": 58.79300000378862
+        "p50_ms": 41.984900017268956,
+        "p90_ms": 82.67326997593045,
+        "p95_ms": 88.65832001320085,
+        "p99_ms": 91.73948299780022,
+        "mean_ms": 49.57678199745715,
+        "min_ms": 35.2394999936223,
+        "max_ms": 91.93219995358959
       },
       "benchmark_config": {
         "mode": "dense",
@@ -292,13 +309,13 @@
       "total_evaluated_queries": 50,
       "supported_queries": 43,
       "refusal_queries": 7,
-      "evidence_recall_1": 0.5697674418604651,
-      "evidence_recall_3": 0.6162790697674418,
-      "evidence_recall_5": 0.7558139534883721,
+      "evidence_recall_1": 0.49612403100775193,
+      "evidence_recall_3": 0.5891472868217054,
+      "evidence_recall_5": 0.7403100775193798,
       "hit_at_5": 0.8372093023255814,
       "mrr": 0.6844961240310077,
       "truncation_violations": 0,
-      "failed_query_count": 14,
+      "failed_query_count": 15,
       "failed_queries": [
         {
           "query_id": "eval_003",
@@ -315,6 +332,23 @@
             "Лабораторна робота №4 / Таблиця параметрів генерації",
             "Лабораторна робота №4 / Організація контрольованих експериментів",
             "Лабораторна робота №4 / Відповідність методичці"
+          ]
+        },
+        {
+          "query_id": "eval_007",
+          "category": "exact_fact",
+          "query": "Яка версія бібліотеки openai-agents використовувалася в Lab 6?",
+          "recall_1": 0.3333333333333333,
+          "recall_5": 0.3333333333333333,
+          "hit_5": 1.0,
+          "mrr": 1.0,
+          "relevant_doc_ids": [
+            "lab06_agents_report.md"
+          ],
+          "top_retrieved_sections": [
+            "Лабораторна робота №6 / Середовище та модель",
+            "Лабораторна робота №6 / Пам'ять та ізоляція",
+            "Лабораторна робота №6 / Фінальна технічна перевірка"
           ]
         },
         {
@@ -553,14 +587,14 @@
           "count": 13,
           "hit_5": 0.7692307692307693,
           "mrr": 0.6730769230769231,
-          "recall_1": 0.6153846153846154,
-          "recall_5": 0.7692307692307693
+          "recall_1": 0.48717948717948717,
+          "recall_5": 0.7179487179487178
         },
         "semantic_paraphrase": {
           "count": 10,
           "hit_5": 0.7,
           "mrr": 0.4833333333333334,
-          "recall_1": 0.4,
+          "recall_1": 0.3,
           "recall_5": 0.7
         },
         "cross_document": {
@@ -574,18 +608,18 @@
           "count": 10,
           "hit_5": 1.0,
           "mrr": 1.0,
-          "recall_1": 1.0,
+          "recall_1": 0.95,
           "recall_5": 1.0
         }
       },
       "latency": {
-        "p50_ms": 1.5650999848730862,
-        "p90_ms": 2.6789700204972178,
-        "p95_ms": 2.7510799816809595,
-        "p99_ms": 2.825711006880738,
-        "mean_ms": 1.6321159980725497,
-        "min_ms": 0.8609999786131084,
-        "max_ms": 2.838500018697232
+        "p50_ms": 2.7609500102698803,
+        "p90_ms": 4.717279999749735,
+        "p95_ms": 5.009599996265024,
+        "p99_ms": 5.317596020177007,
+        "mean_ms": 2.9731119994539768,
+        "min_ms": 1.4648999786004424,
+        "max_ms": 5.425200040917844
       },
       "benchmark_config": {
         "mode": "lexical",
@@ -867,13 +901,13 @@
         }
       },
       "latency": {
-        "p50_ms": 33.945600007427856,
-        "p90_ms": 59.83377001248301,
-        "p95_ms": 67.64861502451822,
-        "p99_ms": 73.80327699182088,
-        "mean_ms": 38.67246799869463,
-        "min_ms": 25.070900039281696,
-        "max_ms": 78.03330000024289
+        "p50_ms": 44.94795002392493,
+        "p90_ms": 85.21400999743491,
+        "p95_ms": 87.09231998946052,
+        "p99_ms": 107.5156669825082,
+        "mean_ms": 52.494303996209055,
+        "min_ms": 38.83750003296882,
+        "max_ms": 124.58319996949285
       },
       "benchmark_config": {
         "mode": "hybrid",
@@ -1156,13 +1190,13 @@
       }
     },
     "latency": {
-      "p50_ms": 33.945600007427856,
-      "p90_ms": 59.83377001248301,
-      "p95_ms": 67.64861502451822,
-      "p99_ms": 73.80327699182088,
-      "mean_ms": 38.67246799869463,
-      "min_ms": 25.070900039281696,
-      "max_ms": 78.03330000024289
+      "p50_ms": 44.94795002392493,
+      "p90_ms": 85.21400999743491,
+      "p95_ms": 87.09231998946052,
+      "p99_ms": 107.5156669825082,
+      "mean_ms": 52.494303996209055,
+      "min_ms": 38.83750003296882,
+      "max_ms": 124.58319996949285
     },
     "benchmark_config": {
       "mode": "hybrid",
@@ -1260,7 +1294,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 25.070900039281696
+      "latency_ms": 42.51619998831302
     },
     {
       "id": "eval_003",
@@ -1350,7 +1384,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 27.951399970334023
+      "latency_ms": 42.002899979706854
     },
     {
       "id": "eval_005",
@@ -1440,7 +1474,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 29.39370000967756
+      "latency_ms": 40.97790003288537
     },
     {
       "id": "eval_007",
@@ -1532,7 +1566,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 28.62890000687912
+      "latency_ms": 38.83750003296882
     },
     {
       "id": "eval_009",
@@ -1624,7 +1658,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 29.39939999487251
+      "latency_ms": 42.40530001698062
     },
     {
       "id": "eval_011",
@@ -1715,7 +1749,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 33.772499999031425
+      "latency_ms": 40.201199997682124
     },
     {
       "id": "eval_013",
@@ -1805,7 +1839,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 36.15280002122745
+      "latency_ms": 49.22590003116056
     },
     {
       "id": "eval_015",
@@ -1895,7 +1929,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 50.84869998972863
+      "latency_ms": 40.772999986074865
     },
     {
       "id": "eval_017",
@@ -1985,7 +2019,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 35.403700021561235
+      "latency_ms": 42.0777999679558
     },
     {
       "id": "eval_019",
@@ -2076,7 +2110,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 28.584200015757233
+      "latency_ms": 41.736099985428154
     },
     {
       "id": "eval_021",
@@ -2165,7 +2199,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 27.049999975133687
+      "latency_ms": 39.46679999353364
     },
     {
       "id": "eval_023",
@@ -2255,7 +2289,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 26.665500015951693
+      "latency_ms": 41.06699995463714
     },
     {
       "id": "eval_025",
@@ -2345,7 +2379,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 29.349899967201054
+      "latency_ms": 42.61659999610856
     },
     {
       "id": "eval_027",
@@ -2436,7 +2470,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 28.151299979072064
+      "latency_ms": 42.627999966498464
     },
     {
       "id": "eval_029",
@@ -2529,7 +2563,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 29.250900028273463
+      "latency_ms": 46.869800018612295
     },
     {
       "id": "eval_031",
@@ -2619,7 +2653,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 30.02040000865236
+      "latency_ms": 43.8408000045456
     },
     {
       "id": "eval_033",
@@ -2715,7 +2749,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 54.62880001869053
+      "latency_ms": 78.2368999789469
     },
     {
       "id": "eval_035",
@@ -2805,7 +2839,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 29.262600000947714
+      "latency_ms": 57.37549997866154
     },
     {
       "id": "eval_037",
@@ -2896,7 +2930,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 28.145299991592765
+      "latency_ms": 40.74289998970926
     },
     {
       "id": "eval_039",
@@ -2986,7 +3020,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 28.9106999989599
+      "latency_ms": 39.85490003833547
     },
     {
       "id": "eval_041",
@@ -3077,7 +3111,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 29.004700016230345
+      "latency_ms": 48.289099999237806
     },
     {
       "id": "eval_043",
@@ -3167,7 +3201,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 31.86190000269562
+      "latency_ms": 47.29899996891618
     },
     {
       "id": "eval_045",
@@ -3257,7 +3291,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 25.693300005514175
+      "latency_ms": 40.552099992055446
     },
     {
       "id": "eval_047",
@@ -3350,7 +3384,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 58.007200015708804
+      "latency_ms": 89.75149999605492
     },
     {
       "id": "eval_049",
@@ -3443,7 +3477,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 59.46690001292154
+      "latency_ms": 82.50040002167225
     },
     {
       "id": "eval_051",
@@ -3537,7 +3571,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 67.93180003296584
+      "latency_ms": 86.2040999927558
     },
     {
       "id": "eval_053",
@@ -3632,7 +3666,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 63.13560000853613
+      "latency_ms": 87.02719997381791
     },
     {
       "id": "eval_055",
@@ -3731,7 +3765,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 58.6207999731414
+      "latency_ms": 124.58319996949285
     },
     {
       "id": "eval_057",
@@ -3827,7 +3861,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 39.87089998554438
+      "latency_ms": 43.6479999916628
     },
     {
       "id": "eval_059",
@@ -3920,7 +3954,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 67.30250001419336
+      "latency_ms": 85.10399999795482
     },
     {
       "id": "eval_061",
@@ -4014,7 +4048,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 69.40059998305514
+      "latency_ms": 83.98739999393001
     },
     {
       "id": "eval_063",
@@ -4108,7 +4142,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 78.03330000024289
+      "latency_ms": 87.14560000225902
     },
     {
       "id": "eval_065",
@@ -4203,7 +4237,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 42.14309999952093
+      "latency_ms": 44.47010002331808
     },
     {
       "id": "eval_067",
@@ -4295,7 +4329,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 49.80809998232871
+      "latency_ms": 48.03669999819249
     },
     {
       "id": "eval_069",
@@ -4387,7 +4421,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 39.28279998945072
+      "latency_ms": 47.7991999941878
     },
     {
       "id": "eval_071",
@@ -4479,7 +4513,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 41.14409995963797
+      "latency_ms": 48.5385000356473
     },
     {
       "id": "eval_073",
@@ -4573,7 +4607,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 38.25669997604564
+      "latency_ms": 41.32219997700304
     },
     {
       "id": "eval_075",
@@ -4663,7 +4697,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 36.188999947626144
+      "latency_ms": 44.08550000516698
     },
     {
       "id": "eval_077",
@@ -4755,7 +4789,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 29.0544000454247
+      "latency_ms": 41.981999995186925
     },
     {
       "id": "eval_079",
@@ -4847,7 +4881,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 35.062899987678975
+      "latency_ms": 47.38449997967109
     },
     {
       "id": "eval_081",
@@ -4937,7 +4971,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 35.06829997058958
+      "latency_ms": 44.99379999469966
     },
     {
       "id": "eval_083",
@@ -5029,7 +5063,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 40.395100018940866
+      "latency_ms": 50.56980001972988
     },
     {
       "id": "eval_085",
@@ -5121,7 +5155,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 35.18270002678037
+      "latency_ms": 45.48649996286258
     },
     {
       "id": "eval_087",
@@ -5199,7 +5233,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 34.11870001582429
+      "latency_ms": 46.97600001236424
     },
     {
       "id": "eval_089",
@@ -5277,7 +5311,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 28.728699951898307
+      "latency_ms": 42.88159997668117
     },
     {
       "id": "eval_091",
@@ -5355,7 +5389,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 32.4220999609679
+      "latency_ms": 44.90210005315021
     },
     {
       "id": "eval_093",
@@ -5433,7 +5467,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 38.36870001396164
+      "latency_ms": 47.76539996964857
     },
     {
       "id": "eval_095",
@@ -5511,7 +5545,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 33.265699981711805
+      "latency_ms": 47.064000042155385
     },
     {
       "id": "eval_097",
@@ -5589,7 +5623,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 30.020000005606562
+      "latency_ms": 48.453399969730526
     },
     {
       "id": "eval_099",
@@ -5667,7 +5701,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 30.141199997160584
+      "latency_ms": 42.45929996250197
     }
   ]
 }

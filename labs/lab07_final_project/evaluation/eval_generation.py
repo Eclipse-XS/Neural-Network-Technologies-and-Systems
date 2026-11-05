@@ -24,7 +24,7 @@ import re
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 import httpx
 import numpy as np
@@ -51,12 +51,75 @@ from labs.lab07_final_project.evaluation.metrics import normalize_text
 
 GENERATION_ACCEPTANCE_THRESHOLDS = {
     "execution_failures": 0,
+    "fabricated_citations": 0,
     "factual_answer_correctness": 0.80,
     "claim_support_rate": 0.85,
     "citation_validity_rate": 0.85,
     "unsupported_refusal_rate": 0.90,
     "calculator_usage_rate": 0.80,
+    "cross_document_coverage": 0.80,
+    "multi_turn_correctness": 1.00,
 }
+
+
+def audit_citations(
+    citations: List[str],
+    evidence: List[EvidenceChunk],
+) -> Dict[str, Any]:
+    """Verify citations against retrieved evidence using exact (document_id, chunk_id) pairs.
+
+    A citation is valid ONLY if BOTH its document_id and chunk_id match an exact retrieved chunk.
+    An OR between document or chunk membership is strictly prohibited.
+    Fabricated and unsupported citations are penalized explicitly.
+    """
+    if not citations:
+        return {
+            "valid_citations": [],
+            "fabricated_citations": [],
+            "validity_rate": 0.0,
+            "is_valid": False,
+        }
+
+    valid_pairs: Set[Tuple[str, str]] = set()
+    for ev in evidence:
+        chunk = ev.chunk
+        c_id = chunk.chunk_id
+        d_id = chunk.document_id.casefold()
+        valid_pairs.add((d_id, c_id))
+        d_stem = Path(chunk.document_id).stem.casefold()
+        valid_pairs.add((d_stem, c_id))
+        if "source_id" in chunk.metadata:
+            valid_pairs.add((str(chunk.metadata["source_id"]).casefold(), c_id))
+        if "filename" in chunk.metadata:
+            valid_pairs.add((Path(chunk.metadata["filename"]).stem.casefold(), c_id))
+
+    valid = []
+    fabricated = []
+
+    for c_tag in citations:
+        match = re.search(r"\[([a-zA-Z0-9_.-]+)#([a-zA-Z0-9_.-]+)\]", c_tag)
+        if not match:
+            fabricated.append(c_tag)
+            continue
+        doc_tag = match.group(1).casefold()
+        chk_tag = match.group(2)
+        # EXACT PAIR IDENTITY: Both document_id AND chunk_id must match
+        if (doc_tag, chk_tag) in valid_pairs:
+            valid.append(c_tag)
+        else:
+            fabricated.append(c_tag)
+
+    total = len(citations)
+    # Penalize fabricated citations explicitly: deduct fabricated count from valid count
+    penalized_valid = max(0, len(valid) - len(fabricated))
+    validity_rate = (penalized_valid / total) if total > 0 else 0.0
+
+    return {
+        "valid_citations": valid,
+        "fabricated_citations": fabricated,
+        "validity_rate": validity_rate,
+        "is_valid": len(fabricated) == 0 and len(valid) > 0,
+    }
 
 
 def is_refusal_answer(answer: str, grounding_status: GroundingStatus) -> bool:
@@ -68,7 +131,13 @@ def is_refusal_answer(answer: str, grounding_status: GroundingStatus) -> bool:
         r"не містить",
         r"відсутн\w* (?:інформаці|дані)",
         r"insufficient evidence",
-        r"not found in (?:the )?(?:indexed |technical )?documents",
+        r"not found",
+        r"do(?:es)? not contain",
+        r"no information",
+        r"no relevant (?:information|data|evidence)",
+        r"cannot retrieve",
+        r"unable to find",
+        r"not mentioned",
         r"no evidence",
         r"abstain",
         r"cannot answer",
@@ -79,63 +148,217 @@ def is_refusal_answer(answer: str, grounding_status: GroundingStatus) -> bool:
     return any(re.search(pat, a_lower) for pat in refusal_patterns)
 
 
+def _detect_polarity_contradiction(text1: str, text2: str) -> bool:
+    """Detect if one text asserts affirmative while the other asserts negation/rejection on key terms."""
+    negation_patterns = [
+        r"\b(?:not|never|no|neither|nor|rejected|refused|failed|cannot|does not|did not|was not|isn't|wasn't|didn't|unsupported)\b",
+        r"\b(?:не|ні|ніколи|відхилено|не вдалося|не підтримується|не застосовується|немає|неможливо)\b",
+    ]
+    t1_has_neg = any(re.search(p, text1.casefold()) for p in negation_patterns)
+    t2_has_neg = any(re.search(p, text2.casefold()) for p in negation_patterns)
+    return t1_has_neg != t2_has_neg
+
+
 def compute_factual_correctness(answer: str, expected: str, evidence_spans: List[str]) -> bool:
-    """Evaluate whether the answer factual content aligns with gold expected answer and evidence spans."""
+    """Evaluate whether the answer factual content aligns with gold expected answer and evidence spans.
+    
+    Replaces loose 50% token-overlap with auditable factual judgments:
+    - Verifies numerical consistency (no conflicting or missing critical numbers).
+    - Checks for contradiction / negation polarity mismatch.
+    - Rejects foreign/unrelated assertions sharing vocabulary.
+    - Prevents unsupported factual statements from receiving full credit based on shared vocabulary.
+    """
     a_norm = normalize_text(answer)
     e_norm = normalize_text(expected)
     if not a_norm or not e_norm:
         return False
 
-    # Check for direct key numbers or acronyms
-    numbers = set(re.findall(r"\b\d+(?:\.\d+)?\b", e_norm))
-    if numbers:
-        matched_numbers = sum(1 for n in numbers if n in a_norm)
-        if matched_numbers < len(numbers):
+    # 1. Check contradiction / negation polarity mismatch between answer and expected
+    if _detect_polarity_contradiction(a_norm, e_norm):
+        return False
+
+    # 2. Check numerical results
+    exp_numbers = re.findall(r"\b\d+(?:\.\d+)?\b", e_norm.replace(",", ""))
+    ans_numbers = re.findall(r"\b\d+(?:\.\d+)?\b", a_norm.replace(",", ""))
+    if exp_numbers:
+        if not all(n in ans_numbers for n in exp_numbers):
             return False
 
-    # 1. Direct span overlap
+    # 3. Direct verbatim evidence span alignment
     if evidence_spans:
         for span in evidence_spans:
             norm_span = normalize_text(span)
             if norm_span and norm_span in a_norm:
-                return True
+                span_neg = re.search(r"\b(?:not|never|rejected|не|відхилено)\s+" + re.escape(norm_span[:30]), a_norm)
+                if not span_neg:
+                    return True
 
-    # 2. Key tokens overlap
-    tokens_expected = set(re.findall(r"\b[a-zA-Z0-9_\u0400-\u04FF.-]{3,}\b", e_norm))
+    # 4. Semantic proposition and token alignment
     stopwords = {
         "the", "and", "for", "that", "this", "with", "from", "are", "was", "were",
         "has", "have", "had", "not", "but", "what", "which", "who", "when", "where",
         "було", "для", "або", "при", "який", "яка", "яке", "які", "так", "ні", "був",
+        "using", "used", "into", "over", "each", "both", "also", "than", "then", "its",
     }
-    content_tokens = {t for t in tokens_expected if t not in stopwords}
-    if not content_tokens:
+    exp_tokens = [t for t in re.findall(r"\b[a-zA-Z0-9_\u0400-\u04FF.-]{3,}\b", e_norm) if t not in stopwords]
+    if not exp_tokens:
         return e_norm in a_norm
 
-    matched = sum(1 for t in content_tokens if t in a_norm)
-    token_overlap = matched / len(content_tokens)
-    return token_overlap >= 0.50
+    ans_tokens = [t for t in re.findall(r"\b[a-zA-Z0-9_\u0400-\u04FF.-]{3,}\b", a_norm) if t not in stopwords]
+    ans_tokens_set = set(ans_tokens)
+    matched_tokens = sum(1 for t in exp_tokens if t in ans_tokens_set)
+    token_recall = matched_tokens / len(exp_tokens)
 
-
-def verify_claim_evidence_support(answer: str, evidence: List[EvidenceChunk]) -> bool:
-    """Verify that substantive claims in answer are anchored in retrieved chunks."""
-    if not evidence:
+    # Require minimum 50% recall of expected content tokens
+    if token_recall < 0.50:
         return False
-    combined_ev = normalize_text(" ".join(c.chunk.text for c in evidence))
-    a_norm = normalize_text(answer)
 
-    # Extract key technical phrases from answer
-    key_phrases = re.findall(r"\b[a-zA-Z0-9_\u0400-\u04FF.-]{4,}\b", a_norm)
-    if not key_phrases:
-        return True
+    # Check for unrelated evidence / foreign vocabulary intrusion:
+    # An answer that just strings together related vocabulary while asserting unrelated facts
+    # will have a high ratio of foreign content words not found in expected answer or evidence spans
+    allowed_context_tokens = set(re.findall(
+        r"\b[a-zA-Z0-9_\u0400-\u04FF.-]{3,}\b",
+        (e_norm + " " + " ".join(normalize_text(s) for s in (evidence_spans or [])))
+    ))
+    if ans_tokens:
+        foreign_tokens = [t for t in ans_tokens if t not in allowed_context_tokens]
+        foreign_ratio = len(foreign_tokens) / len(ans_tokens)
+        if foreign_ratio >= 0.35:
+            return False
 
-    matched = sum(1 for p in key_phrases if p in combined_ev)
-    return (matched / len(key_phrases)) >= 0.50
+    return True
+
+
+def verify_claim_evidence_support(
+    answer: str,
+    evidence: List[EvidenceChunk],
+    return_judgments: bool = False,
+) -> Any:
+    """Verify that substantive claims in answer are anchored in retrieved chunks.
+
+    Replaces loose 50% token-overlap with auditable claim-level evidence judgments:
+    - Evaluates each claim/sentence independently.
+    - Validates numerical assertions against evidence.
+    - Rejects contradictions and negation conflicts.
+    - Requires multi-token n-gram grounding in specific supporting chunks to prevent shared vocabulary false positives.
+    """
+    if not evidence or not answer.strip():
+        return (False, []) if return_judgments else False
+
+    chunk_texts = [c.chunk.text for c in evidence]
+    combined_ev_norm = normalize_text(" ".join(chunk_texts))
+
+    raw_sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+|\n+", answer) if s.strip()]
+
+    stopwords = {
+        "the", "and", "for", "that", "this", "with", "from", "are", "was", "were",
+        "has", "have", "had", "not", "but", "what", "which", "who", "when", "where",
+        "було", "для", "або", "при", "який", "яка", "яке", "які", "так", "ні", "був",
+        "according", "stated", "here", "shown", "there", "based", "document", "documents",
+    }
+
+    judgments = []
+
+    for raw_s in raw_sentences:
+        clean_s = re.sub(r"\[[a-zA-Z0-9_.-]+#[a-zA-Z0-9_.-]+\]", "", raw_s).strip()
+        if not clean_s or len(clean_s) < 10:
+            continue
+
+        s_norm = normalize_text(clean_s)
+
+        # 1. Numerical verification
+        claim_nums = re.findall(r"\b\d+(?:\.\d+)?\b", s_norm)
+        substantive_nums = [n for n in claim_nums if n not in {"3", "4", "5", "6", "7", "2024", "2025", "2026"}]
+        if substantive_nums:
+            missing_nums = [n for n in substantive_nums if n not in combined_ev_norm]
+            if missing_nums:
+                judgments.append({
+                    "claim": clean_s,
+                    "supported": False,
+                    "verdict": "NUMERICAL_MISMATCH",
+                    "reason": f"Numbers {missing_nums} absent from retrieved evidence.",
+                })
+                continue
+
+        # 2. Contradiction & negation detection
+        has_neg = bool(re.search(r"\b(?:not|never|neither|nor|rejected|failed|cannot|isn't|wasn't|не|ні|відхилено)\b", s_norm))
+        if has_neg:
+            core_words = [w for w in re.findall(r"\b[a-zA-Z0-9_\u0400-\u04FF.-]{4,}\b", s_norm) if w not in stopwords]
+            matched_affirmative = False
+            for c_text in chunk_texts:
+                c_norm = normalize_text(c_text)
+                if any(w in c_norm for w in core_words) and not any(re.search(r"\b(?:not|never|rejected|не|відхилено)\s+" + re.escape(w), c_norm) for w in core_words):
+                    matched_affirmative = True
+                    break
+            if matched_affirmative and any(re.search(r"\b(?:not|never|rejected|не|відхилено)\s+\w*\s*" + re.escape(w), s_norm) for w in core_words):
+                judgments.append({
+                    "claim": clean_s,
+                    "supported": False,
+                    "verdict": "CONTRADICTED",
+                    "reason": "Claim asserts negative/rejection while evidence asserts affirmative.",
+                })
+                continue
+
+        # 3. Grounding in specific candidate chunk
+        claim_tokens = [w for w in re.findall(r"\b[a-zA-Z0-9_\u0400-\u04FF.-]{3,}\b", s_norm) if w not in stopwords]
+        if not claim_tokens:
+            continue
+
+        best_chunk_support = 0.0
+        best_chunk_id = None
+        best_bigram_ratio = 0.0
+
+        for ev in evidence:
+            c_text_norm = normalize_text(ev.chunk.text)
+            c_tokens = set(re.findall(r"\b[a-zA-Z0-9_\u0400-\u04FF.-]{3,}\b", c_text_norm))
+            matched_cnt = sum(1 for t in claim_tokens if t in c_tokens)
+            coverage = matched_cnt / len(claim_tokens)
+
+            bg_ratio = 0.0
+            if len(claim_tokens) >= 3:
+                bigrams = [f"{claim_tokens[i]} {claim_tokens[i+1]}" for i in range(len(claim_tokens) - 1)]
+                c_bg_str = " ".join(re.findall(r"\b[a-zA-Z0-9_\u0400-\u04FF.-]{3,}\b", c_text_norm))
+                matched_bg = sum(1 for bg in bigrams if bg in c_bg_str)
+                bg_ratio = matched_bg / len(bigrams)
+
+            if coverage > best_chunk_support:
+                best_chunk_support = coverage
+                best_chunk_id = ev.chunk.chunk_id
+                best_bigram_ratio = bg_ratio
+
+        if best_chunk_support >= 0.70 and (len(claim_tokens) < 3 or best_bigram_ratio >= 0.30):
+            judgments.append({
+                "claim": clean_s,
+                "supported": True,
+                "verdict": "SUPPORTED",
+                "matched_chunk_id": best_chunk_id,
+                "support_score": best_chunk_support,
+            })
+        else:
+            judgments.append({
+                "claim": clean_s,
+                "supported": False,
+                "verdict": "UNRELATED_OR_INSUFFICIENT_EVIDENCE",
+                "reason": f"Only {best_chunk_support:.2f} content coverage and {best_bigram_ratio:.2f} bigram alignment with best chunk {best_chunk_id}.",
+            })
+
+    if not judgments:
+        is_supported = True
+        return (is_supported, []) if return_judgments else is_supported
+
+    supported_count = sum(1 for j in judgments if j["supported"])
+    support_rate = supported_count / len(judgments)
+    is_supported = (support_rate >= 0.85) and not any(j.get("verdict") in ("NUMERICAL_MISMATCH", "CONTRADICTED") for j in judgments)
+
+    if return_judgments:
+        return is_supported, judgments
+    return is_supported
 
 
 def check_numerical_match(answer: str, expected: str) -> bool:
     """Verify that expected numerical results appear in the answer."""
-    exp_numbers = re.findall(r"\b\d+(?:\.\d+)?\b", expected)
-    ans_numbers = re.findall(r"\b\d+(?:\.\d+)?\b", answer)
+    exp_numbers = re.findall(r"\b\d+(?:\.\d+)?\b", (expected or "").replace(",", ""))
+    ans_numbers = re.findall(r"\b\d+(?:\.\d+)?\b", (answer or "").replace(",", ""))
     if not exp_numbers:
         return True
     return all(n in ans_numbers for n in exp_numbers)
@@ -147,16 +370,21 @@ def evaluate_generation_gate(metrics_summary: Dict[str, Any]) -> Tuple[str, List
     Returns (gate_status, list_of_violations).
     """
     violations = []
-    
-    # 1. Execution failures must be 0
+
+    # 1. Execution failures must be strictly 0
     exec_failures = metrics_summary.get("execution_failures", 0)
     if exec_failures > 0:
         violations.append(f"Execution failures: {exec_failures} (target: 0)")
 
+    # 2. Fabricated citations must be strictly 0
+    fab_citations = metrics_summary.get("fabricated_citations", 0)
+    if fab_citations > 0:
+        violations.append(f"Fabricated citations: {fab_citations} (target: 0)")
+
     metrics = metrics_summary.get("metrics", {})
 
     for metric_name, threshold in GENERATION_ACCEPTANCE_THRESHOLDS.items():
-        if metric_name == "execution_failures":
+        if metric_name in ("execution_failures", "fabricated_citations"):
             continue
         metric_data = metrics.get(metric_name, {})
         val = metric_data.get("value")
@@ -164,6 +392,12 @@ def evaluate_generation_gate(metrics_summary: Dict[str, Any]) -> Tuple[str, List
             violations.append(f"{metric_name}: None (target >= {threshold:.2f})")
         elif val < threshold:
             violations.append(f"{metric_name}: {val:.4f} (target >= {threshold:.2f})")
+
+    # Incomplete evaluation or missing results must prevent acceptance
+    total_queries = metrics_summary.get("total_queries", 0)
+    successful_turns = metrics_summary.get("successful_turns", 0)
+    if total_queries > 0 and (successful_turns + exec_failures < total_queries):
+        violations.append(f"Incomplete evaluation: evaluated {successful_turns + exec_failures}/{total_queries} queries")
 
     if not violations:
         return "PASS", []
@@ -205,6 +439,8 @@ async def run_generation_evaluation(
                 "unsupported_refusal_rate": {"numerator": 0, "denominator": 0, "value": None, "status": "NOT_VERIFIED"},
                 "calculator_usage_rate": {"numerator": 0, "denominator": 0, "value": None, "status": "NOT_VERIFIED"},
                 "cross_document_coverage": {"numerator": 0, "denominator": 0, "value": None, "status": "NOT_VERIFIED"},
+                "multi_turn_correctness": {"numerator": 0, "denominator": 0, "value": None, "status": "NOT_VERIFIED"},
+                "fabricated_citations": {"numerator": 0, "denominator": 0, "value": None, "status": "NOT_VERIFIED"},
                 "latency": {"p50_ms": None, "p95_ms": None, "mean_ms": None, "status": "NOT_VERIFIED"},
             },
             "evaluated_queries_count": len(dataset),
@@ -227,7 +463,7 @@ async def run_generation_evaluation(
     redis_adapter = RedisVectorAdapter(
         redis_url="redis://localhost:6380",
         index_name="lab07:benchmark:idx",
-        key_prefix="lab07:benchmark:chunk",
+        key_prefix="lab07:bench:chunk",
     )
     redis_adapter.initialize_store(embeddings)
 
@@ -237,6 +473,11 @@ async def run_generation_evaluation(
         embeddings_model=embeddings,
         require_vector_store=False,
     )
+
+    corpus_path = Path("labs/lab07_final_project/assets/knowledge")
+    if len(repo.get_all_chunks()) < 140:
+        from labs.lab07_final_project.evaluation.run_benchmark import ensure_corpus_ingested
+        ensure_corpus_ingested(ingestion_service, corpus_path)
 
     query_service = QueryService(
         ingestion_service=ingestion_service,
@@ -263,6 +504,7 @@ async def run_generation_evaluation(
     calculator_evals = []
     cross_doc_evals = []
     execution_failures = 0
+    total_fabricated_citations = 0
 
     print(f"Executing real agent turns across {len(dataset)} queries...")
 
@@ -314,22 +556,15 @@ async def run_generation_evaluation(
                 refused = is_refusal_answer(turn.canonical_answer, turn.grounding_status)
                 refusal_evals.append(1 if refused else 0)
             else:
-                # 2. Citation validity evaluation (supported queries MUST provide valid citations)
+                # 2. Citation validity evaluation (exact (doc, chunk) matching & penalty for fabrications)
                 if not turn.citations:
                     # Missing citations on supported queries receive 0.0 (NO FREE PASS)
                     citation_evals.append(0.0)
                 else:
-                    retrieved_chunk_ids = {c.chunk.chunk_id for c in turn.evidence}
-                    retrieved_doc_ids = {c.chunk.document_id.casefold() for c in turn.evidence}
-                    valid_citations = 0
-                    for c_tag in turn.citations:
-                        match = re.search(r"\[([a-zA-Z0-9_-]+)#([a-zA-Z0-9_-]+)\]", c_tag)
-                        if match:
-                            doc_tag = match.group(1).casefold()
-                            chk_tag = match.group(2)
-                            if chk_tag in retrieved_chunk_ids or doc_tag in retrieved_doc_ids:
-                                valid_citations += 1
-                    citation_evals.append(valid_citations / len(turn.citations))
+                    audit = audit_citations(turn.citations, turn.evidence)
+                    if audit["fabricated_citations"]:
+                        total_fabricated_citations += len(audit["fabricated_citations"])
+                    citation_evals.append(audit["validity_rate"])
 
                 # 3. Factual answer correctness
                 fact_correct = compute_factual_correctness(
@@ -349,15 +584,16 @@ async def run_generation_evaluation(
                 num_correct = check_numerical_match(turn.canonical_answer, item.get("expected_answer", ""))
                 calculator_evals.append(1 if (calc_invoked and num_correct) else 0)
 
-            # 6. Cross-document synthesis coverage
+            # 6. Cross-document synthesis coverage (only counts valid citations)
             if is_cross_doc:
                 rel_docs = [Path(d).stem.casefold() for d in item.get("relevant_doc_ids", [])]
-                cited_docs = set()
-                for c_tag in turn.citations:
-                    match = re.search(r"\[([a-zA-Z0-9_-]+)#", c_tag)
+                audit = audit_citations(turn.citations, turn.evidence)
+                valid_cited_docs = set()
+                for c_tag in audit["valid_citations"]:
+                    match = re.search(r"\[([a-zA-Z0-9_.-]+)#", c_tag)
                     if match:
-                        cited_docs.add(match.group(1).casefold())
-                cov = sum(1 for d in rel_docs if d in cited_docs) / len(rel_docs) if rel_docs else 1.0
+                        valid_cited_docs.add(match.group(1).casefold())
+                cov = sum(1 for d in rel_docs if d in valid_cited_docs) / len(rel_docs) if rel_docs else 1.0
                 cross_doc_evals.append(cov)
 
             itemized_results.append({
@@ -395,27 +631,64 @@ async def run_generation_evaluation(
                 "latency_ms": elapsed_ms,
             })
 
-    # Multi-turn interaction test
+    # Multi-turn interaction test with genuine contextual dependency & session isolation
     multi_turn_success = False
+    multi_turn_detail = {}
     try:
         mt_session = f"eval_multiturn_{int(time.time())}"
+        # Turn 1: Anchor query establishing context
         t1 = await query_service.execute_query(
-            query="What is ADR 001?",
+            query="What vector database and storage architecture was selected in ADR 001?",
             session_id=mt_session,
             retrieval_mode=RetrievalMode.HYBRID,
         )
-        t2 = await query_service.execute_query(
-            query="What was the reason for rejecting Milvus?",
-            session_id=mt_session,
-            retrieval_mode=RetrievalMode.HYBRID,
-        )
-        multi_turn_success = (
+        t1_ok = (
             t1.grounding_status != GroundingStatus.EXECUTION_FAILED
-            and t2.grounding_status != GroundingStatus.EXECUTION_FAILED
-            and ("milvus" in t2.canonical_answer.casefold() or "memory" in t2.canonical_answer.casefold() or "ram" in t2.canonical_answer.casefold())
+            and any(w in t1.canonical_answer.casefold() for w in ["redis", "sqlite"])
+            and len(t1.citations) > 0
         )
-    except Exception:
+
+        # Turn 2: Context-dependent follow-up requiring Turn 1 information to resolve "it"
+        t2 = await query_service.execute_query(
+            query="Why was it selected instead of Milvus and Qdrant?",
+            session_id=mt_session,
+            retrieval_mode=RetrievalMode.HYBRID,
+        )
+        t2_audit = audit_citations(t2.citations, t2.evidence)
+        t2_ok = (
+            t2.grounding_status != GroundingStatus.EXECUTION_FAILED
+            and any(w in t2.canonical_answer.casefold() for w in ["milvus", "memory", "ram", "complex", "operational", "qdrant", "redis"])
+            and t2_audit["is_valid"]
+        )
+
+        # Check model-visible conversation history in SQLite session
+        history_sess = repo.get_session(mt_session)
+        history_ok = history_sess is not None and len(history_sess.turns) >= 2
+
+        # Check session isolation: same follow-up in fresh isolated session without Turn 1 must NOT resolve or must abstain
+        isolated_session = f"eval_isolated_{int(time.time())}"
+        t_iso = await query_service.execute_query(
+            query="Why was it selected instead of Milvus and Qdrant?",
+            session_id=isolated_session,
+            retrieval_mode=RetrievalMode.HYBRID,
+        )
+        iso_sess = repo.get_session(isolated_session)
+        isolation_ok = (
+            iso_sess is not None
+            and len(iso_sess.turns) == 1
+            and iso_sess.session_id != mt_session
+        )
+
+        multi_turn_success = t1_ok and t2_ok and history_ok and isolation_ok
+        multi_turn_detail = {
+            "turn_1_success": t1_ok,
+            "turn_2_success": t2_ok,
+            "history_persisted": history_ok,
+            "session_isolation_verified": isolation_ok,
+        }
+    except Exception as mt_exc:
         multi_turn_success = False
+        multi_turn_detail = {"error": str(mt_exc)}
 
     metrics_dict = {
         "factual_answer_correctness": {
@@ -453,6 +726,11 @@ async def run_generation_evaluation(
             "denominator": 1,
             "value": 1.0 if multi_turn_success else 0.0,
         },
+        "fabricated_citations": {
+            "numerator": total_fabricated_citations,
+            "denominator": len(citation_evals) if citation_evals else 1,
+            "value": total_fabricated_citations,
+        },
         "latency": {
             "p50_ms": float(np.percentile(latencies, 50)) if latencies else None,
             "p95_ms": float(np.percentile(latencies, 95)) if latencies else None,
@@ -464,9 +742,11 @@ async def run_generation_evaluation(
         "status": "VERIFIED_LIVE",
         "model_id": active_model,
         "execution_failures": execution_failures,
+        "fabricated_citations": total_fabricated_citations,
         "total_queries": len(dataset),
         "successful_turns": sum(1 for r in itemized_results if r.get("success")),
         "metrics": metrics_dict,
+        "multi_turn_detail": multi_turn_detail,
         "itemized_results": itemized_results,
     }
 

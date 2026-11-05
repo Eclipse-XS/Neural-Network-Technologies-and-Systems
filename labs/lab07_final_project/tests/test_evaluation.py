@@ -2,6 +2,7 @@
 import json
 import math
 from pathlib import Path
+import re
 import pytest
 
 from labs.lab07_final_project.evaluation.metrics import (
@@ -252,9 +253,10 @@ from labs.lab07_final_project.evaluation.eval_generation import (
     compute_factual_correctness,
     is_refusal_answer,
     verify_claim_evidence_support,
+    audit_citations,
     GENERATION_ACCEPTANCE_THRESHOLDS,
 )
-from labs.lab07_final_project.src.knowledge_copilot.domain.enums import GroundingStatus
+from labs.lab07_final_project.src.knowledge_copilot.domain.enums import GroundingStatus, ScoreType, RetrievalMode
 from labs.lab07_final_project.src.knowledge_copilot.domain.models import Chunk, EvidenceChunk, Score
 from labs.lab07_final_project.src.knowledge_copilot.infrastructure.llm_client import (
     probe_lm_studio_readiness,
@@ -264,20 +266,28 @@ from labs.lab07_final_project.src.knowledge_copilot.infrastructure.llm_client im
 
 def _build_mock_summary(
     exec_failures=0,
+    fab_citations=0,
     fact_correct=0.85,
     claim_supp=0.90,
     citation_val=0.90,
     refusal_rate=0.95,
     calc_rate=0.85,
+    cross_doc=0.85,
+    multi_turn=1.0,
 ):
     return {
         "execution_failures": exec_failures,
+        "fabricated_citations": fab_citations,
+        "total_queries": 50,
+        "successful_turns": 50 - exec_failures,
         "metrics": {
             "factual_answer_correctness": {"value": fact_correct},
             "claim_support_rate": {"value": claim_supp},
             "citation_validity_rate": {"value": citation_val},
             "unsupported_refusal_rate": {"value": refusal_rate},
             "calculator_usage_rate": {"value": calc_rate},
+            "cross_document_coverage": {"value": cross_doc},
+            "multi_turn_correctness": {"value": multi_turn},
         },
     }
 
@@ -296,6 +306,13 @@ def test_generation_gate_fails_on_execution_failure():
     assert any("Execution failures: 1" in v for v in violations)
 
 
+def test_generation_gate_fails_on_fabricated_citations():
+    summary = _build_mock_summary(fab_citations=1)
+    status, violations = evaluate_generation_gate(summary)
+    assert status == "FAIL"
+    assert any("Fabricated citations: 1" in v for v in violations)
+
+
 @pytest.mark.parametrize(
     "metric_arg, metric_name, bad_value",
     [
@@ -304,6 +321,8 @@ def test_generation_gate_fails_on_execution_failure():
         ("citation_val", "citation_validity_rate", 0.84),
         ("refusal_rate", "unsupported_refusal_rate", 0.89),
         ("calc_rate", "calculator_usage_rate", 0.79),
+        ("cross_doc", "cross_document_coverage", 0.79),
+        ("multi_turn", "multi_turn_correctness", 0.0),
     ],
 )
 def test_generation_gate_fails_on_subthreshold_metric(metric_arg, metric_name, bad_value):
@@ -341,6 +360,172 @@ def test_factual_correctness_and_refusal_evaluations():
     )
 
 
+# =========================================================================
+# REGRESSION TESTS: DEMONSTRATING FALSE POSITIVES UNDER PREVIOUS EVALUATOR
+# =========================================================================
+
+def _legacy_token_overlap_support(answer: str, expected: str) -> bool:
+    """Replicates the legacy evaluator's 50% token-overlap logic."""
+    a_norm = normalize_text(answer)
+    e_norm = normalize_text(expected)
+    tokens_expected = set(re.findall(r"\b[a-zA-Z0-9_\u0400-\u04FF.-]{3,}\b", e_norm))
+    stopwords = {"the", "and", "for", "that", "this", "with", "from", "are", "was", "were"}
+    content = {t for t in tokens_expected if t not in stopwords}
+    if not content:
+        return True
+    matched = sum(1 for t in content if t in a_norm)
+    return (matched / len(content)) >= 0.50
+
+
+def _legacy_claim_evidence_support(answer: str, evidence_text: str) -> bool:
+    """Replicates the legacy evaluator's 50% token-overlap claim support logic."""
+    combined_ev = normalize_text(evidence_text)
+    a_norm = normalize_text(answer)
+    key_phrases = re.findall(r"\b[a-zA-Z0-9_\u0400-\u04FF.-]{4,}\b", a_norm)
+    if not key_phrases:
+        return True
+    matched = sum(1 for p in key_phrases if p in combined_ev)
+    return (matched / len(key_phrases)) >= 0.50
+
+
+def _legacy_citation_check(citation_tag: str, retrieved_chunk_ids: set, retrieved_doc_ids: set) -> bool:
+    """Replicates the legacy evaluator's loose OR citation check."""
+    match = re.search(r"\[([a-zA-Z0-9_-]+)#([a-zA-Z0-9_-]+)\]", citation_tag)
+    if match:
+        doc_tag = match.group(1).casefold()
+        chk_tag = match.group(2)
+        # LEGACY FLAW: OR allowed false document-only or chunk-only matches
+        return chk_tag in retrieved_chunk_ids or doc_tag in retrieved_doc_ids
+    return False
+
+
+def test_regression_false_positive_on_negation_and_contradiction():
+    """Contradictory / negated statement previously passed 50% token overlap but now FAILS."""
+    evidence_text = "Redis Stack was chosen as the vector database and SQLite with WAL was selected."
+    contradictory_answer = "Redis Stack was not chosen, and SQLite was rejected."
+
+    # Legacy evaluator gave false positive credit based on 50% token overlap
+    assert _legacy_claim_evidence_support(contradictory_answer, evidence_text) is True
+
+    # Correct generation scorer strictly rejects contradiction / negation polarity mismatch
+    chunk = Chunk(
+        chunk_id="chk_1",
+        document_id="adr_001",
+        ordinal=0,
+        text=evidence_text,
+        section="Decision",
+        token_count=10,
+        sha256="abc",
+    )
+    ev = EvidenceChunk(
+        chunk=chunk,
+        score=Score(
+            score_type=ScoreType.COSINE_DISTANCE,
+            score_value=0.9,
+            retrieval_method=RetrievalMode.DENSE,
+            ranking_position=1,
+        )
+    )
+    assert verify_claim_evidence_support(contradictory_answer, [ev]) is False
+
+
+def test_regression_false_positive_on_incorrect_numerical_results():
+    """Incorrect numerical results previously passed due to shared text words but now FAILS."""
+    expected = "The model latency was 14.2 milliseconds."
+    incorrect_num_answer = "The model latency was 99.9 milliseconds."
+
+    # Legacy evaluator gave false positive credit (shared: model, latency, milliseconds)
+    assert _legacy_token_overlap_support(incorrect_num_answer, expected) is True
+
+    # Correct generation scorer rejects missing or conflicting numbers
+    assert compute_factual_correctness(incorrect_num_answer, expected, ["14.2 milliseconds"]) is False
+
+
+def test_regression_false_positive_on_unrelated_shared_vocabulary():
+    """Unrelated statement sharing vocabulary previously passed but now FAILS."""
+    expected = "Redis Stack was chosen as the vector database and SQLite with WAL for application state."
+    unrelated_soup = "Vector database architecture uses Redis Stack and SQLite WAL to store logs and telemetry metrics."
+
+    # Legacy evaluator gave false positive credit (>50% token overlap)
+    assert _legacy_token_overlap_support(unrelated_soup, expected) is True
+
+    # Correct generation scorer rejects proposition mismatch / bigram inconsistency
+    assert compute_factual_correctness(unrelated_soup, expected, []) is False
+
+
+def test_regression_false_positive_on_fabricated_chunk_id_with_real_doc_id():
+    """Citation with real doc but fabricated chunk_id previously passed due to OR."""
+    retrieved_chunk = Chunk(
+        chunk_id="chunk-312de896eb918af4",
+        document_id="adr_001_vector_and_storage_architecture",
+        ordinal=0,
+        text="Redis Stack was selected for vector search.",
+        section="Decision",
+        token_count=10,
+        sha256="abc",
+    )
+    ev = EvidenceChunk(
+        chunk=retrieved_chunk,
+        score=Score(
+            score_type=ScoreType.COSINE_DISTANCE,
+            score_value=0.9,
+            retrieval_method=RetrievalMode.DENSE,
+            ranking_position=1,
+        )
+    )
+
+    retrieved_chunks = {retrieved_chunk.chunk_id}
+    retrieved_docs = {retrieved_chunk.document_id.casefold()}
+
+    # Model fabricated a chunk ID for the real document
+    fake_citation = "[adr_001_vector_and_storage_architecture#chunk_fabricated_999]"
+
+    # Legacy evaluator erroneously marked this valid because doc_tag in retrieved_doc_ids
+    assert _legacy_citation_check(fake_citation, retrieved_chunks, retrieved_docs) is True
+
+    # Correct generation scorer requires exact (document_id, chunk_id) pair
+    audit = audit_citations([fake_citation], [ev])
+    assert audit["is_valid"] is False
+    assert fake_citation in audit["fabricated_citations"]
+    assert audit["validity_rate"] == 0.0
+
+
+def test_regression_false_positive_on_fabricated_doc_id_with_real_chunk_id():
+    """Citation with fake doc but real chunk_id previously passed due to OR."""
+    retrieved_chunk = Chunk(
+        chunk_id="chunk-312de896eb918af4",
+        document_id="adr_001_vector_and_storage_architecture",
+        ordinal=0,
+        text="Redis Stack was selected for vector search.",
+        section="Decision",
+        token_count=10,
+        sha256="abc",
+    )
+    ev = EvidenceChunk(
+        chunk=retrieved_chunk,
+        score=Score(
+            score_type=ScoreType.COSINE_DISTANCE,
+            score_value=0.9,
+            retrieval_method=RetrievalMode.DENSE,
+            ranking_position=1,
+        )
+    )
+
+    retrieved_chunks = {retrieved_chunk.chunk_id}
+    retrieved_docs = {retrieved_chunk.document_id.casefold()}
+
+    fake_citation = "[completely_fabricated_document#chunk-312de896eb918af4]"
+
+    # Legacy evaluator erroneously marked this valid because chk_tag in retrieved_chunk_ids
+    assert _legacy_citation_check(fake_citation, retrieved_chunks, retrieved_docs) is True
+
+    # Correct generation scorer rejects exact pair mismatch
+    audit = audit_citations([fake_citation], [ev])
+    assert audit["is_valid"] is False
+    assert fake_citation in audit["fabricated_citations"]
+    assert audit["validity_rate"] == 0.0
+
+
 def test_granular_lm_studio_probe_statuses(monkeypatch):
     import httpx
 
@@ -368,7 +553,34 @@ def test_granular_lm_studio_probe_statuses(monkeypatch):
         def json(self):
             return {"data": [{"id": "other-model-7b"}]}
     monkeypatch.setattr(httpx, "get", lambda *args, **kwargs: MockRespModels())
-    res_not_found = probe_lm_studio_readiness("http://localhost:1234/v1", required_model="ministral-3b")
+    res_not_found = probe_lm_studio_readiness("http://localhost:1234/v1", required_model="custom-rare-model")
     assert res_not_found.status == LMStudioStatus.MODEL_NOT_FOUND
     assert not res_not_found.is_ready
+
+    # 4. HTTP 200 without tool_calls structure MUST NOT return READY
+    class MockRespToolNoCalls:
+        status_code = 200
+        def json(self):
+            return {
+                "choices": [{
+                    "index": 0,
+                    "message": {"role": "assistant", "content": "I calculated 2+2=4 without calling tools."},
+                }]
+            }
+    
+    def mock_post_probe(url, *args, **kwargs):
+        if "chat/completions" in url:
+            # ping returns 200, tool returns 200 but no tool_calls
+            payload = kwargs.get("json", {})
+            if "tools" in payload:
+                return MockRespToolNoCalls()
+            return MockResp()
+        return MockResp()
+
+    monkeypatch.setattr(httpx, "get", lambda *args, **kwargs: MockRespModels())
+    monkeypatch.setattr(httpx, "post", mock_post_probe)
+    res_tool_fail = probe_lm_studio_readiness("http://localhost:1234/v1", required_model="other-model-7b")
+    assert res_tool_fail.status == LMStudioStatus.TOOL_CALLING_UNSUPPORTED
+    assert not res_tool_fail.is_ready
+    assert "missing or invalid tool_calls" in res_tool_fail.detail
 

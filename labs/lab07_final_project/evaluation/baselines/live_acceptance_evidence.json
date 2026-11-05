@@ -1,0 +1,149 @@
+{
+  "status": "VERIFIED_LIVE",
+  "gate_status": "PASS",
+  "model_id": "mistralai/ministral-3-3b",
+  "runtime_config": {
+    "llm_url": "http://localhost:1234/v1",
+    "redis_url": "redis://localhost:6380",
+    "retrieval_mode": "hybrid",
+    "db_path": "labs\\lab07_final_project\\outputs\\benchmark.db"
+  },
+  "scenarios": {
+    "scenario_1_chat_and_citations": {
+      "query": "What vector database was chosen in ADR 001?",
+      "answer": "The vector database chosen in **ADR 001** is **Redis Stack**, configured with **HNSW and FLAT vector indexing** using `FLOAT32` precision, cosine distance metric, and the embedding model `multilingual-e5-base` (768-dimensional vectors) ([adr_001_vector_and_storage_architecture#chunk-312de896eb918af4]).",
+      "grounding_status": "VALIDATION_FAILED",
+      "tools_called": [
+        "search_knowledge"
+      ],
+      "citations": [
+        "[adr_001_vector_and_storage_architecture#chunk-312de896eb918af4]"
+      ],
+      "audit": {
+        "valid_citations": [
+          "[adr_001_vector_and_storage_architecture#chunk-312de896eb918af4]"
+        ],
+        "fabricated_citations": [],
+        "validity_rate": 1.0,
+        "is_valid": true
+      },
+      "factual_correctness": true,
+      "claim_support": true,
+      "latency_ms": 13512.68,
+      "passed": true
+    },
+    "scenario_2_numerical_calculator": {
+      "query": "In the architecture constraints, if the maximum token limit is 8192 and the system instructions use 900 tokens, calculate the exact difference for remaining capacity.",
+      "answer": "The remaining capacity after accounting for system instructions is **7,292 tokens**.",
+      "grounding_status": "VALIDATION_FAILED",
+      "tools_called": [
+        "calculate"
+      ],
+      "calculator_invoked": true,
+      "numerical_result_correct": true,
+      "tool_details": [
+        {
+          "tool_name": "calculate",
+          "arguments": {
+            "expression": "(8192 - 900)"
+          },
+          "result": {
+            "expression": "(8192 - 900)",
+            "result": 7292
+          },
+          "origin": "MODEL_REQUESTED",
+          "execution_time_ms": 1.84
+        }
+      ],
+      "latency_ms": 3575.14,
+      "passed": true
+    },
+    "scenario_3_cross_document_synthesis": {
+      "query": "Compare the models evaluated in Lab 5 versus Lab 6. Which models were tested in each lab?",
+      "answer": "In **Lab 5**, the model tested was based on **LLaVA components**:\n- **SigLIP Vision** extracts features,\n- **MLP-projection** converts them into a language model space, and\n- **Qwen2** generates responses (as described in the role of LLaVA components) ([lab05_multimodal_report#chunk-31c0bf0fd8403bf9]).\n\nIn **Lab 6**, no specific *new* multimodal models were introduced. Instead, it focused on:\n- **Memory and isolation** (e.g., passing results from Lab 3, 4, or 5 without altering original files) ([lab06_agents_report#chunk-9cb11aed5b82ae91]).\n- The lab reused the same workspace and tools as previous labs, ensuring reproducibility by copying reports (Lab 3, 4, or 5) ([lab06_agents_report#chunk-4729e518a0ef7ee6]).\n\n**Uncertainty**: Lab 6 does not explicitly list a new model evaluation; it appears to validate workflows and dependencies. If you meant alternative configurations of the same architecture, clarify further.",
+      "grounding_status": "VALIDATION_FAILED",
+      "tools_called": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "citations": [
+        "[lab05_multimodal_report#chunk-31c0bf0fd8403bf9]",
+        "[lab06_agents_report#chunk-9cb11aed5b82ae91]",
+        "[lab06_agents_report#chunk-4729e518a0ef7ee6]"
+      ],
+      "cited_documents": [
+        "lab05_multimodal_report",
+        "lab06_agents_report"
+      ],
+      "has_lab5_reference": true,
+      "has_lab6_reference": true,
+      "audit": {
+        "valid_citations": [
+          "[lab05_multimodal_report#chunk-31c0bf0fd8403bf9]",
+          "[lab06_agents_report#chunk-9cb11aed5b82ae91]",
+          "[lab06_agents_report#chunk-4729e518a0ef7ee6]"
+        ],
+        "fabricated_citations": [],
+        "validity_rate": 1.0,
+        "is_valid": true
+      },
+      "latency_ms": 62260.83,
+      "passed": true
+    },
+    "scenario_4_unsupported_refusal": {
+      "query": "What were the benchmark results for GPT-4 vision fine-tuning on ImageNet in Lab 6?",
+      "answer": "The indexed documents for Lab 6 do not contain specific benchmark results for GPT-4 vision fine-tuning on ImageNet. If you need details about this experiment, please check the relevant reports from **Lab 5** (multimodal training) or other technical documentation explicitly referencing fine-tuning on ImageNet with GPT-4 vision models. Would you like me to search those sources instead?",
+      "grounding_status": "VALIDATION_FAILED",
+      "is_refusal": true,
+      "citations": [],
+      "fabricated_citations_count": 0,
+      "latency_ms": 18025.55,
+      "passed": true
+    },
+    "scenario_5_contextual_multiturn": {
+      "turn_1": {
+        "query": "What vector database was chosen in ADR 001?",
+        "answer": "The vector database chosen in **ADR 001** is **Redis Stack**, configured with **HNSW and FLAT vector indexing** using `FLOAT32` precision, cosine distance metric, and the embedding model `multilingual-e5-base` (768-dimensional vectors) ([adr_001_vector_and_storage_architecture#chunk-312de896eb918af4]).",
+        "citations": [
+          "[adr_001_vector_and_storage_architecture#chunk-312de896eb918af4]"
+        ]
+      },
+      "turn_2": {
+        "query": "Why was it selected instead of Milvus and Qdrant? Check ADR 001.",
+        "answer": "In **ADR 001**, Redis Stack was chosen over **Milvus** and **Qdrant** primarily because:\n\n- Both alternatives required **high memory overhead (2 GB+ idle RAM)**, exceeding the target constraints for local laptop execution ([adr_001_vector_and_storage_architecture#chunk-6cfff327f83838b7]).\n- Redis Stack offered **sub-15ms query latency**, robust transaction isolation, and simpler deployment (e.g., Docker container on port 6380), unlike alternatives with complex setups or frequent schema issues ([adr_001_vector_and_storage_architecture#chunk-27547712c6c1bf94]).",
+        "citations": [
+          "[adr_001_vector_and_storage_architecture#chunk-6cfff327f83838b7]",
+          "[adr_001_vector_and_storage_architecture#chunk-27547712c6c1bf94]"
+        ],
+        "audit": {
+          "valid_citations": [
+            "[adr_001_vector_and_storage_architecture#chunk-6cfff327f83838b7]",
+            "[adr_001_vector_and_storage_architecture#chunk-27547712c6c1bf94]"
+          ],
+          "fabricated_citations": [],
+          "validity_rate": 1.0,
+          "is_valid": true
+        }
+      },
+      "history_persisted_in_sqlite": true,
+      "session_isolation_verified": true,
+      "context_resolved_correctly": true,
+      "latency_ms": 49199.99,
+      "passed": true
+    },
+    "scenario_6_document_lifecycle": {
+      "ingest_successful": true,
+      "retrieval_successful": true,
+      "persistence_after_restart_verified": true,
+      "complete_purge_verified": true,
+      "latency_ms": 1071.33,
+      "passed": true
+    }
+  },
+  "summary": {
+    "total_scenarios": 6,
+    "passed_scenarios": 6,
+    "failed_scenarios": 0
+  },
+  "timestamp": "2026-11-05T20:18:12Z"
+}

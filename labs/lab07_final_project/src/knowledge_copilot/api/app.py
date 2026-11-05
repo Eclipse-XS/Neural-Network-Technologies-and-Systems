@@ -46,6 +46,21 @@ async def lifespan(app: FastAPI):
                             )
                         except Exception as e:
                             logger.warning(f"Could not ingest initial doc {item['source_id']}: {e}")
+
+            # Also ingest engineering documents from subdirectories
+            for fpath in knowledge_dir.glob("**/*"):
+                if fpath.is_file() and fpath.suffix.lower() in {".md", ".txt", ".pdf"} and fpath.name != "manifest.json":
+                    doc_id = fpath.stem
+                    if ingestion.sqlite_repo.get_document(doc_id) is None:
+                        try:
+                            ingestion.ingest_file(
+                                filename=fpath.name,
+                                content=fpath.read_bytes(),
+                                collection="engineering",
+                                document_id=doc_id,
+                            )
+                        except Exception as e:
+                            logger.warning(f"Could not ingest engineering doc {doc_id}: {e}")
         else:
             logger.warning("Redis is not currently reachable on startup.")
     except Exception as exc:

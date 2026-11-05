@@ -52,6 +52,45 @@ class QueryService:
             self.bm25.index(chunks)
             self._lexical_version = current_version
 
+    def _resolve_document_id(self, document_id: Optional[str]) -> Optional[str]:
+        """Resolve shorthand or varied document identifier to canonical indexed document_id."""
+        if not document_id:
+            return None
+        docs = self.ingestion_service.list_documents()
+        d_lower = document_id.casefold().strip()
+
+        # 1. Exact match against document_id or filename stem
+        for d in docs:
+            if d.document_id.casefold() == d_lower or Path(d.filename).stem.casefold() == d_lower:
+                return d.document_id
+
+        # 2. Lab number match (e.g. "lab05", "lab 5", "lab-5", "lab_05")
+        lab_m = re.search(r"lab[_\s-]*0?([1-9])", d_lower)
+        if lab_m:
+            num = lab_m.group(1)
+            for d in docs:
+                if re.search(rf"lab[_\s-]*0?{num}", d.document_id.casefold()) or re.search(rf"lab[_\s-]*0?{num}", Path(d.filename).stem.casefold()):
+                    return d.document_id
+
+        # 3. ADR number match (e.g. "adr 001", "adr-001", "adr_001", "adr 1")
+        adr_m = re.search(r"adr[_\s-]*0*([1-9]+)", d_lower)
+        if adr_m:
+            num = adr_m.group(1)
+            for d in docs:
+                if re.search(rf"adr[_\s-]*0*{num}", d.document_id.casefold()) or re.search(rf"adr[_\s-]*0*{num}", Path(d.filename).stem.casefold()):
+                    return d.document_id
+
+        # 4. Normalized alphanumeric match
+        clean_d = re.sub(r"[^a-z0-9]", "", d_lower)
+        if clean_d:
+            for d in docs:
+                clean_existing = re.sub(r"[^a-z0-9]", "", d.document_id.casefold())
+                clean_stem = re.sub(r"[^a-z0-9]", "", Path(d.filename).stem.casefold())
+                if clean_d == clean_existing or clean_d == clean_stem or clean_d in clean_existing or clean_existing in clean_d:
+                    return d.document_id
+
+        return document_id
+
     def _route_query_documents(self, query: str) -> List[str]:
         """Detect referenced documents using structure-aware heuristics."""
         referenced_docs: List[str] = []
@@ -131,7 +170,9 @@ class QueryService:
         start_time = time.perf_counter()
 
         targets: List[str] = []
-        if not document_id:
+        if document_id:
+            document_id = self._resolve_document_id(document_id)
+        else:
             referenced_docs = self._route_query_documents(query)
             if len(referenced_docs) == 1:
                 document_id = referenced_docs[0]
@@ -287,9 +328,11 @@ class QueryService:
             session = self.sqlite_repo.create_session(session_id)
 
         history_messages = []
+        session_evidence = []
         for t in session.turns:
             history_messages.append({"role": "user", "content": t.user_input})
             history_messages.append({"role": "assistant", "content": t.canonical_answer})
+            session_evidence.extend(t.evidence)
 
         if not self.orchestrator:
             raise RuntimeError("AgentOrchestrator is not configured on QueryService.")
@@ -301,6 +344,7 @@ class QueryService:
                 session_id=session_id,
                 history_messages=history_messages,
                 retrieval_mode=retrieval_mode,
+                session_evidence=session_evidence,
             )
         finally:
             ACTIVE_RETRIEVAL_MODE.reset(token)
