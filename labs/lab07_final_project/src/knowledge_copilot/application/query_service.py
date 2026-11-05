@@ -86,27 +86,26 @@ class QueryService:
                     continue
 
             if "runbook" in stem:
-                if re.search(r"\b(?:runbook|operating procedure)\b", q_lower):
+                if re.search(r"\b(?:runbook|operating procedure|sop|експлуатаці\w*|readiness probe|відновленн\w*|disaster recovery|restart)\b", q_lower):
                     referenced_docs.append(doc.document_id)
                     continue
 
             if "api_specification" in stem:
-                if re.search(r"\b(?:api specification|api contract|data contract)\b", q_lower):
+                if re.search(r"\b(?:api specification|api contract|data contract|ендпоінт\w*|endpoint\w*|chatresponse|documentuploadresponse|extractionerror|extractor\w*|parsing capabilit\w*)\b", q_lower):
                     referenced_docs.append(doc.document_id)
                     continue
 
-        if re.search(r"\b(?:api|ендпоінт\w*|endpoints?)\b", q_lower) and "api_specification_and_contracts" not in referenced_docs:
+        if re.search(r"\b(?:api|ендпоінт\w*|endpoints?|chatresponse|extractor\w*|contracts?)\b", q_lower) and "api_specification_and_contracts" not in referenced_docs:
             for doc in docs:
                 if "api" in doc.filename.casefold() and doc.document_id not in referenced_docs:
                     referenced_docs.append(doc.document_id)
                     break
-        if re.search(r"\b(?:runbook|експлуатаці\w*|knowledge copilot|copilot)\b", q_lower) and "rag_system_runbook" not in referenced_docs:
-            if "api" not in q_lower or "runbook" in q_lower:
-                for doc in docs:
-                    if "runbook" in doc.filename.casefold() and doc.document_id not in referenced_docs:
-                        referenced_docs.append(doc.document_id)
-                        break
-        if re.search(r"\b(?:adr|lab\s*0?7|специфікац\w*)\b", q_lower) and "adr_001_vector_and_storage_architecture" not in referenced_docs:
+        if re.search(r"\b(?:runbook|експлуатаці\w*|sop|readiness|disaster recovery)\b", q_lower) and "rag_system_runbook" not in referenced_docs:
+            for doc in docs:
+                if "runbook" in doc.filename.casefold() and doc.document_id not in referenced_docs:
+                    referenced_docs.append(doc.document_id)
+                    break
+        if re.search(r"\b(?:adr|lab\s*0?7|архітектур\w* persistence|storage architecture)\b", q_lower) and "adr_001_vector_and_storage_architecture" not in referenced_docs:
             for doc in docs:
                 if "adr" in doc.filename.casefold() and doc.document_id not in referenced_docs:
                     referenced_docs.append(doc.document_id)
@@ -207,9 +206,9 @@ class QueryService:
                         lexical_results=lex_t,
                         k=4,
                         rrf_k=30,
-                        dense_weight=1.5,
+                        dense_weight=1.0,
                         lexical_weight=1.0,
-                        max_per_section=1,
+                        max_per_section=2,
                     )
                     per_target_chunks[t_id] = fused_t
 
@@ -249,9 +248,9 @@ class QueryService:
                     lexical_results=lex_candidates,
                     k=k,
                     rrf_k=30,
-                    dense_weight=1.5,
+                    dense_weight=1.0,
                     lexical_weight=1.0,
-                    max_per_section=1,
+                    max_per_section=2,
                 )
 
         duration = time.perf_counter() - start_time

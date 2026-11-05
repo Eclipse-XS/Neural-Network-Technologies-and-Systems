@@ -1024,13 +1024,13 @@
       "total_evaluated_queries": 100,
       "supported_queries": 85,
       "refusal_queries": 15,
-      "evidence_recall_1": 0.5117647058823529,
-      "evidence_recall_3": 0.6647058823529411,
-      "evidence_recall_5": 0.7529411764705882,
+      "evidence_recall_1": 0.4362745098039215,
+      "evidence_recall_3": 0.6102941176470589,
+      "evidence_recall_5": 0.7019607843137254,
       "hit_at_5": 0.8,
       "mrr": 0.648235294117647,
       "truncation_violations": 0,
-      "failed_query_count": 25,
+      "failed_query_count": 33,
       "failed_queries": [
         {
           "query_id": "eval_002",
@@ -1047,6 +1047,40 @@
             "Лабораторна робота №5 / 5. Архітектура мультимодальної моделі",
             "Лабораторна робота №5 / 18. Аналіз якості",
             "Лабораторна робота №5 / 9. Вхідне зображення"
+          ]
+        },
+        {
+          "query_id": "eval_007",
+          "category": "exact_fact",
+          "query": "Яка версія бібліотеки openai-agents використовувалася в Lab 6?",
+          "recall_1": 0.3333333333333333,
+          "recall_5": 0.3333333333333333,
+          "hit_5": 1.0,
+          "mrr": 1.0,
+          "relevant_doc_ids": [
+            "lab06_agents_report.md"
+          ],
+          "top_retrieved_sections": [
+            "Лабораторна робота №6 / Середовище та модель",
+            "Лабораторна робота №6 / Робочий простір і інструменти",
+            "Лабораторна робота №6 / Фінальна технічна перевірка"
+          ]
+        },
+        {
+          "query_id": "eval_011",
+          "category": "exact_fact",
+          "query": "Який PRAGMA busy_timeout встановлено для SQLite у рішенні ADR 001?",
+          "recall_1": 0.5,
+          "recall_5": 0.5,
+          "hit_5": 1.0,
+          "mrr": 1.0,
+          "relevant_doc_ids": [
+            "adr_001_vector_and_storage_architecture.md"
+          ],
+          "top_retrieved_sections": [
+            "ADR 001: Vector Storage and Relational Persistence Architecture / Decision",
+            "ADR 001: Vector Storage and Relational Persistence Architecture / Consequences",
+            "ADR 001: Vector Storage and Relational Persistence Architecture / Alternatives Considered"
           ]
         },
         {
@@ -1098,6 +1132,23 @@
             "Лабораторна робота №5 / 7. Використана модель",
             "Лабораторна робота №5 / 6. Роль компонентів LLaVA",
             "Лабораторна робота №5 / 4. Теоретичні відомості"
+          ]
+        },
+        {
+          "query_id": "eval_022",
+          "category": "exact_fact",
+          "query": "What are the four tool functions registered in the Lab 6 agent?",
+          "recall_1": 0.0,
+          "recall_5": 0.08333333333333333,
+          "hit_5": 1.0,
+          "mrr": 0.3333333333333333,
+          "relevant_doc_ids": [
+            "lab06_agents_report.md"
+          ],
+          "top_retrieved_sections": [
+            "Лабораторна робота №6 / Тема, мета та варіант",
+            "Лабораторна робота №6 / Пам'ять та ізоляція",
+            "Лабораторна робота №6 / Робочий простір і інструменти"
           ]
         },
         {
@@ -1153,6 +1204,23 @@
           ]
         },
         {
+          "query_id": "eval_032",
+          "category": "semantic_paraphrase",
+          "query": "What safety measures prevent the agent from looping indefinitely in Lab 6?",
+          "recall_1": 0.0,
+          "recall_5": 0.5,
+          "hit_5": 1.0,
+          "mrr": 0.2,
+          "relevant_doc_ids": [
+            "lab06_agents_report.md"
+          ],
+          "top_retrieved_sections": [
+            "Лабораторна робота №6 / Тема, мета та варіант",
+            "Лабораторна робота №6 / Середовище та модель",
+            "Лабораторна робота №6 / Пам'ять та ізоляція"
+          ]
+        },
+        {
           "query_id": "eval_033",
           "category": "semantic_paraphrase",
           "query": "Як система поводиться, коли Redis стає недоступним під час пошуку згідно з runbook та ADR 001?",
@@ -1168,6 +1236,40 @@
             "ADR 001: Vector Storage and Relational Persistence Architecture / Consequences",
             "Operational Runbook: Local Engineering Knowledge Copilot / 2. Standard Operating Procedures (SOP) / Health Probes & Monitoring",
             "ADR 001: Vector Storage and Relational Persistence Architecture / Decision"
+          ]
+        },
+        {
+          "query_id": "eval_036",
+          "category": "semantic_paraphrase",
+          "query": "What was the immediate workaround applied by engineers during the Redis OOM incident?",
+          "recall_1": 0.0,
+          "recall_5": 0.5,
+          "hit_5": 1.0,
+          "mrr": 0.5,
+          "relevant_doc_ids": [
+            "incident_postmortem_redis_oom.md"
+          ],
+          "top_retrieved_sections": [
+            "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Summary",
+            "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Corrective and Preventative Actions",
+            "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)"
+          ]
+        },
+        {
+          "query_id": "eval_037",
+          "category": "semantic_paraphrase",
+          "query": "Яка роль відведена SQLite у архітектурі асистента згідно з ADR 001?",
+          "recall_1": 0.0,
+          "recall_5": 0.5,
+          "hit_5": 1.0,
+          "mrr": 0.25,
+          "relevant_doc_ids": [
+            "adr_001_vector_and_storage_architecture.md"
+          ],
+          "top_retrieved_sections": [
+            "ADR 001: Vector Storage and Relational Persistence Architecture / Consequences",
+            "ADR 001: Vector Storage and Relational Persistence Architecture / Status",
+            "ADR 001: Vector Storage and Relational Persistence Architecture / Alternatives Considered"
           ]
         },
         {
@@ -1474,6 +1576,40 @@
             "Operational Runbook: Local Engineering Knowledge Copilot / 1. System Overview",
             "Лабораторна робота №6 / Робочий простір і інструменти"
           ]
+        },
+        {
+          "query_id": "eval_068",
+          "category": "numerical_reasoning",
+          "query": "What is the percentage increase in Redis memory limit from the incident postmortem (from 512 MB to 2048 MB)?",
+          "recall_1": 0.25,
+          "recall_5": 0.75,
+          "hit_5": 1.0,
+          "mrr": 1.0,
+          "relevant_doc_ids": [
+            "incident_postmortem_redis_oom.md"
+          ],
+          "top_retrieved_sections": [
+            "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)",
+            "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Summary",
+            "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Corrective and Preventative Actions"
+          ]
+        },
+        {
+          "query_id": "eval_082",
+          "category": "numerical_reasoning",
+          "query": "What is the sum of seed values tested in Lab 4: 42, 123, 777, and 2026?",
+          "recall_1": 0.0,
+          "recall_5": 0.5,
+          "hit_5": 1.0,
+          "mrr": 1.0,
+          "relevant_doc_ids": [
+            "lab04_stable_diffusion_report.md"
+          ],
+          "top_retrieved_sections": [
+            "Лабораторна робота №4 / Дослідження seed",
+            "Лабораторна робота №4 / Організація контрольованих експериментів",
+            "Лабораторна робота №4 / Таблиця параметрів генерації"
+          ]
         }
       ],
       "category_breakdown": {
@@ -1481,15 +1617,15 @@
           "count": 25,
           "hit_5": 0.84,
           "mrr": 0.7413333333333333,
-          "recall_1": 0.68,
-          "recall_5": 0.84
+          "recall_1": 0.5533333333333332,
+          "recall_5": 0.7566666666666667
         },
         "semantic_paraphrase": {
           "count": 20,
           "hit_5": 0.7,
           "mrr": 0.4616666666666666,
-          "recall_1": 0.35,
-          "recall_5": 0.7
+          "recall_1": 0.3,
+          "recall_5": 0.625
         },
         "cross_document": {
           "count": 20,
@@ -1502,8 +1638,8 @@
           "count": 20,
           "hit_5": 1.0,
           "mrr": 0.925,
-          "recall_1": 0.825,
-          "recall_5": 1.0
+          "recall_1": 0.7125,
+          "recall_5": 0.9625
         }
       },
       "latency": {
@@ -1526,13 +1662,13 @@
     "total_evaluated_queries": 100,
     "supported_queries": 85,
     "refusal_queries": 15,
-    "evidence_recall_1": 0.5117647058823529,
-    "evidence_recall_3": 0.6647058823529411,
-    "evidence_recall_5": 0.7529411764705882,
+    "evidence_recall_1": 0.4362745098039215,
+    "evidence_recall_3": 0.6102941176470589,
+    "evidence_recall_5": 0.7019607843137254,
     "hit_at_5": 0.8,
     "mrr": 0.648235294117647,
     "truncation_violations": 0,
-    "failed_query_count": 25,
+    "failed_query_count": 33,
     "failed_queries": [
       {
         "query_id": "eval_002",
@@ -1549,6 +1685,40 @@
           "Лабораторна робота №5 / 5. Архітектура мультимодальної моделі",
           "Лабораторна робота №5 / 18. Аналіз якості",
           "Лабораторна робота №5 / 9. Вхідне зображення"
+        ]
+      },
+      {
+        "query_id": "eval_007",
+        "category": "exact_fact",
+        "query": "Яка версія бібліотеки openai-agents використовувалася в Lab 6?",
+        "recall_1": 0.3333333333333333,
+        "recall_5": 0.3333333333333333,
+        "hit_5": 1.0,
+        "mrr": 1.0,
+        "relevant_doc_ids": [
+          "lab06_agents_report.md"
+        ],
+        "top_retrieved_sections": [
+          "Лабораторна робота №6 / Середовище та модель",
+          "Лабораторна робота №6 / Робочий простір і інструменти",
+          "Лабораторна робота №6 / Фінальна технічна перевірка"
+        ]
+      },
+      {
+        "query_id": "eval_011",
+        "category": "exact_fact",
+        "query": "Який PRAGMA busy_timeout встановлено для SQLite у рішенні ADR 001?",
+        "recall_1": 0.5,
+        "recall_5": 0.5,
+        "hit_5": 1.0,
+        "mrr": 1.0,
+        "relevant_doc_ids": [
+          "adr_001_vector_and_storage_architecture.md"
+        ],
+        "top_retrieved_sections": [
+          "ADR 001: Vector Storage and Relational Persistence Architecture / Decision",
+          "ADR 001: Vector Storage and Relational Persistence Architecture / Consequences",
+          "ADR 001: Vector Storage and Relational Persistence Architecture / Alternatives Considered"
         ]
       },
       {
@@ -1600,6 +1770,23 @@
           "Лабораторна робота №5 / 7. Використана модель",
           "Лабораторна робота №5 / 6. Роль компонентів LLaVA",
           "Лабораторна робота №5 / 4. Теоретичні відомості"
+        ]
+      },
+      {
+        "query_id": "eval_022",
+        "category": "exact_fact",
+        "query": "What are the four tool functions registered in the Lab 6 agent?",
+        "recall_1": 0.0,
+        "recall_5": 0.08333333333333333,
+        "hit_5": 1.0,
+        "mrr": 0.3333333333333333,
+        "relevant_doc_ids": [
+          "lab06_agents_report.md"
+        ],
+        "top_retrieved_sections": [
+          "Лабораторна робота №6 / Тема, мета та варіант",
+          "Лабораторна робота №6 / Пам'ять та ізоляція",
+          "Лабораторна робота №6 / Робочий простір і інструменти"
         ]
       },
       {
@@ -1655,6 +1842,23 @@
         ]
       },
       {
+        "query_id": "eval_032",
+        "category": "semantic_paraphrase",
+        "query": "What safety measures prevent the agent from looping indefinitely in Lab 6?",
+        "recall_1": 0.0,
+        "recall_5": 0.5,
+        "hit_5": 1.0,
+        "mrr": 0.2,
+        "relevant_doc_ids": [
+          "lab06_agents_report.md"
+        ],
+        "top_retrieved_sections": [
+          "Лабораторна робота №6 / Тема, мета та варіант",
+          "Лабораторна робота №6 / Середовище та модель",
+          "Лабораторна робота №6 / Пам'ять та ізоляція"
+        ]
+      },
+      {
         "query_id": "eval_033",
         "category": "semantic_paraphrase",
         "query": "Як система поводиться, коли Redis стає недоступним під час пошуку згідно з runbook та ADR 001?",
@@ -1670,6 +1874,40 @@
           "ADR 001: Vector Storage and Relational Persistence Architecture / Consequences",
           "Operational Runbook: Local Engineering Knowledge Copilot / 2. Standard Operating Procedures (SOP) / Health Probes & Monitoring",
           "ADR 001: Vector Storage and Relational Persistence Architecture / Decision"
+        ]
+      },
+      {
+        "query_id": "eval_036",
+        "category": "semantic_paraphrase",
+        "query": "What was the immediate workaround applied by engineers during the Redis OOM incident?",
+        "recall_1": 0.0,
+        "recall_5": 0.5,
+        "hit_5": 1.0,
+        "mrr": 0.5,
+        "relevant_doc_ids": [
+          "incident_postmortem_redis_oom.md"
+        ],
+        "top_retrieved_sections": [
+          "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Summary",
+          "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Corrective and Preventative Actions",
+          "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)"
+        ]
+      },
+      {
+        "query_id": "eval_037",
+        "category": "semantic_paraphrase",
+        "query": "Яка роль відведена SQLite у архітектурі асистента згідно з ADR 001?",
+        "recall_1": 0.0,
+        "recall_5": 0.5,
+        "hit_5": 1.0,
+        "mrr": 0.25,
+        "relevant_doc_ids": [
+          "adr_001_vector_and_storage_architecture.md"
+        ],
+        "top_retrieved_sections": [
+          "ADR 001: Vector Storage and Relational Persistence Architecture / Consequences",
+          "ADR 001: Vector Storage and Relational Persistence Architecture / Status",
+          "ADR 001: Vector Storage and Relational Persistence Architecture / Alternatives Considered"
         ]
       },
       {
@@ -1976,6 +2214,40 @@
           "Operational Runbook: Local Engineering Knowledge Copilot / 1. System Overview",
           "Лабораторна робота №6 / Робочий простір і інструменти"
         ]
+      },
+      {
+        "query_id": "eval_068",
+        "category": "numerical_reasoning",
+        "query": "What is the percentage increase in Redis memory limit from the incident postmortem (from 512 MB to 2048 MB)?",
+        "recall_1": 0.25,
+        "recall_5": 0.75,
+        "hit_5": 1.0,
+        "mrr": 1.0,
+        "relevant_doc_ids": [
+          "incident_postmortem_redis_oom.md"
+        ],
+        "top_retrieved_sections": [
+          "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)",
+          "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Summary",
+          "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Corrective and Preventative Actions"
+        ]
+      },
+      {
+        "query_id": "eval_082",
+        "category": "numerical_reasoning",
+        "query": "What is the sum of seed values tested in Lab 4: 42, 123, 777, and 2026?",
+        "recall_1": 0.0,
+        "recall_5": 0.5,
+        "hit_5": 1.0,
+        "mrr": 1.0,
+        "relevant_doc_ids": [
+          "lab04_stable_diffusion_report.md"
+        ],
+        "top_retrieved_sections": [
+          "Лабораторна робота №4 / Дослідження seed",
+          "Лабораторна робота №4 / Організація контрольованих експериментів",
+          "Лабораторна робота №4 / Таблиця параметрів генерації"
+        ]
       }
     ],
     "category_breakdown": {
@@ -1983,15 +2255,15 @@
         "count": 25,
         "hit_5": 0.84,
         "mrr": 0.7413333333333333,
-        "recall_1": 0.68,
-        "recall_5": 0.84
+        "recall_1": 0.5533333333333332,
+        "recall_5": 0.7566666666666667
       },
       "semantic_paraphrase": {
         "count": 20,
         "hit_5": 0.7,
         "mrr": 0.4616666666666666,
-        "recall_1": 0.35,
-        "recall_5": 0.7
+        "recall_1": 0.3,
+        "recall_5": 0.625
       },
       "cross_document": {
         "count": 20,
@@ -2004,8 +2276,8 @@
         "count": 20,
         "hit_5": 1.0,
         "mrr": 0.925,
-        "recall_1": 0.825,
-        "recall_5": 1.0
+        "recall_1": 0.7125,
+        "recall_5": 0.9625
       }
     },
     "latency": {

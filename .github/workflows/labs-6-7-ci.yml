@@ -67,7 +67,7 @@ jobs:
         env:
           ALLOW_OFFLINE_EMBEDDINGS: "1"
         run: |
-          python labs/lab07_final_project/evaluation/validate_annotations.py
+          python labs/lab07_final_project/evaluation/validate_annotations.py --allow-cached-manifest
 
       - name: Reject committed secrets
         shell: bash

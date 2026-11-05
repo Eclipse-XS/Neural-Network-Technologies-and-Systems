@@ -145,20 +145,41 @@ def compute_retrieval_metrics(
         category_metrics[cat]["hit_5"].append(h5)
         category_metrics[cat]["mrr"].append(rr)
 
-        # Recall@k calculation with consistent denominator across all k
-        num_targets = len(relevant_docs) if relevant_docs else 1
+        # Multi-component evidence targets calculation (P1-2)
+        # For queries requiring multiple documents, passages, or facts, verify all mandatory components
+        gold_passages = [p.casefold() for p in (r.get("gold_passage_ids") or r.get("passage_ids") or [])]
+        gold_spans = r.get("evidence_spans") or []
+
+        if len(relevant_docs) > 1:
+            target_units = [{"type": "doc", "val": d} for d in relevant_docs]
+        elif len(gold_passages) > 1:
+            target_units = [{"type": "passage", "val": p} for p in gold_passages]
+        elif len(gold_spans) > 1 and not gold_passages:
+            target_units = [{"type": "span", "val": s} for s in gold_spans]
+        else:
+            target_units = [{"type": "single", "val": None}]
+
+        num_targets = len(target_units)
         for k in k_thresholds:
             chunks_at_k = retrieved[:k]
-            if relevant_docs:
-                retrieved_doc_matches = 0
-                for r_doc in relevant_docs:
-                    doc_query = {**r, "relevant_doc_ids": [r_doc]}
+            satisfied_targets = 0
+            for tu in target_units:
+                if tu["type"] == "doc":
+                    doc_query = {**r, "relevant_doc_ids": [tu["val"]]}
                     if any(is_chunk_relevant(c, doc_query) for c in chunks_at_k):
-                        retrieved_doc_matches += 1
-                rec_k = retrieved_doc_matches / num_targets
-            else:
-                rec_k = 1.0 if any(is_chunk_relevant(c, r) for c in chunks_at_k) else 0.0
+                        satisfied_targets += 1
+                elif tu["type"] == "passage":
+                    if any((c.get("chunk_id") or "").casefold() == tu["val"] for c in chunks_at_k):
+                        satisfied_targets += 1
+                elif tu["type"] == "span":
+                    norm_s = normalize_text(tu["val"])
+                    if any(norm_s in normalize_text(c.get("content") or c.get("text") or "") for c in chunks_at_k):
+                        satisfied_targets += 1
+                else:
+                    if any(is_chunk_relevant(c, r) for c in chunks_at_k):
+                        satisfied_targets += 1
 
+            rec_k = satisfied_targets / num_targets
             recalls[k].append(rec_k)
             if k == 1:
                 category_metrics[cat]["recall_1"].append(rec_k)

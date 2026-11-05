@@ -26,24 +26,21 @@ from labs.lab07_final_project.src.knowledge_copilot.api.dependencies import (
     get_query_service,
 )
 from labs.lab07_final_project.src.knowledge_copilot.domain.enums import DocumentStatus
-
-
-def check_lm_studio_online(base_url: str = "http://localhost:1234/v1") -> bool:
-    try:
-        resp = httpx.get(f"{base_url}/models", timeout=3.0)
-        return resp.status_code == 200
-    except Exception:
-        return False
+from labs.lab07_final_project.src.knowledge_copilot.infrastructure.llm_client import (
+    probe_lm_studio_readiness,
+    LMStudioStatus,
+)
 
 
 def test_live_lm_studio_acceptance_suite():
     """Live acceptance test verifying real networked components."""
     lm_studio_url = os.getenv("COPILOT_LLM_URL", "http://localhost:1234/v1")
-    is_llm_up = check_lm_studio_online(lm_studio_url)
+    configured_model = os.getenv("COPILOT_LLM_MODEL", "ministral-3b")
+    probe = probe_lm_studio_readiness(lm_studio_url, required_model=configured_model)
 
-    if not is_llm_up:
+    if not probe.is_ready:
         pytest.skip(
-            f"Gate status: BLOCKED (Host Dependency Offline). LM Studio is not listening at {lm_studio_url}."
+            f"Gate status: BLOCKED ({probe.status.value}). {probe.detail}"
         )
 
     # 1. Verify dependencies

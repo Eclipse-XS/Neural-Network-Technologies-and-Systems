@@ -524,7 +524,7 @@
       "total_evaluated_queries": 50,
       "supported_queries": 40,
       "refusal_queries": 10,
-      "evidence_recall_1": 0.55,
+      "evidence_recall_1": 0.525,
       "evidence_recall_3": 0.7125,
       "evidence_recall_5": 0.775,
       "hit_at_5": 0.825,
@@ -752,7 +752,7 @@
           "count": 10,
           "hit_5": 0.9,
           "mrr": 0.8,
-          "recall_1": 0.7,
+          "recall_1": 0.6,
           "recall_5": 0.9
         }
       },
@@ -776,7 +776,7 @@
     "total_evaluated_queries": 50,
     "supported_queries": 40,
     "refusal_queries": 10,
-    "evidence_recall_1": 0.55,
+    "evidence_recall_1": 0.525,
     "evidence_recall_3": 0.7125,
     "evidence_recall_5": 0.775,
     "hit_at_5": 0.825,
@@ -1004,7 +1004,7 @@
         "count": 10,
         "hit_5": 0.9,
         "mrr": 0.8,
-        "recall_1": 0.7,
+        "recall_1": 0.6,
         "recall_5": 0.9
       }
     },

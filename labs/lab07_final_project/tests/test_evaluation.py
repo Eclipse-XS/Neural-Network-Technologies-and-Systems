@@ -194,7 +194,9 @@ def test_evaluation_dataset_annotations_and_hashes_valid():
         local_files_only=True,
     )
     docs = load_source_documents()
-    chunks_by_id, chunks_by_doc = generate_production_chunks(settings, embeddings)
+    chunks_by_id, chunks_by_doc, *_ = generate_production_chunks(
+        settings, embeddings, allow_cached_manifest=True
+    )
 
     for fname in DATASET_FILES:
         res = validate_dataset_file(
@@ -239,3 +241,134 @@ def test_benchmark_result_schema_and_recomputation_consistency():
         assert math.isclose(summary["mrr"], recomputed["mrr"], rel_tol=1e-3), (
             f"{b_file.name}: Summary MRR {summary['mrr']} does not match raw itemized {recomputed['mrr']}"
         )
+
+
+# =========================================================================
+# P0-1: GENERATION EVALUATION ACCEPTANCE GATE THRESHOLD REGRESSIONS
+# =========================================================================
+
+from labs.lab07_final_project.evaluation.eval_generation import (
+    evaluate_generation_gate,
+    compute_factual_correctness,
+    is_refusal_answer,
+    verify_claim_evidence_support,
+    GENERATION_ACCEPTANCE_THRESHOLDS,
+)
+from labs.lab07_final_project.src.knowledge_copilot.domain.enums import GroundingStatus
+from labs.lab07_final_project.src.knowledge_copilot.domain.models import Chunk, EvidenceChunk, Score
+from labs.lab07_final_project.src.knowledge_copilot.infrastructure.llm_client import (
+    probe_lm_studio_readiness,
+    LMStudioStatus,
+)
+
+
+def _build_mock_summary(
+    exec_failures=0,
+    fact_correct=0.85,
+    claim_supp=0.90,
+    citation_val=0.90,
+    refusal_rate=0.95,
+    calc_rate=0.85,
+):
+    return {
+        "execution_failures": exec_failures,
+        "metrics": {
+            "factual_answer_correctness": {"value": fact_correct},
+            "claim_support_rate": {"value": claim_supp},
+            "citation_validity_rate": {"value": citation_val},
+            "unsupported_refusal_rate": {"value": refusal_rate},
+            "calculator_usage_rate": {"value": calc_rate},
+        },
+    }
+
+
+def test_generation_gate_pass_when_all_thresholds_satisfied():
+    summary = _build_mock_summary()
+    status, violations = evaluate_generation_gate(summary)
+    assert status == "PASS"
+    assert len(violations) == 0
+
+
+def test_generation_gate_fails_on_execution_failure():
+    summary = _build_mock_summary(exec_failures=1)
+    status, violations = evaluate_generation_gate(summary)
+    assert status == "FAIL"
+    assert any("Execution failures: 1" in v for v in violations)
+
+
+@pytest.mark.parametrize(
+    "metric_arg, metric_name, bad_value",
+    [
+        ("fact_correct", "factual_answer_correctness", 0.79),
+        ("claim_supp", "claim_support_rate", 0.84),
+        ("citation_val", "citation_validity_rate", 0.84),
+        ("refusal_rate", "unsupported_refusal_rate", 0.89),
+        ("calc_rate", "calculator_usage_rate", 0.79),
+    ],
+)
+def test_generation_gate_fails_on_subthreshold_metric(metric_arg, metric_name, bad_value):
+    kwargs = {metric_arg: bad_value}
+    summary = _build_mock_summary(**kwargs)
+    status, violations = evaluate_generation_gate(summary)
+    assert status == "FAIL"
+    assert any(metric_name in v for v in violations)
+
+
+def test_generation_gate_fails_when_metric_is_none():
+    summary = _build_mock_summary()
+    summary["metrics"]["factual_answer_correctness"]["value"] = None
+    status, violations = evaluate_generation_gate(summary)
+    assert status == "FAIL"
+    assert any("factual_answer_correctness: None" in v for v in violations)
+
+
+def test_factual_correctness_and_refusal_evaluations():
+    assert is_refusal_answer("Інформація не знайдена в індексованій документації.", GroundingStatus.INSUFFICIENT_EVIDENCE)
+    assert is_refusal_answer("This is not found in the technical documents.", GroundingStatus.GROUNDED)
+    assert not is_refusal_answer("Redis Stack was selected for vector search.", GroundingStatus.GROUNDED)
+
+    assert compute_factual_correctness(
+        answer="Redis Stack (Search & JSON) was chosen with SQLite WAL.",
+        expected="Redis Stack was chosen for vector storage and SQLite with WAL for application state.",
+        evidence_spans=["Redis Stack (Search & JSON) as the vector database"],
+    )
+
+    # Missing critical numerical fact
+    assert not compute_factual_correctness(
+        answer="Latency was 99.9 milliseconds.",
+        expected="Latency was 14.2 milliseconds.",
+        evidence_spans=["14.2 milliseconds"],
+    )
+
+
+def test_granular_lm_studio_probe_statuses(monkeypatch):
+    import httpx
+
+    # 1. Unreachable server
+    def mock_get_fail(*args, **kwargs):
+        raise httpx.ConnectError("Connection refused")
+    monkeypatch.setattr(httpx, "get", mock_get_fail)
+    res = probe_lm_studio_readiness("http://localhost:1234/v1")
+    assert res.status == LMStudioStatus.SERVER_UNREACHABLE
+    assert not res.is_ready
+
+    # 2. Server up, but no models loaded
+    class MockResp:
+        status_code = 200
+        def json(self):
+            return {"data": []}
+    monkeypatch.setattr(httpx, "get", lambda *args, **kwargs: MockResp())
+    res_no_model = probe_lm_studio_readiness("http://localhost:1234/v1")
+    assert res_no_model.status == LMStudioStatus.NO_MODEL_LOADED
+    assert not res_no_model.is_ready
+
+    # 3. Model not found
+    class MockRespModels:
+        status_code = 200
+        def json(self):
+            return {"data": [{"id": "other-model-7b"}]}
+    monkeypatch.setattr(httpx, "get", lambda *args, **kwargs: MockRespModels())
+    res_not_found = probe_lm_studio_readiness("http://localhost:1234/v1", required_model="ministral-3b")
+    assert res_not_found.status == LMStudioStatus.MODEL_NOT_FOUND
+    assert not res_not_found.is_ready
+

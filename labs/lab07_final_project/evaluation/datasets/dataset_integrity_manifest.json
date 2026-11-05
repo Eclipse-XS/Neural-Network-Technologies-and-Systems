@@ -38,5 +38,15 @@
     "verified_gold_passages": 53,
     "sha256": "663700c2bbf5390cc88800776554b0a8fa1471e733181cb301d8243810a9e1b9",
     "status": "VALIDATED"
+  },
+  "final_acceptance_holdout_v2_50.json": {
+    "filename": "final_acceptance_holdout_v2_50.json",
+    "query_count": 50,
+    "supported_queries": 42,
+    "refusal_queries": 8,
+    "verified_evidence_spans": 56,
+    "verified_gold_passages": 56,
+    "sha256": "b4b7398037d8dd9ee43af8732683331eaaeb5822a1b888b99e01b47be3307696",
+    "status": "VALIDATED"
   }
 }

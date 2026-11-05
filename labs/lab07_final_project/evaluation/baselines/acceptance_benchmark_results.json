@@ -529,13 +529,13 @@
       "total_evaluated_queries": 50,
       "supported_queries": 42,
       "refusal_queries": 8,
-      "evidence_recall_1": 0.4880952380952381,
-      "evidence_recall_3": 0.7023809523809523,
-      "evidence_recall_5": 0.7857142857142857,
+      "evidence_recall_1": 0.4107142857142857,
+      "evidence_recall_3": 0.6319444444444444,
+      "evidence_recall_5": 0.7222222222222222,
       "hit_at_5": 0.8095238095238095,
       "mrr": 0.6396825396825397,
       "truncation_violations": 0,
-      "failed_query_count": 10,
+      "failed_query_count": 15,
       "failed_queries": [
         {
           "query_id": "eval_002",
@@ -552,6 +552,23 @@
             "Лабораторна робота №5 / 5. Архітектура мультимодальної моделі",
             "Лабораторна робота №5 / 18. Аналіз якості",
             "Лабораторна робота №5 / 9. Вхідне зображення"
+          ]
+        },
+        {
+          "query_id": "eval_022",
+          "category": "exact_fact",
+          "query": "What are the four tool functions registered in the Lab 6 agent?",
+          "recall_1": 0.0,
+          "recall_5": 0.08333333333333333,
+          "hit_5": 1.0,
+          "mrr": 0.3333333333333333,
+          "relevant_doc_ids": [
+            "lab06_agents_report.md"
+          ],
+          "top_retrieved_sections": [
+            "Лабораторна робота №6 / Тема, мета та варіант",
+            "Лабораторна робота №6 / Пам'ять та ізоляція",
+            "Лабораторна робота №6 / Робочий простір і інструменти"
           ]
         },
         {
@@ -587,6 +604,40 @@
             "Лабораторна робота №4 / Джерела",
             "Лабораторна робота №4 / Організація контрольованих експериментів",
             "Лабораторна робота №4 / Модель і середовище"
+          ]
+        },
+        {
+          "query_id": "eval_032",
+          "category": "semantic_paraphrase",
+          "query": "What safety measures prevent the agent from looping indefinitely in Lab 6?",
+          "recall_1": 0.0,
+          "recall_5": 0.5,
+          "hit_5": 1.0,
+          "mrr": 0.2,
+          "relevant_doc_ids": [
+            "lab06_agents_report.md"
+          ],
+          "top_retrieved_sections": [
+            "Лабораторна робота №6 / Тема, мета та варіант",
+            "Лабораторна робота №6 / Середовище та модель",
+            "Лабораторна робота №6 / Пам'ять та ізоляція"
+          ]
+        },
+        {
+          "query_id": "eval_036",
+          "category": "semantic_paraphrase",
+          "query": "What was the immediate workaround applied by engineers during the Redis OOM incident?",
+          "recall_1": 0.0,
+          "recall_5": 0.5,
+          "hit_5": 1.0,
+          "mrr": 0.5,
+          "relevant_doc_ids": [
+            "incident_postmortem_redis_oom.md"
+          ],
+          "top_retrieved_sections": [
+            "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Summary",
+            "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Corrective and Preventative Actions",
+            "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)"
           ]
         },
         {
@@ -714,6 +765,40 @@
             "Лабораторна робота №5 / 9. Вхідне зображення",
             "Лабораторна робота №4"
           ]
+        },
+        {
+          "query_id": "eval_068",
+          "category": "numerical_reasoning",
+          "query": "What is the percentage increase in Redis memory limit from the incident postmortem (from 512 MB to 2048 MB)?",
+          "recall_1": 0.25,
+          "recall_5": 0.75,
+          "hit_5": 1.0,
+          "mrr": 1.0,
+          "relevant_doc_ids": [
+            "incident_postmortem_redis_oom.md"
+          ],
+          "top_retrieved_sections": [
+            "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)",
+            "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Summary",
+            "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Corrective and Preventative Actions"
+          ]
+        },
+        {
+          "query_id": "eval_082",
+          "category": "numerical_reasoning",
+          "query": "What is the sum of seed values tested in Lab 4: 42, 123, 777, and 2026?",
+          "recall_1": 0.0,
+          "recall_5": 0.5,
+          "hit_5": 1.0,
+          "mrr": 1.0,
+          "relevant_doc_ids": [
+            "lab04_stable_diffusion_report.md"
+          ],
+          "top_retrieved_sections": [
+            "Лабораторна робота №4 / Дослідження seed",
+            "Лабораторна робота №4 / Організація контрольованих експериментів",
+            "Лабораторна робота №4 / Таблиця параметрів генерації"
+          ]
         }
       ],
       "category_breakdown": {
@@ -721,15 +806,15 @@
           "count": 12,
           "hit_5": 0.9166666666666666,
           "mrr": 0.8194444444444445,
-          "recall_1": 0.75,
-          "recall_5": 0.9166666666666666
+          "recall_1": 0.625,
+          "recall_5": 0.8402777777777778
         },
         "semantic_paraphrase": {
           "count": 10,
           "hit_5": 0.7,
           "mrr": 0.495,
           "recall_1": 0.4,
-          "recall_5": 0.7
+          "recall_5": 0.6
         },
         "cross_document": {
           "count": 10,
@@ -742,8 +827,8 @@
           "count": 10,
           "hit_5": 1.0,
           "mrr": 0.85,
-          "recall_1": 0.65,
-          "recall_5": 1.0
+          "recall_1": 0.475,
+          "recall_5": 0.925
         }
       },
       "latency": {
@@ -766,13 +851,13 @@
     "total_evaluated_queries": 50,
     "supported_queries": 42,
     "refusal_queries": 8,
-    "evidence_recall_1": 0.4880952380952381,
-    "evidence_recall_3": 0.7023809523809523,
-    "evidence_recall_5": 0.7857142857142857,
+    "evidence_recall_1": 0.4107142857142857,
+    "evidence_recall_3": 0.6319444444444444,
+    "evidence_recall_5": 0.7222222222222222,
     "hit_at_5": 0.8095238095238095,
     "mrr": 0.6396825396825397,
     "truncation_violations": 0,
-    "failed_query_count": 10,
+    "failed_query_count": 15,
     "failed_queries": [
       {
         "query_id": "eval_002",
@@ -789,6 +874,23 @@
           "Лабораторна робота №5 / 5. Архітектура мультимодальної моделі",
           "Лабораторна робота №5 / 18. Аналіз якості",
           "Лабораторна робота №5 / 9. Вхідне зображення"
+        ]
+      },
+      {
+        "query_id": "eval_022",
+        "category": "exact_fact",
+        "query": "What are the four tool functions registered in the Lab 6 agent?",
+        "recall_1": 0.0,
+        "recall_5": 0.08333333333333333,
+        "hit_5": 1.0,
+        "mrr": 0.3333333333333333,
+        "relevant_doc_ids": [
+          "lab06_agents_report.md"
+        ],
+        "top_retrieved_sections": [
+          "Лабораторна робота №6 / Тема, мета та варіант",
+          "Лабораторна робота №6 / Пам'ять та ізоляція",
+          "Лабораторна робота №6 / Робочий простір і інструменти"
         ]
       },
       {
@@ -824,6 +926,40 @@
           "Лабораторна робота №4 / Джерела",
           "Лабораторна робота №4 / Організація контрольованих експериментів",
           "Лабораторна робота №4 / Модель і середовище"
+        ]
+      },
+      {
+        "query_id": "eval_032",
+        "category": "semantic_paraphrase",
+        "query": "What safety measures prevent the agent from looping indefinitely in Lab 6?",
+        "recall_1": 0.0,
+        "recall_5": 0.5,
+        "hit_5": 1.0,
+        "mrr": 0.2,
+        "relevant_doc_ids": [
+          "lab06_agents_report.md"
+        ],
+        "top_retrieved_sections": [
+          "Лабораторна робота №6 / Тема, мета та варіант",
+          "Лабораторна робота №6 / Середовище та модель",
+          "Лабораторна робота №6 / Пам'ять та ізоляція"
+        ]
+      },
+      {
+        "query_id": "eval_036",
+        "category": "semantic_paraphrase",
+        "query": "What was the immediate workaround applied by engineers during the Redis OOM incident?",
+        "recall_1": 0.0,
+        "recall_5": 0.5,
+        "hit_5": 1.0,
+        "mrr": 0.5,
+        "relevant_doc_ids": [
+          "incident_postmortem_redis_oom.md"
+        ],
+        "top_retrieved_sections": [
+          "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Summary",
+          "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Corrective and Preventative Actions",
+          "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)"
         ]
       },
       {
@@ -951,6 +1087,40 @@
           "Лабораторна робота №5 / 9. Вхідне зображення",
           "Лабораторна робота №4"
         ]
+      },
+      {
+        "query_id": "eval_068",
+        "category": "numerical_reasoning",
+        "query": "What is the percentage increase in Redis memory limit from the incident postmortem (from 512 MB to 2048 MB)?",
+        "recall_1": 0.25,
+        "recall_5": 0.75,
+        "hit_5": 1.0,
+        "mrr": 1.0,
+        "relevant_doc_ids": [
+          "incident_postmortem_redis_oom.md"
+        ],
+        "top_retrieved_sections": [
+          "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)",
+          "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Summary",
+          "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Corrective and Preventative Actions"
+        ]
+      },
+      {
+        "query_id": "eval_082",
+        "category": "numerical_reasoning",
+        "query": "What is the sum of seed values tested in Lab 4: 42, 123, 777, and 2026?",
+        "recall_1": 0.0,
+        "recall_5": 0.5,
+        "hit_5": 1.0,
+        "mrr": 1.0,
+        "relevant_doc_ids": [
+          "lab04_stable_diffusion_report.md"
+        ],
+        "top_retrieved_sections": [
+          "Лабораторна робота №4 / Дослідження seed",
+          "Лабораторна робота №4 / Організація контрольованих експериментів",
+          "Лабораторна робота №4 / Таблиця параметрів генерації"
+        ]
       }
     ],
     "category_breakdown": {
@@ -958,15 +1128,15 @@
         "count": 12,
         "hit_5": 0.9166666666666666,
         "mrr": 0.8194444444444445,
-        "recall_1": 0.75,
-        "recall_5": 0.9166666666666666
+        "recall_1": 0.625,
+        "recall_5": 0.8402777777777778
       },
       "semantic_paraphrase": {
         "count": 10,
         "hit_5": 0.7,
         "mrr": 0.495,
         "recall_1": 0.4,
-        "recall_5": 0.7
+        "recall_5": 0.6
       },
       "cross_document": {
         "count": 10,
@@ -979,8 +1149,8 @@
         "count": 10,
         "hit_5": 1.0,
         "mrr": 0.85,
-        "recall_1": 0.65,
-        "recall_5": 1.0
+        "recall_1": 0.475,
+        "recall_5": 0.925
       }
     },
     "latency": {

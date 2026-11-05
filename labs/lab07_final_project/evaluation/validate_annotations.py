@@ -37,6 +37,7 @@ DATASET_FILES = [
     "dev_eval_50.json",
     "acceptance_eval_50.json",
     "final_acceptance_holdout_50.json",
+    "final_acceptance_holdout_v2_50.json",
 ]
 
 
@@ -48,11 +49,16 @@ def load_source_documents() -> dict[str, str]:
     return docs
 
 
-def generate_production_chunks(settings: Settings, embeddings: CopilotEmbeddings) -> tuple[dict, dict]:
+def generate_production_chunks(
+    settings: Settings,
+    embeddings: CopilotEmbeddings,
+    allow_cached_manifest: bool = False,
+) -> tuple[dict, dict, str]:
     chunks_by_id = {}
     chunks_by_doc = {}
 
     if embeddings.tokenizer is not None:
+        chunk_source = "DYNAMIC_TOKENIZER"
         for f in sorted(KNOWLEDGE_DIR.glob("**/*.md")):
             content = f.read_bytes()
             clean_name, sha256_hash, size_bytes = validate_file_content(content, f.name)
@@ -81,17 +87,24 @@ def generate_production_chunks(settings: Settings, embeddings: CopilotEmbeddings
             chunks_by_doc[f.name] = chunks
             for c in chunks:
                 chunks_by_id[c.chunk_id] = c
-    elif CORPUS_CHUNKS_PATH.exists():
+    elif allow_cached_manifest and CORPUS_CHUNKS_PATH.exists():
+        chunk_source = "CACHED_MANIFEST"
         stored = json.loads(CORPUS_CHUNKS_PATH.read_text(encoding="utf-8"))
         for item in stored:
             c = type("ChunkProxy", (), item)()
             chunks_by_id[c.chunk_id] = c
             chunks_by_doc.setdefault(c.document_id, []).append(c)
             chunks_by_doc.setdefault(c.filename, []).append(c)
+    elif not allow_cached_manifest and embeddings.tokenizer is None:
+        raise RuntimeError(
+            "Production tokenizer is unavailable and --allow-cached-manifest was not provided. "
+            "Default verification mode enforces dynamic chunk regeneration via HuggingFace tokenizer. "
+            "Pass --allow-cached-manifest for offline regression audit."
+        )
     else:
         raise RuntimeError("No tokenizer available and corpus_chunks_manifest.json is missing.")
 
-    return chunks_by_id, chunks_by_doc
+    return chunks_by_id, chunks_by_doc, chunk_source
 
 
 def validate_dataset_file(
@@ -213,6 +226,7 @@ def validate_dataset_file(
 def main():
     parser = argparse.ArgumentParser(description="Scientific Evaluation Dataset Audit and Verification Tool")
     parser.add_argument("--update-manifest", action="store_true", help="Update dataset_integrity_manifest.json with new hashes")
+    parser.add_argument("--allow-cached-manifest", action="store_true", help="Allow fallback to cached corpus_chunks_manifest.json when tokenizer is missing")
     args = parser.parse_args()
 
     print("==================================================")
@@ -232,8 +246,11 @@ def main():
         local_files_only=True,
     )
     docs = load_source_documents()
-    chunks_by_id, chunks_by_doc = generate_production_chunks(settings, embeddings)
-    print(f"Generated {len(chunks_by_id)} production corpus chunks across {len(docs)//2} documents.")
+    chunks_by_id, chunks_by_doc, chunk_source = generate_production_chunks(
+        settings, embeddings, allow_cached_manifest=args.allow_cached_manifest
+    )
+    print(f"Chunk Verification Source: {chunk_source}")
+    print(f"Generated/Loaded {len(chunks_by_id)} production corpus chunks across {len(docs)//2} documents.")
 
     manifest_data = {}
     for fname in DATASET_FILES:
