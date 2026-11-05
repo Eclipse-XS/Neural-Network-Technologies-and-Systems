@@ -4,12 +4,15 @@ import re
 from collections import Counter
 from typing import List, Optional, Tuple
 
-from nltk.stem.snowball import SnowballStemmer
+try:
+    from nltk.stem.snowball import SnowballStemmer
+    _STEMMER_EN = SnowballStemmer("english")
+except ImportError:
+    _STEMMER_EN = None
 
 from ..domain.enums import EvidenceQuality
 from ..domain.models import Chunk
 
-_STEMMER_EN = SnowballStemmer("english")
 _UKR_STEM_PATTERN = re.compile(
     r"(?:ів|ей|ями|ами|ях|ах|ому|ими|ого|ою|ею|ові|єві|их|ість|ості|ння|нь|івка|івки|я|а|е|є|и|і|о|у|ю)$"
 )
@@ -19,7 +22,7 @@ def stem_word(w: str) -> str:
     """Stem English and Ukrainian technical tokens."""
     w = w.casefold()
     if re.match(r"^[a-z]+$", w):
-        return _STEMMER_EN.stem(w)
+        return _STEMMER_EN.stem(w) if _STEMMER_EN is not None else w
     if re.match(r"^[а-яіїєґ]+$", w) and len(w) > 4:
         s = _UKR_STEM_PATTERN.sub("", w)
         if len(s) >= 3:
