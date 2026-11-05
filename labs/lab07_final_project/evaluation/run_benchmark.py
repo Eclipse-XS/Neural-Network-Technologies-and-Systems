@@ -98,12 +98,16 @@ def run_retrieval_benchmark(
             })
 
         results.append({
-            "query_id": item["id"],
+            **item,
+            "query_id": item.get("query_id") or item.get("id"),
             "category": item["category"],
             "language": item["language"],
             "query": query,
             "refusal_expected": item.get("refusal_expected", False),
             "relevant_doc_ids": item.get("relevant_doc_ids", []),
+            "target_sections": item.get("target_sections", []),
+            "evidence_spans": item.get("evidence_spans", []),
+            "gold_passage_ids": item.get("gold_passage_ids", []),
             "gold_chunks": item.get("gold_chunks", []),
             "retrieved_chunks": retrieved_data,
             "latency_ms": elapsed_ms,

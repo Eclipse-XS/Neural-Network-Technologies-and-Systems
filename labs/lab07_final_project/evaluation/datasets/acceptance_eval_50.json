@@ -22,7 +22,7 @@
       "Лабораторна робота №5 / 7. Використана модель"
     ],
     "gold_passage_ids": [
-      "chunk-71b21c7d1cedea98"
+      "chunk-94bae1e60a6d617a"
     ]
   },
   {
@@ -48,7 +48,7 @@
       "Звіт до лабораторної роботи №3 / Обмеження і подальша робота"
     ],
     "gold_passage_ids": [
-      "chunk-7ab7bc463cadce84"
+      "chunk-4d5ce6f4f6109390"
     ]
   },
   {
@@ -74,7 +74,7 @@
       "Лабораторна робота №4 / Модель і середовище"
     ],
     "gold_passage_ids": [
-      "chunk-128b02934da9cf4d"
+      "chunk-aa189355741329d5"
     ]
   },
   {
@@ -100,7 +100,7 @@
       "Звіт до лабораторної роботи №3 / Фактичні результати"
     ],
     "gold_passage_ids": [
-      "chunk-119d574195d60fbc"
+      "chunk-0111f65037b69bff"
     ]
   },
   {
@@ -126,7 +126,7 @@
       "Лабораторна робота №6 / Середовище та модель"
     ],
     "gold_passage_ids": [
-      "chunk-adafb09d29db82c4"
+      "chunk-24d0b9d10d53e82f"
     ]
   },
   {
@@ -153,8 +153,8 @@
       "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)"
     ],
     "gold_passage_ids": [
-      "chunk-43af63920d8d64ad",
-      "chunk-853c5a75ae80f8e0"
+      "chunk-458c9cd66b4c0a1c",
+      "chunk-ce91c3b15f07706b"
     ]
   },
   {
@@ -207,8 +207,8 @@
       "Operational Runbook: Local Engineering Knowledge Copilot / 2. Standard Operating Procedures (SOP) / Starting Local Services"
     ],
     "gold_passage_ids": [
-      "chunk-6e773f78130aabdd",
-      "chunk-76e9dbe374b7e0a6"
+      "chunk-407f9e5fb7119a9e",
+      "chunk-6e773f78130aabdd"
     ]
   },
   {
@@ -300,25 +300,30 @@
       "Лабораторна робота №6 / Фактичні помилки та застрягання"
     ],
     "gold_passage_ids": [
-      "chunk-10f77db05bf6e6f3",
-      "chunk-1688b09b21c2c513",
-      "chunk-1a62992de51e1caf",
-      "chunk-291ad9ce094d5585",
-      "chunk-4ead124cfc4dff9d",
-      "chunk-7039fb23718eb086",
-      "chunk-7af265cf2dfc2969",
-      "chunk-82c813d73db1cf77",
-      "chunk-85a17dee48fd4c4c",
-      "chunk-940011cfd2fbe411",
-      "chunk-9b9253ce9335ec3f",
-      "chunk-9ef97ea084091deb",
-      "chunk-a1ffed8cecb945dd",
-      "chunk-a6a1616a7a4a279a",
-      "chunk-a7f31b4ee136c8b8",
-      "chunk-ac067864562e2b2f",
-      "chunk-bf82b285f8439ca5",
-      "chunk-d4a5a504fb563a8b",
-      "chunk-e40f63828243e716"
+      "chunk-1133e41580e70178",
+      "chunk-12a03b71961c1ac1",
+      "chunk-2541c6ccf2851bfc",
+      "chunk-2b56a92c74801888",
+      "chunk-4642f32d37ba2537",
+      "chunk-46c1624506d2e193",
+      "chunk-4729e518a0ef7ee6",
+      "chunk-47fa3567591701ef",
+      "chunk-5347a184c347b143",
+      "chunk-5df8fa9bd18dcc7d",
+      "chunk-6c7d34223e559081",
+      "chunk-6e1e09b0b7838618",
+      "chunk-76599141f8219ae7",
+      "chunk-7dd0954eb581a5c8",
+      "chunk-830dde97b9155de5",
+      "chunk-86d718f1afb8a0ac",
+      "chunk-9ec6e6392c0ad721",
+      "chunk-c20f91b8c873c9ed",
+      "chunk-c7c13e324e2b86f8",
+      "chunk-d2444550c68115e7",
+      "chunk-f25fe1c27cf5f7b0",
+      "chunk-f3da4d4a83bf3d4f",
+      "chunk-f4a75df4074f72a2",
+      "chunk-f98972d1584ddd9e"
     ]
   },
   {
@@ -345,8 +350,8 @@
       "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)"
     ],
     "gold_passage_ids": [
-      "chunk-3820ea8db5c0e91e",
-      "chunk-43af63920d8d64ad"
+      "chunk-161474725628508f",
+      "chunk-840311292cd3047a"
     ]
   },
   {
@@ -375,9 +380,9 @@
       "Лабораторна робота №6 / Фінальна технічна перевірка"
     ],
     "gold_passage_ids": [
-      "chunk-597fe237cb244a8c",
-      "chunk-7af265cf2dfc2969",
-      "chunk-c6cddafce64bf3f5"
+      "chunk-073b9da90cf9c792",
+      "chunk-4729e518a0ef7ee6",
+      "chunk-8fff50ca0752a250"
     ]
   },
   {
@@ -403,7 +408,7 @@
       "Лабораторна робота №4 / Теорія та архітектура"
     ],
     "gold_passage_ids": [
-      "chunk-1c35225386ea6c8b"
+      "chunk-41b3f6b8377f876a"
     ]
   },
   {
@@ -428,7 +433,7 @@
       "ADR 001: Vector Storage and Relational Persistence Architecture / Alternatives Considered"
     ],
     "gold_passage_ids": [
-      "chunk-f62798726ddff5a6"
+      "chunk-6cfff327f83838b7"
     ]
   },
   {
@@ -455,8 +460,8 @@
       "Лабораторна робота №6 / Теоретичні відомості та архітектура"
     ],
     "gold_passage_ids": [
-      "chunk-291ad9ce094d5585",
-      "chunk-adafb09d29db82c4"
+      "chunk-24d0b9d10d53e82f",
+      "chunk-47fa3567591701ef"
     ]
   },
   {
@@ -483,8 +488,7 @@
       "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 3. Agentic Chat & Retrieval"
     ],
     "gold_passage_ids": [
-      "chunk-3ddd91583cc40812",
-      "chunk-7557340bf109907b"
+      "chunk-3ddd91583cc40812"
     ]
   },
   {
@@ -514,11 +518,8 @@
       "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)"
     ],
     "gold_passage_ids": [
-      "chunk-3820ea8db5c0e91e",
-      "chunk-43af63920d8d64ad",
-      "chunk-853c5a75ae80f8e0",
-      "chunk-bbf7932ccf875435",
-      "chunk-ec91ddb2dece2958"
+      "chunk-161474725628508f",
+      "chunk-840311292cd3047a"
     ]
   },
   {
@@ -544,7 +545,7 @@
       "Звіт до лабораторної роботи №3 / Фактичні результати"
     ],
     "gold_passage_ids": [
-      "chunk-119d574195d60fbc"
+      "chunk-0111f65037b69bff"
     ]
   },
   {
@@ -572,9 +573,7 @@
       "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 3. Agentic Chat & Retrieval"
     ],
     "gold_passage_ids": [
-      "chunk-342a291bedfe4d18",
-      "chunk-50dc3e44b7a22bc5",
-      "chunk-7557340bf109907b"
+      "chunk-50dc3e44b7a22bc5"
     ]
   },
   {
@@ -594,13 +593,16 @@
     "expected_tool_calls": [],
     "refusal_expected": false,
     "evidence_spans": [
-      "Grounded prompt"
+      "Grounded prompt",
+      "Без tools модель вигадала CSV-файли, значення 28 і 32 та докази з неіснуючих таблиць."
     ],
     "target_sections": [
       "Звіт до лабораторної роботи №3 / Реалізація"
     ],
     "gold_passage_ids": [
-      "chunk-c6cddafce64bf3f5"
+      "chunk-073b9da90cf9c792",
+      "chunk-46c1624506d2e193",
+      "chunk-76599141f8219ae7"
     ]
   },
   {
@@ -626,7 +628,7 @@
       "Operational Runbook: Local Engineering Knowledge Copilot / 2. Standard Operating Procedures (SOP) / Reindexing and Disaster Recovery"
     ],
     "gold_passage_ids": [
-      "chunk-421c2453243c2da4"
+      "chunk-3a4f3f08614dc268"
     ]
   },
   {
@@ -655,9 +657,8 @@
       "Звіт до лабораторної роботи №3 / Реалізація"
     ],
     "gold_passage_ids": [
-      "chunk-230a9615175364d9",
-      "chunk-7de8ebfc223e2406",
-      "chunk-c6cddafce64bf3f5"
+      "chunk-073b9da90cf9c792",
+      "chunk-312de896eb918af4"
     ]
   },
   {
@@ -685,8 +686,8 @@
       "Лабораторна робота №6 / Середовище та модель"
     ],
     "gold_passage_ids": [
-      "chunk-74d222f492cc6669",
-      "chunk-adafb09d29db82c4"
+      "chunk-24d0b9d10d53e82f",
+      "chunk-848f92fad2de281b"
     ]
   },
   {
@@ -724,20 +725,24 @@
       "Лабораторна робота №6 / Фактичні помилки та застрягання"
     ],
     "gold_passage_ids": [
-      "chunk-10f77db05bf6e6f3",
-      "chunk-119d574195d60fbc",
-      "chunk-1688b09b21c2c513",
-      "chunk-1a62992de51e1caf",
-      "chunk-291ad9ce094d5585",
-      "chunk-4ead124cfc4dff9d",
-      "chunk-82c813d73db1cf77",
-      "chunk-940011cfd2fbe411",
-      "chunk-9b9253ce9335ec3f",
-      "chunk-a1ffed8cecb945dd",
-      "chunk-a6a1616a7a4a279a",
-      "chunk-ac067864562e2b2f",
-      "chunk-bf82b285f8439ca5",
-      "chunk-d4a5a504fb563a8b"
+      "chunk-0111f65037b69bff",
+      "chunk-12a03b71961c1ac1",
+      "chunk-2541c6ccf2851bfc",
+      "chunk-46c1624506d2e193",
+      "chunk-47fa3567591701ef",
+      "chunk-6c7d34223e559081",
+      "chunk-76599141f8219ae7",
+      "chunk-7dd0954eb581a5c8",
+      "chunk-830dde97b9155de5",
+      "chunk-86d718f1afb8a0ac",
+      "chunk-9ec6e6392c0ad721",
+      "chunk-c20f91b8c873c9ed",
+      "chunk-c7c13e324e2b86f8",
+      "chunk-d2444550c68115e7",
+      "chunk-f25fe1c27cf5f7b0",
+      "chunk-f3da4d4a83bf3d4f",
+      "chunk-f4a75df4074f72a2",
+      "chunk-f98972d1584ddd9e"
     ]
   },
   {
@@ -768,12 +773,12 @@
       "Лабораторна робота №6 / Фактичні помилки та застрягання"
     ],
     "gold_passage_ids": [
-      "chunk-7039fb23718eb086",
-      "chunk-7af265cf2dfc2969",
-      "chunk-85a17dee48fd4c4c",
-      "chunk-9ef97ea084091deb",
-      "chunk-a7f31b4ee136c8b8",
-      "chunk-c6cddafce64bf3f5"
+      "chunk-073b9da90cf9c792",
+      "chunk-1133e41580e70178",
+      "chunk-2b56a92c74801888",
+      "chunk-4642f32d37ba2537",
+      "chunk-4729e518a0ef7ee6",
+      "chunk-5df8fa9bd18dcc7d"
     ]
   },
   {
@@ -804,9 +809,9 @@
       "Звіт до лабораторної роботи №3 / Реалізація"
     ],
     "gold_passage_ids": [
-      "chunk-43af63920d8d64ad",
-      "chunk-853c5a75ae80f8e0",
-      "chunk-c6cddafce64bf3f5"
+      "chunk-073b9da90cf9c792",
+      "chunk-458c9cd66b4c0a1c",
+      "chunk-ce91c3b15f07706b"
     ]
   },
   {
@@ -851,29 +856,34 @@
       "Лабораторна робота №5 / 9. Вхідне зображення"
     ],
     "gold_passage_ids": [
-      "chunk-0812f2f94d88caee",
-      "chunk-0b26bc429458bcc2",
-      "chunk-100cf6c4a7370c39",
-      "chunk-128b02934da9cf4d",
-      "chunk-1c35225386ea6c8b",
-      "chunk-40916694000a9493",
-      "chunk-43668ecd79057cfd",
-      "chunk-5d884cbaaa70aaeb",
-      "chunk-65c638eac0ebdfae",
-      "chunk-67553454707d614a",
-      "chunk-6df734682d4dc06a",
-      "chunk-7781e8a48d790707",
-      "chunk-89a66cb7b3709b98",
-      "chunk-8f4c99b5d79c24bc",
-      "chunk-a1c378d86833f1a6",
-      "chunk-a4371d256847e664",
-      "chunk-bccf2d5bb78c2033",
-      "chunk-c0eadc1b9213c399",
-      "chunk-c5df1da4e0c4a2bf",
-      "chunk-d77da206656e6da8",
-      "chunk-dcf9f93d2d35171c",
-      "chunk-ea1f1331770db123",
-      "chunk-eca153052b112ed0"
+      "chunk-1407dd0be2d2fcd0",
+      "chunk-18d474c532eaff77",
+      "chunk-1c5094e7423bc36b",
+      "chunk-26d0af60fb9fa7e7",
+      "chunk-2a770669fd14f515",
+      "chunk-3dfee68eebf183d4",
+      "chunk-41b3f6b8377f876a",
+      "chunk-4acbb5e0d0c5d4b1",
+      "chunk-5384cddcf9075b9b",
+      "chunk-5c08082f33816b8a",
+      "chunk-6840bec4abf514cd",
+      "chunk-6df372aabbcbdb8c",
+      "chunk-79d3cbd323866e7e",
+      "chunk-7e93d8b05229cb50",
+      "chunk-7fb74e0d4e973e63",
+      "chunk-896a2a16107a9c54",
+      "chunk-920d93de947630aa",
+      "chunk-99ec8eb4e21da20a",
+      "chunk-9fb5160565af959c",
+      "chunk-a258fb75bd76024c",
+      "chunk-a94f964af1ecfea3",
+      "chunk-aa189355741329d5",
+      "chunk-aa19138611347f87",
+      "chunk-ae052c16b966a501",
+      "chunk-ba3204a9b8ae0589",
+      "chunk-ca2e2d95b9a2643f",
+      "chunk-d3a358856bb197e2",
+      "chunk-f261f424057e37ef"
     ]
   },
   {
@@ -893,13 +903,15 @@
     "expected_tool_calls": [],
     "refusal_expected": false,
     "evidence_spans": [
-      "Cloud tracing вимкнено"
+      "Cloud tracing вимкнено",
+      "The copilot runs locally as a modular monolith."
     ],
     "target_sections": [
       "Лабораторна робота №6 / Середовище та модель"
     ],
     "gold_passage_ids": [
-      "chunk-60b6c7379d1b3732"
+      "chunk-6e773f78130aabdd",
+      "chunk-ee8f55a223e64af3"
     ]
   },
   {
@@ -919,13 +931,15 @@
     "expected_tool_calls": [],
     "refusal_expected": false,
     "evidence_spans": [
-      "Помилки інструментів повертаються коротким структурованим"
+      "Помилки інструментів повертаються коротким структурованим",
+      "Rejection policy: Zero-byte files or corrupted PDFs without an extractable text layer return HTTP 400 with `ExtractionError`."
     ],
     "target_sections": [
       "Лабораторна робота №6 / Робочий простір і інструменти"
     ],
     "gold_passage_ids": [
-      "chunk-a6a1616a7a4a279a"
+      "chunk-50dc3e44b7a22bc5",
+      "chunk-d2444550c68115e7"
     ]
   },
   {
@@ -945,10 +959,8 @@
     "expected_tool_calls": [],
     "refusal_expected": false,
     "evidence_spans": [
-      "**Мета:** дослідити параметри локального text-to-image inference у контрольованих порівняннях.",
-      "Stable Diffusion v1.5",
-      "864,031,264 параметри",
-      "primary_image.png: 512×512, PNG. Джерело: `labs/lab04_stable_diffusion/outputs/images/styles/photorealistic_seed42_steps30_cfg7p5_df410b01ba0eea49.png`; скопійовано без зміни оригіналу. SHA-256: `1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5`. Lab 5 використовує власну копію й не імпортує Lab 4. З пікселів видно будиночок ліворуч, коричневі дерев’яні стіни, темний дах, хвойні дерева, водойму та відбиття. Ground truth отримано з візуального огляду, а не prompt генератора."
+      "Методичка називає `runwayml/stable-diffusion-v1-5`.",
+      "`llava-hf/llava-interleave-qwen-0.5b-hf`, revision `1090956dd1c79bc93ae98dcf395590369435ec91`."
     ],
     "target_sections": [
       "Лабораторна робота №4",
@@ -960,13 +972,8 @@
       "Лабораторна робота №5 / 9. Вхідне зображення"
     ],
     "gold_passage_ids": [
-      "chunk-128b02934da9cf4d",
-      "chunk-43668ecd79057cfd",
-      "chunk-65c638eac0ebdfae",
-      "chunk-67553454707d614a",
-      "chunk-71b21c7d1cedea98",
-      "chunk-a1c378d86833f1a6",
-      "chunk-ea1f1331770db123"
+      "chunk-94bae1e60a6d617a",
+      "chunk-aa189355741329d5"
     ]
   },
   {
@@ -986,16 +993,16 @@
     "expected_tool_calls": [],
     "refusal_expected": false,
     "evidence_spans": [
-      "Hit@5 = 0.8571",
-      "Semantic baseline оцінено за Hit@5, MRR і Recall@5. Hit@k фіксує наявність хоча б одного релевантного документа, тоді як Recall@k показує повноту множини. Тому успішний Hit@5 не доводить, що контекст достатній для багатотоварної відповіді. Перевірка generation окремо аналізує поля, citations, completeness і відмову за недостатнього контексту."
+      "Semantic baseline оцінено за Hit@5, MRR і Recall@5. Hit@k фіксує наявність хоча б одного релевантного документа, тоді як Recall@k показує повноту множини.",
+      "Low query latency (<50ms for retrieval pipeline)."
     ],
     "target_sections": [
       "Звіт до лабораторної роботи №3 / Реалізація",
       "Звіт до лабораторної роботи №3 / Фактичні результати"
     ],
     "gold_passage_ids": [
-      "chunk-119d574195d60fbc",
-      "chunk-c6cddafce64bf3f5"
+      "chunk-073b9da90cf9c792",
+      "chunk-230a9615175364d9"
     ]
   },
   {
@@ -1025,8 +1032,8 @@
       "Лабораторна робота №5 / 8. Апаратне та програмне середовище"
     ],
     "gold_passage_ids": [
-      "chunk-ad0b753c42e1255b",
-      "chunk-c0eadc1b9213c399"
+      "chunk-9fb5160565af959c",
+      "chunk-a9920be700462f9a"
     ]
   },
   {
@@ -1056,9 +1063,10 @@
       "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)"
     ],
     "gold_passage_ids": [
-      "chunk-3820ea8db5c0e91e",
-      "chunk-43af63920d8d64ad",
-      "chunk-853c5a75ae80f8e0"
+      "chunk-161474725628508f",
+      "chunk-458c9cd66b4c0a1c",
+      "chunk-840311292cd3047a",
+      "chunk-ce91c3b15f07706b"
     ]
   },
   {
@@ -1088,8 +1096,8 @@
       "Звіт до лабораторної роботи №3 / Реалізація"
     ],
     "gold_passage_ids": [
-      "chunk-7de8ebfc223e2406",
-      "chunk-c6cddafce64bf3f5"
+      "chunk-073b9da90cf9c792",
+      "chunk-312de896eb918af4"
     ]
   },
   {
@@ -1118,8 +1126,8 @@
       "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)"
     ],
     "gold_passage_ids": [
-      "chunk-3820ea8db5c0e91e",
-      "chunk-43af63920d8d64ad"
+      "chunk-161474725628508f",
+      "chunk-ce91c3b15f07706b"
     ]
   },
   {
@@ -1145,7 +1153,7 @@
       "Лабораторна робота №4 / Організація контрольованих експериментів"
     ],
     "gold_passage_ids": [
-      "chunk-0b26bc429458bcc2"
+      "chunk-a258fb75bd76024c"
     ]
   },
   {
@@ -1173,7 +1181,7 @@
       "Лабораторна робота №6 / Середовище та модель"
     ],
     "gold_passage_ids": [
-      "chunk-adafb09d29db82c4"
+      "chunk-24d0b9d10d53e82f"
     ]
   },
   {
@@ -1201,7 +1209,7 @@
       "ADR 001: Vector Storage and Relational Persistence Architecture / Decision"
     ],
     "gold_passage_ids": [
-      "chunk-7de8ebfc223e2406"
+      "chunk-312de896eb918af4"
     ]
   },
   {
@@ -1229,7 +1237,7 @@
       "Звіт до лабораторної роботи №3 / Фактичні результати"
     ],
     "gold_passage_ids": [
-      "chunk-119d574195d60fbc"
+      "chunk-0111f65037b69bff"
     ]
   },
   {
@@ -1255,8 +1263,8 @@
       "Лабораторна робота №4 / Організація контрольованих експериментів"
     ],
     "gold_passage_ids": [
-      "chunk-0b26bc429458bcc2",
-      "chunk-8f4c99b5d79c24bc"
+      "chunk-896a2a16107a9c54",
+      "chunk-a258fb75bd76024c"
     ]
   },
   {

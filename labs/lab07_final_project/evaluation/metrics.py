@@ -18,7 +18,14 @@ def normalize_text(text: str) -> str:
 
 
 def is_chunk_relevant(chunk: dict, gold_query: dict) -> bool:
-    """Determine if a retrieved chunk matches ground truth targets with verified semantics."""
+    """Determine if a retrieved chunk matches ground truth targets with verified semantics.
+    
+    A correct document name or section title alone NEVER establishes factual evidence relevance.
+    Relevance strictly requires:
+    1. Exact validated passage ID; or
+    2. Verbatim supporting evidence span in retrieved chunk content; or
+    3. (Historical fallback) Substantive multi-word evidence overlap against gold chunk terms.
+    """
     filename = (chunk.get("filename") or "").casefold()
     source_id = (chunk.get("source_id") or "").casefold()
     document_id = (chunk.get("document_id") or "").casefold()
@@ -38,33 +45,25 @@ def is_chunk_relevant(chunk: dict, gold_query: dict) -> bool:
         )
         if not doc_match:
             return False
-    else:
-        doc_match = True
 
     # 2. Passage ID / Chunk ID exact match
-    gold_passage_ids = [p.casefold() for p in gold_query.get("gold_passage_ids", []) or gold_query.get("passage_ids", [])]
+    gold_passage_ids = [p.casefold() for p in (gold_query.get("gold_passage_ids") or gold_query.get("passage_ids") or [])]
     if gold_passage_ids and chunk_id in gold_passage_ids:
         return True
 
-    # 3. Verbatim Gold Evidence Span match
+    # 3. Verbatim Gold Evidence Span match in chunk content
     evidence_spans = gold_query.get("evidence_spans", [])
     if evidence_spans:
         for span in evidence_spans:
             norm_span = normalize_text(span)
-            if norm_span and (norm_span in content or norm_span in section):
+            if norm_span and norm_span in content:
                 return True
 
-    # 4. Target Section match within the confirmed document
-    target_sections = [normalize_text(s) for s in gold_query.get("target_sections", [])]
-    if target_sections and any(ts in section or section in ts for ts in target_sections if ts):
-        # When section matches, verify that chunk is substantive (not just header)
-        if len(content) > 40:
-            return True
-
-    # 5. Fallback Gold Chunks / Key Evidence Phrases
+    # 4. Fallback Gold Chunks / Key Evidence Phrases (substantive match only)
     gold_terms = [g for g in gold_query.get("gold_chunks", [])]
     if not gold_terms:
-        return doc_match
+        # Document or section alone NEVER establishes relevance
+        return False
 
     STOPWORDS = {
         "the", "and", "for", "that", "this", "with", "from", "are", "was",
@@ -80,7 +79,7 @@ def is_chunk_relevant(chunk: dict, gold_query: dict) -> bool:
         norm_term = normalize_text(term)
         if not norm_term:
             continue
-        if norm_term in content or norm_term in section:
+        if norm_term in content:
             return True
 
         # Multi-word substantive evidence overlap
@@ -146,18 +145,17 @@ def compute_retrieval_metrics(
         category_metrics[cat]["hit_5"].append(h5)
         category_metrics[cat]["mrr"].append(rr)
 
-        # Recall@k
+        # Recall@k calculation with consistent denominator across all k
+        num_targets = len(relevant_docs) if relevant_docs else 1
         for k in k_thresholds:
             chunks_at_k = retrieved[:k]
-            if len(relevant_docs) > 1 and k >= len(relevant_docs):
+            if relevant_docs:
                 retrieved_doc_matches = 0
                 for r_doc in relevant_docs:
-                    if any(
-                        is_chunk_relevant(c, {**r, "relevant_doc_ids": [r_doc]})
-                        for c in chunks_at_k
-                    ):
+                    doc_query = {**r, "relevant_doc_ids": [r_doc]}
+                    if any(is_chunk_relevant(c, doc_query) for c in chunks_at_k):
                         retrieved_doc_matches += 1
-                rec_k = retrieved_doc_matches / len(relevant_docs)
+                rec_k = retrieved_doc_matches / num_targets
             else:
                 rec_k = 1.0 if any(is_chunk_relevant(c, r) for c in chunks_at_k) else 0.0
 
@@ -166,6 +164,14 @@ def compute_retrieval_metrics(
                 category_metrics[cat]["recall_1"].append(rec_k)
             elif k == 5:
                 category_metrics[cat]["recall_5"].append(rec_k)
+
+        # Mathematical monotonicity invariant check: Recall@1 <= Recall@3 <= Recall@5
+        r1, r3, r5 = recalls[1][-1], recalls[3][-1], recalls[5][-1]
+        if not (r1 <= r3 + 1e-9 <= r5 + 1e-9):
+            raise AssertionError(
+                f"Recall@k monotonicity violation for query {qid}: "
+                f"R@1={r1:.4f}, R@3={r3:.4f}, R@5={r5:.4f}"
+            )
 
         # Track query failure if Recall@5 < 1.0 or Hit@5 == 0.0
         rec_5_val = recalls[5][-1]
@@ -182,13 +188,21 @@ def compute_retrieval_metrics(
                 "top_retrieved_sections": [c.get("section", "") for c in retrieved[:3]],
             })
 
+    mean_r1 = float(np.mean(recalls[1])) if recalls[1] else 0.0
+    mean_r3 = float(np.mean(recalls[3])) if recalls[3] else 0.0
+    mean_r5 = float(np.mean(recalls[5])) if recalls[5] else 0.0
+    if not (mean_r1 <= mean_r3 + 1e-9 <= mean_r5 + 1e-9):
+        raise AssertionError(
+            f"Aggregate Recall@k monotonicity violation: R@1={mean_r1:.4f}, R@3={mean_r3:.4f}, R@5={mean_r5:.4f}"
+        )
+
     summary = {
         "total_evaluated_queries": len(eval_results),
         "supported_queries": len(supported_results),
         "refusal_queries": len(eval_results) - len(supported_results),
-        "evidence_recall_1": float(np.mean(recalls[1])) if recalls[1] else 0.0,
-        "evidence_recall_3": float(np.mean(recalls[3])) if recalls[3] else 0.0,
-        "evidence_recall_5": float(np.mean(recalls[5])) if recalls[5] else 0.0,
+        "evidence_recall_1": mean_r1,
+        "evidence_recall_3": mean_r3,
+        "evidence_recall_5": mean_r5,
         "hit_at_5": float(np.mean(hit_5)) if hit_5 else 0.0,
         "mrr": float(np.mean(mrr_scores)) if mrr_scores else 0.0,
         "truncation_violations": truncation_violations,

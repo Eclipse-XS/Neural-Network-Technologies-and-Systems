@@ -5,7 +5,8 @@
     "supported_queries": 85,
     "refusal_queries": 15,
     "verified_evidence_spans": 172,
-    "sha256": "bbf92c004ad91e2247b638e0f1860c2ae47f1aeae41a89495ca3cc7097d36eb3",
+    "verified_gold_passages": 205,
+    "sha256": "5aad50c90b4100499cf5a8d13982c94a23b92b7664ce9242395ada45320c09e0",
     "status": "VALIDATED"
   },
   "dev_eval_50.json": {
@@ -13,8 +14,9 @@
     "query_count": 50,
     "supported_queries": 43,
     "refusal_queries": 7,
-    "verified_evidence_spans": 88,
-    "sha256": "68ea707746e5b0510bc26af9ab6a8ee3aaacbf513d075e538ab23e806ad0453e",
+    "verified_evidence_spans": 87,
+    "verified_gold_passages": 67,
+    "sha256": "352774cce8da799b16ccf57d05af2f98a3026b2dffd71287ccb590dc6b10d04a",
     "status": "VALIDATED"
   },
   "acceptance_eval_50.json": {
@@ -22,8 +24,9 @@
     "query_count": 50,
     "supported_queries": 42,
     "refusal_queries": 8,
-    "verified_evidence_spans": 84,
-    "sha256": "308eee463285dd300d2f68079d19c79607c457461134859d81a9e47581bf96c2",
+    "verified_evidence_spans": 85,
+    "verified_gold_passages": 138,
+    "sha256": "aeecbc6484dbf034839ddc7cf1ad90dea4fcf801b50f2fadfbcfd0324a48bcd6",
     "status": "VALIDATED"
   },
   "final_acceptance_holdout_50.json": {
@@ -32,7 +35,8 @@
     "supported_queries": 40,
     "refusal_queries": 10,
     "verified_evidence_spans": 57,
-    "sha256": "1493c4ea5093bae5cd501c1349beb0513305af98582c7891f1232be7536b82cc",
+    "verified_gold_passages": 53,
+    "sha256": "dd414345586ad80759962154182b269eb50ab5997e9fde9087ce1876931923c4",
     "status": "VALIDATED"
   }
 }

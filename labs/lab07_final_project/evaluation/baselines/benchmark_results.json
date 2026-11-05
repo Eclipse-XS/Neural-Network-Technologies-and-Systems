@@ -4,13 +4,13 @@
       "total_evaluated_queries": 100,
       "supported_queries": 85,
       "refusal_queries": 15,
-      "evidence_recall_1": 0.43529411764705883,
-      "evidence_recall_3": 0.6411764705882353,
-      "evidence_recall_5": 0.7411764705882353,
-      "hit_at_5": 0.8,
-      "mrr": 0.5756862745098039,
+      "evidence_recall_1": 0.4176470588235294,
+      "evidence_recall_3": 0.6588235294117647,
+      "evidence_recall_5": 0.7647058823529411,
+      "hit_at_5": 0.8235294117647058,
+      "mrr": 0.5933333333333334,
       "truncation_violations": 0,
-      "failed_query_count": 27,
+      "failed_query_count": 25,
       "failed_queries": [
         {
           "query_id": "eval_003",
@@ -226,7 +226,7 @@
           "query_id": "eval_051",
           "category": "cross_document",
           "query": "Compare the VRAM requirements and offloading strategies between Lab 4 and Lab 5 on the RTX 3050 GPU.",
-          "recall_1": 1.0,
+          "recall_1": 0.5,
           "recall_5": 0.5,
           "hit_5": 1.0,
           "mrr": 1.0,
@@ -277,24 +277,6 @@
           ]
         },
         {
-          "query_id": "eval_056",
-          "category": "cross_document",
-          "query": "Як різняться вхідні зображення: згенероване у Lab 4 та використане як primary_image у Lab 5?",
-          "recall_1": 0.0,
-          "recall_5": 0.5,
-          "hit_5": 1.0,
-          "mrr": 0.25,
-          "relevant_doc_ids": [
-            "lab04_stable_diffusion_report.md",
-            "lab05_multimodal_report.md"
-          ],
-          "top_retrieved_sections": [
-            "Лабораторна робота №4 / Обмеження",
-            "Лабораторна робота №4 / Організація контрольованих експериментів",
-            "Лабораторна робота №4 / Відповідність методичці"
-          ]
-        },
-        {
           "query_id": "eval_057",
           "category": "cross_document",
           "query": "Compare the evaluation focus between Lab 3 retrieval experiments and the Knowledge Copilot benchmark.",
@@ -317,9 +299,9 @@
           "category": "cross_document",
           "query": "Порівняйте рівень ізоляції мережі та зовнішніх викликів між Lab 6 та Knowledge Copilot.",
           "recall_1": 0.0,
-          "recall_5": 0.0,
-          "hit_5": 0.0,
-          "mrr": 0.0,
+          "recall_5": 0.5,
+          "hit_5": 1.0,
+          "mrr": 0.25,
           "relevant_doc_ids": [
             "lab06_agents_report.md",
             "rag_system_runbook.md"
@@ -353,9 +335,9 @@
           "category": "cross_document",
           "query": "Яка різниця між структурою помилок у Lab 6 та відповідями при помилках в API Copilot?",
           "recall_1": 0.0,
-          "recall_5": 0.0,
-          "hit_5": 0.0,
-          "mrr": 0.0,
+          "recall_5": 0.5,
+          "hit_5": 1.0,
+          "mrr": 0.2,
           "relevant_doc_ids": [
             "lab06_agents_report.md",
             "api_specification_and_contracts.md"
@@ -418,24 +400,6 @@
             "Лабораторна робота №4 / Відповідність методичці",
             "Лабораторна робота №4 / Джерела",
             "Лабораторна робота №4 / Організація контрольованих експериментів"
-          ]
-        },
-        {
-          "query_id": "eval_064",
-          "category": "cross_document",
-          "query": "Порівняйте метрики пошуку Hit@5 у семантичного бейзлайну Lab 3 та цільовий критерій у специфікації Lab 7.",
-          "recall_1": 1.0,
-          "recall_5": 0.5,
-          "hit_5": 1.0,
-          "mrr": 1.0,
-          "relevant_doc_ids": [
-            "lab03_rag_report.md",
-            "adr_001_vector_and_storage_architecture.md"
-          ],
-          "top_retrieved_sections": [
-            "Звіт до лабораторної роботи №3 / Фактичні результати",
-            "Звіт до лабораторної роботи №3 / Реалізація",
-            "Звіт до лабораторної роботи №3 / Реалізація"
           ]
         },
         {
@@ -503,16 +467,16 @@
         "semantic_paraphrase": {
           "count": 20,
           "hit_5": 0.7,
-          "mrr": 0.4766666666666667,
+          "mrr": 0.4916666666666667,
           "recall_1": 0.35,
           "recall_5": 0.7
         },
         "cross_document": {
           "count": 20,
-          "hit_5": 0.7,
-          "mrr": 0.3475,
-          "recall_1": 0.2,
-          "recall_5": 0.45
+          "hit_5": 0.8,
+          "mrr": 0.40750000000000003,
+          "recall_1": 0.125,
+          "recall_5": 0.55
         },
         "numerical_reasoning": {
           "count": 20,
@@ -523,13 +487,13 @@
         }
       },
       "latency": {
-        "p50_ms": 45.9100499865599,
-        "p90_ms": 87.12132997461597,
-        "p95_ms": 94.60342998208944,
-        "p99_ms": 107.16942898812714,
-        "mean_ms": 56.15279799851123,
-        "min_ms": 35.52879998460412,
-        "max_ms": 127.35839997185394
+        "p50_ms": 44.111099996371195,
+        "p90_ms": 85.91145995887928,
+        "p95_ms": 89.11800995119847,
+        "p99_ms": 94.60529198462625,
+        "mean_ms": 53.8620500016259,
+        "min_ms": 38.771499996073544,
+        "max_ms": 125.74990000575781
       },
       "benchmark_config": {
         "mode": "dense",
@@ -541,13 +505,13 @@
       "total_evaluated_queries": 100,
       "supported_queries": 85,
       "refusal_queries": 15,
-      "evidence_recall_1": 0.5176470588235295,
-      "evidence_recall_3": 0.6529411764705882,
-      "evidence_recall_5": 0.7588235294117647,
-      "hit_at_5": 0.8352941176470589,
-      "mrr": 0.6349019607843137,
+      "evidence_recall_1": 0.48823529411764705,
+      "evidence_recall_3": 0.6647058823529411,
+      "evidence_recall_5": 0.7764705882352941,
+      "hit_at_5": 0.8588235294117647,
+      "mrr": 0.6584313725490196,
       "truncation_violations": 0,
-      "failed_query_count": 27,
+      "failed_query_count": 26,
       "failed_queries": [
         {
           "query_id": "eval_002",
@@ -798,7 +762,7 @@
           "query_id": "eval_051",
           "category": "cross_document",
           "query": "Compare the VRAM requirements and offloading strategies between Lab 4 and Lab 5 on the RTX 3050 GPU.",
-          "recall_1": 1.0,
+          "recall_1": 0.5,
           "recall_5": 0.5,
           "hit_5": 1.0,
           "mrr": 1.0,
@@ -816,7 +780,7 @@
           "query_id": "eval_053",
           "category": "cross_document",
           "query": "How do the token budget constraints differ between the MiniLM model in Lab 3 and the Agent context in Lab 6?",
-          "recall_1": 1.0,
+          "recall_1": 0.5,
           "recall_5": 0.5,
           "hit_5": 1.0,
           "mrr": 1.0,
@@ -849,24 +813,6 @@
           ]
         },
         {
-          "query_id": "eval_056",
-          "category": "cross_document",
-          "query": "Як різняться вхідні зображення: згенероване у Lab 4 та використане як primary_image у Lab 5?",
-          "recall_1": 0.0,
-          "recall_5": 0.5,
-          "hit_5": 1.0,
-          "mrr": 0.25,
-          "relevant_doc_ids": [
-            "lab04_stable_diffusion_report.md",
-            "lab05_multimodal_report.md"
-          ],
-          "top_retrieved_sections": [
-            "Лабораторна робота №4 / Дослідження steps",
-            "Лабораторна робота №4 / Відповідність методичці",
-            "Лабораторна робота №4 / Теорія та архітектура"
-          ]
-        },
-        {
           "query_id": "eval_057",
           "category": "cross_document",
           "query": "Compare the evaluation focus between Lab 3 retrieval experiments and the Knowledge Copilot benchmark.",
@@ -889,9 +835,9 @@
           "category": "cross_document",
           "query": "Порівняйте рівень ізоляції мережі та зовнішніх викликів між Lab 6 та Knowledge Copilot.",
           "recall_1": 0.0,
-          "recall_5": 0.0,
-          "hit_5": 0.0,
-          "mrr": 0.0,
+          "recall_5": 0.5,
+          "hit_5": 1.0,
+          "mrr": 0.25,
           "relevant_doc_ids": [
             "lab06_agents_report.md",
             "rag_system_runbook.md"
@@ -924,7 +870,7 @@
           "query_id": "eval_060",
           "category": "cross_document",
           "query": "Яка різниця між структурою помилок у Lab 6 та відповідями при помилках в API Copilot?",
-          "recall_1": 1.0,
+          "recall_1": 0.5,
           "recall_5": 0.5,
           "hit_5": 1.0,
           "mrr": 1.0,
@@ -942,7 +888,7 @@
           "query_id": "eval_061",
           "category": "cross_document",
           "query": "Contrast the document parsing capabilities of Lab 3 CSVLoader with the generalized extractors in Knowledge Copilot.",
-          "recall_1": 1.0,
+          "recall_1": 0.5,
           "recall_5": 0.5,
           "hit_5": 1.0,
           "mrr": 1.0,
@@ -997,9 +943,9 @@
           "category": "cross_document",
           "query": "Порівняйте метрики пошуку Hit@5 у семантичного бейзлайну Lab 3 та цільовий критерій у специфікації Lab 7.",
           "recall_1": 0.0,
-          "recall_5": 0.0,
-          "hit_5": 0.0,
-          "mrr": 0.0,
+          "recall_5": 0.5,
+          "hit_5": 1.0,
+          "mrr": 0.5,
           "relevant_doc_ids": [
             "lab03_rag_report.md",
             "adr_001_vector_and_storage_architecture.md"
@@ -1040,33 +986,33 @@
         "semantic_paraphrase": {
           "count": 20,
           "hit_5": 0.7,
-          "mrr": 0.4833333333333333,
-          "recall_1": 0.35,
+          "mrr": 0.5083333333333333,
+          "recall_1": 0.4,
           "recall_5": 0.7
         },
         "cross_document": {
           "count": 20,
-          "hit_5": 0.8,
-          "mrr": 0.4691666666666666,
-          "recall_1": 0.35,
-          "recall_5": 0.475
+          "hit_5": 0.9,
+          "mrr": 0.5441666666666667,
+          "recall_1": 0.2,
+          "recall_5": 0.55
         },
         "numerical_reasoning": {
           "count": 20,
           "hit_5": 1.0,
           "mrr": 0.9,
-          "recall_1": 0.8,
+          "recall_1": 0.775,
           "recall_5": 1.0
         }
       },
       "latency": {
-        "p50_ms": 2.0724499772768468,
-        "p90_ms": 3.1696000078227375,
-        "p95_ms": 3.349480000906624,
-        "p99_ms": 4.056950998492553,
-        "mean_ms": 2.242986999335699,
-        "min_ms": 1.1479000095278025,
-        "max_ms": 6.88349996926263
+        "p50_ms": 2.117899974109605,
+        "p90_ms": 2.9747100372333084,
+        "p95_ms": 3.4845899499487127,
+        "p99_ms": 4.094797000871058,
+        "mean_ms": 2.235815996536985,
+        "min_ms": 1.2389000039547682,
+        "max_ms": 7.608999963849783
       },
       "benchmark_config": {
         "mode": "lexical",
@@ -1078,13 +1024,13 @@
       "total_evaluated_queries": 100,
       "supported_queries": 85,
       "refusal_queries": 15,
-      "evidence_recall_1": 0.5294117647058824,
-      "evidence_recall_3": 0.6470588235294118,
-      "evidence_recall_5": 0.7352941176470589,
-      "hit_at_5": 0.788235294117647,
-      "mrr": 0.6286274509803921,
+      "evidence_recall_1": 0.5117647058823529,
+      "evidence_recall_3": 0.6647058823529411,
+      "evidence_recall_5": 0.7529411764705882,
+      "hit_at_5": 0.8,
+      "mrr": 0.648235294117647,
       "truncation_violations": 0,
-      "failed_query_count": 27,
+      "failed_query_count": 25,
       "failed_queries": [
         {
           "query_id": "eval_002",
@@ -1335,7 +1281,7 @@
           "query_id": "eval_051",
           "category": "cross_document",
           "query": "Compare the VRAM requirements and offloading strategies between Lab 4 and Lab 5 on the RTX 3050 GPU.",
-          "recall_1": 1.0,
+          "recall_1": 0.5,
           "recall_5": 0.5,
           "hit_5": 1.0,
           "mrr": 1.0,
@@ -1353,7 +1299,7 @@
           "query_id": "eval_053",
           "category": "cross_document",
           "query": "How do the token budget constraints differ between the MiniLM model in Lab 3 and the Agent context in Lab 6?",
-          "recall_1": 1.0,
+          "recall_1": 0.5,
           "recall_5": 0.5,
           "hit_5": 1.0,
           "mrr": 1.0,
@@ -1386,24 +1332,6 @@
           ]
         },
         {
-          "query_id": "eval_056",
-          "category": "cross_document",
-          "query": "Як різняться вхідні зображення: згенероване у Lab 4 та використане як primary_image у Lab 5?",
-          "recall_1": 0.0,
-          "recall_5": 0.5,
-          "hit_5": 1.0,
-          "mrr": 0.5,
-          "relevant_doc_ids": [
-            "lab04_stable_diffusion_report.md",
-            "lab05_multimodal_report.md"
-          ],
-          "top_retrieved_sections": [
-            "Лабораторна робота №4 / Відповідність методичці",
-            "Лабораторна робота №5 / 9. Вхідне зображення",
-            "Лабораторна робота №4 / Організація контрольованих експериментів"
-          ]
-        },
-        {
           "query_id": "eval_057",
           "category": "cross_document",
           "query": "Compare the evaluation focus between Lab 3 retrieval experiments and the Knowledge Copilot benchmark.",
@@ -1426,9 +1354,9 @@
           "category": "cross_document",
           "query": "Порівняйте рівень ізоляції мережі та зовнішніх викликів між Lab 6 та Knowledge Copilot.",
           "recall_1": 0.0,
-          "recall_5": 0.0,
-          "hit_5": 0.0,
-          "mrr": 0.0,
+          "recall_5": 0.5,
+          "hit_5": 1.0,
+          "mrr": 0.5,
           "relevant_doc_ids": [
             "lab06_agents_report.md",
             "rag_system_runbook.md"
@@ -1479,7 +1407,7 @@
           "query_id": "eval_061",
           "category": "cross_document",
           "query": "Contrast the document parsing capabilities of Lab 3 CSVLoader with the generalized extractors in Knowledge Copilot.",
-          "recall_1": 1.0,
+          "recall_1": 0.5,
           "recall_5": 0.5,
           "hit_5": 1.0,
           "mrr": 1.0,
@@ -1530,24 +1458,6 @@
           ]
         },
         {
-          "query_id": "eval_064",
-          "category": "cross_document",
-          "query": "Порівняйте метрики пошуку Hit@5 у семантичного бейзлайну Lab 3 та цільовий критерій у специфікації Lab 7.",
-          "recall_1": 1.0,
-          "recall_5": 0.5,
-          "hit_5": 1.0,
-          "mrr": 1.0,
-          "relevant_doc_ids": [
-            "lab03_rag_report.md",
-            "adr_001_vector_and_storage_architecture.md"
-          ],
-          "top_retrieved_sections": [
-            "Звіт до лабораторної роботи №3 / Фактичні результати",
-            "ADR 001: Vector Storage and Relational Persistence Architecture / Context",
-            "Звіт до лабораторної роботи №3 / Реалізація"
-          ]
-        },
-        {
           "query_id": "eval_065",
           "category": "cross_document",
           "query": "Compare the execution interfaces provided in Lab 6 versus Knowledge Copilot.",
@@ -1577,33 +1487,33 @@
         "semantic_paraphrase": {
           "count": 20,
           "hit_5": 0.7,
-          "mrr": 0.42833333333333334,
-          "recall_1": 0.3,
+          "mrr": 0.4616666666666666,
+          "recall_1": 0.35,
           "recall_5": 0.7
         },
         "cross_document": {
           "count": 20,
-          "hit_5": 0.6,
-          "mrr": 0.39166666666666666,
-          "recall_1": 0.25,
-          "recall_5": 0.375
+          "hit_5": 0.65,
+          "mrr": 0.4416666666666666,
+          "recall_1": 0.15,
+          "recall_5": 0.45
         },
         "numerical_reasoning": {
           "count": 20,
           "hit_5": 1.0,
           "mrr": 0.925,
-          "recall_1": 0.85,
+          "recall_1": 0.825,
           "recall_5": 1.0
         }
       },
       "latency": {
-        "p50_ms": 47.51554998802021,
-        "p90_ms": 85.81194000435063,
-        "p95_ms": 91.46573501056992,
-        "p99_ms": 98.2131679909071,
-        "mean_ms": 55.63875400228426,
-        "min_ms": 39.21349998563528,
-        "max_ms": 98.21989998454228
+        "p50_ms": 47.78439996880479,
+        "p90_ms": 96.00231003132649,
+        "p95_ms": 98.85802497738041,
+        "p99_ms": 104.0211829985492,
+        "mean_ms": 57.29728400299791,
+        "min_ms": 37.88710001390427,
+        "max_ms": 105.27679999358952
       },
       "benchmark_config": {
         "mode": "hybrid",
@@ -1616,13 +1526,13 @@
     "total_evaluated_queries": 100,
     "supported_queries": 85,
     "refusal_queries": 15,
-    "evidence_recall_1": 0.5294117647058824,
-    "evidence_recall_3": 0.6470588235294118,
-    "evidence_recall_5": 0.7352941176470589,
-    "hit_at_5": 0.788235294117647,
-    "mrr": 0.6286274509803921,
+    "evidence_recall_1": 0.5117647058823529,
+    "evidence_recall_3": 0.6647058823529411,
+    "evidence_recall_5": 0.7529411764705882,
+    "hit_at_5": 0.8,
+    "mrr": 0.648235294117647,
     "truncation_violations": 0,
-    "failed_query_count": 27,
+    "failed_query_count": 25,
     "failed_queries": [
       {
         "query_id": "eval_002",
@@ -1873,7 +1783,7 @@
         "query_id": "eval_051",
         "category": "cross_document",
         "query": "Compare the VRAM requirements and offloading strategies between Lab 4 and Lab 5 on the RTX 3050 GPU.",
-        "recall_1": 1.0,
+        "recall_1": 0.5,
         "recall_5": 0.5,
         "hit_5": 1.0,
         "mrr": 1.0,
@@ -1891,7 +1801,7 @@
         "query_id": "eval_053",
         "category": "cross_document",
         "query": "How do the token budget constraints differ between the MiniLM model in Lab 3 and the Agent context in Lab 6?",
-        "recall_1": 1.0,
+        "recall_1": 0.5,
         "recall_5": 0.5,
         "hit_5": 1.0,
         "mrr": 1.0,
@@ -1924,24 +1834,6 @@
         ]
       },
       {
-        "query_id": "eval_056",
-        "category": "cross_document",
-        "query": "Як різняться вхідні зображення: згенероване у Lab 4 та використане як primary_image у Lab 5?",
-        "recall_1": 0.0,
-        "recall_5": 0.5,
-        "hit_5": 1.0,
-        "mrr": 0.5,
-        "relevant_doc_ids": [
-          "lab04_stable_diffusion_report.md",
-          "lab05_multimodal_report.md"
-        ],
-        "top_retrieved_sections": [
-          "Лабораторна робота №4 / Відповідність методичці",
-          "Лабораторна робота №5 / 9. Вхідне зображення",
-          "Лабораторна робота №4 / Організація контрольованих експериментів"
-        ]
-      },
-      {
         "query_id": "eval_057",
         "category": "cross_document",
         "query": "Compare the evaluation focus between Lab 3 retrieval experiments and the Knowledge Copilot benchmark.",
@@ -1964,9 +1856,9 @@
         "category": "cross_document",
         "query": "Порівняйте рівень ізоляції мережі та зовнішніх викликів між Lab 6 та Knowledge Copilot.",
         "recall_1": 0.0,
-        "recall_5": 0.0,
-        "hit_5": 0.0,
-        "mrr": 0.0,
+        "recall_5": 0.5,
+        "hit_5": 1.0,
+        "mrr": 0.5,
         "relevant_doc_ids": [
           "lab06_agents_report.md",
           "rag_system_runbook.md"
@@ -2017,7 +1909,7 @@
         "query_id": "eval_061",
         "category": "cross_document",
         "query": "Contrast the document parsing capabilities of Lab 3 CSVLoader with the generalized extractors in Knowledge Copilot.",
-        "recall_1": 1.0,
+        "recall_1": 0.5,
         "recall_5": 0.5,
         "hit_5": 1.0,
         "mrr": 1.0,
@@ -2068,24 +1960,6 @@
         ]
       },
       {
-        "query_id": "eval_064",
-        "category": "cross_document",
-        "query": "Порівняйте метрики пошуку Hit@5 у семантичного бейзлайну Lab 3 та цільовий критерій у специфікації Lab 7.",
-        "recall_1": 1.0,
-        "recall_5": 0.5,
-        "hit_5": 1.0,
-        "mrr": 1.0,
-        "relevant_doc_ids": [
-          "lab03_rag_report.md",
-          "adr_001_vector_and_storage_architecture.md"
-        ],
-        "top_retrieved_sections": [
-          "Звіт до лабораторної роботи №3 / Фактичні результати",
-          "ADR 001: Vector Storage and Relational Persistence Architecture / Context",
-          "Звіт до лабораторної роботи №3 / Реалізація"
-        ]
-      },
-      {
         "query_id": "eval_065",
         "category": "cross_document",
         "query": "Compare the execution interfaces provided in Lab 6 versus Knowledge Copilot.",
@@ -2115,33 +1989,33 @@
       "semantic_paraphrase": {
         "count": 20,
         "hit_5": 0.7,
-        "mrr": 0.42833333333333334,
-        "recall_1": 0.3,
+        "mrr": 0.4616666666666666,
+        "recall_1": 0.35,
         "recall_5": 0.7
       },
       "cross_document": {
         "count": 20,
-        "hit_5": 0.6,
-        "mrr": 0.39166666666666666,
-        "recall_1": 0.25,
-        "recall_5": 0.375
+        "hit_5": 0.65,
+        "mrr": 0.4416666666666666,
+        "recall_1": 0.15,
+        "recall_5": 0.45
       },
       "numerical_reasoning": {
         "count": 20,
         "hit_5": 1.0,
         "mrr": 0.925,
-        "recall_1": 0.85,
+        "recall_1": 0.825,
         "recall_5": 1.0
       }
     },
     "latency": {
-      "p50_ms": 47.51554998802021,
-      "p90_ms": 85.81194000435063,
-      "p95_ms": 91.46573501056992,
-      "p99_ms": 98.2131679909071,
-      "mean_ms": 55.63875400228426,
-      "min_ms": 39.21349998563528,
-      "max_ms": 98.21989998454228
+      "p50_ms": 47.78439996880479,
+      "p90_ms": 96.00231003132649,
+      "p95_ms": 98.85802497738041,
+      "p99_ms": 104.0211829985492,
+      "mean_ms": 57.29728400299791,
+      "min_ms": 37.88710001390427,
+      "max_ms": 105.27679999358952
     },
     "benchmark_config": {
       "mode": "hybrid",
@@ -2152,11 +2026,11 @@
   "targets_passed": false,
   "itemized_results": [
     {
-      "query_id": "eval_001",
+      "id": "eval_001",
       "category": "exact_fact",
       "language": "uk",
       "query": "Яку розмірність ембеддінгів формує модель all-MiniLM-L6-v2 у Lab 3?",
-      "refusal_expected": false,
+      "expected_answer": "all-MiniLM-L6-v2 формує 384-вимірні нормалізовані embeddings.",
       "relevant_doc_ids": [
         "lab03_rag_report.md"
       ],
@@ -2164,6 +2038,19 @@
         "all-MiniLM-L6-v2",
         "384-вимірні embeddings"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "all-MiniLM-L6-v2",
+        "384-вимірні embeddings"
+      ],
+      "target_sections": [
+        "Звіт до лабораторної роботи №3 / Реалізація"
+      ],
+      "gold_passage_ids": [
+        "chunk-073b9da90cf9c792"
+      ],
+      "query_id": "eval_001",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -2226,14 +2113,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 44.64510001707822
+      "latency_ms": 41.98879998875782
     },
     {
-      "query_id": "eval_002",
+      "id": "eval_002",
       "category": "exact_fact",
       "language": "en",
       "query": "What is the exact parameter count of the full multimodal model used in Lab 5?",
-      "refusal_expected": false,
+      "expected_answer": "The full model has 864,031,264 parameters.",
       "relevant_doc_ids": [
         "lab05_multimodal_report.md"
       ],
@@ -2241,6 +2128,19 @@
         "864,031,264 параметри",
         "LlavaForConditionalGeneration"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "864,031,264 параметри",
+        "LlavaForConditionalGeneration"
+      ],
+      "target_sections": [
+        "Лабораторна робота №5 / 7. Використана модель"
+      ],
+      "gold_passage_ids": [
+        "chunk-94bae1e60a6d617a"
+      ],
+      "query_id": "eval_002",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -2303,14 +2203,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 46.37110000476241
+      "latency_ms": 47.48890001792461
     },
     {
-      "query_id": "eval_003",
+      "id": "eval_003",
       "category": "exact_fact",
       "language": "uk",
       "query": "Який планувальник (scheduler) використовується для генерації в Lab 4?",
-      "refusal_expected": false,
+      "expected_answer": "Використовується PNDMScheduler у StableDiffusionPipeline.",
       "relevant_doc_ids": [
         "lab04_stable_diffusion_report.md"
       ],
@@ -2318,6 +2218,19 @@
         "PNDMScheduler",
         "StableDiffusionPipeline"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "PNDMScheduler",
+        "StableDiffusionPipeline"
+      ],
+      "target_sections": [
+        "Лабораторна робота №4 / Модель і середовище"
+      ],
+      "gold_passage_ids": [
+        "chunk-aa189355741329d5"
+      ],
+      "query_id": "eval_003",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -2380,14 +2293,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 42.30470000766218
+      "latency_ms": 47.573299962095916
     },
     {
-      "query_id": "eval_004",
+      "id": "eval_004",
       "category": "exact_fact",
       "language": "en",
       "query": "What is the maximum token sequence length budget in Lab 3 before truncation occurs?",
-      "refusal_expected": false,
+      "expected_answer": "MiniLM truncates records over 256 word pieces.",
       "relevant_doc_ids": [
         "lab03_rag_report.md"
       ],
@@ -2395,6 +2308,19 @@
         "256 word pieces",
         "обрізає 17 довгих записів"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "256 word pieces",
+        "обрізає 17 довгих записів"
+      ],
+      "target_sections": [
+        "Звіт до лабораторної роботи №3 / Обмеження і подальша робота"
+      ],
+      "gold_passage_ids": [
+        "chunk-4d5ce6f4f6109390"
+      ],
+      "query_id": "eval_004",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -2457,14 +2383,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 42.071000032592565
+      "latency_ms": 47.99549997551367
     },
     {
-      "query_id": "eval_005",
+      "id": "eval_005",
       "category": "exact_fact",
       "language": "uk",
       "query": "Скільки шарів має енкодер зору SigLIP у Lab 5 та який його patch_size?",
-      "refusal_expected": false,
+      "expected_answer": "SigLIP Vision має 26 шарів, hidden_size=1152, patch_size=14 та image_size=384.",
       "relevant_doc_ids": [
         "lab05_multimodal_report.md"
       ],
@@ -2472,6 +2398,19 @@
         "SigLIP Vision має 26 шарів",
         "patch_size=14"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "SigLIP Vision має 26 шарів",
+        "patch_size=14"
+      ],
+      "target_sections": [
+        "Лабораторна робота №5 / 5. Архітектура мультимодальної моделі"
+      ],
+      "gold_passage_ids": [
+        "chunk-848f92fad2de281b"
+      ],
+      "query_id": "eval_005",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -2534,14 +2473,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 43.66919997846708
+      "latency_ms": 40.384899999480695
     },
     {
-      "query_id": "eval_006",
+      "id": "eval_006",
       "category": "exact_fact",
       "language": "en",
       "query": "Which revision of Stable Diffusion v1.5 checkpoint was used in Lab 4?",
-      "refusal_expected": false,
+      "expected_answer": "Revision 451f4fe16113bff5a5d2269ed5ad43b0592e9a14 was used.",
       "relevant_doc_ids": [
         "lab04_stable_diffusion_report.md"
       ],
@@ -2549,6 +2488,19 @@
         "451f4fe16113bff5a5d2269ed5ad43b0592e9a14",
         "Revision:"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "451f4fe16113bff5a5d2269ed5ad43b0592e9a14",
+        "Revision:"
+      ],
+      "target_sections": [
+        "Лабораторна робота №4 / Модель і середовище"
+      ],
+      "gold_passage_ids": [
+        "chunk-aa189355741329d5"
+      ],
+      "query_id": "eval_006",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -2611,14 +2563,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 40.83479999098927
+      "latency_ms": 44.87350000999868
     },
     {
-      "query_id": "eval_007",
+      "id": "eval_007",
       "category": "exact_fact",
       "language": "uk",
       "query": "Яка версія бібліотеки openai-agents використовувалася в Lab 6?",
-      "refusal_expected": false,
+      "expected_answer": "Використовувалася версія openai-agents 0.22.3.",
       "relevant_doc_ids": [
         "lab06_agents_report.md"
       ],
@@ -2626,6 +2578,21 @@
         "openai-agents 0.22.3",
         "Середовище та модель"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "openai-agents 0.22.3",
+        "Середовище та модель"
+      ],
+      "target_sections": [
+        "Лабораторна робота №6 / Середовище та модель"
+      ],
+      "gold_passage_ids": [
+        "chunk-24d0b9d10d53e82f",
+        "chunk-3d28a0b2f13b08f9",
+        "chunk-ee8f55a223e64af3"
+      ],
+      "query_id": "eval_007",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -2688,14 +2655,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 41.97660001227632
+      "latency_ms": 39.65910000260919
     },
     {
-      "query_id": "eval_008",
+      "id": "eval_008",
       "category": "exact_fact",
       "language": "en",
       "query": "What is the baseline Hit@5 score reported for the semantic baseline in Lab 3?",
-      "refusal_expected": false,
+      "expected_answer": "The baseline Hit@5 score is 0.8571 on the seven labeled queries.",
       "relevant_doc_ids": [
         "lab03_rag_report.md"
       ],
@@ -2703,6 +2670,19 @@
         "Hit@5 = 0.8571",
         "MRR = 0.6905"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "Hit@5 = 0.8571",
+        "MRR = 0.6905"
+      ],
+      "target_sections": [
+        "Звіт до лабораторної роботи №3 / Фактичні результати"
+      ],
+      "gold_passage_ids": [
+        "chunk-0111f65037b69bff"
+      ],
+      "query_id": "eval_008",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -2765,14 +2745,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 40.503099968191236
+      "latency_ms": 40.18539999378845
     },
     {
-      "query_id": "eval_009",
+      "id": "eval_009",
       "category": "exact_fact",
       "language": "uk",
       "query": "Скільки унікальних генерацій зображень було проведено в експериментах Lab 4?",
-      "refusal_expected": false,
+      "expected_answer": "Було проведено 13 унікальних генерацій зображень.",
       "relevant_doc_ids": [
         "lab04_stable_diffusion_report.md"
       ],
@@ -2780,6 +2760,21 @@
         "13 унікальних генерацій",
         "1 baseline + 3 seeds + 2 steps"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "13 унікальних генерацій",
+        "1 baseline + 3 seeds + 2 steps"
+      ],
+      "target_sections": [
+        "Лабораторна робота №4 / Висновки",
+        "Лабораторна робота №4 / Організація контрольованих експериментів"
+      ],
+      "gold_passage_ids": [
+        "chunk-5384cddcf9075b9b",
+        "chunk-920d93de947630aa"
+      ],
+      "query_id": "eval_009",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -2842,14 +2837,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 39.399500004947186
+      "latency_ms": 40.878200030419976
     },
     {
-      "query_id": "eval_010",
+      "id": "eval_010",
       "category": "exact_fact",
       "language": "en",
       "query": "What is the context window size of Ministral-3B detected via LM Studio in Lab 6?",
-      "refusal_expected": false,
+      "expected_answer": "The detected context window size in lms ps is 8192.",
       "relevant_doc_ids": [
         "lab06_agents_report.md"
       ],
@@ -2857,6 +2852,19 @@
         "Контекст у lms ps — 8192",
         "mistralai/ministral-3-3b"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "Контекст у lms ps — 8192",
+        "mistralai/ministral-3-3b"
+      ],
+      "target_sections": [
+        "Лабораторна робота №6 / Середовище та модель"
+      ],
+      "gold_passage_ids": [
+        "chunk-24d0b9d10d53e82f"
+      ],
+      "query_id": "eval_010",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -2919,14 +2927,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 42.308000032790005
+      "latency_ms": 43.2394000235945
     },
     {
-      "query_id": "eval_011",
+      "id": "eval_011",
       "category": "exact_fact",
       "language": "uk",
       "query": "Який PRAGMA busy_timeout встановлено для SQLite у рішенні ADR 001?",
-      "refusal_expected": false,
+      "expected_answer": "Встановлено PRAGMA busy_timeout = 5000 для запобігання блокуванням.",
       "relevant_doc_ids": [
         "adr_001_vector_and_storage_architecture.md"
       ],
@@ -2934,6 +2942,20 @@
         "PRAGMA busy_timeout = 5000",
         "SQLite with WAL"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "PRAGMA busy_timeout = 5000",
+        "SQLite with WAL"
+      ],
+      "target_sections": [
+        "ADR 001: Vector Storage and Relational Persistence Architecture / Decision"
+      ],
+      "gold_passage_ids": [
+        "chunk-312de896eb918af4",
+        "chunk-4db415c0e51d681e"
+      ],
+      "query_id": "eval_011",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -2996,14 +3018,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 40.14369996730238
+      "latency_ms": 42.118399986065924
     },
     {
-      "query_id": "eval_012",
+      "id": "eval_012",
       "category": "exact_fact",
       "language": "en",
       "query": "What was the initial maxmemory setting of Redis before the outage in the incident postmortem?",
-      "refusal_expected": false,
+      "expected_answer": "The initial setting was maxmemory 512mb.",
       "relevant_doc_ids": [
         "incident_postmortem_redis_oom.md"
       ],
@@ -3011,6 +3033,21 @@
         "maxmemory 512mb",
         "crossed the configured"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "maxmemory 512mb",
+        "crossed the configured"
+      ],
+      "target_sections": [
+        "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Root Cause Analysis",
+        "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)"
+      ],
+      "gold_passage_ids": [
+        "chunk-458c9cd66b4c0a1c",
+        "chunk-ce91c3b15f07706b"
+      ],
+      "query_id": "eval_012",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -3073,14 +3110,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 41.23149998486042
+      "latency_ms": 41.20450001209974
     },
     {
-      "query_id": "eval_013",
+      "id": "eval_013",
       "category": "exact_fact",
       "language": "uk",
       "query": "Який час завантаження моделі LLaVA зафіксовано в Lab 5?",
-      "refusal_expected": false,
+      "expected_answer": "Час завантаження моделі склав 7.557 секунд.",
       "relevant_doc_ids": [
         "lab05_multimodal_report.md"
       ],
@@ -3088,6 +3125,19 @@
         "Model load: 7.557 с",
         "не включений у час відповідей"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "Model load: 7.557 с",
+        "не включений у час відповідей"
+      ],
+      "target_sections": [
+        "Лабораторна робота №5 / 8. Апаратне та програмне середовище"
+      ],
+      "gold_passage_ids": [
+        "chunk-a9920be700462f9a"
+      ],
+      "query_id": "eval_013",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -3150,14 +3200,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 43.72800001874566
+      "latency_ms": 44.72720000194386
     },
     {
-      "query_id": "eval_014",
+      "id": "eval_014",
       "category": "exact_fact",
       "language": "en",
       "query": "What is the HTTP endpoint path for the Prometheus metrics scrape in Knowledge Copilot API?",
-      "refusal_expected": false,
+      "expected_answer": "The endpoint is /metrics (or /api/v1/metrics).",
       "relevant_doc_ids": [
         "api_specification_and_contracts.md"
       ],
@@ -3165,6 +3215,19 @@
         "GET /metrics",
         "Prometheus metric scrape endpoint"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "GET /metrics",
+        "Prometheus metric scrape endpoint"
+      ],
+      "target_sections": [
+        "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 1. Health Checks"
+      ],
+      "gold_passage_ids": [
+        "chunk-342a291bedfe4d18"
+      ],
+      "query_id": "eval_014",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -3227,14 +3290,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 42.235300003085285
+      "latency_ms": 44.68190000625327
     },
     {
-      "query_id": "eval_015",
+      "id": "eval_015",
       "category": "exact_fact",
       "language": "uk",
       "query": "Скільки AST-вузлів дозволено калькулятору в Lab 6?",
-      "refusal_expected": false,
+      "expected_answer": "Калькулятор обмежений 64 AST-вузлами та 200 символами.",
       "relevant_doc_ids": [
         "lab06_agents_report.md"
       ],
@@ -3242,6 +3305,19 @@
         "64 AST-вузлами",
         "обмежені 200 символами"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "64 AST-вузлами",
+        "обмежені 200 символами"
+      ],
+      "target_sections": [
+        "Лабораторна робота №6 / Робочий простір і інструменти"
+      ],
+      "gold_passage_ids": [
+        "chunk-d2444550c68115e7"
+      ],
+      "query_id": "eval_015",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -3304,14 +3380,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 39.21349998563528
+      "latency_ms": 44.28969998843968
     },
     {
-      "query_id": "eval_016",
+      "id": "eval_016",
       "category": "exact_fact",
       "language": "en",
       "query": "What is the port number used by Redis Stack container in the operational runbook?",
-      "refusal_expected": false,
+      "expected_answer": "Redis Stack container runs on port 6380.",
       "relevant_doc_ids": [
         "rag_system_runbook.md"
       ],
@@ -3319,6 +3395,21 @@
         "port 6380 for vector indexing",
         "lab07-redis"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "port 6380 for vector indexing",
+        "lab07-redis"
+      ],
+      "target_sections": [
+        "Operational Runbook: Local Engineering Knowledge Copilot / 1. System Overview",
+        "Operational Runbook: Local Engineering Knowledge Copilot / 2. Standard Operating Procedures (SOP) / Starting Local Services"
+      ],
+      "gold_passage_ids": [
+        "chunk-407f9e5fb7119a9e",
+        "chunk-6e773f78130aabdd"
+      ],
+      "query_id": "eval_016",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -3381,14 +3472,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 39.28059997269884
+      "latency_ms": 47.178100037854165
     },
     {
-      "query_id": "eval_017",
+      "id": "eval_017",
       "category": "exact_fact",
       "language": "uk",
       "query": "Яка точна модель мовної частини використовується у LLaVA в Lab 5?",
-      "refusal_expected": false,
+      "expected_answer": "Використовується Qwen/Qwen1.5-0.5B-Chat з 24 шарами.",
       "relevant_doc_ids": [
         "lab05_multimodal_report.md"
       ],
@@ -3396,6 +3487,19 @@
         "Qwen/Qwen1.5-0.5B-Chat",
         "Qwen2 має 24 шари"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "Qwen/Qwen1.5-0.5B-Chat",
+        "Qwen2 має 24 шари"
+      ],
+      "target_sections": [
+        "Лабораторна робота №5 / 5. Архітектура мультимодальної моделі"
+      ],
+      "gold_passage_ids": [
+        "chunk-848f92fad2de281b"
+      ],
+      "query_id": "eval_017",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -3458,14 +3562,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 44.60280004423112
+      "latency_ms": 44.74599997047335
     },
     {
-      "query_id": "eval_018",
+      "id": "eval_018",
       "category": "exact_fact",
       "language": "en",
       "query": "What was the duration of the Redis OOM incident described in the post-mortem?",
-      "refusal_expected": false,
+      "expected_answer": "The incident lasted 25 minutes, between 14:22 and 14:47 UTC.",
       "relevant_doc_ids": [
         "incident_postmortem_redis_oom.md"
       ],
@@ -3473,6 +3577,19 @@
         "25-minute window",
         "14:22 and 14:47 UTC"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "25-minute window",
+        "14:22 and 14:47 UTC"
+      ],
+      "target_sections": [
+        "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Summary"
+      ],
+      "gold_passage_ids": [
+        "chunk-ec91ddb2dece2958"
+      ],
+      "query_id": "eval_018",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -3535,14 +3652,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 40.207300044130534
+      "latency_ms": 39.84900005161762
     },
     {
-      "query_id": "eval_019",
+      "id": "eval_019",
       "category": "exact_fact",
       "language": "uk",
       "query": "Яка розмірність ембеддінгів моделі multilingual-e5-base зазначена в ADR 001?",
-      "refusal_expected": false,
+      "expected_answer": "Розмірність становить 768 вимірів.",
       "relevant_doc_ids": [
         "adr_001_vector_and_storage_architecture.md"
       ],
@@ -3550,6 +3667,20 @@
         "multilingual-e5-base, dimension = 768",
         "normalized embedding vectors"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "- Cosine distance metric for normalized embedding vectors (`multilingual-e5-base`, dimension = 768).",
+        "normalized embedding vectors"
+      ],
+      "target_sections": [
+        "ADR 001: Vector Storage and Relational Persistence Architecture / Context",
+        "ADR 001: Vector Storage and Relational Persistence Architecture / Decision"
+      ],
+      "gold_passage_ids": [
+        "chunk-312de896eb918af4"
+      ],
+      "query_id": "eval_019",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -3612,14 +3743,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 39.873600006103516
+      "latency_ms": 40.15429998980835
     },
     {
-      "query_id": "eval_020",
+      "id": "eval_020",
       "category": "exact_fact",
       "language": "en",
       "query": "What is the maximum allowed file upload size in the Knowledge Copilot API specification?",
-      "refusal_expected": false,
+      "expected_answer": "The maximum file size is 20 MB.",
       "relevant_doc_ids": [
         "api_specification_and_contracts.md"
       ],
@@ -3627,6 +3758,19 @@
         "Max file size: 20 MB",
         "POST /documents/upload"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "Max file size: 20 MB",
+        "POST /documents/upload"
+      ],
+      "target_sections": [
+        "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 2. Document Management"
+      ],
+      "gold_passage_ids": [
+        "chunk-50dc3e44b7a22bc5"
+      ],
+      "query_id": "eval_020",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -3689,14 +3833,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 39.44660001434386
+      "latency_ms": 42.6492000115104
     },
     {
-      "query_id": "eval_021",
+      "id": "eval_021",
       "category": "exact_fact",
       "language": "uk",
       "query": "Який тип індексу та метрику відстані використовує Redis у Lab 3?",
-      "refusal_expected": false,
+      "expected_answer": "Redis Stack використовує FLAT-індекс з метрикою cosine distance.",
       "relevant_doc_ids": [
         "lab03_rag_report.md"
       ],
@@ -3704,6 +3848,18 @@
         "FLAT-індексі та виконує пошук за cosine distance",
         "FLOAT32 vectors"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "185 товарів завантажуються через LangChain `CSVLoader`. Один CSV-рядок стає одним `Document`, оскільки ціна, опис, характеристики та provenance мають залишатися однією логічною одиницею. `all-MiniLM-L6-v2` формує нормалізовані 384-вимірні embeddings. Redis Stack зберігає `FLOAT32` vectors у `FLAT`-індексі та виконує пошук за cosine distance. Grounded prompt передає локальній моделі в LM Studio лише retrieved records і вимагає citations формату `[source.csv:row]`."
+      ],
+      "target_sections": [
+        "Звіт до лабораторної роботи №3 / Реалізація"
+      ],
+      "gold_passage_ids": [
+        "chunk-073b9da90cf9c792"
+      ],
+      "query_id": "eval_021",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -3766,14 +3922,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 40.587900031823665
+      "latency_ms": 39.2866000183858
     },
     {
-      "query_id": "eval_022",
+      "id": "eval_022",
       "category": "exact_fact",
       "language": "en",
       "query": "What are the four tool functions registered in the Lab 6 agent?",
-      "refusal_expected": false,
+      "expected_answer": "list_workspace_files, search_workspace, read_workspace_file, and calculate.",
       "relevant_doc_ids": [
         "lab06_agents_report.md"
       ],
@@ -3783,6 +3939,54 @@
         "read_workspace_file",
         "calculate"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "list_workspace_files",
+        "search_workspace",
+        "read_workspace_file",
+        "calculate"
+      ],
+      "target_sections": [
+        "Лабораторна робота №6 / System instructions",
+        "Лабораторна робота №6 / Багатокрокове виконання",
+        "Лабораторна робота №6 / Без інструментів і з інструментами / Comparison:",
+        "Лабораторна робота №6 / Дизайн експерименту",
+        "Лабораторна робота №6 / Додаткова арифметична перевірка",
+        "Лабораторна робота №6 / Додаткова арифметична перевірка / Результати:",
+        "Лабораторна робота №6 / Зауваження до кожної відповіді фінальної серії",
+        "Лабораторна робота №6 / Керована діагностика калькулятора",
+        "Лабораторна робота №6 / Робочий простір і інструменти",
+        "Лабораторна робота №6 / Теоретичні відомості та архітектура",
+        "Лабораторна робота №6 / Фактичні помилки та застрягання"
+      ],
+      "gold_passage_ids": [
+        "chunk-1133e41580e70178",
+        "chunk-12a03b71961c1ac1",
+        "chunk-2541c6ccf2851bfc",
+        "chunk-2b56a92c74801888",
+        "chunk-4642f32d37ba2537",
+        "chunk-46c1624506d2e193",
+        "chunk-4729e518a0ef7ee6",
+        "chunk-47fa3567591701ef",
+        "chunk-5347a184c347b143",
+        "chunk-5df8fa9bd18dcc7d",
+        "chunk-6c7d34223e559081",
+        "chunk-6e1e09b0b7838618",
+        "chunk-76599141f8219ae7",
+        "chunk-7dd0954eb581a5c8",
+        "chunk-830dde97b9155de5",
+        "chunk-86d718f1afb8a0ac",
+        "chunk-9ec6e6392c0ad721",
+        "chunk-c20f91b8c873c9ed",
+        "chunk-c7c13e324e2b86f8",
+        "chunk-d2444550c68115e7",
+        "chunk-f25fe1c27cf5f7b0",
+        "chunk-f3da4d4a83bf3d4f",
+        "chunk-f4a75df4074f72a2",
+        "chunk-f98972d1584ddd9e"
+      ],
+      "query_id": "eval_022",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -3845,14 +4049,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 40.38559994660318
+      "latency_ms": 41.59650002839044
     },
     {
-      "query_id": "eval_023",
+      "id": "eval_023",
       "category": "exact_fact",
       "language": "uk",
       "query": "Скільки товарів було завантажено через CSVLoader у Lab 3?",
-      "refusal_expected": false,
+      "expected_answer": "185 товарів було завантажено через CSVLoader.",
       "relevant_doc_ids": [
         "lab03_rag_report.md"
       ],
@@ -3860,6 +4064,19 @@
         "185 товарів завантажуються",
         "CSVLoader"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "185 товарів завантажуються",
+        "CSVLoader"
+      ],
+      "target_sections": [
+        "Звіт до лабораторної роботи №3 / Реалізація"
+      ],
+      "gold_passage_ids": [
+        "chunk-073b9da90cf9c792"
+      ],
+      "query_id": "eval_023",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -3922,14 +4139,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 46.105400018859655
+      "latency_ms": 42.26150002796203
     },
     {
-      "query_id": "eval_024",
+      "id": "eval_024",
       "category": "exact_fact",
       "language": "en",
       "query": "Which eviction policy was configured for Redis to prevent future OOM crashes in the post-mortem?",
-      "refusal_expected": false,
+      "expected_answer": "The eviction policy was set to allkeys-lru with maxmemory 2gb.",
       "relevant_doc_ids": [
         "incident_postmortem_redis_oom.md"
       ],
@@ -3937,6 +4154,21 @@
         "allkeys-lru",
         "maxmemory 2gb"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "allkeys-lru",
+        "maxmemory 2gb"
+      ],
+      "target_sections": [
+        "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Corrective and Preventative Actions",
+        "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)"
+      ],
+      "gold_passage_ids": [
+        "chunk-161474725628508f",
+        "chunk-840311292cd3047a"
+      ],
+      "query_id": "eval_024",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -3999,14 +4231,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 40.335900033824146
+      "latency_ms": 46.76850000396371
     },
     {
-      "query_id": "eval_025",
+      "id": "eval_025",
       "category": "exact_fact",
       "language": "uk",
       "query": "Яка роздільність та формат вхідного зображення primary_image у Lab 5?",
-      "refusal_expected": false,
+      "expected_answer": "Роздільність 512×512 у форматі PNG.",
       "relevant_doc_ids": [
         "lab05_multimodal_report.md"
       ],
@@ -4014,6 +4246,19 @@
         "primary_image.png: 512×512, PNG",
         "SHA-256"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "primary_image.png: 512×512, PNG",
+        "SHA-256"
+      ],
+      "target_sections": [
+        "Лабораторна робота №5 / 9. Вхідне зображення"
+      ],
+      "gold_passage_ids": [
+        "chunk-2a770669fd14f515"
+      ],
+      "query_id": "eval_025",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -4076,14 +4321,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 42.69510001176968
+      "latency_ms": 44.70060003222898
     },
     {
-      "query_id": "eval_026",
+      "id": "eval_026",
       "category": "semantic_paraphrase",
       "language": "en",
       "query": "How does the knowledge system verify that a chunk was not tampered with?",
-      "refusal_expected": false,
+      "expected_answer": "Integrity is validated using SHA-256 digests and provenance metadata comparing chunks against source files.",
       "relevant_doc_ids": [
         "lab03_rag_report.md",
         "lab06_agents_report.md"
@@ -4092,6 +4337,23 @@
         "SHA-256",
         "provenance"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "provenance",
+        "SHA-256"
+      ],
+      "target_sections": [
+        "Звіт до лабораторної роботи №3 / Реалізація",
+        "Лабораторна робота №6 / Робочий простір і інструменти",
+        "Лабораторна робота №6 / Фінальна технічна перевірка"
+      ],
+      "gold_passage_ids": [
+        "chunk-073b9da90cf9c792",
+        "chunk-4729e518a0ef7ee6",
+        "chunk-8fff50ca0752a250"
+      ],
+      "query_id": "eval_026",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -4154,14 +4416,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 42.681399965658784
+      "latency_ms": 46.77279997849837
     },
     {
-      "query_id": "eval_027",
+      "id": "eval_027",
       "category": "semantic_paraphrase",
       "language": "uk",
       "query": "Чому високий показник Hit@5 у Lab 3 ще не гарантує безпомилкової відповіді моделі?",
-      "refusal_expected": false,
+      "expected_answer": "Hit@5 фіксує наявність хоча б одного релевантного запису, але не гарантує повноти контексту для багатотоварної агрегації.",
       "relevant_doc_ids": [
         "lab03_rag_report.md"
       ],
@@ -4169,6 +4431,20 @@
         "Hit@k фіксує наявність хоча б одного",
         "не доводить, що контекст достатній"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "Hit@k фіксує наявність хоча б одного",
+        "не доводить, що контекст достатній"
+      ],
+      "target_sections": [
+        "Звіт до лабораторної роботи №3 / Реалізація"
+      ],
+      "gold_passage_ids": [
+        "chunk-073b9da90cf9c792",
+        "chunk-35a68ee78d570a29"
+      ],
+      "query_id": "eval_027",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -4231,14 +4507,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 39.26980000687763
+      "latency_ms": 42.92039998108521
     },
     {
-      "query_id": "eval_028",
+      "id": "eval_028",
       "category": "semantic_paraphrase",
       "language": "en",
       "query": "Explain what role CFG plays in diffusion image generation according to Lab 4.",
-      "refusal_expected": false,
+      "expected_answer": "Classifier-Free Guidance (CFG) controls the conditioning strength rather than accuracy; negative prompt steers the unconditioned branch.",
       "relevant_doc_ids": [
         "lab04_stable_diffusion_report.md"
       ],
@@ -4246,6 +4522,19 @@
         "CFG керує силою умови, а не «точністю»",
         "negative prompt змінює опорну гілку CFG"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "CFG керує силою умови, а не «точністю»",
+        "negative prompt змінює опорну гілку CFG"
+      ],
+      "target_sections": [
+        "Лабораторна робота №4 / Теорія та архітектура"
+      ],
+      "gold_passage_ids": [
+        "chunk-41b3f6b8377f876a"
+      ],
+      "query_id": "eval_028",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -4308,14 +4597,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 40.4149999958463
+      "latency_ms": 41.66869999608025
     },
     {
-      "query_id": "eval_029",
+      "id": "eval_029",
       "category": "semantic_paraphrase",
       "language": "uk",
       "query": "Як саме поєднуються візуальні та мовні представлення у LLaVA перед надходженням у мовну модель?",
-      "refusal_expected": false,
+      "expected_answer": "MLP-проєктор трансформує вектори ознак SigLIP у розмірність текстових ембеддінгів Qwen2, після чого вони обробляються спільно авторегресивним декодером.",
       "relevant_doc_ids": [
         "lab05_multimodal_report.md"
       ],
@@ -4323,6 +4612,22 @@
         "MLP-проєктор узгоджує їх із простором",
         "Qwen2 → токени відповіді"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "Енкодер зображення утворює вектори ознак, проєктор узгоджує їх із простором мовних embeddings, tokenizer перетворює запитання на текстові токени. Авторегресивна мовна модель отримує обидва представлення і послідовно прогнозує токени відповіді. Це не просте з’єднання зображення і тексту як сирих даних. Загальна схема узгоджується з [документацією LLaVA](https://huggingface.co/docs/transformers/model_doc/llava).",
+        "Qwen2 → токени відповіді"
+      ],
+      "target_sections": [
+        "Лабораторна робота №5 / 4. Теоретичні відомості",
+        "Лабораторна робота №5 / 5. Архітектура мультимодальної моделі",
+        "Лабораторна робота №5 / 6. Роль компонентів LLaVA"
+      ],
+      "gold_passage_ids": [
+        "chunk-414c629fb4226106",
+        "chunk-848f92fad2de281b"
+      ],
+      "query_id": "eval_029",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -4385,14 +4690,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 45.61100003775209
+      "latency_ms": 48.28669998096302
     },
     {
-      "query_id": "eval_030",
+      "id": "eval_030",
       "category": "semantic_paraphrase",
       "language": "en",
       "query": "Why was ChromaDB ruled out for persistent vector storage according to ADR 001?",
-      "refusal_expected": false,
+      "expected_answer": "ChromaDB was rejected due to inconsistent SQLite locking in multi-threaded environments and frequent schema changes between versions.",
       "relevant_doc_ids": [
         "adr_001_vector_and_storage_architecture.md"
       ],
@@ -4400,6 +4705,18 @@
         "ChromaDB: Inconsistent SQLite locking",
         "multi-threaded FastAPI runners"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "multi-threaded FastAPI runners"
+      ],
+      "target_sections": [
+        "ADR 001: Vector Storage and Relational Persistence Architecture / Alternatives Considered"
+      ],
+      "gold_passage_ids": [
+        "chunk-6cfff327f83838b7"
+      ],
+      "query_id": "eval_030",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -4462,14 +4779,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 42.484300036448985
+      "latency_ms": 41.768600000068545
     },
     {
-      "query_id": "eval_031",
+      "id": "eval_031",
       "category": "semantic_paraphrase",
       "language": "uk",
       "query": "Що відбувається, якщо агент у Lab 6 робить спробу виконати довільний системний код через інструмент?",
-      "refusal_expected": false,
+      "expected_answer": "Інструмент calculate використовує захищений синтаксичний аналізатор AST без eval чи доступу до модулів, повертаючи помилку безпеки.",
       "relevant_doc_ids": [
         "lab06_agents_report.md"
       ],
@@ -4477,6 +4794,19 @@
         "AST для чисел",
         "без eval, імен, викликів чи атрибутів"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "AST для чисел",
+        "без eval, імен, викликів чи атрибутів"
+      ],
+      "target_sections": [
+        "Лабораторна робота №6 / Робочий простір і інструменти"
+      ],
+      "gold_passage_ids": [
+        "chunk-d2444550c68115e7"
+      ],
+      "query_id": "eval_031",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -4539,14 +4869,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 48.271199979353696
+      "latency_ms": 40.51099997013807
     },
     {
-      "query_id": "eval_032",
+      "id": "eval_032",
       "category": "semantic_paraphrase",
       "language": "en",
       "query": "What safety measures prevent the agent from looping indefinitely in Lab 6?",
-      "refusal_expected": false,
+      "expected_answer": "Execution is bounded by max_turns (set to 10) and request timeouts.",
       "relevant_doc_ids": [
         "lab06_agents_report.md"
       ],
@@ -4554,6 +4884,21 @@
         "max_turns=10",
         "Завершення — фінальна відповідь, помилка, max_turns"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "max_turns=10",
+        "Завершення — фінальна відповідь, помилка, max_turns"
+      ],
+      "target_sections": [
+        "Лабораторна робота №6 / Середовище та модель",
+        "Лабораторна робота №6 / Теоретичні відомості та архітектура"
+      ],
+      "gold_passage_ids": [
+        "chunk-24d0b9d10d53e82f",
+        "chunk-47fa3567591701ef"
+      ],
+      "query_id": "eval_032",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -4616,14 +4961,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 48.757200012914836
+      "latency_ms": 40.36879999330267
     },
     {
-      "query_id": "eval_033",
+      "id": "eval_033",
       "category": "semantic_paraphrase",
       "language": "uk",
       "query": "Як система поводиться, коли Redis стає недоступним під час пошуку згідно з runbook та ADR 001?",
-      "refusal_expected": false,
+      "expected_answer": "Система переходить у режим деградації, використовуючи лексичний пошук BM25 без векторного ранжування.",
       "relevant_doc_ids": [
         "rag_system_runbook.md",
         "incident_postmortem_redis_oom.md"
@@ -4632,6 +4977,24 @@
         "lexical fallback without vector ranking",
         "fallback to BM25 lexical retriever"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "3. Redis Stack container running on port 6380 for vector indexing.",
+        "lexical fallback without vector ranking",
+        "fallback to BM25 lexical retriever"
+      ],
+      "target_sections": [
+        "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Corrective and Preventative Actions",
+        "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Impact",
+        "Operational Runbook: Local Engineering Knowledge Copilot / 1. System Overview"
+      ],
+      "gold_passage_ids": [
+        "chunk-161474725628508f",
+        "chunk-6e773f78130aabdd",
+        "chunk-bbf7932ccf875435"
+      ],
+      "query_id": "eval_033",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -4694,14 +5057,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 91.38920000987127
+      "latency_ms": 86.10149996820837
     },
     {
-      "query_id": "eval_034",
+      "id": "eval_034",
       "category": "semantic_paraphrase",
       "language": "en",
       "query": "How is request tracing implemented across the FastAPI service according to the API specification?",
-      "refusal_expected": false,
+      "expected_answer": "Through the X-Request-ID HTTP header, injected automatically via middleware if absent.",
       "relevant_doc_ids": [
         "api_specification_and_contracts.md"
       ],
@@ -4709,6 +5072,20 @@
         "X-Request-ID for end-to-end request tracing",
         "UUIDv4 string into response headers"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "- All requests should include `X-Request-ID` for end-to-end request tracing.",
+        "UUIDv4 string into response headers"
+      ],
+      "target_sections": [
+        "API Specification and Data Contracts: Knowledge Copilot v1 / Authentication & Headers",
+        "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 3. Agentic Chat & Retrieval"
+      ],
+      "gold_passage_ids": [
+        "chunk-3ddd91583cc40812"
+      ],
+      "query_id": "eval_034",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -4771,14 +5148,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 40.494400018360466
+      "latency_ms": 37.88710001390427
     },
     {
-      "query_id": "eval_035",
+      "id": "eval_035",
       "category": "semantic_paraphrase",
       "language": "uk",
       "query": "Чому CLIP у Stable Diffusion сам по собі не здатний генерувати пікселі зображення?",
-      "refusal_expected": false,
+      "expected_answer": "CLIP лише трансформує текстовий промпт в ембеддінги; генерацію латентів здійснює UNet через шум та розклад, а пікселі декодує VAE.",
       "relevant_doc_ids": [
         "lab04_stable_diffusion_report.md"
       ],
@@ -4786,6 +5163,19 @@
         "CLIP не створює пікселі",
         "UNet з cross-attention та scheduler → фінальний латент → VAE decoder → RGB"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "CLIP не створює пікселі",
+        "UNet з cross-attention та scheduler → фінальний латент → VAE decoder → RGB"
+      ],
+      "target_sections": [
+        "Лабораторна робота №4 / Теорія та архітектура"
+      ],
+      "gold_passage_ids": [
+        "chunk-41b3f6b8377f876a"
+      ],
+      "query_id": "eval_035",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -4848,14 +5238,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 44.943900022190064
+      "latency_ms": 47.39349998999387
     },
     {
-      "query_id": "eval_036",
+      "id": "eval_036",
       "category": "semantic_paraphrase",
       "language": "en",
       "query": "What was the immediate workaround applied by engineers during the Redis OOM incident?",
-      "refusal_expected": false,
+      "expected_answer": "Configuring Redis maxmemory to 2GB and enabling the allkeys-lru eviction policy.",
       "relevant_doc_ids": [
         "incident_postmortem_redis_oom.md"
       ],
@@ -4863,6 +5253,24 @@
         "Updated Redis config to maxmemory 2gb",
         "allkeys-lru"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "- **14:45**: Updated Redis config to `maxmemory 2gb` and set vector cache eviction policy to `allkeys-lru`.",
+        "allkeys-lru"
+      ],
+      "target_sections": [
+        "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Corrective and Preventative Actions",
+        "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Impact",
+        "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Root Cause Analysis",
+        "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Summary",
+        "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)"
+      ],
+      "gold_passage_ids": [
+        "chunk-161474725628508f",
+        "chunk-840311292cd3047a"
+      ],
+      "query_id": "eval_036",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -4925,14 +5333,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 43.4298999607563
+      "latency_ms": 41.79309995379299
     },
     {
-      "query_id": "eval_037",
+      "id": "eval_037",
       "category": "semantic_paraphrase",
       "language": "uk",
       "query": "Яка роль відведена SQLite у архітектурі асистента згідно з ADR 001?",
-      "refusal_expected": false,
+      "expected_answer": "SQLite у режимі WAL зберігає історію сесій, канонічні репліки, метадані документів та переходи їхніх статусів без мережевих накладних витрат.",
       "relevant_doc_ids": [
         "adr_001_vector_and_storage_architecture.md"
       ],
@@ -4940,6 +5348,20 @@
         "SQLite with WAL (Write-Ahead Logging)",
         "transactional integrity for session turns"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "SQLite with WAL (Write-Ahead Logging)",
+        "transactional integrity for session turns"
+      ],
+      "target_sections": [
+        "ADR 001: Vector Storage and Relational Persistence Architecture / Decision"
+      ],
+      "gold_passage_ids": [
+        "chunk-312de896eb918af4",
+        "chunk-4db415c0e51d681e"
+      ],
+      "query_id": "eval_037",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -5002,14 +5424,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 41.85550002148375
+      "latency_ms": 43.946599995251745
     },
     {
-      "query_id": "eval_038",
+      "id": "eval_038",
       "category": "semantic_paraphrase",
       "language": "en",
       "query": "What distinguishes the hybrid router from the pure semantic baseline in Lab 3?",
-      "refusal_expected": false,
+      "expected_answer": "The hybrid router handles exact IDs, attributes, and numerical filters without data leakage, yielding higher recall and MRR.",
       "relevant_doc_ids": [
         "lab03_rag_report.md"
       ],
@@ -5017,6 +5439,19 @@
         "Leakage-free hybrid router",
         "exact ID, атрибути та числові умови"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "Leakage-free hybrid router",
+        "exact ID, атрибути та числові умови"
+      ],
+      "target_sections": [
+        "Звіт до лабораторної роботи №3 / Фактичні результати"
+      ],
+      "gold_passage_ids": [
+        "chunk-0111f65037b69bff"
+      ],
+      "query_id": "eval_038",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -5079,14 +5514,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 39.49200001079589
+      "latency_ms": 39.60469999583438
     },
     {
-      "query_id": "eval_039",
+      "id": "eval_039",
       "category": "semantic_paraphrase",
       "language": "uk",
       "query": "Яким чином забезпечується відсутність втрати результатів при перериванні генерації в Lab 4?",
-      "refusal_expected": false,
+      "expected_answer": "Параметри та метадані кожного окремого запуску фіксуються негайно, а результати звіряються за SHA-256 хешами.",
       "relevant_doc_ids": [
         "lab04_stable_diffusion_report.md"
       ],
@@ -5094,6 +5529,19 @@
         "Параметри кожного запуску збережені одразу",
         "SHA-256 PNG і повна конфігурація"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "Параметри кожного запуску збережені одразу",
+        "SHA-256 PNG і повна конфігурація"
+      ],
+      "target_sections": [
+        "Лабораторна робота №4 / Організація контрольованих експериментів"
+      ],
+      "gold_passage_ids": [
+        "chunk-5384cddcf9075b9b"
+      ],
+      "query_id": "eval_039",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -5156,14 +5604,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 42.522899981122464
+      "latency_ms": 47.18910000519827
     },
     {
-      "query_id": "eval_040",
+      "id": "eval_040",
       "category": "semantic_paraphrase",
       "language": "en",
       "query": "What happens if a user submits an empty or corrupted document for ingestion according to the API specification?",
-      "refusal_expected": false,
+      "expected_answer": "The API rejects the file returning HTTP 400 Bad Request with an ExtractionError.",
       "relevant_doc_ids": [
         "api_specification_and_contracts.md"
       ],
@@ -5171,6 +5619,21 @@
         "Zero-byte files or corrupted PDFs",
         "HTTP 400 with ExtractionError"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "Zero-byte files or corrupted PDFs",
+        "- Rejection policy: Zero-byte files or corrupted PDFs without an extractable text layer return HTTP 400 with `ExtractionError`."
+      ],
+      "target_sections": [
+        "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 1. Health Checks",
+        "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 2. Document Management",
+        "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 3. Agentic Chat & Retrieval"
+      ],
+      "gold_passage_ids": [
+        "chunk-50dc3e44b7a22bc5"
+      ],
+      "query_id": "eval_040",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -5233,14 +5696,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 45.43649998959154
+      "latency_ms": 42.06030000932515
     },
     {
-      "query_id": "eval_041",
+      "id": "eval_041",
       "category": "semantic_paraphrase",
       "language": "uk",
       "query": "Яке призначення ендпоінту /health/ready у порівнянні з /health/live?",
-      "refusal_expected": false,
+      "expected_answer": "/health/live сигналізує про роботу веб-сервера, тоді як /health/ready перевіряє зв'язок з Redis та SQLite.",
       "relevant_doc_ids": [
         "api_specification_and_contracts.md"
       ],
@@ -5249,6 +5712,19 @@
         "GET /health/ready",
         "redis: true, database: true"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "GET /health/live",
+        "GET /health/ready"
+      ],
+      "target_sections": [
+        "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 1. Health Checks"
+      ],
+      "gold_passage_ids": [
+        "chunk-342a291bedfe4d18"
+      ],
+      "query_id": "eval_041",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -5311,14 +5787,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 46.19530000491068
+      "latency_ms": 45.700899965595454
     },
     {
-      "query_id": "eval_042",
+      "id": "eval_042",
       "category": "semantic_paraphrase",
       "language": "en",
       "query": "Why does the copilot require strict citation support before accepting an answer?",
-      "refusal_expected": false,
+      "expected_answer": "To prevent hallucinations and guarantee that every factual statement is grounded in retrieved chunks from the current session.",
       "relevant_doc_ids": [
         "lab03_rag_report.md",
         "lab06_agents_report.md"
@@ -5327,6 +5803,21 @@
         "Citations require evidence from current run",
         "Grounded prompt"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "Grounded prompt",
+        "Без tools модель вигадала CSV-файли, значення 28 і 32 та докази з неіснуючих таблиць."
+      ],
+      "target_sections": [
+        "Звіт до лабораторної роботи №3 / Реалізація"
+      ],
+      "gold_passage_ids": [
+        "chunk-073b9da90cf9c792",
+        "chunk-46c1624506d2e193",
+        "chunk-76599141f8219ae7"
+      ],
+      "query_id": "eval_042",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -5389,14 +5880,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 40.38150003179908
+      "latency_ms": 43.32040000008419
     },
     {
-      "query_id": "eval_043",
+      "id": "eval_043",
       "category": "semantic_paraphrase",
       "language": "uk",
       "query": "Як уникнути переповнення VRAM під час запуску Stable Diffusion на мобільній RTX 3050?",
-      "refusal_expected": false,
+      "expected_answer": "У Lab 4 застосовано float16, model_cpu_offload та механізм SDPA (AttnProcessor2_0), що дозволило уникнути помилок OOM.",
       "relevant_doc_ids": [
         "lab04_stable_diffusion_report.md"
       ],
@@ -5404,6 +5895,19 @@
         "torch.float16, model_cpu_offload, AttnProcessor2_0",
         "OOM не було"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "Стратегія: `torch.float16`, `model_cpu_offload`, `AttnProcessor2_0` (SDPA). Attention slicing, xFormers, VAE slicing/tiling не застосовувалися. OOM не було."
+      ],
+      "target_sections": [
+        "Лабораторна робота №4 / Модель і середовище",
+        "Лабораторна робота №4 / Організація контрольованих експериментів"
+      ],
+      "gold_passage_ids": [
+        "chunk-26d0af60fb9fa7e7"
+      ],
+      "query_id": "eval_043",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -5466,14 +5970,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 48.44069998944178
+      "latency_ms": 49.1889999830164
     },
     {
-      "query_id": "eval_044",
+      "id": "eval_044",
       "category": "semantic_paraphrase",
       "language": "en",
       "query": "How can an administrator reindex the entire vector store according to the operational runbook?",
-      "refusal_expected": false,
+      "expected_answer": "By executing python -m labs.lab07_final_project.src.experiments --reindex or flushing Redis keys matching lab07:kb:*.",
       "relevant_doc_ids": [
         "rag_system_runbook.md"
       ],
@@ -5481,6 +5985,19 @@
         "--reindex",
         "lab07:kb:*"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "--reindex",
+        "lab07:kb:*"
+      ],
+      "target_sections": [
+        "Operational Runbook: Local Engineering Knowledge Copilot / 2. Standard Operating Procedures (SOP) / Reindexing and Disaster Recovery"
+      ],
+      "gold_passage_ids": [
+        "chunk-3a4f3f08614dc268"
+      ],
+      "query_id": "eval_044",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -5543,14 +6060,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 40.06570001365617
+      "latency_ms": 43.39320003055036
     },
     {
-      "query_id": "eval_045",
+      "id": "eval_045",
       "category": "semantic_paraphrase",
       "language": "uk",
       "query": "Чому хмарний трейсинг було відключено в експериментах Lab 6?",
-      "refusal_expected": false,
+      "expected_answer": "Для дотримання повної локальності та конфіденційності без зовнішніх мережевих залежностей через set_tracing_disabled(True).",
       "relevant_doc_ids": [
         "lab06_agents_report.md"
       ],
@@ -5558,6 +6075,19 @@
         "Cloud tracing вимкнено через set_tracing_disabled(True)",
         "Хмарні сесії, hosted tools"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "Cloud tracing вимкнено через set_tracing_disabled(True)",
+        "Хмарні сесії, hosted tools"
+      ],
+      "target_sections": [
+        "Лабораторна робота №6 / Середовище та модель"
+      ],
+      "gold_passage_ids": [
+        "chunk-ee8f55a223e64af3"
+      ],
+      "query_id": "eval_045",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -5620,14 +6150,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 43.44460001448169
+      "latency_ms": 46.14869999932125
     },
     {
-      "query_id": "eval_046",
+      "id": "eval_046",
       "category": "cross_document",
       "language": "uk",
       "query": "Порівняйте розмірність векторних представлень (embeddings), що використовуються у Lab 3 та запропоновані в ADR 001.",
-      "refusal_expected": false,
+      "expected_answer": "У Lab 3 all-MiniLM-L6-v2 генерує 384-вимірні вектори, тоді як у ADR 001 multilingual-e5-base має розмірність 768.",
       "relevant_doc_ids": [
         "lab03_rag_report.md",
         "adr_001_vector_and_storage_architecture.md"
@@ -5636,6 +6166,22 @@
         "384-вимірні embeddings",
         "multilingual-e5-base, dimension = 768"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "384-вимірні embeddings",
+        "- Cosine distance metric for normalized embedding vectors (`multilingual-e5-base`, dimension = 768)."
+      ],
+      "target_sections": [
+        "ADR 001: Vector Storage and Relational Persistence Architecture / Context",
+        "ADR 001: Vector Storage and Relational Persistence Architecture / Decision",
+        "Звіт до лабораторної роботи №3 / Реалізація"
+      ],
+      "gold_passage_ids": [
+        "chunk-073b9da90cf9c792",
+        "chunk-312de896eb918af4"
+      ],
+      "query_id": "eval_046",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -5698,14 +6244,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 85.69400000851601
+      "latency_ms": 84.98729998245835
     },
     {
-      "query_id": "eval_047",
+      "id": "eval_047",
       "category": "cross_document",
       "language": "en",
       "query": "Compare the model loading times reported between Stable Diffusion in Lab 4 and LLaVA in Lab 5.",
-      "refusal_expected": false,
+      "expected_answer": "Stable Diffusion in Lab 4 took 42.37 seconds to load, whereas LLaVA in Lab 5 took 7.557 seconds.",
       "relevant_doc_ids": [
         "lab04_stable_diffusion_report.md",
         "lab05_multimodal_report.md"
@@ -5714,6 +6260,21 @@
         "Час завантаження моделі, включно з першим отриманням ваг: 42.37 с",
         "Model load: 7.557 с"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "Час завантаження моделі, включно з першим отриманням ваг: 42.37 с",
+        "Model load: 7.557 с"
+      ],
+      "target_sections": [
+        "Лабораторна робота №4 / Модель і середовище",
+        "Лабораторна робота №5 / 8. Апаратне та програмне середовище"
+      ],
+      "gold_passage_ids": [
+        "chunk-9fb5160565af959c",
+        "chunk-a9920be700462f9a"
+      ],
+      "query_id": "eval_047",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -5776,14 +6337,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 81.79460000246763
+      "latency_ms": 86.23860002262518
     },
     {
-      "query_id": "eval_048",
+      "id": "eval_048",
       "category": "cross_document",
       "language": "uk",
       "query": "Які різні мовні моделі є основою для відповідей у Lab 5 та Lab 6?",
-      "refusal_expected": false,
+      "expected_answer": "У Lab 5 використовується Qwen1.5-0.5B-Chat у складі LLaVA, а в Lab 6 — mistralai/ministral-3-3b через LM Studio.",
       "relevant_doc_ids": [
         "lab05_multimodal_report.md",
         "lab06_agents_report.md"
@@ -5792,6 +6353,21 @@
         "Qwen/Qwen1.5-0.5B-Chat",
         "mistralai/ministral-3-3b"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "Qwen/Qwen1.5-0.5B-Chat",
+        "mistralai/ministral-3-3b"
+      ],
+      "target_sections": [
+        "Лабораторна робота №5 / 5. Архітектура мультимодальної моделі",
+        "Лабораторна робота №6 / Середовище та модель"
+      ],
+      "gold_passage_ids": [
+        "chunk-24d0b9d10d53e82f",
+        "chunk-848f92fad2de281b"
+      ],
+      "query_id": "eval_048",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -5854,14 +6430,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 83.67320004617795
+      "latency_ms": 85.33000003080815
     },
     {
-      "query_id": "eval_049",
+      "id": "eval_049",
       "category": "cross_document",
       "language": "en",
       "query": "Contrast the vector index configurations of Redis in Lab 3 with the production setup in ADR 001.",
-      "refusal_expected": false,
+      "expected_answer": "Lab 3 uses a simple FLAT cosine index, while ADR 001 specifies HNSW alongside FLAT index support for large collections.",
       "relevant_doc_ids": [
         "lab03_rag_report.md",
         "adr_001_vector_and_storage_architecture.md"
@@ -5870,6 +6446,21 @@
         "FLAT-індексі та виконує пошук за cosine distance",
         "HNSW (Hierarchical Navigable Small World) and FLAT vector indexing"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "185 товарів завантажуються через LangChain `CSVLoader`. Один CSV-рядок стає одним `Document`, оскільки ціна, опис, характеристики та provenance мають залишатися однією логічною одиницею. `all-MiniLM-L6-v2` формує нормалізовані 384-вимірні embeddings. Redis Stack зберігає `FLOAT32` vectors у `FLAT`-індексі та виконує пошук за cosine distance. Grounded prompt передає локальній моделі в LM Studio лише retrieved records і вимагає citations формату `[source.csv:row]`.",
+        "- Utilizes `HNSW` (Hierarchical Navigable Small World) and `FLAT` vector indexing with `FLOAT32` precision."
+      ],
+      "target_sections": [
+        "ADR 001: Vector Storage and Relational Persistence Architecture / Decision",
+        "Звіт до лабораторної роботи №3 / Реалізація"
+      ],
+      "gold_passage_ids": [
+        "chunk-073b9da90cf9c792",
+        "chunk-312de896eb918af4"
+      ],
+      "query_id": "eval_049",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -5932,14 +6523,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 78.94229999510571
+      "latency_ms": 83.46890000393614
     },
     {
-      "query_id": "eval_050",
+      "id": "eval_050",
       "category": "cross_document",
       "language": "uk",
       "query": "Як відрізняється підхід до обробки числових виразів між звичайним RAG у Lab 3 та агентом у Lab 6?",
-      "refusal_expected": false,
+      "expected_answer": "У Lab 3 числові розрахунки викликали помилки арифметики в LLM, тоді як у Lab 6 реалізовано детермінований AST-інструмент calculate.",
       "relevant_doc_ids": [
         "lab03_rag_report.md",
         "lab06_agents_report.md"
@@ -5949,6 +6540,46 @@
         "calculate",
         "AST для чисел"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "арифметичну помилку",
+        "calculate",
+        "AST для чисел"
+      ],
+      "target_sections": [
+        "Звіт до лабораторної роботи №3 / Фактичні результати",
+        "Лабораторна робота №6 / System instructions",
+        "Лабораторна робота №6 / Без інструментів і з інструментами / Comparison:",
+        "Лабораторна робота №6 / Дизайн експерименту",
+        "Лабораторна робота №6 / Додаткова арифметична перевірка / Результати:",
+        "Лабораторна робота №6 / Зауваження до кожної відповіді фінальної серії",
+        "Лабораторна робота №6 / Керована діагностика калькулятора",
+        "Лабораторна робота №6 / Робочий простір і інструменти",
+        "Лабораторна робота №6 / Теоретичні відомості та архітектура",
+        "Лабораторна робота №6 / Фактичні помилки та застрягання"
+      ],
+      "gold_passage_ids": [
+        "chunk-0111f65037b69bff",
+        "chunk-12a03b71961c1ac1",
+        "chunk-2541c6ccf2851bfc",
+        "chunk-46c1624506d2e193",
+        "chunk-47fa3567591701ef",
+        "chunk-6c7d34223e559081",
+        "chunk-76599141f8219ae7",
+        "chunk-7dd0954eb581a5c8",
+        "chunk-830dde97b9155de5",
+        "chunk-86d718f1afb8a0ac",
+        "chunk-9ec6e6392c0ad721",
+        "chunk-c20f91b8c873c9ed",
+        "chunk-c7c13e324e2b86f8",
+        "chunk-d2444550c68115e7",
+        "chunk-f25fe1c27cf5f7b0",
+        "chunk-f3da4d4a83bf3d4f",
+        "chunk-f4a75df4074f72a2",
+        "chunk-f98972d1584ddd9e"
+      ],
+      "query_id": "eval_050",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -6011,14 +6642,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 88.01649999804795
+      "latency_ms": 84.37009999761358
     },
     {
-      "query_id": "eval_051",
+      "id": "eval_051",
       "category": "cross_document",
       "language": "en",
       "query": "Compare the VRAM requirements and offloading strategies between Lab 4 and Lab 5 on the RTX 3050 GPU.",
-      "refusal_expected": false,
+      "expected_answer": "Lab 4 required model_cpu_offload to fit Stable Diffusion into 4GB VRAM, whereas Lab 5 ran LLaVA directly on cuda:0 without CPU offloading.",
       "relevant_doc_ids": [
         "lab04_stable_diffusion_report.md",
         "lab05_multimodal_report.md"
@@ -6027,6 +6658,22 @@
         "model_cpu_offload",
         "Квантизація та offload не знадобилися"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "model_cpu_offload",
+        "Квантизація та offload не знадобилися"
+      ],
+      "target_sections": [
+        "Лабораторна робота №4 / Модель і середовище",
+        "Лабораторна робота №5 / 7. Використана модель"
+      ],
+      "gold_passage_ids": [
+        "chunk-26d0af60fb9fa7e7",
+        "chunk-920d93de947630aa",
+        "chunk-94bae1e60a6d617a"
+      ],
+      "query_id": "eval_051",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -6089,14 +6736,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 96.16799996001646
+      "latency_ms": 90.70040000369772
     },
     {
-      "query_id": "eval_052",
+      "id": "eval_052",
       "category": "cross_document",
       "language": "uk",
       "query": "Порівняйте формат цитування фактів у вихідних текстах Lab 3 та Lab 6.",
-      "refusal_expected": false,
+      "expected_answer": "Lab 3 вимагає посилань на рядки CSV виду [source.csv:row], а Lab 6 використовує роботу з назвами звітів та рядками через read_workspace_file.",
       "relevant_doc_ids": [
         "lab03_rag_report.md",
         "lab06_agents_report.md"
@@ -6105,6 +6752,28 @@
         "[source.csv:row]",
         "read_workspace_file"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "[source.csv:row]",
+        "read_workspace_file"
+      ],
+      "target_sections": [
+        "Звіт до лабораторної роботи №3 / Реалізація",
+        "Лабораторна робота №6 / Багатокрокове виконання",
+        "Лабораторна робота №6 / Додаткова арифметична перевірка",
+        "Лабораторна робота №6 / Робочий простір і інструменти",
+        "Лабораторна робота №6 / Фактичні помилки та застрягання"
+      ],
+      "gold_passage_ids": [
+        "chunk-073b9da90cf9c792",
+        "chunk-1133e41580e70178",
+        "chunk-2b56a92c74801888",
+        "chunk-4642f32d37ba2537",
+        "chunk-4729e518a0ef7ee6",
+        "chunk-5df8fa9bd18dcc7d"
+      ],
+      "query_id": "eval_052",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -6167,14 +6836,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 85.02619998762384
+      "latency_ms": 87.45260001160204
     },
     {
-      "query_id": "eval_053",
+      "id": "eval_053",
       "category": "cross_document",
       "language": "en",
       "query": "How do the token budget constraints differ between the MiniLM model in Lab 3 and the Agent context in Lab 6?",
-      "refusal_expected": false,
+      "expected_answer": "MiniLM in Lab 3 is constrained to 256 word pieces, while the Agent in Lab 6 operates within an 8192 token context window with max_tokens 900.",
       "relevant_doc_ids": [
         "lab03_rag_report.md",
         "lab06_agents_report.md"
@@ -6184,6 +6853,22 @@
         "Контекст у lms ps — 8192",
         "max_tokens=900"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "256 word pieces",
+        "Контекст у lms ps — 8192",
+        "max_tokens=900"
+      ],
+      "target_sections": [
+        "Звіт до лабораторної роботи №3 / Обмеження і подальша робота",
+        "Лабораторна робота №6 / Середовище та модель"
+      ],
+      "gold_passage_ids": [
+        "chunk-24d0b9d10d53e82f",
+        "chunk-4d5ce6f4f6109390"
+      ],
+      "query_id": "eval_053",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -6246,14 +6931,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 94.70709995366633
+      "latency_ms": 96.00160003174096
     },
     {
-      "query_id": "eval_054",
+      "id": "eval_054",
       "category": "cross_document",
       "language": "uk",
       "query": "Порівняйте роль Redis у лабораторній роботі №3 та в інциденті post-mortem.",
-      "refusal_expected": false,
+      "expected_answer": "У Lab 3 Redis зберігав 185 записів без проблем з пам'яттю, а в інциденті індексація 12,400 фрагментів спричинила OOM через ліміт 512MB.",
       "relevant_doc_ids": [
         "lab03_rag_report.md",
         "incident_postmortem_redis_oom.md"
@@ -6263,6 +6948,24 @@
         "12,400 chunks",
         "maxmemory 512mb"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "185 товарів",
+        "12,400 chunks",
+        "maxmemory 512mb"
+      ],
+      "target_sections": [
+        "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Root Cause Analysis",
+        "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)",
+        "Звіт до лабораторної роботи №3 / Реалізація"
+      ],
+      "gold_passage_ids": [
+        "chunk-073b9da90cf9c792",
+        "chunk-458c9cd66b4c0a1c",
+        "chunk-ce91c3b15f07706b"
+      ],
+      "query_id": "eval_054",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -6325,14 +7028,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 92.9199000238441
+      "latency_ms": 97.01879997737706
     },
     {
-      "query_id": "eval_055",
+      "id": "eval_055",
       "category": "cross_document",
       "language": "en",
       "query": "Compare how sessions and history are managed between Lab 6 and the Knowledge Copilot API.",
-      "refusal_expected": false,
+      "expected_answer": "Lab 6 uses SQLiteSession within the OpenAI Agents SDK, while Knowledge Copilot abstracts this via SQLiteRepository and SessionService with FastAPI.",
       "relevant_doc_ids": [
         "lab06_agents_report.md",
         "api_specification_and_contracts.md"
@@ -6342,6 +7045,26 @@
         "POST /chat/completions",
         "session_id"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "SQLiteSession",
+        "POST /chat/completions",
+        "session_id"
+      ],
+      "target_sections": [
+        "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 3. Agentic Chat & Retrieval",
+        "Лабораторна робота №6 / Обмеження та висновки",
+        "Лабораторна робота №6 / Пам'ять та ізоляція",
+        "Лабораторна робота №6 / Теоретичні відомості та архітектура"
+      ],
+      "gold_passage_ids": [
+        "chunk-06da53430d20c957",
+        "chunk-47fa3567591701ef",
+        "chunk-bd1aa85cebb398d3",
+        "chunk-d41505820ec0fe04"
+      ],
+      "query_id": "eval_055",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -6404,14 +7127,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 91.27309999894351
+      "latency_ms": 96.94179997313768
     },
     {
-      "query_id": "eval_056",
+      "id": "eval_056",
       "category": "cross_document",
       "language": "uk",
       "query": "Як різняться вхідні зображення: згенероване у Lab 4 та використане як primary_image у Lab 5?",
-      "refusal_expected": false,
+      "expected_answer": "Primary_image у Lab 5 є прямою незмінною копією фотореалістичного зображення, згенерованого у Lab 4 (стиль photorealistic, seed 42).",
       "relevant_doc_ids": [
         "lab04_stable_diffusion_report.md",
         "lab05_multimodal_report.md"
@@ -6420,6 +7143,64 @@
         "photorealistic_seed42_steps30_cfg7p5",
         "скопійовано без зміни оригіналу"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "# Лабораторна робота №4",
+        "photorealistic_seed42_steps30_cfg7p5",
+        "скопійовано без зміни оригіналу"
+      ],
+      "target_sections": [
+        "Лабораторна робота №4",
+        "Лабораторна робота №4 / Negative prompt, seed 123",
+        "Лабораторна робота №4 / Negative prompt, seed 42",
+        "Лабораторна робота №4 / Аналіз часу",
+        "Лабораторна робота №4 / Базова генерація",
+        "Лабораторна робота №4 / Висновки",
+        "Лабораторна робота №4 / Відповідність методичці",
+        "Лабораторна робота №4 / Джерела",
+        "Лабораторна робота №4 / Дослідження CFG",
+        "Лабораторна робота №4 / Дослідження seed",
+        "Лабораторна робота №4 / Дослідження steps",
+        "Лабораторна робота №4 / Модель і середовище",
+        "Лабораторна робота №4 / Обмеження",
+        "Лабораторна робота №4 / Організація контрольованих експериментів",
+        "Лабораторна робота №4 / Порівняння стилів",
+        "Лабораторна робота №4 / Таблиця параметрів генерації",
+        "Лабораторна робота №4 / Теорія та архітектура",
+        "Лабораторна робота №5 / 9. Вхідне зображення"
+      ],
+      "gold_passage_ids": [
+        "chunk-1407dd0be2d2fcd0",
+        "chunk-18d474c532eaff77",
+        "chunk-1c5094e7423bc36b",
+        "chunk-26d0af60fb9fa7e7",
+        "chunk-2a770669fd14f515",
+        "chunk-3dfee68eebf183d4",
+        "chunk-41b3f6b8377f876a",
+        "chunk-4acbb5e0d0c5d4b1",
+        "chunk-5384cddcf9075b9b",
+        "chunk-5c08082f33816b8a",
+        "chunk-6840bec4abf514cd",
+        "chunk-6df372aabbcbdb8c",
+        "chunk-79d3cbd323866e7e",
+        "chunk-7e93d8b05229cb50",
+        "chunk-7fb74e0d4e973e63",
+        "chunk-896a2a16107a9c54",
+        "chunk-920d93de947630aa",
+        "chunk-99ec8eb4e21da20a",
+        "chunk-9fb5160565af959c",
+        "chunk-a258fb75bd76024c",
+        "chunk-a94f964af1ecfea3",
+        "chunk-aa189355741329d5",
+        "chunk-aa19138611347f87",
+        "chunk-ae052c16b966a501",
+        "chunk-ba3204a9b8ae0589",
+        "chunk-ca2e2d95b9a2643f",
+        "chunk-d3a358856bb197e2",
+        "chunk-f261f424057e37ef"
+      ],
+      "query_id": "eval_056",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -6482,14 +7263,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 98.21989998454228
+      "latency_ms": 100.68080003838986
     },
     {
-      "query_id": "eval_057",
+      "id": "eval_057",
       "category": "cross_document",
       "language": "en",
       "query": "Compare the evaluation focus between Lab 3 retrieval experiments and the Knowledge Copilot benchmark.",
-      "refusal_expected": false,
+      "expected_answer": "Lab 3 evaluated 7 queries for Hit@5/MRR/Recall@5, whereas Knowledge Copilot uses a frozen 100-query benchmark evaluating retrieval, grounding, tools, and latency.",
       "relevant_doc_ids": [
         "lab03_rag_report.md",
         "api_specification_and_contracts.md"
@@ -6499,6 +7280,23 @@
         "grounding_status",
         "execution_metadata"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "семи labeled запитах",
+        "grounding_status",
+        "execution_metadata"
+      ],
+      "target_sections": [
+        "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 3. Agentic Chat & Retrieval",
+        "Звіт до лабораторної роботи №3 / Фактичні результати"
+      ],
+      "gold_passage_ids": [
+        "chunk-0111f65037b69bff",
+        "chunk-3e96a9e19c6722a0",
+        "chunk-d41505820ec0fe04"
+      ],
+      "query_id": "eval_057",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -6561,14 +7359,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 80.21069999085739
+      "latency_ms": 98.82269997615367
     },
     {
-      "query_id": "eval_058",
+      "id": "eval_058",
       "category": "cross_document",
       "language": "uk",
       "query": "Порівняйте рівень ізоляції мережі та зовнішніх викликів між Lab 6 та Knowledge Copilot.",
-      "refusal_expected": false,
+      "expected_answer": "Обидві системи спроєктовані як повністю локальні: Lab 6 відключає cloud tracing, а Copilot використовує лише локальний FastAPI, Redis та LM Studio.",
       "relevant_doc_ids": [
         "lab06_agents_report.md",
         "rag_system_runbook.md"
@@ -6577,6 +7375,20 @@
         "Cloud tracing вимкнено",
         "100% offline, local-first execution"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "Cloud tracing вимкнено",
+        "The copilot runs locally as a modular monolith."
+      ],
+      "target_sections": [
+        "Лабораторна робота №6 / Середовище та модель"
+      ],
+      "gold_passage_ids": [
+        "chunk-6e773f78130aabdd",
+        "chunk-ee8f55a223e64af3"
+      ],
+      "query_id": "eval_058",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -6639,14 +7451,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 81.29709999775514
+      "latency_ms": 96.0087000275962
     },
     {
-      "query_id": "eval_059",
+      "id": "eval_059",
       "category": "cross_document",
       "language": "en",
       "query": "Compare the precision formats used in Lab 4 inference with vector representation in Redis according to ADR 001.",
-      "refusal_expected": false,
+      "expected_answer": "Lab 4 uses torch.float16 for diffusion model weights, while Redis stores vectors in FLOAT32 precision.",
       "relevant_doc_ids": [
         "lab04_stable_diffusion_report.md",
         "adr_001_vector_and_storage_architecture.md"
@@ -6655,6 +7467,21 @@
         "torch.float16",
         "FLOAT32 precision"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "torch.float16",
+        "- Utilizes `HNSW` (Hierarchical Navigable Small World) and `FLAT` vector indexing with `FLOAT32` precision."
+      ],
+      "target_sections": [
+        "ADR 001: Vector Storage and Relational Persistence Architecture / Decision",
+        "Лабораторна робота №4 / Модель і середовище"
+      ],
+      "gold_passage_ids": [
+        "chunk-26d0af60fb9fa7e7",
+        "chunk-312de896eb918af4"
+      ],
+      "query_id": "eval_059",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -6717,14 +7544,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 82.51239999663085
+      "latency_ms": 101.09260003082454
     },
     {
-      "query_id": "eval_060",
+      "id": "eval_060",
       "category": "cross_document",
       "language": "uk",
       "query": "Яка різниця між структурою помилок у Lab 6 та відповідями при помилках в API Copilot?",
-      "refusal_expected": false,
+      "expected_answer": "У Lab 6 інструменти повертають помилки у словнику, який додається до trace, а в Copilot API помилки мапляться у відповідні коди HTTP (400, 503).",
       "relevant_doc_ids": [
         "lab06_agents_report.md",
         "api_specification_and_contracts.md"
@@ -6733,6 +7560,20 @@
         "Помилки інструментів повертаються коротким структурованим",
         "HTTP error mapping"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "Помилки інструментів повертаються коротким структурованим",
+        "Rejection policy: Zero-byte files or corrupted PDFs without an extractable text layer return HTTP 400 with `ExtractionError`."
+      ],
+      "target_sections": [
+        "Лабораторна робота №6 / Робочий простір і інструменти"
+      ],
+      "gold_passage_ids": [
+        "chunk-50dc3e44b7a22bc5",
+        "chunk-d2444550c68115e7"
+      ],
+      "query_id": "eval_060",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -6795,14 +7636,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 85.63260000664741
+      "latency_ms": 99.52920000068843
     },
     {
-      "query_id": "eval_061",
+      "id": "eval_061",
       "category": "cross_document",
       "language": "en",
       "query": "Contrast the document parsing capabilities of Lab 3 CSVLoader with the generalized extractors in Knowledge Copilot.",
-      "refusal_expected": false,
+      "expected_answer": "Lab 3 only handled structured CSV tabular data, while Knowledge Copilot ingests Markdown, plain text, and text-based PDFs via PyMuPDF.",
       "relevant_doc_ids": [
         "lab03_rag_report.md",
         "api_specification_and_contracts.md"
@@ -6811,6 +7652,22 @@
         "CSVLoader",
         "accepting .md, .txt, .pdf"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "CSVLoader",
+        "- `GET /health/live`: Returns `{\"status\": \"ok\"}` when the ASGI server is accepting connections (HTTP 200)."
+      ],
+      "target_sections": [
+        "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 1. Health Checks",
+        "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 2. Document Management",
+        "Звіт до лабораторної роботи №3 / Реалізація"
+      ],
+      "gold_passage_ids": [
+        "chunk-073b9da90cf9c792",
+        "chunk-342a291bedfe4d18"
+      ],
+      "query_id": "eval_061",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -6873,14 +7730,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 84.0576000045985
+      "latency_ms": 104.00849999859929
     },
     {
-      "query_id": "eval_062",
+      "id": "eval_062",
       "category": "cross_document",
       "language": "uk",
       "query": "Порівняйте кількість параметрів моделей, згаданих у звітах Lab 4 та Lab 5.",
-      "refusal_expected": false,
+      "expected_answer": "У Lab 5 LLaVA має 864,031,264 параметри, тоді як Stable Diffusion v1.5 у Lab 4 базується на моделі 0.86B параметрів (SD 1.5).",
       "relevant_doc_ids": [
         "lab04_stable_diffusion_report.md",
         "lab05_multimodal_report.md"
@@ -6889,6 +7746,26 @@
         "864,031,264 параметри",
         "Stable Diffusion v1.5"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "Методичка називає `runwayml/stable-diffusion-v1-5`.",
+        "`llava-hf/llava-interleave-qwen-0.5b-hf`, revision `1090956dd1c79bc93ae98dcf395590369435ec91`."
+      ],
+      "target_sections": [
+        "Лабораторна робота №4",
+        "Лабораторна робота №4 / Базова генерація",
+        "Лабораторна робота №4 / Відповідність методичці",
+        "Лабораторна робота №4 / Модель і середовище",
+        "Лабораторна робота №4 / Організація контрольованих експериментів",
+        "Лабораторна робота №5 / 7. Використана модель",
+        "Лабораторна робота №5 / 9. Вхідне зображення"
+      ],
+      "gold_passage_ids": [
+        "chunk-94bae1e60a6d617a",
+        "chunk-aa189355741329d5"
+      ],
+      "query_id": "eval_062",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -6951,14 +7828,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 81.59419998992234
+      "latency_ms": 90.99870000500232
     },
     {
-      "query_id": "eval_063",
+      "id": "eval_063",
       "category": "cross_document",
       "language": "en",
       "query": "How does the caching strategy in Lab 4 compare with vector index caching in Redis post-mortem?",
-      "refusal_expected": false,
+      "expected_answer": "Lab 4 caches downloaded weights in HuggingFace cache and verifies PNG SHA-256 digests, while Redis uses an allkeys-lru memory eviction policy.",
       "relevant_doc_ids": [
         "lab04_stable_diffusion_report.md",
         "incident_postmortem_redis_oom.md"
@@ -6967,6 +7844,22 @@
         "Hugging Face cache",
         "allkeys-lru eviction policy"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "Hugging Face cache",
+        "- **14:45**: Updated Redis config to `maxmemory 2gb` and set vector cache eviction policy to `allkeys-lru`."
+      ],
+      "target_sections": [
+        "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Corrective and Preventative Actions",
+        "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)",
+        "Лабораторна робота №4 / Модель і середовище"
+      ],
+      "gold_passage_ids": [
+        "chunk-840311292cd3047a",
+        "chunk-aa189355741329d5"
+      ],
+      "query_id": "eval_063",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -7029,14 +7922,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 84.52490001218393
+      "latency_ms": 85.47450002515689
     },
     {
-      "query_id": "eval_064",
+      "id": "eval_064",
       "category": "cross_document",
       "language": "uk",
       "query": "Порівняйте метрики пошуку Hit@5 у семантичного бейзлайну Lab 3 та цільовий критерій у специфікації Lab 7.",
-      "refusal_expected": false,
+      "expected_answer": "У Lab 3 семантичний бейзлайн показав Hit@5 = 0.8571, тоді як цільовий критерій для Lab 7 становить Hit@5 >= 0.92.",
       "relevant_doc_ids": [
         "lab03_rag_report.md",
         "adr_001_vector_and_storage_architecture.md"
@@ -7045,6 +7938,21 @@
         "Hit@5 = 0.8571",
         "Hit@5 >= 0.92"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "Semantic baseline оцінено за Hit@5, MRR і Recall@5. Hit@k фіксує наявність хоча б одного релевантного документа, тоді як Recall@k показує повноту множини.",
+        "Low query latency (<50ms for retrieval pipeline)."
+      ],
+      "target_sections": [
+        "Звіт до лабораторної роботи №3 / Реалізація",
+        "Звіт до лабораторної роботи №3 / Фактичні результати"
+      ],
+      "gold_passage_ids": [
+        "chunk-073b9da90cf9c792",
+        "chunk-230a9615175364d9"
+      ],
+      "query_id": "eval_064",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -7107,14 +8015,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 86.87339996686205
+      "latency_ms": 92.4972000066191
     },
     {
-      "query_id": "eval_065",
+      "id": "eval_065",
       "category": "cross_document",
       "language": "en",
       "query": "Compare the execution interfaces provided in Lab 6 versus Knowledge Copilot.",
-      "refusal_expected": false,
+      "expected_answer": "Lab 6 was executed via a headless test runner and notebook, whereas Knowledge Copilot provides both a FastAPI REST backend and a Streamlit UI.",
       "relevant_doc_ids": [
         "lab06_agents_report.md",
         "rag_system_runbook.md"
@@ -7124,6 +8032,22 @@
         "FastAPI backend",
         "Streamlit interactive UI"
       ],
+      "expected_tool_calls": [],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "Agent / Runner",
+        "FastAPI backend",
+        "Streamlit interactive UI"
+      ],
+      "target_sections": [
+        "Operational Runbook: Local Engineering Knowledge Copilot / 1. System Overview",
+        "Лабораторна робота №6 / Теоретичні відомості та архітектура"
+      ],
+      "gold_passage_ids": [
+        "chunk-47fa3567591701ef",
+        "chunk-6e773f78130aabdd"
+      ],
+      "query_id": "eval_065",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -7186,14 +8110,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 78.39510001940653
+      "latency_ms": 88.9655000064522
     },
     {
-      "query_id": "eval_066",
+      "id": "eval_066",
       "category": "numerical_reasoning",
       "language": "en",
       "query": "Calculate the difference in seconds between model loading time in Lab 4 (42.37 s) and Lab 5 (7.557 s).",
-      "refusal_expected": false,
+      "expected_answer": "42.37 - 7.557 = 34.813 seconds.",
       "relevant_doc_ids": [
         "lab04_stable_diffusion_report.md",
         "lab05_multimodal_report.md"
@@ -7202,6 +8126,23 @@
         "42.37 с",
         "7.557 с"
       ],
+      "expected_tool_calls": [
+        "calculate"
+      ],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "42.37 с",
+        "7.557 с"
+      ],
+      "target_sections": [
+        "Лабораторна робота №4 / Модель і середовище",
+        "Лабораторна робота №5 / 8. Апаратне та програмне середовище"
+      ],
+      "gold_passage_ids": [
+        "chunk-9fb5160565af959c",
+        "chunk-a9920be700462f9a"
+      ],
+      "query_id": "eval_066",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -7264,14 +8205,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 88.96379999350756
+      "latency_ms": 96.4444000273943
     },
     {
-      "query_id": "eval_067",
+      "id": "eval_067",
       "category": "numerical_reasoning",
       "language": "uk",
       "query": "Обчисліть суму доступної системної пам'яті (15.19 GiB) та відеопам'яті (4.000 GiB), зафіксованих у середовищі Lab 4.",
-      "refusal_expected": false,
+      "expected_answer": "15.19 + 4.000 = 19.19 GiB.",
       "relevant_doc_ids": [
         "lab04_stable_diffusion_report.md"
       ],
@@ -7279,6 +8220,21 @@
         "RAM 15.19 GiB",
         "4.000 GiB VRAM"
       ],
+      "expected_tool_calls": [
+        "calculate"
+      ],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "RAM 15.19 GiB",
+        "4.000 GiB VRAM"
+      ],
+      "target_sections": [
+        "Лабораторна робота №4 / Модель і середовище"
+      ],
+      "gold_passage_ids": [
+        "chunk-26d0af60fb9fa7e7"
+      ],
+      "query_id": "eval_067",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -7341,14 +8297,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 47.46319999685511
+      "latency_ms": 57.09780001780018
     },
     {
-      "query_id": "eval_068",
+      "id": "eval_068",
       "category": "numerical_reasoning",
       "language": "en",
       "query": "What is the percentage increase in Redis memory limit from the incident postmortem (from 512 MB to 2048 MB)?",
-      "refusal_expected": false,
+      "expected_answer": "((2048 - 512) / 512) * 100 = 300% increase.",
       "relevant_doc_ids": [
         "incident_postmortem_redis_oom.md"
       ],
@@ -7356,6 +8312,26 @@
         "maxmemory 512mb",
         "maxmemory 2gb"
       ],
+      "expected_tool_calls": [
+        "calculate"
+      ],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "maxmemory 512mb",
+        "maxmemory 2gb"
+      ],
+      "target_sections": [
+        "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Corrective and Preventative Actions",
+        "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Root Cause Analysis",
+        "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)"
+      ],
+      "gold_passage_ids": [
+        "chunk-161474725628508f",
+        "chunk-458c9cd66b4c0a1c",
+        "chunk-840311292cd3047a",
+        "chunk-ce91c3b15f07706b"
+      ],
+      "query_id": "eval_068",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -7418,14 +8394,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 41.82149999542162
+      "latency_ms": 53.225800045765936
     },
     {
-      "query_id": "eval_069",
+      "id": "eval_069",
       "category": "numerical_reasoning",
       "language": "uk",
       "query": "Скільки всього шарів мають разом SigLIP Vision (26 шарів) та Qwen2 (24 шари) у Lab 5?",
-      "refusal_expected": false,
+      "expected_answer": "26 + 24 = 50 шарів.",
       "relevant_doc_ids": [
         "lab05_multimodal_report.md"
       ],
@@ -7433,6 +8409,21 @@
         "SigLIP Vision має 26 шарів",
         "Qwen2 має 24 шари"
       ],
+      "expected_tool_calls": [
+        "calculate"
+      ],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "SigLIP Vision має 26 шарів",
+        "Qwen2 має 24 шари"
+      ],
+      "target_sections": [
+        "Лабораторна робота №5 / 5. Архітектура мультимодальної моделі"
+      ],
+      "gold_passage_ids": [
+        "chunk-848f92fad2de281b"
+      ],
+      "query_id": "eval_069",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -7495,14 +8486,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 46.38310003792867
+      "latency_ms": 46.472400019411
     },
     {
-      "query_id": "eval_070",
+      "id": "eval_070",
       "category": "numerical_reasoning",
       "language": "en",
       "query": "Calculate the ratio of the embedding dimension in ADR 001 (768) to that in Lab 3 (384).",
-      "refusal_expected": false,
+      "expected_answer": "768 / 384 = 2.0.",
       "relevant_doc_ids": [
         "lab03_rag_report.md",
         "adr_001_vector_and_storage_architecture.md"
@@ -7511,6 +8502,23 @@
         "384-вимірні embeddings",
         "dimension = 768"
       ],
+      "expected_tool_calls": [
+        "calculate"
+      ],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "384-вимірні embeddings",
+        "dimension = 768"
+      ],
+      "target_sections": [
+        "ADR 001: Vector Storage and Relational Persistence Architecture / Decision",
+        "Звіт до лабораторної роботи №3 / Реалізація"
+      ],
+      "gold_passage_ids": [
+        "chunk-073b9da90cf9c792",
+        "chunk-312de896eb918af4"
+      ],
+      "query_id": "eval_070",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -7573,14 +8581,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 98.21309999097139
+      "latency_ms": 105.27679999358952
     },
     {
-      "query_id": "eval_071",
+      "id": "eval_071",
       "category": "numerical_reasoning",
       "language": "uk",
       "query": "Обчисліть різницю між Hit@5 гібридного роутера (1.0000) та семантичного бейзлайну (0.8571) у Lab 3.",
-      "refusal_expected": false,
+      "expected_answer": "1.0000 - 0.8571 = 0.1429.",
       "relevant_doc_ids": [
         "lab03_rag_report.md"
       ],
@@ -7588,6 +8596,21 @@
         "Hit@5 = 0.8571",
         "1.0000, 1.0000 і 0.8829"
       ],
+      "expected_tool_calls": [
+        "calculate"
+      ],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "Hit@5 = 0.8571",
+        "1.0000, 1.0000 і 0.8829"
+      ],
+      "target_sections": [
+        "Звіт до лабораторної роботи №3 / Фактичні результати"
+      ],
+      "gold_passage_ids": [
+        "chunk-0111f65037b69bff"
+      ],
+      "query_id": "eval_071",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -7650,14 +8673,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 65.75959996553138
+      "latency_ms": 66.32049998734146
     },
     {
-      "query_id": "eval_072",
+      "id": "eval_072",
       "category": "numerical_reasoning",
       "language": "en",
       "query": "If an ingestion batch processes 12,400 chunks with a batch size of 64 chunks, how many batches are required?",
-      "refusal_expected": false,
+      "expected_answer": "12400 / 64 = 193.75 (so 194 batches).",
       "relevant_doc_ids": [
         "incident_postmortem_redis_oom.md"
       ],
@@ -7665,6 +8688,23 @@
         "12,400 chunks",
         "batch size = 64 chunks"
       ],
+      "expected_tool_calls": [
+        "calculate"
+      ],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "12,400 chunks",
+        "batch size = 64 chunks"
+      ],
+      "target_sections": [
+        "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Corrective and Preventative Actions",
+        "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)"
+      ],
+      "gold_passage_ids": [
+        "chunk-161474725628508f",
+        "chunk-ce91c3b15f07706b"
+      ],
+      "query_id": "eval_072",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -7727,14 +8767,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 52.82929999521002
+      "latency_ms": 63.29990003723651
     },
     {
-      "query_id": "eval_073",
+      "id": "eval_073",
       "category": "numerical_reasoning",
       "language": "uk",
       "query": "Яка загальна кількість записів у Lab 3 без урахування 17 обрізаних записів (185 - 17)?",
-      "refusal_expected": false,
+      "expected_answer": "185 - 17 = 168 записів.",
       "relevant_doc_ids": [
         "lab03_rag_report.md"
       ],
@@ -7742,6 +8782,23 @@
         "185 товарів",
         "обрізає 17 довгих записів"
       ],
+      "expected_tool_calls": [
+        "calculate"
+      ],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "185 товарів",
+        "обрізає 17 довгих записів"
+      ],
+      "target_sections": [
+        "Звіт до лабораторної роботи №3 / Обмеження і подальша робота",
+        "Звіт до лабораторної роботи №3 / Реалізація"
+      ],
+      "gold_passage_ids": [
+        "chunk-073b9da90cf9c792",
+        "chunk-4d5ce6f4f6109390"
+      ],
+      "query_id": "eval_073",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -7804,20 +8861,34 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 43.20670000743121
+      "latency_ms": 48.66060003405437
     },
     {
-      "query_id": "eval_074",
+      "id": "eval_074",
       "category": "numerical_reasoning",
       "language": "en",
       "query": "Calculate the total number of inference steps if one runs 20, 30, and 50 steps from Lab 4 experiments.",
-      "refusal_expected": false,
+      "expected_answer": "20 + 30 + 50 = 100 steps.",
       "relevant_doc_ids": [
         "lab04_stable_diffusion_report.md"
       ],
       "gold_chunks": [
         "20, 30, 50"
       ],
+      "expected_tool_calls": [
+        "calculate"
+      ],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "20, 30, 50"
+      ],
+      "target_sections": [
+        "Лабораторна робота №4 / Організація контрольованих експериментів"
+      ],
+      "gold_passage_ids": [
+        "chunk-a258fb75bd76024c"
+      ],
+      "query_id": "eval_074",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -7880,20 +8951,34 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 55.32360001234338
+      "latency_ms": 73.7436999916099
     },
     {
-      "query_id": "eval_075",
+      "id": "eval_075",
       "category": "numerical_reasoning",
       "language": "uk",
       "query": "Обчисліть середнє значення CFG scale з протестованих у Lab 4 (5, 7.5, 10).",
-      "refusal_expected": false,
+      "expected_answer": "(5 + 7.5 + 10) / 3 = 7.5.",
       "relevant_doc_ids": [
         "lab04_stable_diffusion_report.md"
       ],
       "gold_chunks": [
         "5, 7.5, 10"
       ],
+      "expected_tool_calls": [
+        "calculate"
+      ],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "5, 7.5, 10"
+      ],
+      "target_sections": [
+        "Лабораторна робота №4 / Організація контрольованих експериментів"
+      ],
+      "gold_passage_ids": [
+        "chunk-a258fb75bd76024c"
+      ],
+      "query_id": "eval_075",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -7956,14 +9041,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 47.56789997918531
+      "latency_ms": 48.59749996103346
     },
     {
-      "query_id": "eval_076",
+      "id": "eval_076",
       "category": "numerical_reasoning",
       "language": "en",
       "query": "What is the remaining context in Ministral-3B (8192) after subtracting max_tokens (900)?",
-      "refusal_expected": false,
+      "expected_answer": "8192 - 900 = 7292 tokens.",
       "relevant_doc_ids": [
         "lab06_agents_report.md"
       ],
@@ -7971,6 +9056,21 @@
         "Контекст у lms ps — 8192",
         "max_tokens=900"
       ],
+      "expected_tool_calls": [
+        "calculate"
+      ],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "Контекст у lms ps — 8192",
+        "max_tokens=900"
+      ],
+      "target_sections": [
+        "Лабораторна робота №6 / Середовище та модель"
+      ],
+      "gold_passage_ids": [
+        "chunk-24d0b9d10d53e82f"
+      ],
+      "query_id": "eval_076",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -8033,14 +9133,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 48.794300004374236
+      "latency_ms": 59.60780003806576
     },
     {
-      "query_id": "eval_077",
+      "id": "eval_077",
       "category": "numerical_reasoning",
       "language": "uk",
       "query": "Скільки хвилин тривала недоступність сервісу під час інциденту OOM (з 14:22 до 14:47 UTC)?",
-      "refusal_expected": false,
+      "expected_answer": "47 - 22 = 25 хвилин.",
       "relevant_doc_ids": [
         "incident_postmortem_redis_oom.md"
       ],
@@ -8048,6 +9148,21 @@
         "14:22 and 14:47 UTC",
         "25-minute window"
       ],
+      "expected_tool_calls": [
+        "calculate"
+      ],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "14:22 and 14:47 UTC",
+        "25-minute window"
+      ],
+      "target_sections": [
+        "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Summary"
+      ],
+      "gold_passage_ids": [
+        "chunk-ec91ddb2dece2958"
+      ],
+      "query_id": "eval_077",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -8110,14 +9225,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 51.081900019198656
+      "latency_ms": 51.554700010456145
     },
     {
-      "query_id": "eval_078",
+      "id": "eval_078",
       "category": "numerical_reasoning",
       "language": "en",
       "query": "Calculate the byte size of a 768-dimensional float32 embedding vector (768 * 4 bytes).",
-      "refusal_expected": false,
+      "expected_answer": "768 * 4 = 3072 bytes (3.0 KB).",
       "relevant_doc_ids": [
         "adr_001_vector_and_storage_architecture.md"
       ],
@@ -8125,6 +9240,21 @@
         "dimension = 768",
         "FLOAT32 precision"
       ],
+      "expected_tool_calls": [
+        "calculate"
+      ],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "dimension = 768",
+        "- Utilizes `HNSW` (Hierarchical Navigable Small World) and `FLAT` vector indexing with `FLOAT32` precision."
+      ],
+      "target_sections": [
+        "ADR 001: Vector Storage and Relational Persistence Architecture / Decision"
+      ],
+      "gold_passage_ids": [
+        "chunk-312de896eb918af4"
+      ],
+      "query_id": "eval_078",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -8187,14 +9317,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 53.85530000785366
+      "latency_ms": 49.98890002025291
     },
     {
-      "query_id": "eval_079",
+      "id": "eval_079",
       "category": "numerical_reasoning",
       "language": "uk",
       "query": "Обчисліть суму рядків VQA у Lab 5: 10 baseline-питань плюс 9 контрольованих порівнянь.",
-      "refusal_expected": false,
+      "expected_answer": "10 + 9 = 19 рядків.",
       "relevant_doc_ids": [
         "lab05_multimodal_report.md"
       ],
@@ -8202,6 +9332,21 @@
         "10 baseline-питань",
         "разом 19 рядків"
       ],
+      "expected_tool_calls": [
+        "calculate"
+      ],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "10 baseline-питань",
+        "разом 19 рядків"
+      ],
+      "target_sections": [
+        "Лабораторна робота №5 / 3. Варіант"
+      ],
+      "gold_passage_ids": [
+        "chunk-11fa98c799dc1978"
+      ],
+      "query_id": "eval_079",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -8264,14 +9409,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 53.565300011541694
+      "latency_ms": 51.47659999784082
     },
     {
-      "query_id": "eval_080",
+      "id": "eval_080",
       "category": "numerical_reasoning",
       "language": "en",
       "query": "Calculate the difference between Recall@5 of the hybrid router (0.8829) and semantic baseline (0.5734) in Lab 3.",
-      "refusal_expected": false,
+      "expected_answer": "0.8829 - 0.5734 = 0.3095.",
       "relevant_doc_ids": [
         "lab03_rag_report.md"
       ],
@@ -8279,6 +9424,21 @@
         "mean Recall@5 = 0.5734",
         "0.8829"
       ],
+      "expected_tool_calls": [
+        "calculate"
+      ],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "mean Recall@5 = 0.5734",
+        "0.8829"
+      ],
+      "target_sections": [
+        "Звіт до лабораторної роботи №3 / Фактичні результати"
+      ],
+      "gold_passage_ids": [
+        "chunk-0111f65037b69bff"
+      ],
+      "query_id": "eval_080",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -8341,20 +9501,34 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 61.45949999336153
+      "latency_ms": 48.04730002069846
     },
     {
-      "query_id": "eval_081",
+      "id": "eval_081",
       "category": "numerical_reasoning",
       "language": "uk",
       "query": "Скільки генерацій із 13 у Lab 4 припадає на додаткові експерименти, якщо 1 була baseline (13 - 1)?",
-      "refusal_expected": false,
+      "expected_answer": "13 - 1 = 12 генерацій.",
       "relevant_doc_ids": [
         "lab04_stable_diffusion_report.md"
       ],
       "gold_chunks": [
         "13 унікальних генерацій: 1 baseline"
       ],
+      "expected_tool_calls": [
+        "calculate"
+      ],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "13 унікальних генерацій: 1 baseline"
+      ],
+      "target_sections": [
+        "Лабораторна робота №4 / Організація контрольованих експериментів"
+      ],
+      "gold_passage_ids": [
+        "chunk-5384cddcf9075b9b"
+      ],
+      "query_id": "eval_081",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -8417,20 +9591,35 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 53.154899971559644
+      "latency_ms": 51.26390000805259
     },
     {
-      "query_id": "eval_082",
+      "id": "eval_082",
       "category": "numerical_reasoning",
       "language": "en",
       "query": "What is the sum of seed values tested in Lab 4: 42, 123, 777, and 2026?",
-      "refusal_expected": false,
+      "expected_answer": "42 + 123 + 777 + 2026 = 2968.",
       "relevant_doc_ids": [
         "lab04_stable_diffusion_report.md"
       ],
       "gold_chunks": [
         "42, 123, 777, 2026"
       ],
+      "expected_tool_calls": [
+        "calculate"
+      ],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "42, 123, 777, 2026"
+      ],
+      "target_sections": [
+        "Лабораторна робота №4 / Організація контрольованих експериментів"
+      ],
+      "gold_passage_ids": [
+        "chunk-896a2a16107a9c54",
+        "chunk-a258fb75bd76024c"
+      ],
+      "query_id": "eval_082",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -8493,14 +9682,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 48.6440000240691
+      "latency_ms": 44.542199990246445
     },
     {
-      "query_id": "eval_083",
+      "id": "eval_083",
       "category": "numerical_reasoning",
       "language": "uk",
       "query": "Обчисліть різницю між hidden_size зорової моделі SigLIP (1152) та мовної моделі Qwen2 (1024) у Lab 5.",
-      "refusal_expected": false,
+      "expected_answer": "1152 - 1024 = 128.",
       "relevant_doc_ids": [
         "lab05_multimodal_report.md"
       ],
@@ -8508,6 +9697,21 @@
         "hidden_size=1152",
         "hidden_size=1024"
       ],
+      "expected_tool_calls": [
+        "calculate"
+      ],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "hidden_size=1152",
+        "hidden_size=1024"
+      ],
+      "target_sections": [
+        "Лабораторна робота №5 / 5. Архітектура мультимодальної моделі"
+      ],
+      "gold_passage_ids": [
+        "chunk-848f92fad2de281b"
+      ],
+      "query_id": "eval_083",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -8570,20 +9774,34 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 53.40119998436421
+      "latency_ms": 48.22899994906038
     },
     {
-      "query_id": "eval_084",
+      "id": "eval_084",
       "category": "numerical_reasoning",
       "language": "en",
       "query": "If an API client makes 45 requests in a minute under a 60 req/min rate limit, how many requests remain?",
-      "refusal_expected": false,
+      "expected_answer": "60 - 45 = 15 requests remaining.",
       "relevant_doc_ids": [
         "api_specification_and_contracts.md"
       ],
       "gold_chunks": [
         "Rate limit: 60 requests per minute"
       ],
+      "expected_tool_calls": [
+        "calculate"
+      ],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "Rate limit: 60 requests per minute"
+      ],
+      "target_sections": [
+        "API Specification and Data Contracts: Knowledge Copilot v1 / Authentication & Headers"
+      ],
+      "gold_passage_ids": [
+        "chunk-3ddd91583cc40812"
+      ],
+      "query_id": "eval_084",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -8646,14 +9864,14 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 42.39650000818074
+      "latency_ms": 43.903800018597394
     },
     {
-      "query_id": "eval_085",
+      "id": "eval_085",
       "category": "numerical_reasoning",
       "language": "uk",
       "query": "Обчисліть середнє значення MRR між семантичним бейзлайном (0.6905) та гібридним роутером (1.0000) у Lab 3.",
-      "refusal_expected": false,
+      "expected_answer": "(0.6905 + 1.0000) / 2 = 0.84525.",
       "relevant_doc_ids": [
         "lab03_rag_report.md"
       ],
@@ -8661,6 +9879,21 @@
         "MRR = 0.6905",
         "1.0000"
       ],
+      "expected_tool_calls": [
+        "calculate"
+      ],
+      "refusal_expected": false,
+      "evidence_spans": [
+        "MRR = 0.6905",
+        "1.0000"
+      ],
+      "target_sections": [
+        "Звіт до лабораторної роботи №3 / Фактичні результати"
+      ],
+      "gold_passage_ids": [
+        "chunk-0111f65037b69bff"
+      ],
+      "query_id": "eval_085",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -8723,16 +9956,22 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 48.10190002899617
+      "latency_ms": 49.27339998539537
     },
     {
-      "query_id": "eval_086",
+      "id": "eval_086",
       "category": "unsupported",
       "language": "en",
       "query": "What was the fine-tuning learning rate used for training Stable Diffusion in Lab 4?",
-      "refusal_expected": true,
+      "expected_answer": "Refusal: Stable Diffusion was not trained or fine-tuned in Lab 4 (Variant 1 explicit).",
       "relevant_doc_ids": [],
       "gold_chunks": [],
+      "expected_tool_calls": [],
+      "refusal_expected": true,
+      "evidence_spans": [],
+      "target_sections": [],
+      "gold_passage_ids": [],
+      "query_id": "eval_086",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -8795,16 +10034,22 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 49.335299991071224
+      "latency_ms": 48.27969998586923
     },
     {
-      "query_id": "eval_087",
+      "id": "eval_087",
       "category": "unsupported",
       "language": "uk",
       "query": "Яка точність квантизації INT4 (BitsAndBytes) застосовувалася для LLaVA у Lab 5?",
-      "refusal_expected": true,
+      "expected_answer": "Refusal: Квантизація не використовувалася, модель працювала у FP16.",
       "relevant_doc_ids": [],
       "gold_chunks": [],
+      "expected_tool_calls": [],
+      "refusal_expected": true,
+      "evidence_spans": [],
+      "target_sections": [],
+      "gold_passage_ids": [],
+      "query_id": "eval_087",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -8867,16 +10112,22 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 48.14670002087951
+      "latency_ms": 50.21320004016161
     },
     {
-      "query_id": "eval_088",
+      "id": "eval_088",
       "category": "unsupported",
       "language": "en",
       "query": "What is the AWS S3 bucket name configured for document archival in Knowledge Copilot?",
-      "refusal_expected": true,
+      "expected_answer": "Refusal: The copilot is a local-first system and does not configure AWS S3 buckets.",
       "relevant_doc_ids": [],
       "gold_chunks": [],
+      "expected_tool_calls": [],
+      "refusal_expected": true,
+      "evidence_spans": [],
+      "target_sections": [],
+      "gold_passage_ids": [],
+      "query_id": "eval_088",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -8939,16 +10190,22 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 57.08140000933781
+      "latency_ms": 43.481099943164736
     },
     {
-      "query_id": "eval_089",
+      "id": "eval_089",
       "category": "unsupported",
       "language": "uk",
       "query": "Який F1-score отримала модель BERT на датасеті SQuAD у Lab 3?",
-      "refusal_expected": true,
+      "expected_answer": "Refusal: У Lab 3 не використовувався датасет SQuAD та модель BERT для QA.",
       "relevant_doc_ids": [],
       "gold_chunks": [],
+      "expected_tool_calls": [],
+      "refusal_expected": true,
+      "evidence_spans": [],
+      "target_sections": [],
+      "gold_passage_ids": [],
+      "query_id": "eval_089",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -9011,16 +10268,22 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 48.24829997960478
+      "latency_ms": 40.17260001273826
     },
     {
-      "query_id": "eval_090",
+      "id": "eval_090",
       "category": "unsupported",
       "language": "en",
       "query": "Which PostgreSQL server connection string is used for vector search in ADR 001?",
-      "refusal_expected": true,
+      "expected_answer": "Refusal: PostgreSQL and pgvector were explicitly rejected in ADR 001 in favor of Redis Stack.",
       "relevant_doc_ids": [],
       "gold_chunks": [],
+      "expected_tool_calls": [],
+      "refusal_expected": true,
+      "evidence_spans": [],
+      "target_sections": [],
+      "gold_passage_ids": [],
+      "query_id": "eval_090",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -9083,16 +10346,22 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 46.825600031297654
+      "latency_ms": 49.1660000407137
     },
     {
-      "query_id": "eval_091",
+      "id": "eval_091",
       "category": "unsupported",
       "language": "uk",
       "query": "Яка адреса підключення до кластера Kubernetes зазначена у runbook?",
-      "refusal_expected": true,
+      "expected_answer": "Refusal: Система розгорнута як локальний моноліт без Kubernetes.",
       "relevant_doc_ids": [],
       "gold_chunks": [],
+      "expected_tool_calls": [],
+      "refusal_expected": true,
+      "evidence_spans": [],
+      "target_sections": [],
+      "gold_passage_ids": [],
+      "query_id": "eval_091",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -9155,16 +10424,22 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 43.15569996833801
+      "latency_ms": 57.420300028752536
     },
     {
-      "query_id": "eval_092",
+      "id": "eval_092",
       "category": "unsupported",
       "language": "en",
       "query": "What was the BLEU score of the translation task in Lab 6?",
-      "refusal_expected": true,
+      "expected_answer": "Refusal: Lab 6 focused on an agent analyzing coursework reports, not machine translation.",
       "relevant_doc_ids": [],
       "gold_chunks": [],
+      "expected_tool_calls": [],
+      "refusal_expected": true,
+      "evidence_spans": [],
+      "target_sections": [],
+      "gold_passage_ids": [],
+      "query_id": "eval_092",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -9227,16 +10502,22 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 44.09830004442483
+      "latency_ms": 45.18479999387637
     },
     {
-      "query_id": "eval_093",
+      "id": "eval_093",
       "category": "unsupported",
       "language": "uk",
       "query": "Який розмір аудіофайлу оброблявся моделлю Whisper у Lab 5?",
-      "refusal_expected": true,
+      "expected_answer": "Refusal: У Lab 5 досліджувалася візуально-мовна модель LLaVA, аудіо та Whisper не використовувалися.",
       "relevant_doc_ids": [],
       "gold_chunks": [],
+      "expected_tool_calls": [],
+      "refusal_expected": true,
+      "evidence_spans": [],
+      "target_sections": [],
+      "gold_passage_ids": [],
+      "query_id": "eval_093",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -9299,16 +10580,22 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 50.60670000966638
+      "latency_ms": 50.279100018087775
     },
     {
-      "query_id": "eval_094",
+      "id": "eval_094",
       "category": "unsupported",
       "language": "en",
       "query": "What is the master password for the administrative GraphQL endpoint in API specification?",
-      "refusal_expected": true,
+      "expected_answer": "Refusal: There is no administrative GraphQL endpoint or master password in the specification.",
       "relevant_doc_ids": [],
       "gold_chunks": [],
+      "expected_tool_calls": [],
+      "refusal_expected": true,
+      "evidence_spans": [],
+      "target_sections": [],
+      "gold_passage_ids": [],
+      "query_id": "eval_094",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -9371,16 +10658,22 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 46.8181999749504
+      "latency_ms": 41.44910001195967
     },
     {
-      "query_id": "eval_095",
+      "id": "eval_095",
       "category": "unsupported",
       "language": "uk",
       "query": "Скільки епох навчалася рекурентна нейромережа LSTM у Lab 4?",
-      "refusal_expected": true,
+      "expected_answer": "Refusal: У Lab 4 досліджувалася дифузійна модель Stable Diffusion без навчання LSTM.",
       "relevant_doc_ids": [],
       "gold_chunks": [],
+      "expected_tool_calls": [],
+      "refusal_expected": true,
+      "evidence_spans": [],
+      "target_sections": [],
+      "gold_passage_ids": [],
+      "query_id": "eval_095",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -9443,16 +10736,22 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 72.62449996778741
+      "latency_ms": 45.82629998913035
     },
     {
-      "query_id": "eval_096",
+      "id": "eval_096",
       "category": "unsupported",
       "language": "en",
       "query": "What was the temperature set for GPT-4 in the Lab 6 experiment suite?",
-      "refusal_expected": true,
+      "expected_answer": "Refusal: GPT-4 was not used; Lab 6 ran a local Ministral-3B model via LM Studio.",
       "relevant_doc_ids": [],
       "gold_chunks": [],
+      "expected_tool_calls": [],
+      "refusal_expected": true,
+      "evidence_spans": [],
+      "target_sections": [],
+      "gold_passage_ids": [],
+      "query_id": "eval_096",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -9515,16 +10814,22 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 61.960200022440404
+      "latency_ms": 49.872999952640384
     },
     {
-      "query_id": "eval_097",
+      "id": "eval_097",
       "category": "unsupported",
       "language": "uk",
       "query": "Який токен доступу до сервісу Pinecone використовується для зберігання індексів?",
-      "refusal_expected": true,
+      "expected_answer": "Refusal: Хмарний сервіс Pinecone не використовується; векторний індекс розміщено локально в Redis.",
       "relevant_doc_ids": [],
       "gold_chunks": [],
+      "expected_tool_calls": [],
+      "refusal_expected": true,
+      "evidence_spans": [],
+      "target_sections": [],
+      "gold_passage_ids": [],
+      "query_id": "eval_097",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -9587,16 +10892,22 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 55.73660001391545
+      "latency_ms": 56.07759999111295
     },
     {
-      "query_id": "eval_098",
+      "id": "eval_098",
       "category": "unsupported",
       "language": "en",
       "query": "Which optical character recognition (OCR) engine was used to parse scanned PDFs in Lab 3?",
-      "refusal_expected": true,
+      "expected_answer": "Refusal: Lab 3 processed CSV catalog files, not scanned PDFs or OCR.",
       "relevant_doc_ids": [],
       "gold_chunks": [],
+      "expected_tool_calls": [],
+      "refusal_expected": true,
+      "evidence_spans": [],
+      "target_sections": [],
+      "gold_passage_ids": [],
+      "query_id": "eval_098",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -9659,16 +10970,22 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 47.6007999968715
+      "latency_ms": 52.31790000107139
     },
     {
-      "query_id": "eval_099",
+      "id": "eval_099",
       "category": "unsupported",
       "language": "uk",
       "query": "Яка швидкість генерації у токенах за секунду зафіксована для LLaMA-70B у Lab 5?",
-      "refusal_expected": true,
+      "expected_answer": "Refusal: Модель LLaMA-70B не запускалася в Lab 5.",
       "relevant_doc_ids": [],
       "gold_chunks": [],
+      "expected_tool_calls": [],
+      "refusal_expected": true,
+      "evidence_spans": [],
+      "target_sections": [],
+      "gold_passage_ids": [],
+      "query_id": "eval_099",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -9731,16 +11048,22 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 58.68509999709204
+      "latency_ms": 49.9518999713473
     },
     {
-      "query_id": "eval_100",
+      "id": "eval_100",
       "category": "unsupported",
       "language": "en",
       "query": "What is the Stripe payment gateway webhook secret configured in Knowledge Copilot API?",
-      "refusal_expected": true,
+      "expected_answer": "Refusal: There is no billing or Stripe integration in the Knowledge Copilot.",
       "relevant_doc_ids": [],
       "gold_chunks": [],
+      "expected_tool_calls": [],
+      "refusal_expected": true,
+      "evidence_spans": [],
+      "target_sections": [],
+      "gold_passage_ids": [],
+      "query_id": "eval_100",
       "retrieved_chunks": [
         {
           "rank": 1,
@@ -9803,7 +11126,7 @@
           "token_overflow_flag": false
         }
       ],
-      "latency_ms": 49.69469999196008
+      "latency_ms": 45.91620003338903
     }
   ]
 }

@@ -63,6 +63,12 @@ jobs:
         run: |
           python -m pytest labs/lab06_agents/tests/test_notebook.py labs/lab07_final_project/tests/test_notebook.py -q
 
+      - name: Validate dataset annotations and cryptographic provenance (read-only)
+        env:
+          ALLOW_OFFLINE_EMBEDDINGS: "1"
+        run: |
+          python labs/lab07_final_project/evaluation/validate_annotations.py
+
       - name: Reject committed secrets
         shell: bash
         run: |
