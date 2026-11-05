@@ -23,7 +23,7 @@ async def liveness(
     except Exception:
         sqlite_ok = False
     llm_ok = await llm_client.is_available()
-    
+
     return HealthResponse(
         status="live",
         version="2.0.0",
@@ -49,10 +49,17 @@ async def readiness(
     except Exception:
         sqlite_ok = False
     llm_ok = await llm_client.is_available()
-    
+
+    # Core dependencies must be healthy for service readiness
     ready = redis_ok and sqlite_ok
-    status_str = "ready" if ready else "degraded"
-    
+    if not ready:
+        response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+        status_str = "unready"
+    elif not llm_ok:
+        status_str = "degraded"
+    else:
+        status_str = "ready"
+
     return HealthResponse(
         status=status_str,
         version="2.0.0",

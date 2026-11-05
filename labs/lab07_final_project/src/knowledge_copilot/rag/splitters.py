@@ -42,7 +42,7 @@ def build_chunks_from_document(
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size,
         chunk_overlap=chunk_overlap,
-        separators=["\n\n", "\n", ". ", " ", ""],
+        separators=["\n\n", "\n- ", "\n* ", "\n1. ", "\n| ", "\n", ". ", " "],
     )
     
     candidates = splitter.split_documents(sections)
@@ -63,20 +63,49 @@ def build_chunks_from_document(
                 bounded_docs.append(curr)
                 continue
             
-            # Deterministic midpoint cut
+            # Semantic cut avoiding mid-word or mid-sentence slicing
             txt = curr.page_content
-            midpoint = len(txt) // 2
-            cut = max(
-                txt.rfind("\n", 0, midpoint),
-                txt.rfind(". ", 0, midpoint),
-                txt.rfind(" ", 0, midpoint),
-            )
-            if cut < 1:
-                cut = midpoint
-            overlap = min(chunk_overlap, max(0, cut // 4))
-            left, right = txt[:cut].strip(), txt[max(0, cut - overlap):].strip()
+            # Candidate semantic separators in order of preference
+            split_candidates = []
+            for sep in ["\n\n", "\n- ", "\n* ", "\n1. ", "\n| ", "\n", ". "]:
+                for m in re.finditer(re.escape(sep), txt):
+                    pos = m.end() if sep in [". ", "\n\n"] else m.start()
+                    if 0 < pos < len(txt):
+                        split_candidates.append(pos)
+            
+            split_candidates = sorted(set(split_candidates))
+            best_cut = None
+            if token_counter is not None:
+                for pos in reversed(split_candidates):
+                    cand_left = txt[:pos].strip()
+                    if cand_left and token_counter(cand_left) <= max_tokens and len(cand_left) >= 40:
+                        best_cut = pos
+                        break
+            
+            if best_cut is None:
+                midpoint = len(txt) // 2
+                best_cut = max(
+                    txt.rfind("\n", 0, midpoint),
+                    txt.rfind(". ", 0, midpoint),
+                    txt.rfind(" ", 0, midpoint),
+                )
+                if best_cut < 1:
+                    best_cut = midpoint
+            
+            left = txt[:best_cut].strip()
+            
+            # Snap overlap backward to whitespace to guarantee clean word boundaries
+            raw_start = max(0, best_cut - chunk_overlap)
+            while raw_start > 0 and not txt[raw_start - 1].isspace():
+                raw_start -= 1
+            right = txt[raw_start:].strip()
+            
             if not left or not right or left == txt or right == txt:
-                raise ValueError(f"Unable to split text within token budget of {max_tokens} tokens")
+                # Force clean cut at midpoint on whitespace if identical
+                ws = txt.rfind(" ", 0, len(txt) // 2)
+                mid = ws if ws > 0 else len(txt) // 2
+                left = txt[:mid].strip()
+                right = txt[mid:].strip()
             
             heading_prefix = f"## {heading}\n" if heading else ""
             if heading_prefix and not right.startswith(heading_prefix):

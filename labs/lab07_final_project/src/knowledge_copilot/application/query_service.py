@@ -41,11 +41,82 @@ class QueryService:
         self.default_retrieval_mode = default_retrieval_mode
         self.top_k = top_k
         self.bm25 = BM25Retriever()
-        self._refresh_lexical_index()
+        self._lexical_version = -1
+        self._refresh_lexical_index(force=True)
 
-    def _refresh_lexical_index(self) -> None:
-        chunks = self.ingestion_service.get_all_indexed_chunks()
-        self.bm25.index(chunks)
+    def _refresh_lexical_index(self, force: bool = False) -> None:
+        """Refresh lexical index if version changed, index empty, or explicitly forced."""
+        current_version = getattr(self.ingestion_service, "corpus_version", 0)
+        if force or self._lexical_version != current_version or not self.bm25.chunks:
+            chunks = self.ingestion_service.get_all_indexed_chunks()
+            self.bm25.index(chunks)
+            self._lexical_version = current_version
+
+    def _route_query_documents(self, query: str) -> List[str]:
+        """Detect referenced documents using structure-aware heuristics."""
+        referenced_docs: List[str] = []
+        q_lower = query.casefold()
+        docs = self.ingestion_service.list_documents()
+
+        for doc in docs:
+            stem = Path(doc.filename).stem.casefold()
+            clean_stem = re.sub(r"[_-]", " ", stem)
+
+            if clean_stem in q_lower or (doc.document_id and doc.document_id.casefold() in q_lower):
+                referenced_docs.append(doc.document_id)
+                continue
+
+            lab_match = re.search(r"lab[_\s-]*0?([1-9])", stem)
+            if lab_match:
+                num = lab_match.group(1)
+                if re.search(rf"\b(?:lab|лабораторн\w*(?:\s*робот\w*)?)\s*№?\s*0?{num}\b", q_lower):
+                    referenced_docs.append(doc.document_id)
+                    continue
+
+            adr_match = re.search(r"adr[_\s-]*0*([1-9]+)", stem)
+            if adr_match:
+                num = adr_match.group(1)
+                if re.search(rf"\badr[_\s-]*0*{num}\b", q_lower):
+                    referenced_docs.append(doc.document_id)
+                    continue
+
+            if "postmortem" in stem or "incident" in stem:
+                if re.search(r"\b(?:postmortem|post-mortem|інцидент\w*|incident|oom|out-of-memory)\b", q_lower):
+                    referenced_docs.append(doc.document_id)
+                    continue
+
+            if "runbook" in stem:
+                if re.search(r"\b(?:runbook|operating procedure)\b", q_lower):
+                    referenced_docs.append(doc.document_id)
+                    continue
+
+            if "api_specification" in stem:
+                if re.search(r"\b(?:api specification|api contract|data contract)\b", q_lower):
+                    referenced_docs.append(doc.document_id)
+                    continue
+
+        if re.search(r"\b(?:api|ендпоінт\w*|endpoints?)\b", q_lower) and "api_specification_and_contracts" not in referenced_docs:
+            for doc in docs:
+                if "api" in doc.filename.casefold() and doc.document_id not in referenced_docs:
+                    referenced_docs.append(doc.document_id)
+                    break
+        if re.search(r"\b(?:runbook|експлуатаці\w*|knowledge copilot|copilot)\b", q_lower) and "rag_system_runbook" not in referenced_docs:
+            if "api" not in q_lower or "runbook" in q_lower:
+                for doc in docs:
+                    if "runbook" in doc.filename.casefold() and doc.document_id not in referenced_docs:
+                        referenced_docs.append(doc.document_id)
+                        break
+        if re.search(r"\b(?:adr|lab\s*0?7|специфікац\w*)\b", q_lower) and "adr_001_vector_and_storage_architecture" not in referenced_docs:
+            for doc in docs:
+                if "adr" in doc.filename.casefold() and doc.document_id not in referenced_docs:
+                    referenced_docs.append(doc.document_id)
+                    break
+
+        is_comparative = bool(re.search(r"\b(?:порівня\w*|різниц\w*|відрізня\w*|відмінн\w*|compare|contrast|differ\w*|versus|vs)\b", q_lower))
+        if is_comparative and len(referenced_docs) == 1:
+            return []
+
+        return referenced_docs
 
     def search(
         self,
@@ -55,47 +126,14 @@ class QueryService:
         mode: Optional[RetrievalMode] = None,
         filter_quoted_outputs: bool = True,
     ) -> List[EvidenceChunk]:
-        """Perform multi-mode retrieval with explicit score semantics (DEFECT-06)."""
+        """Perform multi-mode retrieval with explicit score semantics and structure-aware routing."""
         k = k or self.top_k
         active_mode = mode or ACTIVE_RETRIEVAL_MODE.get() or self.default_retrieval_mode
         start_time = time.perf_counter()
 
-        # Dynamic document routing based on indexed catalog
         targets: List[str] = []
         if not document_id:
-            referenced_docs: List[str] = []
-            for doc in self.ingestion_service.list_documents():
-                stem = Path(doc.filename).stem.casefold()
-                clean_stem = re.sub(r"[_-]", " ", stem)
-                pattern = r"\b" + re.escape(clean_stem) + r"\b"
-                if stem in query.casefold() or re.search(pattern, query.casefold()):
-                    referenced_docs.append(doc.document_id)
-                    continue
-                lab_match = re.search(r"(?:lab|лабораторн\w*)[_\s-]*№?\s*0?([1-9])", stem)
-                if lab_match:
-                    num = lab_match.group(1)
-                    if re.search(rf"\b(?:lab|лабораторн\w*(?:\s*робот\w*)?)\s*№?\s*0?{num}\b", query.casefold()):
-                        referenced_docs.append(doc.document_id)
-                        continue
-                adr_match = re.search(r"adr[_\s-]*0*([1-9]+)", stem)
-                if adr_match:
-                    num = adr_match.group(1)
-                    if re.search(rf"\b(?:adr[_\s-]*0*{num}|lab\s*0?7|специфікац\w*)\b", query.casefold()):
-                        referenced_docs.append(doc.document_id)
-                        continue
-                if "postmortem" in stem or "incident" in stem:
-                    if re.search(r"\b(?:postmortem|post-mortem|інцидент\w*|incident|oom)\b", query.casefold()):
-                        referenced_docs.append(doc.document_id)
-                        continue
-                if "runbook" in stem:
-                    if re.search(r"\b(?:runbook|експлуатаці\w*|operating procedure|knowledge copilot|copilot)\b", query.casefold()):
-                        referenced_docs.append(doc.document_id)
-                        continue
-                if "api" in stem:
-                    if re.search(r"\b(?:api|ендпоінт\w*|endpoints?)\b", query.casefold()):
-                        referenced_docs.append(doc.document_id)
-                        continue
-
+            referenced_docs = self._route_query_documents(query)
             if len(referenced_docs) == 1:
                 document_id = referenced_docs[0]
             elif len(referenced_docs) > 1:
@@ -159,31 +197,39 @@ class QueryService:
                 per_target_chunks: Dict[str, List[EvidenceChunk]] = {}
                 for t_id in targets:
                     dense_t = self.redis_adapter.dense_search(
-                        query=query, k=per_doc_quota * 4, document_id=t_id, filter_quoted_outputs=filter_quoted_outputs
+                        query=query, k=8, document_id=t_id, filter_quoted_outputs=filter_quoted_outputs
                     )
                     lex_t = self.bm25.search(
-                        query=query, k=per_doc_quota * 4, document_id=t_id, filter_quoted_outputs=filter_quoted_outputs
+                        query=query, k=8, document_id=t_id, filter_quoted_outputs=filter_quoted_outputs
                     )
                     fused_t = reciprocal_rank_fusion(
                         dense_results=dense_t,
                         lexical_results=lex_t,
-                        k=per_doc_quota * 2,
+                        k=4,
+                        rrf_k=30,
                         dense_weight=1.5,
                         lexical_weight=1.0,
+                        max_per_section=1,
                     )
                     per_target_chunks[t_id] = fused_t
 
                 interleaved: List[EvidenceChunk] = []
-                for idx in range(per_doc_quota * 2):
+                # Round 1: take up to 2 top chunks from each target
+                for idx in range(2):
                     for t_id in targets:
                         if idx < len(per_target_chunks[t_id]):
                             c = per_target_chunks[t_id][idx]
                             if c.chunk.chunk_id not in {x.chunk.chunk_id for x in interleaved}:
                                 interleaved.append(c)
+                # Round 2: fill remaining slots up to k
+                for idx in range(2, 4):
+                    for t_id in targets:
                         if len(interleaved) >= k:
                             break
-                    if len(interleaved) >= k:
-                        break
+                        if idx < len(per_target_chunks[t_id]):
+                            c = per_target_chunks[t_id][idx]
+                            if c.chunk.chunk_id not in {x.chunk.chunk_id for x in interleaved}:
+                                interleaved.append(c)
                 evidence_chunks = interleaved[:k]
             else:
                 dense_candidates = self.redis_adapter.dense_search(
@@ -202,8 +248,10 @@ class QueryService:
                     dense_results=dense_candidates,
                     lexical_results=lex_candidates,
                     k=k,
+                    rrf_k=30,
                     dense_weight=1.5,
                     lexical_weight=1.0,
+                    max_per_section=1,
                 )
 
         duration = time.perf_counter() - start_time

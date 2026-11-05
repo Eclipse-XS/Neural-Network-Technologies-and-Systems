@@ -130,6 +130,15 @@ with st.sidebar:
     st.write(f"**Indexed Documents:** {indexed_count} ({sum(d.chunk_count for d in docs)} chunks)")
     
     st.divider()
+    st.subheader("Execution Backend")
+    backend_mode = st.radio(
+        "Service Backend",
+        options=["FastAPI HTTP API (Port 8000)", "Standalone In-Process"],
+        index=0,
+        help="Select explicit execution path. HTTP API tests the networked FastAPI service, In-Process runs embedded.",
+    )
+    
+    st.divider()
     st.subheader("Session Management")
     st.code(st.session_state.session_id, language=None)
     
@@ -224,20 +233,27 @@ with tab_chat:
                         "retrieval_mode": mode_str,
                     }
 
-                    use_http = True
-                    http_resp_data = None
-                    try:
-                        with httpx.Client(base_url=api_url, timeout=120.0) as http_client:
-                            resp = http_client.post("/api/v1/chat", json=chat_payload)
-                            if resp.status_code == 200:
+                    if backend_mode.startswith("FastAPI"):
+                        try:
+                            with httpx.Client(base_url=api_url, timeout=120.0) as http_client:
+                                resp = http_client.post("/api/v1/chat", json=chat_payload)
+                                if resp.status_code != 200:
+                                    err_detail = resp.text
+                                    st.error(
+                                        f"FastAPI HTTP Error ({resp.status_code}): {err_detail}\n\n"
+                                        "Ensure the FastAPI service is running or switch to 'Standalone In-Process' backend."
+                                    )
+                                    st.stop()
                                 http_resp_data = resp.json()
-                            else:
-                                st.warning(f"FastAPI HTTP {resp.status_code}: Falling back to direct service execution.")
-                                use_http = False
-                    except Exception:
-                        use_http = False
+                        except Exception as conn_err:
+                            st.error(
+                                f"Could not connect to FastAPI at `{api_url}`: {conn_err}\n\n"
+                                "Start the service via:\n"
+                                "```bash\nuvicorn labs.lab07_final_project.src.knowledge_copilot.api.app:app --host 127.0.0.1 --port 8000\n```\n"
+                                "Or select 'Standalone In-Process' in the sidebar."
+                            )
+                            st.stop()
 
-                    if use_http and http_resp_data:
                         ans_text = http_resp_data["answer"]
                         status_val = http_resp_data["grounding_status"]
                         evidence_list = http_resp_data.get("evidence", [])
@@ -340,6 +356,12 @@ with tab_docs:
                         st.rerun()
                     except Exception as exc:
                         st.error(f"Ingestion failed for '{f.name}': {type(exc).__name__}: {exc}")
+
+    st.subheader("Storage Consistency & Maintenance")
+    if st.button("Reconcile Storage (Repair Inconsistencies)", type="secondary"):
+        with st.spinner("Checking SQLite and Redis alignment..."):
+            rec_report = ingestion_service.reconcile_storage()
+            st.json(rec_report)
 
     st.subheader("Current Document Index")
     all_docs = ingestion_service.list_documents()
