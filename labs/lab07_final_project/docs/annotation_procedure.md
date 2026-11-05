@@ -1,7 +1,7 @@
 # Scientific Annotation Procedure and Evaluation Protocol
 ## Ground Truth Methodology for Local Engineering Knowledge Copilot (Lab 7)
 
-**Document Version:** 1.0.0  
+**Document Version:** 2.0.0  
 **Status:** Approved Standard  
 **Target:** Local Agentic RAG System Evaluation  
 
@@ -15,18 +15,21 @@ This document establishes the scientific annotation protocol, ground truth passa
 
 ---
 
-## 2. Dataset Split Architecture
+## 2. Dataset Split Governance
 
-To prevent data snooping and target overfitting, the evaluation corpus is strictly partitioned into two independent sets:
+To maintain scientific integrity and prevent data leakage, the evaluation corpus is strictly partitioned into two independent tiers:
 
-| Split Identifier | Query Count | Purpose | Optimization Policy |
-| :--- | :--- | :--- | :--- |
-| **`dev_eval_50.json`** | 51 queries | Development, parameter tuning, error analysis | Open for feature engineering, BM25 weight tuning, and router iteration. |
-| **`acceptance_eval_50.json`** | 49 queries | Independent acceptance gate and final certification | **Frozen and untouched.** Evaluated strictly once without post-hoc hyperparameter adjustments. |
+### 2.1 Tier 1: Historical Regression Data (100 Queries)
+- `frozen_eval_100.json` (100 queries): The full historical regression benchmark.
+- `dev_eval_50.json` (50 queries, odd IDs): Historical development split.
+- `acceptance_eval_50.json` (50 queries, even IDs): Historical acceptance split.
+- **Role**: Preserved for regression tracking, performance history auditing, and ablation comparisons. Exposed during initial optimization.
 
-### Distribution by Category
+### 2.2 Tier 2: Independent Untouched Final Acceptance Holdout (50 Queries)
+- `final_acceptance_holdout_50.json` (50 queries, SHA256: `1493c4ea5093bae5cd501c1349beb0513305af98582c7891f1232be7536b82cc`).
+- **Role**: **Frozen and untouched final certification holdout.** Authored independently with verified source-grounded evidence spans. No implementation or algorithmic tuning was performed against this set.
 
-Each split preserves balanced coverage across 5 functional categories:
+### Distribution by Category across Splits:
 1. **Exact Fact (`exact_fact`)**: Single-hop factual queries requiring exact architectural constants, configuration keys, or quantitative specifications.
 2. **Semantic Paraphrase (`semantic_paraphrase`)**: Queries formulated with colloquial phrasing, synonyms, or cross-lingual terms (Ukrainian technical terminology vs. English source headers).
 3. **Cross-Document (`cross_document`)**: Multi-hop comparison queries requiring synthesized evidence from two or more distinct laboratory reports or specifications.
@@ -37,20 +40,21 @@ Each split preserves balanced coverage across 5 functional categories:
 
 ## 3. Evidence Annotation Standard
 
-### 3.1 Stable Passage Identifier (`passage_id`)
-Every chunk generated during ingestion is assigned a deterministic, immutable identifier:
-$$\text{chunk\_id} = \langle\text{document\_id}\rangle\text{\_chunk\_}\langle\text{ordinal:03d}\rangle$$
+### 3.1 Stable Chunk Identifier (`gold_passage_ids`)
+Every chunk generated during ingestion is assigned a deterministic, immutable identifier computed by `build_chunks_from_document`:
+$$\text{chunk\_id} = \text{chunk-}\langle\text{SHA256}(\text{doc\_sha256}, \text{section}, \text{content}, \text{ordinal})[:16]\rangle$$
 
 Examples:
-- `adr_001_vector_and_storage_architecture_chunk_001`
-- `lab04_model_adaptation_chunk_004`
-- `incident_postmortem_oom_chunk_002`
+- `chunk-c6cddafce64bf3f5`
+- `chunk-8f19da52e257850a`
+- `chunk-34c7ef95a32b694b`
 
 ### 3.2 Verbatim Evidence Span (`evidence_spans`)
-For every supported query, human annotators mark the exact, minimal contiguous string that proves the claim.
+For every supported query, human annotators mark the exact, minimal contiguous string that proves the claim:
 - **Rule of Minimality**: The evidence span must not include extraneous narrative sentences.
 - **Verbatim Requirement**: The span must match verbatim against the source markdown document, including mathematical notation and unit names.
-- **Multi-Document Requirement**: Cross-document queries must provide at least one distinct evidence span for *each* required source document.
+- **Automated Verification**: Every span is audited against the source documents by `evaluation/validate_annotations.py`. A single non-matching character fails the build.
+- **Multi-Document Requirement**: Cross-document queries must provide distinct evidence spans for *each* required source document.
 
 ### 3.3 Target Section Header (`target_sections`)
 Annotators record the canonical Markdown heading level 2 (`##`) or level 3 (`###`) where the evidence resides.
@@ -69,7 +73,7 @@ flowchart TD
     C -- Yes --> R["Relevant (Rank = idx)"]
     C -- No --> D{"Verbatim Evidence Span in Chunk?"}
     D -- Yes --> R
-    D -- No --> E{"Target Section Match & Length > 40?"}
+    D -- No --> E{"Target Section Match & Substantive (>40 chars)?"}
     E -- Yes --> R
     E -- No --> G{"Substantive Key Term Match?"}
     G -- Yes --> R
@@ -84,42 +88,10 @@ flowchart TD
 
 ---
 
-## 5. Metrics Specification and Formulas
+## 5. Automated Audit Verification
 
-### 5.1 Evidence Recall@k
-For single-document queries:
-$$\text{Recall@}k = \begin{cases} 1.0 & \text{if } \exists c \in \text{Top-}k \text{ s.t. } \text{IsRelevant}(c) \\ 0.0 & \text{otherwise} \end{cases}$$
-
-For cross-document queries requiring set $D_{\text{gold}}$ of documents:
-$$\text{Recall@}k = \frac{|\{d \in D_{\text{gold}} \mid \exists c \in \text{Top-}k, c.\text{doc\_id} = d \land \text{IsRelevant}(c)\}|}{|D_{\text{gold}}|}$$
-
-### 5.2 Hit@5
-$$\text{Hit@5} = \begin{cases} 1.0 & \text{if at least 1 relevant passage is retrieved in top 5} \\ 0.0 & \text{otherwise} \end{cases}$$
-
-### 5.3 Mean Reciprocal Rank (MRR)
-$$\text{MRR} = \frac{1}{|Q|} \sum_{q=1}^{|Q|} \frac{1}{\min(\{r \mid c_r \text{ is relevant}\} \cup \{\infty\})}$$
-
----
-
-## 6. Model and Pipeline Configuration Fingerprint
-
-All reported benchmarks must execute against the following frozen configuration:
-
-```yaml
-rag_pipeline_fingerprint:
-  embedding_model: "intfloat/multilingual-e5-small"
-  embedding_dimension: 384
-  embedding_device: "cpu"
-  chunk_size_chars: 900
-  chunk_overlap_chars: 120
-  chunk_max_tokens: 240
-  vector_store: "Redis Stack 7.4 (Docker localhost:6380)"
-  vector_index: "FLAT / COSINE"
-  bm25_stemmer: "Snowball (English) + Cyrillic inflectional suffix stripping"
-  bm25_field_weights: "filename: 1.0, section: 2.0, body: 1.0"
-  fusion_algorithm: "Reciprocal Rank Fusion (RRF)"
-  rrf_constant_k: 30
-  dense_weight: 1.5
-  lexical_weight: 1.0
-  section_diversity_limit: 1
+The integrity of all evaluation datasets is verified by executing:
+```bash
+python labs/lab07_final_project/evaluation/validate_annotations.py
 ```
+This utility audits schema adherence, cross-verifies every evidence span against disk markdown files, and generates `dataset_integrity_manifest.json`.

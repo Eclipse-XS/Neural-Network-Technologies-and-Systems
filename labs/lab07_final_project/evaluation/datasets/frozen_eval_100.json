@@ -13,7 +13,17 @@
       "384-вимірні embeddings"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "all-MiniLM-L6-v2",
+      "384-вимірні embeddings"
+    ],
+    "target_sections": [
+      "Звіт до лабораторної роботи №3 / Реалізація"
+    ],
+    "gold_passage_ids": [
+      "chunk-c6cddafce64bf3f5"
+    ]
   },
   {
     "id": "eval_002",
@@ -29,7 +39,17 @@
       "LlavaForConditionalGeneration"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "864,031,264 параметри",
+      "LlavaForConditionalGeneration"
+    ],
+    "target_sections": [
+      "Лабораторна робота №5 / 7. Використана модель"
+    ],
+    "gold_passage_ids": [
+      "chunk-71b21c7d1cedea98"
+    ]
   },
   {
     "id": "eval_003",
@@ -45,7 +65,17 @@
       "StableDiffusionPipeline"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "PNDMScheduler",
+      "StableDiffusionPipeline"
+    ],
+    "target_sections": [
+      "Лабораторна робота №4 / Модель і середовище"
+    ],
+    "gold_passage_ids": [
+      "chunk-128b02934da9cf4d"
+    ]
   },
   {
     "id": "eval_004",
@@ -61,7 +91,17 @@
       "обрізає 17 довгих записів"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "256 word pieces",
+      "обрізає 17 довгих записів"
+    ],
+    "target_sections": [
+      "Звіт до лабораторної роботи №3 / Обмеження і подальша робота"
+    ],
+    "gold_passage_ids": [
+      "chunk-7ab7bc463cadce84"
+    ]
   },
   {
     "id": "eval_005",
@@ -77,7 +117,17 @@
       "patch_size=14"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "SigLIP Vision має 26 шарів",
+      "patch_size=14"
+    ],
+    "target_sections": [
+      "Лабораторна робота №5 / 5. Архітектура мультимодальної моделі"
+    ],
+    "gold_passage_ids": [
+      "chunk-74d222f492cc6669"
+    ]
   },
   {
     "id": "eval_006",
@@ -93,7 +143,17 @@
       "Revision:"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "451f4fe16113bff5a5d2269ed5ad43b0592e9a14",
+      "Revision:"
+    ],
+    "target_sections": [
+      "Лабораторна робота №4 / Модель і середовище"
+    ],
+    "gold_passage_ids": [
+      "chunk-128b02934da9cf4d"
+    ]
   },
   {
     "id": "eval_007",
@@ -109,7 +169,18 @@
       "Середовище та модель"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "openai-agents 0.22.3",
+      "Середовище та модель"
+    ],
+    "target_sections": [
+      "Лабораторна робота №6 / Середовище та модель"
+    ],
+    "gold_passage_ids": [
+      "chunk-60b6c7379d1b3732",
+      "chunk-adafb09d29db82c4"
+    ]
   },
   {
     "id": "eval_008",
@@ -125,7 +196,17 @@
       "MRR = 0.6905"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Hit@5 = 0.8571",
+      "MRR = 0.6905"
+    ],
+    "target_sections": [
+      "Звіт до лабораторної роботи №3 / Фактичні результати"
+    ],
+    "gold_passage_ids": [
+      "chunk-119d574195d60fbc"
+    ]
   },
   {
     "id": "eval_009",
@@ -141,7 +222,19 @@
       "1 baseline + 3 seeds + 2 steps"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "13 унікальних генерацій",
+      "1 baseline + 3 seeds + 2 steps"
+    ],
+    "target_sections": [
+      "Лабораторна робота №4 / Висновки",
+      "Лабораторна робота №4 / Організація контрольованих експериментів"
+    ],
+    "gold_passage_ids": [
+      "chunk-100cf6c4a7370c39",
+      "chunk-43668ecd79057cfd"
+    ]
   },
   {
     "id": "eval_010",
@@ -157,7 +250,17 @@
       "mistralai/ministral-3-3b"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Контекст у lms ps — 8192",
+      "mistralai/ministral-3-3b"
+    ],
+    "target_sections": [
+      "Лабораторна робота №6 / Середовище та модель"
+    ],
+    "gold_passage_ids": [
+      "chunk-adafb09d29db82c4"
+    ]
   },
   {
     "id": "eval_011",
@@ -173,7 +276,17 @@
       "SQLite with WAL"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "PRAGMA busy_timeout = 5000",
+      "SQLite with WAL"
+    ],
+    "target_sections": [
+      "ADR 001: Vector Storage and Relational Persistence Architecture / Decision"
+    ],
+    "gold_passage_ids": [
+      "chunk-7de8ebfc223e2406"
+    ]
   },
   {
     "id": "eval_012",
@@ -189,7 +302,19 @@
       "crossed the configured"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "maxmemory 512mb",
+      "crossed the configured"
+    ],
+    "target_sections": [
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Root Cause Analysis",
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)"
+    ],
+    "gold_passage_ids": [
+      "chunk-43af63920d8d64ad",
+      "chunk-853c5a75ae80f8e0"
+    ]
   },
   {
     "id": "eval_013",
@@ -205,7 +330,17 @@
       "не включений у час відповідей"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Model load: 7.557 с",
+      "не включений у час відповідей"
+    ],
+    "target_sections": [
+      "Лабораторна робота №5 / 8. Апаратне та програмне середовище"
+    ],
+    "gold_passage_ids": [
+      "chunk-ad0b753c42e1255b"
+    ]
   },
   {
     "id": "eval_014",
@@ -221,7 +356,17 @@
       "Prometheus metric scrape endpoint"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "GET /metrics",
+      "Prometheus metric scrape endpoint"
+    ],
+    "target_sections": [
+      "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 1. Health Checks"
+    ],
+    "gold_passage_ids": [
+      "chunk-342a291bedfe4d18"
+    ]
   },
   {
     "id": "eval_015",
@@ -237,7 +382,17 @@
       "обмежені 200 символами"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "64 AST-вузлами",
+      "обмежені 200 символами"
+    ],
+    "target_sections": [
+      "Лабораторна робота №6 / Робочий простір і інструменти"
+    ],
+    "gold_passage_ids": [
+      "chunk-a6a1616a7a4a279a"
+    ]
   },
   {
     "id": "eval_016",
@@ -253,7 +408,19 @@
       "lab07-redis"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "port 6380 for vector indexing",
+      "lab07-redis"
+    ],
+    "target_sections": [
+      "Operational Runbook: Local Engineering Knowledge Copilot / 1. System Overview",
+      "Operational Runbook: Local Engineering Knowledge Copilot / 2. Standard Operating Procedures (SOP) / Starting Local Services"
+    ],
+    "gold_passage_ids": [
+      "chunk-6e773f78130aabdd",
+      "chunk-76e9dbe374b7e0a6"
+    ]
   },
   {
     "id": "eval_017",
@@ -269,7 +436,17 @@
       "Qwen2 має 24 шари"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Qwen/Qwen1.5-0.5B-Chat",
+      "Qwen2 має 24 шари"
+    ],
+    "target_sections": [
+      "Лабораторна робота №5 / 5. Архітектура мультимодальної моделі"
+    ],
+    "gold_passage_ids": [
+      "chunk-74d222f492cc6669"
+    ]
   },
   {
     "id": "eval_018",
@@ -285,7 +462,17 @@
       "14:22 and 14:47 UTC"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "25-minute window",
+      "14:22 and 14:47 UTC"
+    ],
+    "target_sections": [
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Summary"
+    ],
+    "gold_passage_ids": [
+      "chunk-ec91ddb2dece2958"
+    ]
   },
   {
     "id": "eval_019",
@@ -301,7 +488,19 @@
       "normalized embedding vectors"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "- Cosine distance metric for normalized embedding vectors (`multilingual-e5-base`, dimension = 768).",
+      "normalized embedding vectors"
+    ],
+    "target_sections": [
+      "ADR 001: Vector Storage and Relational Persistence Architecture / Context",
+      "ADR 001: Vector Storage and Relational Persistence Architecture / Decision"
+    ],
+    "gold_passage_ids": [
+      "chunk-230a9615175364d9",
+      "chunk-7de8ebfc223e2406"
+    ]
   },
   {
     "id": "eval_020",
@@ -317,7 +516,17 @@
       "POST /documents/upload"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Max file size: 20 MB",
+      "POST /documents/upload"
+    ],
+    "target_sections": [
+      "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 2. Document Management"
+    ],
+    "gold_passage_ids": [
+      "chunk-50dc3e44b7a22bc5"
+    ]
   },
   {
     "id": "eval_021",
@@ -333,7 +542,16 @@
       "FLOAT32 vectors"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "185 товарів завантажуються через LangChain `CSVLoader`. Один CSV-рядок стає одним `Document`, оскільки ціна, опис, характеристики та provenance мають залишатися однією логічною одиницею. `all-MiniLM-L6-v2` формує нормалізовані 384-вимірні embeddings. Redis Stack зберігає `FLOAT32` vectors у `FLAT`-індексі та виконує пошук за cosine distance. Grounded prompt передає локальній моделі в LM Studio лише retrieved records і вимагає citations формату `[source.csv:row]`."
+    ],
+    "target_sections": [
+      "Звіт до лабораторної роботи №3 / Реалізація"
+    ],
+    "gold_passage_ids": [
+      "chunk-c6cddafce64bf3f5"
+    ]
   },
   {
     "id": "eval_022",
@@ -351,7 +569,47 @@
       "calculate"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "list_workspace_files",
+      "search_workspace",
+      "read_workspace_file",
+      "calculate"
+    ],
+    "target_sections": [
+      "Лабораторна робота №6 / System instructions",
+      "Лабораторна робота №6 / Багатокрокове виконання",
+      "Лабораторна робота №6 / Без інструментів і з інструментами / Comparison:",
+      "Лабораторна робота №6 / Дизайн експерименту",
+      "Лабораторна робота №6 / Додаткова арифметична перевірка",
+      "Лабораторна робота №6 / Додаткова арифметична перевірка / Результати:",
+      "Лабораторна робота №6 / Зауваження до кожної відповіді фінальної серії",
+      "Лабораторна робота №6 / Керована діагностика калькулятора",
+      "Лабораторна робота №6 / Робочий простір і інструменти",
+      "Лабораторна робота №6 / Теоретичні відомості та архітектура",
+      "Лабораторна робота №6 / Фактичні помилки та застрягання"
+    ],
+    "gold_passage_ids": [
+      "chunk-10f77db05bf6e6f3",
+      "chunk-1688b09b21c2c513",
+      "chunk-1a62992de51e1caf",
+      "chunk-291ad9ce094d5585",
+      "chunk-4ead124cfc4dff9d",
+      "chunk-7039fb23718eb086",
+      "chunk-7af265cf2dfc2969",
+      "chunk-82c813d73db1cf77",
+      "chunk-85a17dee48fd4c4c",
+      "chunk-940011cfd2fbe411",
+      "chunk-9b9253ce9335ec3f",
+      "chunk-9ef97ea084091deb",
+      "chunk-a1ffed8cecb945dd",
+      "chunk-a6a1616a7a4a279a",
+      "chunk-a7f31b4ee136c8b8",
+      "chunk-ac067864562e2b2f",
+      "chunk-bf82b285f8439ca5",
+      "chunk-d4a5a504fb563a8b",
+      "chunk-e40f63828243e716"
+    ]
   },
   {
     "id": "eval_023",
@@ -367,7 +625,17 @@
       "CSVLoader"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "185 товарів завантажуються",
+      "CSVLoader"
+    ],
+    "target_sections": [
+      "Звіт до лабораторної роботи №3 / Реалізація"
+    ],
+    "gold_passage_ids": [
+      "chunk-c6cddafce64bf3f5"
+    ]
   },
   {
     "id": "eval_024",
@@ -383,7 +651,19 @@
       "maxmemory 2gb"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "allkeys-lru",
+      "maxmemory 2gb"
+    ],
+    "target_sections": [
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Corrective and Preventative Actions",
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)"
+    ],
+    "gold_passage_ids": [
+      "chunk-3820ea8db5c0e91e",
+      "chunk-43af63920d8d64ad"
+    ]
   },
   {
     "id": "eval_025",
@@ -399,7 +679,17 @@
       "SHA-256"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "primary_image.png: 512×512, PNG",
+      "SHA-256"
+    ],
+    "target_sections": [
+      "Лабораторна робота №5 / 9. Вхідне зображення"
+    ],
+    "gold_passage_ids": [
+      "chunk-ea1f1331770db123"
+    ]
   },
   {
     "id": "eval_026",
@@ -416,7 +706,21 @@
       "provenance"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "provenance",
+      "SHA-256"
+    ],
+    "target_sections": [
+      "Звіт до лабораторної роботи №3 / Реалізація",
+      "Лабораторна робота №6 / Робочий простір і інструменти",
+      "Лабораторна робота №6 / Фінальна технічна перевірка"
+    ],
+    "gold_passage_ids": [
+      "chunk-597fe237cb244a8c",
+      "chunk-7af265cf2dfc2969",
+      "chunk-c6cddafce64bf3f5"
+    ]
   },
   {
     "id": "eval_027",
@@ -432,7 +736,17 @@
       "не доводить, що контекст достатній"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Hit@k фіксує наявність хоча б одного",
+      "не доводить, що контекст достатній"
+    ],
+    "target_sections": [
+      "Звіт до лабораторної роботи №3 / Реалізація"
+    ],
+    "gold_passage_ids": [
+      "chunk-c6cddafce64bf3f5"
+    ]
   },
   {
     "id": "eval_028",
@@ -448,7 +762,17 @@
       "negative prompt змінює опорну гілку CFG"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "CFG керує силою умови, а не «точністю»",
+      "negative prompt змінює опорну гілку CFG"
+    ],
+    "target_sections": [
+      "Лабораторна робота №4 / Теорія та архітектура"
+    ],
+    "gold_passage_ids": [
+      "chunk-1c35225386ea6c8b"
+    ]
   },
   {
     "id": "eval_029",
@@ -464,7 +788,21 @@
       "Qwen2 → токени відповіді"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Енкодер зображення утворює вектори ознак, проєктор узгоджує їх із простором мовних embeddings, tokenizer перетворює запитання на текстові токени. Авторегресивна мовна модель отримує обидва представлення і послідовно прогнозує токени відповіді. Це не просте з’єднання зображення і тексту як сирих даних. Загальна схема узгоджується з [документацією LLaVA](https://huggingface.co/docs/transformers/model_doc/llava).",
+      "Qwen2 → токени відповіді"
+    ],
+    "target_sections": [
+      "Лабораторна робота №5 / 4. Теоретичні відомості",
+      "Лабораторна робота №5 / 5. Архітектура мультимодальної моделі",
+      "Лабораторна робота №5 / 6. Роль компонентів LLaVA"
+    ],
+    "gold_passage_ids": [
+      "chunk-15544c0b2d578ecd",
+      "chunk-74d222f492cc6669",
+      "chunk-fa7fb49a7b858fd2"
+    ]
   },
   {
     "id": "eval_030",
@@ -480,7 +818,16 @@
       "multi-threaded FastAPI runners"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "multi-threaded FastAPI runners"
+    ],
+    "target_sections": [
+      "ADR 001: Vector Storage and Relational Persistence Architecture / Alternatives Considered"
+    ],
+    "gold_passage_ids": [
+      "chunk-f62798726ddff5a6"
+    ]
   },
   {
     "id": "eval_031",
@@ -496,7 +843,17 @@
       "без eval, імен, викликів чи атрибутів"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "AST для чисел",
+      "без eval, імен, викликів чи атрибутів"
+    ],
+    "target_sections": [
+      "Лабораторна робота №6 / Робочий простір і інструменти"
+    ],
+    "gold_passage_ids": [
+      "chunk-a6a1616a7a4a279a"
+    ]
   },
   {
     "id": "eval_032",
@@ -512,7 +869,19 @@
       "Завершення — фінальна відповідь, помилка, max_turns"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "max_turns=10",
+      "Завершення — фінальна відповідь, помилка, max_turns"
+    ],
+    "target_sections": [
+      "Лабораторна робота №6 / Середовище та модель",
+      "Лабораторна робота №6 / Теоретичні відомості та архітектура"
+    ],
+    "gold_passage_ids": [
+      "chunk-291ad9ce094d5585",
+      "chunk-adafb09d29db82c4"
+    ]
   },
   {
     "id": "eval_033",
@@ -529,7 +898,22 @@
       "fallback to BM25 lexical retriever"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "3. Redis Stack container running on port 6380 for vector indexing.",
+      "lexical fallback without vector ranking",
+      "fallback to BM25 lexical retriever"
+    ],
+    "target_sections": [
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Corrective and Preventative Actions",
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Impact",
+      "Operational Runbook: Local Engineering Knowledge Copilot / 1. System Overview"
+    ],
+    "gold_passage_ids": [
+      "chunk-3820ea8db5c0e91e",
+      "chunk-6e773f78130aabdd",
+      "chunk-bbf7932ccf875435"
+    ]
   },
   {
     "id": "eval_034",
@@ -545,7 +929,19 @@
       "UUIDv4 string into response headers"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "- All requests should include `X-Request-ID` for end-to-end request tracing.",
+      "UUIDv4 string into response headers"
+    ],
+    "target_sections": [
+      "API Specification and Data Contracts: Knowledge Copilot v1 / Authentication & Headers",
+      "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 3. Agentic Chat & Retrieval"
+    ],
+    "gold_passage_ids": [
+      "chunk-3ddd91583cc40812",
+      "chunk-7557340bf109907b"
+    ]
   },
   {
     "id": "eval_035",
@@ -561,7 +957,17 @@
       "UNet з cross-attention та scheduler → фінальний латент → VAE decoder → RGB"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "CLIP не створює пікселі",
+      "UNet з cross-attention та scheduler → фінальний латент → VAE decoder → RGB"
+    ],
+    "target_sections": [
+      "Лабораторна робота №4 / Теорія та архітектура"
+    ],
+    "gold_passage_ids": [
+      "chunk-1c35225386ea6c8b"
+    ]
   },
   {
     "id": "eval_036",
@@ -577,7 +983,25 @@
       "allkeys-lru"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "- **14:45**: Updated Redis config to `maxmemory 2gb` and set vector cache eviction policy to `allkeys-lru`.",
+      "allkeys-lru"
+    ],
+    "target_sections": [
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Corrective and Preventative Actions",
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Impact",
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Root Cause Analysis",
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Summary",
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)"
+    ],
+    "gold_passage_ids": [
+      "chunk-3820ea8db5c0e91e",
+      "chunk-43af63920d8d64ad",
+      "chunk-853c5a75ae80f8e0",
+      "chunk-bbf7932ccf875435",
+      "chunk-ec91ddb2dece2958"
+    ]
   },
   {
     "id": "eval_037",
@@ -593,7 +1017,17 @@
       "transactional integrity for session turns"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "SQLite with WAL (Write-Ahead Logging)",
+      "transactional integrity for session turns"
+    ],
+    "target_sections": [
+      "ADR 001: Vector Storage and Relational Persistence Architecture / Decision"
+    ],
+    "gold_passage_ids": [
+      "chunk-7de8ebfc223e2406"
+    ]
   },
   {
     "id": "eval_038",
@@ -609,7 +1043,17 @@
       "exact ID, атрибути та числові умови"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Leakage-free hybrid router",
+      "exact ID, атрибути та числові умови"
+    ],
+    "target_sections": [
+      "Звіт до лабораторної роботи №3 / Фактичні результати"
+    ],
+    "gold_passage_ids": [
+      "chunk-119d574195d60fbc"
+    ]
   },
   {
     "id": "eval_039",
@@ -625,7 +1069,17 @@
       "SHA-256 PNG і повна конфігурація"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Параметри кожного запуску збережені одразу",
+      "SHA-256 PNG і повна конфігурація"
+    ],
+    "target_sections": [
+      "Лабораторна робота №4 / Організація контрольованих експериментів"
+    ],
+    "gold_passage_ids": [
+      "chunk-43668ecd79057cfd"
+    ]
   },
   {
     "id": "eval_040",
@@ -641,7 +1095,21 @@
       "HTTP 400 with ExtractionError"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Zero-byte files or corrupted PDFs",
+      "- Rejection policy: Zero-byte files or corrupted PDFs without an extractable text layer return HTTP 400 with `ExtractionError`."
+    ],
+    "target_sections": [
+      "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 1. Health Checks",
+      "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 2. Document Management",
+      "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 3. Agentic Chat & Retrieval"
+    ],
+    "gold_passage_ids": [
+      "chunk-342a291bedfe4d18",
+      "chunk-50dc3e44b7a22bc5",
+      "chunk-7557340bf109907b"
+    ]
   },
   {
     "id": "eval_041",
@@ -658,7 +1126,17 @@
       "redis: true, database: true"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "GET /health/live",
+      "GET /health/ready"
+    ],
+    "target_sections": [
+      "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 1. Health Checks"
+    ],
+    "gold_passage_ids": [
+      "chunk-342a291bedfe4d18"
+    ]
   },
   {
     "id": "eval_042",
@@ -675,7 +1153,16 @@
       "Grounded prompt"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Grounded prompt"
+    ],
+    "target_sections": [
+      "Звіт до лабораторної роботи №3 / Реалізація"
+    ],
+    "gold_passage_ids": [
+      "chunk-c6cddafce64bf3f5"
+    ]
   },
   {
     "id": "eval_043",
@@ -691,7 +1178,19 @@
       "OOM не було"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Стратегія: `torch.float16`, `model_cpu_offload`, `AttnProcessor2_0` (SDPA). Attention slicing, xFormers, VAE slicing/tiling не застосовувалися. OOM не було. Наявний CUDA-enabled torch не замінено. Час завантаження моделі, включно з першим отриманням ваг: 42.37 с; він не входить у час inference.",
+      "OOM не було"
+    ],
+    "target_sections": [
+      "Лабораторна робота №4 / Модель і середовище",
+      "Лабораторна робота №4 / Організація контрольованих експериментів"
+    ],
+    "gold_passage_ids": [
+      "chunk-43668ecd79057cfd",
+      "chunk-c0eadc1b9213c399"
+    ]
   },
   {
     "id": "eval_044",
@@ -707,7 +1206,17 @@
       "lab07:kb:*"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "--reindex",
+      "lab07:kb:*"
+    ],
+    "target_sections": [
+      "Operational Runbook: Local Engineering Knowledge Copilot / 2. Standard Operating Procedures (SOP) / Reindexing and Disaster Recovery"
+    ],
+    "gold_passage_ids": [
+      "chunk-421c2453243c2da4"
+    ]
   },
   {
     "id": "eval_045",
@@ -723,7 +1232,17 @@
       "Хмарні сесії, hosted tools"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Cloud tracing вимкнено через set_tracing_disabled(True)",
+      "Хмарні сесії, hosted tools"
+    ],
+    "target_sections": [
+      "Лабораторна робота №6 / Середовище та модель"
+    ],
+    "gold_passage_ids": [
+      "chunk-60b6c7379d1b3732"
+    ]
   },
   {
     "id": "eval_046",
@@ -740,7 +1259,21 @@
       "multilingual-e5-base, dimension = 768"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "384-вимірні embeddings",
+      "- Cosine distance metric for normalized embedding vectors (`multilingual-e5-base`, dimension = 768)."
+    ],
+    "target_sections": [
+      "ADR 001: Vector Storage and Relational Persistence Architecture / Context",
+      "ADR 001: Vector Storage and Relational Persistence Architecture / Decision",
+      "Звіт до лабораторної роботи №3 / Реалізація"
+    ],
+    "gold_passage_ids": [
+      "chunk-230a9615175364d9",
+      "chunk-7de8ebfc223e2406",
+      "chunk-c6cddafce64bf3f5"
+    ]
   },
   {
     "id": "eval_047",
@@ -757,7 +1290,19 @@
       "Model load: 7.557 с"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Час завантаження моделі, включно з першим отриманням ваг: 42.37 с",
+      "Model load: 7.557 с"
+    ],
+    "target_sections": [
+      "Лабораторна робота №4 / Модель і середовище",
+      "Лабораторна робота №5 / 8. Апаратне та програмне середовище"
+    ],
+    "gold_passage_ids": [
+      "chunk-ad0b753c42e1255b",
+      "chunk-c0eadc1b9213c399"
+    ]
   },
   {
     "id": "eval_048",
@@ -774,7 +1319,19 @@
       "mistralai/ministral-3-3b"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Qwen/Qwen1.5-0.5B-Chat",
+      "mistralai/ministral-3-3b"
+    ],
+    "target_sections": [
+      "Лабораторна робота №5 / 5. Архітектура мультимодальної моделі",
+      "Лабораторна робота №6 / Середовище та модель"
+    ],
+    "gold_passage_ids": [
+      "chunk-74d222f492cc6669",
+      "chunk-adafb09d29db82c4"
+    ]
   },
   {
     "id": "eval_049",
@@ -791,7 +1348,19 @@
       "HNSW (Hierarchical Navigable Small World) and FLAT vector indexing"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "185 товарів завантажуються через LangChain `CSVLoader`. Один CSV-рядок стає одним `Document`, оскільки ціна, опис, характеристики та provenance мають залишатися однією логічною одиницею. `all-MiniLM-L6-v2` формує нормалізовані 384-вимірні embeddings. Redis Stack зберігає `FLOAT32` vectors у `FLAT`-індексі та виконує пошук за cosine distance. Grounded prompt передає локальній моделі в LM Studio лише retrieved records і вимагає citations формату `[source.csv:row]`.",
+      "- Utilizes `HNSW` (Hierarchical Navigable Small World) and `FLAT` vector indexing with `FLOAT32` precision."
+    ],
+    "target_sections": [
+      "ADR 001: Vector Storage and Relational Persistence Architecture / Decision",
+      "Звіт до лабораторної роботи №3 / Реалізація"
+    ],
+    "gold_passage_ids": [
+      "chunk-7de8ebfc223e2406",
+      "chunk-c6cddafce64bf3f5"
+    ]
   },
   {
     "id": "eval_050",
@@ -809,7 +1378,40 @@
       "AST для чисел"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "арифметичну помилку",
+      "calculate",
+      "AST для чисел"
+    ],
+    "target_sections": [
+      "Звіт до лабораторної роботи №3 / Фактичні результати",
+      "Лабораторна робота №6 / System instructions",
+      "Лабораторна робота №6 / Без інструментів і з інструментами / Comparison:",
+      "Лабораторна робота №6 / Дизайн експерименту",
+      "Лабораторна робота №6 / Додаткова арифметична перевірка / Результати:",
+      "Лабораторна робота №6 / Зауваження до кожної відповіді фінальної серії",
+      "Лабораторна робота №6 / Керована діагностика калькулятора",
+      "Лабораторна робота №6 / Робочий простір і інструменти",
+      "Лабораторна робота №6 / Теоретичні відомості та архітектура",
+      "Лабораторна робота №6 / Фактичні помилки та застрягання"
+    ],
+    "gold_passage_ids": [
+      "chunk-10f77db05bf6e6f3",
+      "chunk-119d574195d60fbc",
+      "chunk-1688b09b21c2c513",
+      "chunk-1a62992de51e1caf",
+      "chunk-291ad9ce094d5585",
+      "chunk-4ead124cfc4dff9d",
+      "chunk-82c813d73db1cf77",
+      "chunk-940011cfd2fbe411",
+      "chunk-9b9253ce9335ec3f",
+      "chunk-a1ffed8cecb945dd",
+      "chunk-a6a1616a7a4a279a",
+      "chunk-ac067864562e2b2f",
+      "chunk-bf82b285f8439ca5",
+      "chunk-d4a5a504fb563a8b"
+    ]
   },
   {
     "id": "eval_051",
@@ -826,7 +1428,19 @@
       "Квантизація та offload не знадобилися"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "model_cpu_offload",
+      "Квантизація та offload не знадобилися"
+    ],
+    "target_sections": [
+      "Лабораторна робота №4 / Модель і середовище",
+      "Лабораторна робота №5 / 7. Використана модель"
+    ],
+    "gold_passage_ids": [
+      "chunk-71b21c7d1cedea98",
+      "chunk-c0eadc1b9213c399"
+    ]
   },
   {
     "id": "eval_052",
@@ -843,7 +1457,26 @@
       "read_workspace_file"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "[source.csv:row]",
+      "read_workspace_file"
+    ],
+    "target_sections": [
+      "Звіт до лабораторної роботи №3 / Реалізація",
+      "Лабораторна робота №6 / Багатокрокове виконання",
+      "Лабораторна робота №6 / Додаткова арифметична перевірка",
+      "Лабораторна робота №6 / Робочий простір і інструменти",
+      "Лабораторна робота №6 / Фактичні помилки та застрягання"
+    ],
+    "gold_passage_ids": [
+      "chunk-7039fb23718eb086",
+      "chunk-7af265cf2dfc2969",
+      "chunk-85a17dee48fd4c4c",
+      "chunk-9ef97ea084091deb",
+      "chunk-a7f31b4ee136c8b8",
+      "chunk-c6cddafce64bf3f5"
+    ]
   },
   {
     "id": "eval_053",
@@ -861,7 +1494,20 @@
       "max_tokens=900"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "256 word pieces",
+      "Контекст у lms ps — 8192",
+      "max_tokens=900"
+    ],
+    "target_sections": [
+      "Звіт до лабораторної роботи №3 / Обмеження і подальша робота",
+      "Лабораторна робота №6 / Середовище та модель"
+    ],
+    "gold_passage_ids": [
+      "chunk-7ab7bc463cadce84",
+      "chunk-adafb09d29db82c4"
+    ]
   },
   {
     "id": "eval_054",
@@ -879,7 +1525,22 @@
       "maxmemory 512mb"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "185 товарів",
+      "12,400 chunks",
+      "maxmemory 512mb"
+    ],
+    "target_sections": [
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Root Cause Analysis",
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)",
+      "Звіт до лабораторної роботи №3 / Реалізація"
+    ],
+    "gold_passage_ids": [
+      "chunk-43af63920d8d64ad",
+      "chunk-853c5a75ae80f8e0",
+      "chunk-c6cddafce64bf3f5"
+    ]
   },
   {
     "id": "eval_055",
@@ -897,7 +1558,24 @@
       "session_id"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "SQLiteSession",
+      "POST /chat/completions",
+      "session_id"
+    ],
+    "target_sections": [
+      "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 3. Agentic Chat & Retrieval",
+      "Лабораторна робота №6 / Обмеження та висновки",
+      "Лабораторна робота №6 / Пам'ять та ізоляція",
+      "Лабораторна робота №6 / Теоретичні відомості та архітектура"
+    ],
+    "gold_passage_ids": [
+      "chunk-291ad9ce094d5585",
+      "chunk-7557340bf109907b",
+      "chunk-970cd41f6ce0e917",
+      "chunk-b92808abe9241b7f"
+    ]
   },
   {
     "id": "eval_056",
@@ -914,7 +1592,57 @@
       "скопійовано без зміни оригіналу"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "# Лабораторна робота №4",
+      "photorealistic_seed42_steps30_cfg7p5",
+      "скопійовано без зміни оригіналу"
+    ],
+    "target_sections": [
+      "Лабораторна робота №4",
+      "Лабораторна робота №4 / Negative prompt, seed 123",
+      "Лабораторна робота №4 / Negative prompt, seed 42",
+      "Лабораторна робота №4 / Аналіз часу",
+      "Лабораторна робота №4 / Базова генерація",
+      "Лабораторна робота №4 / Висновки",
+      "Лабораторна робота №4 / Відповідність методичці",
+      "Лабораторна робота №4 / Джерела",
+      "Лабораторна робота №4 / Дослідження CFG",
+      "Лабораторна робота №4 / Дослідження seed",
+      "Лабораторна робота №4 / Дослідження steps",
+      "Лабораторна робота №4 / Модель і середовище",
+      "Лабораторна робота №4 / Обмеження",
+      "Лабораторна робота №4 / Організація контрольованих експериментів",
+      "Лабораторна робота №4 / Порівняння стилів",
+      "Лабораторна робота №4 / Таблиця параметрів генерації",
+      "Лабораторна робота №4 / Теорія та архітектура",
+      "Лабораторна робота №5 / 9. Вхідне зображення"
+    ],
+    "gold_passage_ids": [
+      "chunk-0812f2f94d88caee",
+      "chunk-0b26bc429458bcc2",
+      "chunk-100cf6c4a7370c39",
+      "chunk-128b02934da9cf4d",
+      "chunk-1c35225386ea6c8b",
+      "chunk-40916694000a9493",
+      "chunk-43668ecd79057cfd",
+      "chunk-5d884cbaaa70aaeb",
+      "chunk-65c638eac0ebdfae",
+      "chunk-67553454707d614a",
+      "chunk-6df734682d4dc06a",
+      "chunk-7781e8a48d790707",
+      "chunk-89a66cb7b3709b98",
+      "chunk-8f4c99b5d79c24bc",
+      "chunk-a1c378d86833f1a6",
+      "chunk-a4371d256847e664",
+      "chunk-bccf2d5bb78c2033",
+      "chunk-c0eadc1b9213c399",
+      "chunk-c5df1da4e0c4a2bf",
+      "chunk-d77da206656e6da8",
+      "chunk-dcf9f93d2d35171c",
+      "chunk-ea1f1331770db123",
+      "chunk-eca153052b112ed0"
+    ]
   },
   {
     "id": "eval_057",
@@ -932,7 +1660,20 @@
       "execution_metadata"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "семи labeled запитах",
+      "grounding_status",
+      "execution_metadata"
+    ],
+    "target_sections": [
+      "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 3. Agentic Chat & Retrieval",
+      "Звіт до лабораторної роботи №3 / Фактичні результати"
+    ],
+    "gold_passage_ids": [
+      "chunk-119d574195d60fbc",
+      "chunk-7557340bf109907b"
+    ]
   },
   {
     "id": "eval_058",
@@ -949,7 +1690,16 @@
       "100% offline, local-first execution"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Cloud tracing вимкнено"
+    ],
+    "target_sections": [
+      "Лабораторна робота №6 / Середовище та модель"
+    ],
+    "gold_passage_ids": [
+      "chunk-60b6c7379d1b3732"
+    ]
   },
   {
     "id": "eval_059",
@@ -966,7 +1716,19 @@
       "FLOAT32 precision"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "torch.float16",
+      "- Utilizes `HNSW` (Hierarchical Navigable Small World) and `FLAT` vector indexing with `FLOAT32` precision."
+    ],
+    "target_sections": [
+      "ADR 001: Vector Storage and Relational Persistence Architecture / Decision",
+      "Лабораторна робота №4 / Модель і середовище"
+    ],
+    "gold_passage_ids": [
+      "chunk-7de8ebfc223e2406",
+      "chunk-c0eadc1b9213c399"
+    ]
   },
   {
     "id": "eval_060",
@@ -983,7 +1745,16 @@
       "HTTP error mapping"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Помилки інструментів повертаються коротким структурованим"
+    ],
+    "target_sections": [
+      "Лабораторна робота №6 / Робочий простір і інструменти"
+    ],
+    "gold_passage_ids": [
+      "chunk-a6a1616a7a4a279a"
+    ]
   },
   {
     "id": "eval_061",
@@ -1000,7 +1771,21 @@
       "accepting .md, .txt, .pdf"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "CSVLoader",
+      "- `GET /health/live`: Returns `{\"status\": \"ok\"}` when the ASGI server is accepting connections (HTTP 200)."
+    ],
+    "target_sections": [
+      "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 1. Health Checks",
+      "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 2. Document Management",
+      "Звіт до лабораторної роботи №3 / Реалізація"
+    ],
+    "gold_passage_ids": [
+      "chunk-342a291bedfe4d18",
+      "chunk-50dc3e44b7a22bc5",
+      "chunk-c6cddafce64bf3f5"
+    ]
   },
   {
     "id": "eval_062",
@@ -1017,7 +1802,31 @@
       "Stable Diffusion v1.5"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "**Мета:** дослідити параметри локального text-to-image inference у контрольованих порівняннях.",
+      "Stable Diffusion v1.5",
+      "864,031,264 параметри",
+      "primary_image.png: 512×512, PNG. Джерело: `labs/lab04_stable_diffusion/outputs/images/styles/photorealistic_seed42_steps30_cfg7p5_df410b01ba0eea49.png`; скопійовано без зміни оригіналу. SHA-256: `1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5`. Lab 5 використовує власну копію й не імпортує Lab 4. З пікселів видно будиночок ліворуч, коричневі дерев’яні стіни, темний дах, хвойні дерева, водойму та відбиття. Ground truth отримано з візуального огляду, а не prompt генератора."
+    ],
+    "target_sections": [
+      "Лабораторна робота №4",
+      "Лабораторна робота №4 / Базова генерація",
+      "Лабораторна робота №4 / Відповідність методичці",
+      "Лабораторна робота №4 / Модель і середовище",
+      "Лабораторна робота №4 / Організація контрольованих експериментів",
+      "Лабораторна робота №5 / 7. Використана модель",
+      "Лабораторна робота №5 / 9. Вхідне зображення"
+    ],
+    "gold_passage_ids": [
+      "chunk-128b02934da9cf4d",
+      "chunk-43668ecd79057cfd",
+      "chunk-65c638eac0ebdfae",
+      "chunk-67553454707d614a",
+      "chunk-71b21c7d1cedea98",
+      "chunk-a1c378d86833f1a6",
+      "chunk-ea1f1331770db123"
+    ]
   },
   {
     "id": "eval_063",
@@ -1034,7 +1843,21 @@
       "allkeys-lru eviction policy"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Hugging Face cache",
+      "- **14:45**: Updated Redis config to `maxmemory 2gb` and set vector cache eviction policy to `allkeys-lru`."
+    ],
+    "target_sections": [
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Corrective and Preventative Actions",
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)",
+      "Лабораторна робота №4 / Модель і середовище"
+    ],
+    "gold_passage_ids": [
+      "chunk-128b02934da9cf4d",
+      "chunk-3820ea8db5c0e91e",
+      "chunk-43af63920d8d64ad"
+    ]
   },
   {
     "id": "eval_064",
@@ -1051,7 +1874,19 @@
       "Hit@5 >= 0.92"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Hit@5 = 0.8571",
+      "Semantic baseline оцінено за Hit@5, MRR і Recall@5. Hit@k фіксує наявність хоча б одного релевантного документа, тоді як Recall@k показує повноту множини. Тому успішний Hit@5 не доводить, що контекст достатній для багатотоварної відповіді. Перевірка generation окремо аналізує поля, citations, completeness і відмову за недостатнього контексту."
+    ],
+    "target_sections": [
+      "Звіт до лабораторної роботи №3 / Реалізація",
+      "Звіт до лабораторної роботи №3 / Фактичні результати"
+    ],
+    "gold_passage_ids": [
+      "chunk-119d574195d60fbc",
+      "chunk-c6cddafce64bf3f5"
+    ]
   },
   {
     "id": "eval_065",
@@ -1069,7 +1904,20 @@
       "Streamlit interactive UI"
     ],
     "expected_tool_calls": [],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Agent / Runner",
+      "FastAPI backend",
+      "Streamlit interactive UI"
+    ],
+    "target_sections": [
+      "Operational Runbook: Local Engineering Knowledge Copilot / 1. System Overview",
+      "Лабораторна робота №6 / Теоретичні відомості та архітектура"
+    ],
+    "gold_passage_ids": [
+      "chunk-291ad9ce094d5585",
+      "chunk-6e773f78130aabdd"
+    ]
   },
   {
     "id": "eval_066",
@@ -1088,7 +1936,19 @@
     "expected_tool_calls": [
       "calculate"
     ],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "42.37 с",
+      "7.557 с"
+    ],
+    "target_sections": [
+      "Лабораторна робота №4 / Модель і середовище",
+      "Лабораторна робота №5 / 8. Апаратне та програмне середовище"
+    ],
+    "gold_passage_ids": [
+      "chunk-ad0b753c42e1255b",
+      "chunk-c0eadc1b9213c399"
+    ]
   },
   {
     "id": "eval_067",
@@ -1106,7 +1966,17 @@
     "expected_tool_calls": [
       "calculate"
     ],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "RAM 15.19 GiB",
+      "4.000 GiB VRAM"
+    ],
+    "target_sections": [
+      "Лабораторна робота №4 / Модель і середовище"
+    ],
+    "gold_passage_ids": [
+      "chunk-c0eadc1b9213c399"
+    ]
   },
   {
     "id": "eval_068",
@@ -1124,7 +1994,21 @@
     "expected_tool_calls": [
       "calculate"
     ],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "maxmemory 512mb",
+      "maxmemory 2gb"
+    ],
+    "target_sections": [
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Corrective and Preventative Actions",
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Root Cause Analysis",
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)"
+    ],
+    "gold_passage_ids": [
+      "chunk-3820ea8db5c0e91e",
+      "chunk-43af63920d8d64ad",
+      "chunk-853c5a75ae80f8e0"
+    ]
   },
   {
     "id": "eval_069",
@@ -1142,7 +2026,17 @@
     "expected_tool_calls": [
       "calculate"
     ],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "SigLIP Vision має 26 шарів",
+      "Qwen2 має 24 шари"
+    ],
+    "target_sections": [
+      "Лабораторна робота №5 / 5. Архітектура мультимодальної моделі"
+    ],
+    "gold_passage_ids": [
+      "chunk-74d222f492cc6669"
+    ]
   },
   {
     "id": "eval_070",
@@ -1161,7 +2055,19 @@
     "expected_tool_calls": [
       "calculate"
     ],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "384-вимірні embeddings",
+      "dimension = 768"
+    ],
+    "target_sections": [
+      "ADR 001: Vector Storage and Relational Persistence Architecture / Decision",
+      "Звіт до лабораторної роботи №3 / Реалізація"
+    ],
+    "gold_passage_ids": [
+      "chunk-7de8ebfc223e2406",
+      "chunk-c6cddafce64bf3f5"
+    ]
   },
   {
     "id": "eval_071",
@@ -1179,7 +2085,17 @@
     "expected_tool_calls": [
       "calculate"
     ],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Hit@5 = 0.8571",
+      "1.0000, 1.0000 і 0.8829"
+    ],
+    "target_sections": [
+      "Звіт до лабораторної роботи №3 / Фактичні результати"
+    ],
+    "gold_passage_ids": [
+      "chunk-119d574195d60fbc"
+    ]
   },
   {
     "id": "eval_072",
@@ -1197,7 +2113,19 @@
     "expected_tool_calls": [
       "calculate"
     ],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "12,400 chunks",
+      "batch size = 64 chunks"
+    ],
+    "target_sections": [
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Corrective and Preventative Actions",
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)"
+    ],
+    "gold_passage_ids": [
+      "chunk-3820ea8db5c0e91e",
+      "chunk-43af63920d8d64ad"
+    ]
   },
   {
     "id": "eval_073",
@@ -1215,7 +2143,19 @@
     "expected_tool_calls": [
       "calculate"
     ],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "185 товарів",
+      "обрізає 17 довгих записів"
+    ],
+    "target_sections": [
+      "Звіт до лабораторної роботи №3 / Обмеження і подальша робота",
+      "Звіт до лабораторної роботи №3 / Реалізація"
+    ],
+    "gold_passage_ids": [
+      "chunk-7ab7bc463cadce84",
+      "chunk-c6cddafce64bf3f5"
+    ]
   },
   {
     "id": "eval_074",
@@ -1232,7 +2172,16 @@
     "expected_tool_calls": [
       "calculate"
     ],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "20, 30, 50"
+    ],
+    "target_sections": [
+      "Лабораторна робота №4 / Організація контрольованих експериментів"
+    ],
+    "gold_passage_ids": [
+      "chunk-0b26bc429458bcc2"
+    ]
   },
   {
     "id": "eval_075",
@@ -1249,7 +2198,16 @@
     "expected_tool_calls": [
       "calculate"
     ],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "5, 7.5, 10"
+    ],
+    "target_sections": [
+      "Лабораторна робота №4 / Організація контрольованих експериментів"
+    ],
+    "gold_passage_ids": [
+      "chunk-0b26bc429458bcc2"
+    ]
   },
   {
     "id": "eval_076",
@@ -1267,7 +2225,17 @@
     "expected_tool_calls": [
       "calculate"
     ],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Контекст у lms ps — 8192",
+      "max_tokens=900"
+    ],
+    "target_sections": [
+      "Лабораторна робота №6 / Середовище та модель"
+    ],
+    "gold_passage_ids": [
+      "chunk-adafb09d29db82c4"
+    ]
   },
   {
     "id": "eval_077",
@@ -1285,7 +2253,17 @@
     "expected_tool_calls": [
       "calculate"
     ],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "14:22 and 14:47 UTC",
+      "25-minute window"
+    ],
+    "target_sections": [
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Summary"
+    ],
+    "gold_passage_ids": [
+      "chunk-ec91ddb2dece2958"
+    ]
   },
   {
     "id": "eval_078",
@@ -1303,7 +2281,17 @@
     "expected_tool_calls": [
       "calculate"
     ],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "dimension = 768",
+      "- Utilizes `HNSW` (Hierarchical Navigable Small World) and `FLAT` vector indexing with `FLOAT32` precision."
+    ],
+    "target_sections": [
+      "ADR 001: Vector Storage and Relational Persistence Architecture / Decision"
+    ],
+    "gold_passage_ids": [
+      "chunk-7de8ebfc223e2406"
+    ]
   },
   {
     "id": "eval_079",
@@ -1321,7 +2309,17 @@
     "expected_tool_calls": [
       "calculate"
     ],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "10 baseline-питань",
+      "разом 19 рядків"
+    ],
+    "target_sections": [
+      "Лабораторна робота №5 / 3. Варіант"
+    ],
+    "gold_passage_ids": [
+      "chunk-06d9fe4bae9fd9f8"
+    ]
   },
   {
     "id": "eval_080",
@@ -1339,7 +2337,17 @@
     "expected_tool_calls": [
       "calculate"
     ],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "mean Recall@5 = 0.5734",
+      "0.8829"
+    ],
+    "target_sections": [
+      "Звіт до лабораторної роботи №3 / Фактичні результати"
+    ],
+    "gold_passage_ids": [
+      "chunk-119d574195d60fbc"
+    ]
   },
   {
     "id": "eval_081",
@@ -1356,7 +2364,16 @@
     "expected_tool_calls": [
       "calculate"
     ],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "13 унікальних генерацій: 1 baseline"
+    ],
+    "target_sections": [
+      "Лабораторна робота №4 / Організація контрольованих експериментів"
+    ],
+    "gold_passage_ids": [
+      "chunk-43668ecd79057cfd"
+    ]
   },
   {
     "id": "eval_082",
@@ -1373,7 +2390,17 @@
     "expected_tool_calls": [
       "calculate"
     ],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "42, 123, 777, 2026"
+    ],
+    "target_sections": [
+      "Лабораторна робота №4 / Організація контрольованих експериментів"
+    ],
+    "gold_passage_ids": [
+      "chunk-0b26bc429458bcc2",
+      "chunk-8f4c99b5d79c24bc"
+    ]
   },
   {
     "id": "eval_083",
@@ -1391,7 +2418,17 @@
     "expected_tool_calls": [
       "calculate"
     ],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "hidden_size=1152",
+      "hidden_size=1024"
+    ],
+    "target_sections": [
+      "Лабораторна робота №5 / 5. Архітектура мультимодальної моделі"
+    ],
+    "gold_passage_ids": [
+      "chunk-74d222f492cc6669"
+    ]
   },
   {
     "id": "eval_084",
@@ -1408,7 +2445,16 @@
     "expected_tool_calls": [
       "calculate"
     ],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Rate limit: 60 requests per minute"
+    ],
+    "target_sections": [
+      "API Specification and Data Contracts: Knowledge Copilot v1 / Authentication & Headers"
+    ],
+    "gold_passage_ids": [
+      "chunk-3ddd91583cc40812"
+    ]
   },
   {
     "id": "eval_085",
@@ -1426,7 +2472,17 @@
     "expected_tool_calls": [
       "calculate"
     ],
-    "refusal_expected": false
+    "refusal_expected": false,
+    "evidence_spans": [
+      "MRR = 0.6905",
+      "1.0000"
+    ],
+    "target_sections": [
+      "Звіт до лабораторної роботи №3 / Фактичні результати"
+    ],
+    "gold_passage_ids": [
+      "chunk-119d574195d60fbc"
+    ]
   },
   {
     "id": "eval_086",
@@ -1437,7 +2493,10 @@
     "relevant_doc_ids": [],
     "gold_chunks": [],
     "expected_tool_calls": [],
-    "refusal_expected": true
+    "refusal_expected": true,
+    "evidence_spans": [],
+    "target_sections": [],
+    "gold_passage_ids": []
   },
   {
     "id": "eval_087",
@@ -1448,7 +2507,10 @@
     "relevant_doc_ids": [],
     "gold_chunks": [],
     "expected_tool_calls": [],
-    "refusal_expected": true
+    "refusal_expected": true,
+    "evidence_spans": [],
+    "target_sections": [],
+    "gold_passage_ids": []
   },
   {
     "id": "eval_088",
@@ -1459,7 +2521,10 @@
     "relevant_doc_ids": [],
     "gold_chunks": [],
     "expected_tool_calls": [],
-    "refusal_expected": true
+    "refusal_expected": true,
+    "evidence_spans": [],
+    "target_sections": [],
+    "gold_passage_ids": []
   },
   {
     "id": "eval_089",
@@ -1470,7 +2535,10 @@
     "relevant_doc_ids": [],
     "gold_chunks": [],
     "expected_tool_calls": [],
-    "refusal_expected": true
+    "refusal_expected": true,
+    "evidence_spans": [],
+    "target_sections": [],
+    "gold_passage_ids": []
   },
   {
     "id": "eval_090",
@@ -1481,7 +2549,10 @@
     "relevant_doc_ids": [],
     "gold_chunks": [],
     "expected_tool_calls": [],
-    "refusal_expected": true
+    "refusal_expected": true,
+    "evidence_spans": [],
+    "target_sections": [],
+    "gold_passage_ids": []
   },
   {
     "id": "eval_091",
@@ -1492,7 +2563,10 @@
     "relevant_doc_ids": [],
     "gold_chunks": [],
     "expected_tool_calls": [],
-    "refusal_expected": true
+    "refusal_expected": true,
+    "evidence_spans": [],
+    "target_sections": [],
+    "gold_passage_ids": []
   },
   {
     "id": "eval_092",
@@ -1503,7 +2577,10 @@
     "relevant_doc_ids": [],
     "gold_chunks": [],
     "expected_tool_calls": [],
-    "refusal_expected": true
+    "refusal_expected": true,
+    "evidence_spans": [],
+    "target_sections": [],
+    "gold_passage_ids": []
   },
   {
     "id": "eval_093",
@@ -1514,7 +2591,10 @@
     "relevant_doc_ids": [],
     "gold_chunks": [],
     "expected_tool_calls": [],
-    "refusal_expected": true
+    "refusal_expected": true,
+    "evidence_spans": [],
+    "target_sections": [],
+    "gold_passage_ids": []
   },
   {
     "id": "eval_094",
@@ -1525,7 +2605,10 @@
     "relevant_doc_ids": [],
     "gold_chunks": [],
     "expected_tool_calls": [],
-    "refusal_expected": true
+    "refusal_expected": true,
+    "evidence_spans": [],
+    "target_sections": [],
+    "gold_passage_ids": []
   },
   {
     "id": "eval_095",
@@ -1536,7 +2619,10 @@
     "relevant_doc_ids": [],
     "gold_chunks": [],
     "expected_tool_calls": [],
-    "refusal_expected": true
+    "refusal_expected": true,
+    "evidence_spans": [],
+    "target_sections": [],
+    "gold_passage_ids": []
   },
   {
     "id": "eval_096",
@@ -1547,7 +2633,10 @@
     "relevant_doc_ids": [],
     "gold_chunks": [],
     "expected_tool_calls": [],
-    "refusal_expected": true
+    "refusal_expected": true,
+    "evidence_spans": [],
+    "target_sections": [],
+    "gold_passage_ids": []
   },
   {
     "id": "eval_097",
@@ -1558,7 +2647,10 @@
     "relevant_doc_ids": [],
     "gold_chunks": [],
     "expected_tool_calls": [],
-    "refusal_expected": true
+    "refusal_expected": true,
+    "evidence_spans": [],
+    "target_sections": [],
+    "gold_passage_ids": []
   },
   {
     "id": "eval_098",
@@ -1569,7 +2661,10 @@
     "relevant_doc_ids": [],
     "gold_chunks": [],
     "expected_tool_calls": [],
-    "refusal_expected": true
+    "refusal_expected": true,
+    "evidence_spans": [],
+    "target_sections": [],
+    "gold_passage_ids": []
   },
   {
     "id": "eval_099",
@@ -1580,7 +2675,10 @@
     "relevant_doc_ids": [],
     "gold_chunks": [],
     "expected_tool_calls": [],
-    "refusal_expected": true
+    "refusal_expected": true,
+    "evidence_spans": [],
+    "target_sections": [],
+    "gold_passage_ids": []
   },
   {
     "id": "eval_100",
@@ -1591,6 +2689,9 @@
     "relevant_doc_ids": [],
     "gold_chunks": [],
     "expected_tool_calls": [],
-    "refusal_expected": true
+    "refusal_expected": true,
+    "evidence_spans": [],
+    "target_sections": [],
+    "gold_passage_ids": []
   }
 ]

@@ -1,37 +1,64 @@
-# Frozen Evaluation Dataset: Knowledge Copilot (100 Queries)
+# Scientific Evaluation Datasets: Governance and Provenance
 
-## Overview
-This directory contains the frozen, non-synthetic evaluation benchmark for the Local Engineering Knowledge Copilot (`frozen_eval_100.json`).
+## 1. Governance Architecture
 
-## Distribution & Composition
-The 100-query benchmark is distributed across five query categories and balanced equally between English and Ukrainian:
+The evaluation suite is partitioned into two distinct governance tiers:
 
-| Category | Query Count | Purpose & Verification Standard |
-|---|---|---|
-| **exact_fact** | 25 | Precision fact extraction from specifications, architectural records, and reports. Grounded in exact terms and numbers. |
-| **semantic_paraphrase** | 20 | Natural language queries phrased differently from the source text, testing vector and hybrid semantic matching. |
-| **cross_document** | 20 | Multi-document synthesis requiring evidence retrieval from multiple independent technical documents. |
-| **numerical_reasoning** | 20 | Complex numerical calculations and ratio evaluations requiring AST calculator invocation. |
-| **unsupported** | 15 | Negative controls and adversarial queries about missing facts requiring calibrated refusal without hallucination. |
-| **Total** | **100** | **50 Ukrainian / 50 English** |
+1. **Historical Regression Benchmark Suite**:
+   - `frozen_eval_100.json` (100 queries, SHA256: `bbf92c004ad91e2247b638e0f1860c2ae47f1aeae41a89495ca3cc7097d36eb3`)
+   - `dev_eval_50.json` (50 queries, SHA256: `68ea707746e5b0510bc26af9ab6a8ee3aaacbf513d075e538ab23e806ad0453e`)
+   - `acceptance_eval_50.json` (50 queries, SHA256: `308eee463285dd300d2f68079d19c79607c457461134859d81a9e47581bf96c2`)
+   - *Status*: **Historical Regression Data**. These sets were exposed during iterative optimization and served to identify initial architectural bottlenecks (cross-document routing, token truncation, bilingual stemming). They are retained for regression tracking and baseline comparisons.
 
-## Data Schema
-Each benchmark entry adheres to the following JSON schema:
+2. **Independent Untouched Final Acceptance Holdout**:
+   - `final_acceptance_holdout_50.json` (50 queries, SHA256: `1493c4ea5093bae5cd501c1349beb0513305af98582c7891f1232be7536b82cc`)
+   - *Status*: **Untouched Final Holdout**. Authored independently with verified source-grounded evidence spans. No algorithmic tuning or implementation heuristics were adjusted against this set.
+
+---
+
+## 2. Dataset Schema & Evidence Grounding
+
+Every query across all datasets complies with the verified schema:
+
 ```json
 {
-  "id": "eval_001",
+  "id": "final_001",
   "category": "exact_fact",
-  "language": "uk",
-  "query": "Яку розмірність ембеддінгів формує модель all-MiniLM-L6-v2 у Lab 3?",
-  "expected_answer": "all-MiniLM-L6-v2 формує 384-вимірні нормалізовані embeddings.",
-  "relevant_doc_ids": ["lab03_rag_report.md"],
-  "gold_chunks": ["all-MiniLM-L6-v2", "384-вимірні embeddings"],
-  "expected_tool_calls": [],
+  "language": "en",
+  "query": "Which vector database and relational database were chosen in ADR 001?",
+  "expected_answer": "Redis Stack (Search & JSON) was chosen for vector storage and SQLite with WAL for application state.",
+  "relevant_doc_ids": [
+    "adr_001_vector_and_storage_architecture.md"
+  ],
+  "target_sections": [
+    "## Decision"
+  ],
+  "evidence_spans": [
+    "**Redis Stack (Search & JSON)** as the vector database:",
+    "**SQLite with WAL (Write-Ahead Logging)** for application state and chat memory:"
+  ],
+  "gold_passage_ids": [
+    "chunk-8f19da52e257850a"
+  ],
+  "expected_tool_calls": [
+    "search_knowledge"
+  ],
   "refusal_expected": false
 }
 ```
 
-## Ground Truth Principles
-1. **Zero Hallucination Tolerance**: Ground truth was established strictly from the committed knowledge base corpus (`assets/knowledge/` and `assets/knowledge/engineering/`).
-2. **Deterministic Evaluation**: No stochastic prompt-based evaluators are used for gold retrieval matching.
-3. **Immutability**: This benchmark is frozen; developers must not modify query targets or relevance labels to inflate metrics.
+### Invariants:
+1. **Verbatim Evidence**: For every non-refusal query, every string in `evidence_spans` MUST exist verbatim in the target document. This invariant is audited automatically by `evaluation/validate_annotations.py`.
+2. **Deterministic Passage Identifiers**: `gold_passage_ids` correspond to stable SHA-256 chunk digests computed during document parsing.
+3. **Calibrated Refusal**: Queries with `refusal_expected: true` MUST have empty `evidence_spans`, `target_sections`, and `relevant_doc_ids`.
+
+---
+
+## 3. Cryptographic Integrity Manifest
+
+| File | Queries | Supported | Refusal | Verbatim Spans | SHA256 |
+|---|---|---|---|---|---|
+| `frozen_eval_100.json` | 100 | 85 | 15 | 172 | `bbf92c004ad91e2247b638e0f1860c2ae47f1aeae41a89495ca3cc7097d36eb3` |
+| `dev_eval_50.json` | 50 | 43 | 7 | 88 | `68ea707746e5b0510bc26af9ab6a8ee3aaacbf513d075e538ab23e806ad0453e` |
+| `acceptance_eval_50.json` | 50 | 42 | 8 | 84 | `308eee463285dd300d2f68079d19c79607c457461134859d81a9e47581bf96c2` |
+| `final_acceptance_holdout_50.json` | 50 | 40 | 10 | 57 | `1493c4ea5093bae5cd501c1349beb0513305af98582c7891f1232be7536b82cc` |

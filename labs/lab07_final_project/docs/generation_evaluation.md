@@ -1,76 +1,103 @@
-# Generation Evaluation and Grounding Faithfulness Report
-## Engineering Validation for Local Engineering Knowledge Copilot (Lab 7)
+# Generation Evaluation and Grounding Faithfulness Specification
+## Local Engineering Knowledge Copilot (Lab 7)
 
-**Document Version:** 1.0.0  
+**Document Version:** 2.0.0  
 **Evaluated Artifact:** `labs/lab07_final_project/evaluation/baselines/generation_results.json`  
-**Evaluation Scope:** 100 Frozen Queries (`frozen_eval_100.json`) + Dev / Acceptance Splits  
+**Evaluation Harness:** `labs/lab07_final_project/evaluation/eval_generation.py`  
+**Target Scope:** `final_acceptance_holdout_50.json` (50 queries) and `frozen_eval_100.json` (100 queries)  
 
 ---
 
-## 1. Executive Summary and Acceptance Scorecard
+## 1. Live Runtime Status and Scorecard
 
-To eliminate hallucination and verify factual fidelity, answer generation is governed by the Bounded Agent Orchestrator (`AgentOrchestrator`), OpenAI Agents SDK Runner, and strict Semantic Grounding Verification (`verify_grounding`).
+In accordance with the non-negotiable scientific evaluation contract:
+1. Generation evaluation must execute genuine inference through `QueryService.execute_query -> AgentOrchestrator -> Runner.run -> LM Studio`.
+2. Answer-producing code is strictly isolated from evaluation labels (`expected_answer`, `refusal_expected`, `relevant_doc_ids`).
+3. When the local LLM host dependency (LM Studio on port 1234) is offline or unreachable, **all generation metrics are marked `NOT_VERIFIED`** and the live acceptance gate is marked **`BLOCKED (Host Dependency Offline)`**. No synthetic templates or fabricated answers may be substituted.
 
-| Metric | Target | Observed Result | Status | Notes |
-| :--- | :--- | :--- | :--- | :--- |
-| **Unsupported Query Refusal** | 100% (15/15) | **15/15 (100.0%)** | **PASS** | Out-of-scope & ungrounded queries correctly rejected |
-| **Fabricated Citations** | 0 | **0** | **PASS** | Strict citation parsing: only retrieved chunk IDs accepted |
-| **Citation Validity Rate** | 100% | **100.0%** (85/85) | **PASS** | Every citation references an active document passage |
-| **Calculator Execution** | $\ge 90\%$ | **20/20 (100.0%)** | **PASS** | Deterministic arithmetic delegation via `calculate` |
-| **Cross-Doc Coverage** | $\ge 80\%$ | **95.0%** | **PASS** | Evidence interleaved across multiple target documents |
-| **End-to-End Latency P50**| $\le 200\text{ ms}$| **45.71 ms** | **PASS** | Cached lexical indexing & optimized vector retrieval |
-| **End-to-End Latency P95**| $\le 400\text{ ms}$| **91.44 ms** | **PASS** | Sub-100 ms generation and verification pipeline |
-| **Live Host LLM (Port 1234)**| Connected | **BLOCKED (Host Offline)**| **BLOCKED** | Documented host dependency offline on port 1234 |
-
----
-
-## 2. Refusal and Abstention Policy (15/15 Verified)
-
-The system enforces a strict refusal protocol to prevent confident hallucinations when queries target information absent from the engineering corpus:
-
-- When evidence is below the confidence threshold or empty, the orchestrator sets `grounding_status = GroundingStatus.INSUFFICIENT_EVIDENCE`.
-- Across all 15 unsupported queries in the benchmark (`eval_011`, `eval_023`, `eval_035`, `eval_047`, `eval_059`, `eval_071`, `eval_083`, `eval_095`, etc.), the system safely abstained without fabricating claims or hallucinating facts.
+| Metric | Scientific Target | Host Offline Status | Host Online Specification |
+| :--- | :--- | :---: | :--- |
+| **Unsupported Query Refusal** | 100% | **NOT_VERIFIED** | Verified via `is_refusal_answer` and `GroundingStatus.INSUFFICIENT_EVIDENCE` |
+| **Fabricated Citations** | 0 | **NOT_VERIFIED** | Parsed `[source_id#chunk_id]` tags checked against retrieved chunk IDs |
+| **Citation Validity Rate** | 100% | **NOT_VERIFIED** | Every cited passage must exist in the retrieved evidence accumulator |
+| **Calculator Execution** | 100% on numeric questions | **NOT_VERIFIED** | Verified via actual `calculate` tool execution record in `turn.tool_executions` |
+| **Cross-Doc Coverage** | $\ge 80\%$ | **NOT_VERIFIED** | Verified by presence of citations across all referenced target documents |
+| **End-to-End Latency P50** | $\le 200\text{ ms}$ | **NOT_VERIFIED** | Wall-clock latency of real agent inference turn |
+| **End-to-End Latency P95** | $\le 400\text{ ms}$ | **NOT_VERIFIED** | 95th percentile wall-clock latency of real agent inference turn |
+| **Live Host Gate** | Active Inference on Port 1234 | **BLOCKED** | Host runtime dependency offline at `http://localhost:1234/v1` |
 
 ---
 
-## 3. Tool Execution and Calculator Verification (20/20 Verified)
+## 2. Real Agent Call Path and Tracing Architecture
 
-Numerical reasoning questions (e.g. latency deltas, throughput ratios, parameter ratios) must not perform arithmetic in natural language prose. 
-- All 20 numerical reasoning queries invoked the `calculate` tool with Python `ast` safe parsing.
-- Arithmetic recovery (`attempt_arithmetic_recovery`) ensures that if a language model attempts mental arithmetic, the mathematical expression is extracted, evaluated via `calculate`, and verified against the canonical ground truth.
+The actual generation path executed by `evaluation/eval_generation.py` follows:
+
+```mermaid
+sequenceDiagram
+    participant Harness as eval_generation.py
+    participant QS as QueryService
+    participant Orch as AgentOrchestrator
+    participant SDK as OpenAI Agents Runner
+    participant LLM as LM Studio (Port 1234)
+    participant DB as SQLiteSession / Repository
+
+    Harness->>QS: execute_query(query, session_id, mode=HYBRID)
+    Note over QS: Query only — zero label leakage
+    QS->>Orch: execute_turn(user_input, session_id, history)
+    Orch->>SDK: Runner.run(agent, session, hooks=CopilotTraceHooks)
+    SDK->>LLM: POST /v1/chat/completions (tool definitions)
+    LLM-->>SDK: tool_call: search_knowledge(query)
+    SDK->>Orch: execute search_knowledge
+    Orch-->>SDK: evidence chunks
+    SDK->>LLM: POST /v1/chat/completions (evidence context)
+    opt Arithmetic Needed
+        LLM-->>SDK: tool_call: calculate(expression)
+        SDK->>Orch: execute safe_calculate
+        Orch-->>SDK: arithmetic result
+        SDK->>LLM: POST /v1/chat/completions (result)
+    end
+    LLM-->>SDK: final grounded answer with [source_id#chunk_id]
+    SDK-->>Orch: RunResult
+    Orch->>Orch: verify_grounding(canonical_answer, evidence)
+    Orch->>DB: save_canonical_turn(turn)
+    Orch-->>QS: Turn object
+    QS-->>Harness: Turn (answer, tool_executions, citations, status, latency)
+    Note over Harness: Scoring Stage: Evaluate Turn vs Gold Target
+```
 
 ---
 
-## 4. Human-in-the-Loop Audit Sample (10 Factual Claims)
+## 3. Grounding Verification & Tool Execution Semantics
 
-To validate the reliability of automated grounding verification, 10 randomly selected claims from generated responses were independently audited by a human engineer against the source technical reports:
+### 3.1 Tool Call Tracing
+Tool invocations are never inferred from string matching on assistant prose. Every reported tool execution must originate from `CopilotTraceHooks.on_tool_end` and be recorded in `turn.tool_executions` with:
+- `tool_name`: Exact registered tool function (`search_knowledge`, `list_knowledge_sources`, `calculate`).
+- `arguments`: Parsed argument dictionary.
+- `result`: Structured return payload.
+- `execution_time_ms`: Monotonic wall-clock runtime of the tool.
 
-| Query ID | Generated Claim | Cited Passage | Automated Status | Human Auditor Judgment | Concordance |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `eval_001` | "Multilingual-e5-small uses 384 embedding dimensions." | `adr_001#chunk_001` | `GROUNDED` | `SUPPORTED` (Verbatim in ADR 001) | **Agree** |
-| `eval_007` | "Redis vector indexing utilizes FLAT index with COSINE metric." | `adr_001#chunk_003` | `GROUNDED` | `SUPPORTED` (Verified in ADR 001 §2) | **Agree** |
-| `eval_014` | "Batch size for model adaptation was configured to 16." | `lab04#chunk_002` | `GROUNDED` | `SUPPORTED` (Verified in Lab 4 config table)| **Agree** |
-| `eval_025` | "PNDMScheduler required 50 inference steps for generation." | `lab04#chunk_005` | `GROUNDED` | `SUPPORTED` (Verified in Lab 4 §3.1) | **Agree** |
-| `eval_038` | "Redis OOM occurred due to unbounded key expiration policy." | `incident#chunk_002` | `GROUNDED` | `SUPPORTED` (Verified in Postmortem §Root Cause)| **Agree** |
-| `eval_050` | "The agent execution loop enforces max_turns=10." | `runbook#chunk_004` | `GROUNDED` | `SUPPORTED` (Verified in Runbook §Runtime Bounds)| **Agree** |
-| `eval_062` | "FastAPI chat endpoint accepts session_id, query, and mode." | `api_spec#chunk_001` | `GROUNDED` | `SUPPORTED` (Verified in API Contract §POST /chat)| **Agree** |
-| `eval_075` | "Total latency budget delta between Lab 3 and Lab 7 is 320 ms."| `calculate` | `GROUNDED` | `SUPPORTED` (Verified calculation: 559.4 - 238.7)| **Agree** |
-| `eval_088` | "Unsupported: Quantum computing error correction parameters." | None (Refusal) | `INSUFFICIENT`| `SUPPORTED` (No quantum info in corpus) | **Agree** |
-| `eval_099` | "Unsupported: Secret API tokens for external cloud vendors." | None (Refusal) | `INSUFFICIENT`| `SUPPORTED` (Correct security refusal) | **Agree** |
-
-**Inter-Annotator Agreement:** 10 / 10 (100.0% concordance between automated verifier and human review). Zero false positive groundings detected.
+### 3.2 Refusal Detection
+When a query targets facts outside the corpus:
+- The system must return `grounding_status = GroundingStatus.INSUFFICIENT_EVIDENCE`.
+- The canonical answer must state lack of evidence without confabulating details.
 
 ---
 
-## 5. End-to-End Latency Profile
+## 4. Human-in-the-Loop Protocol Specification
 
-Execution latency was measured across all 100 queries:
-- **P50 Latency:** 45.71 ms
-- **P90 Latency:** 78.20 ms
-- **P95 Latency:** 91.44 ms
-- **Mean Latency:** 49.32 ms
+To prevent unsubstantiated claims of human-model agreement, manual evaluation is governed by the following strict schema. Any reported manual review must provide verifiable records:
 
-The sub-100 ms P95 latency is achieved through:
-1. In-memory caching of the bilingual Okapi BM25 inverted index in `QueryService`.
-2. FLAT cosine vector indexing in Redis Stack on Docker port 6380.
-3. Lazy evaluation of embedding model imports in `rag/__init__.py`.
+### Review Schema:
+1. `evaluation_run_id`: UUID of the live benchmark run.
+2. `query_id`: Query identifier from the dataset.
+3. `generated_answer`: Verbatim text produced by the model.
+4. `cited_passages`: List of passage IDs cited in the answer.
+5. `human_reviewer_id`: Identity of the technical auditor.
+6. `timestamp_utc`: ISO 8601 timestamp.
+7. `criteria_judged`:
+   - *Factual correctness*: True / False.
+   - *Claim entailment*: Fully Entailed / Partially Entailed / Contradicted / Unsupported.
+   - *Citation accuracy*: Exact match to supporting sentence in source.
+8. `audit_log_path`: Path to committed JSON review record.
+
+*Note:* In offline execution environments where LM Studio is offline, no live answers exist to audit; therefore, human evaluation claims remain unasserted until live runs are conducted.
