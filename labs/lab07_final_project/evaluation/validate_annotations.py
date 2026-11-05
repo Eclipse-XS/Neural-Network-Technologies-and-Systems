@@ -105,9 +105,9 @@ def validate_dataset_file(
     if not file_path.exists():
         raise FileNotFoundError(f"Dataset file missing: {file_path}")
 
-    raw_bytes = file_path.read_bytes()
-    sha256_hash = hashlib.sha256(raw_bytes).hexdigest()
-    data = json.loads(raw_bytes.decode("utf-8"))
+    text_content = file_path.read_text(encoding="utf-8").replace("\r\n", "\n")
+    sha256_hash = hashlib.sha256(text_content.encode("utf-8")).hexdigest()
+    data = json.loads(text_content)
 
     # Cryptographic integrity check against trusted manifest
     if trusted_manifest and filename in trusted_manifest:

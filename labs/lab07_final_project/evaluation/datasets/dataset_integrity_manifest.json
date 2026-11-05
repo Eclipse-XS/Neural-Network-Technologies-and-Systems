@@ -6,7 +6,7 @@
     "refusal_queries": 15,
     "verified_evidence_spans": 172,
     "verified_gold_passages": 205,
-    "sha256": "5aad50c90b4100499cf5a8d13982c94a23b92b7664ce9242395ada45320c09e0",
+    "sha256": "e729624ca014c04d455518b3e73d2063e01b4782039a0919b173361b2e03b1e4",
     "status": "VALIDATED"
   },
   "dev_eval_50.json": {
@@ -16,7 +16,7 @@
     "refusal_queries": 7,
     "verified_evidence_spans": 87,
     "verified_gold_passages": 67,
-    "sha256": "352774cce8da799b16ccf57d05af2f98a3026b2dffd71287ccb590dc6b10d04a",
+    "sha256": "91da06257a2e41a7fd39cd29860867cc55006007a766881f94721fa0a271f1ff",
     "status": "VALIDATED"
   },
   "acceptance_eval_50.json": {
@@ -26,7 +26,7 @@
     "refusal_queries": 8,
     "verified_evidence_spans": 85,
     "verified_gold_passages": 138,
-    "sha256": "aeecbc6484dbf034839ddc7cf1ad90dea4fcf801b50f2fadfbcfd0324a48bcd6",
+    "sha256": "db7f82aa2a4b84e29f916b58ceec2bf5569664932a4f4d32d0f0ff2bf7f3d06a",
     "status": "VALIDATED"
   },
   "final_acceptance_holdout_50.json": {
@@ -36,7 +36,7 @@
     "refusal_queries": 10,
     "verified_evidence_spans": 57,
     "verified_gold_passages": 53,
-    "sha256": "dd414345586ad80759962154182b269eb50ab5997e9fde9087ce1876931923c4",
+    "sha256": "663700c2bbf5390cc88800776554b0a8fa1471e733181cb301d8243810a9e1b9",
     "status": "VALIDATED"
   }
 }
