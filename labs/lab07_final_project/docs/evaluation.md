@@ -8,19 +8,28 @@ This evaluation applies strict, defensible passage-level relevance criteria (eli
 
 ### Measured Tri-Mode Retrieval Performance (100 Queries)
 
-| Metric | Target | Dense Only | BM25 (Lexical) | Hybrid (Dense + BM25) | Status |
-|---|---|---|---|---|---|
-| **Evidence Recall@1** | $\ge 0.6500$ | 0.4941 | 0.4588 | **0.5176** | Sub-target |
-| **Evidence Recall@3** | $\ge 0.8000$ | 0.6824 | 0.6588 | **0.6941** | Sub-target |
-| **Evidence Recall@5** | $\ge 0.8500$ | 0.7941 | 0.7235 | **0.7765** | Near-target |
-| **Hit@5** | $\ge 0.9200$ | 0.8706 | 0.7882 | **0.8588** | Near-target |
-| **MRR** | $\ge 0.7500$ | 0.6382 | 0.5949 | **0.6431** | Baseline |
-| **Truncation Violations** | $= 0$ | **0** | **0** | **0** | **PASS** |
+All metrics below are drawn directly from the authoritative benchmark artifact [`evaluation/baselines/benchmark_results.json`](../evaluation/baselines/benchmark_results.json):
 
-> **Scientific Audit Finding**:
-> Under strict evidence-span verification, Hybrid retrieval achieves the highest overall accuracy across every rank position (Recall@1: 0.5176, Recall@5: 0.7765, Hit@5: 0.8588, MRR: 0.6431).
-> Performance is strongest on **Numerical Reasoning** (Hit@5: 1.0000, Recall@5: 1.0000, MRR: 0.9167) and **Exact Technical Facts** (Hit@5: 0.8800, Recall@5: 0.8800, MRR: 0.7833).
-> Cross-document multi-target retrieval and semantic paraphrase across technical Ukrainian/English texts represent the remaining optimization frontiers.
+| Metric | Target | Dense Only | BM25 (Lexical) | Hybrid (Dense + BM25) | Final Quality Status |
+|---|---|---|---|---|---|
+| **Evidence Recall@1** | $\ge 0.6500$ | 0.4176 | **0.4882** | 0.4363 | **Sub-target (FAIL)** |
+| **Evidence Recall@3** | $\ge 0.8000$ | 0.6588 | **0.6647** | 0.6103 | **Sub-target (FAIL)** |
+| **Evidence Recall@5** | $\ge 0.8500$ | 0.7647 | **0.7765** | 0.7020 | **Sub-target (FAIL)** |
+| **Hit@5** | $\ge 0.9200$ | 0.8235 | **0.8588** | 0.8000 | **Near-target (FAIL)** |
+| **Mean Reciprocal Rank (MRR)** | $\ge 0.7500$ | 0.5933 | **0.6584** | 0.6482 | **Sub-target (FAIL)** |
+| **Silent Truncation Violations** | $= 0$ | **0** | **0** | **0** | **PASS** |
+
+![Recall Comparison](../artifacts/portfolio/retrieval_recall_comparison.png)
+*Figure 1: Recall@K across Dense, BM25 Lexical, and Hybrid RRF retrieval modes on the 100-query frozen benchmark.*
+
+![MRR and Hit@5 Comparison](../artifacts/portfolio/retrieval_mrr_hit_comparison.png)
+*Figure 2: MRR and Hit@5 retrieval quality comparison across modes.*
+
+> **Scientific Audit & Transparency Statement**:
+> Under strict passage-level evidence span verification, all three retrieval modes remain below the ambitious quality targets ($\text{Recall@1} \ge 0.65$, $\text{MRR} \ge 0.75$).
+> BM25 Lexical retrieval achieved the highest overall Recall@5 (0.7765) and MRR (0.6584) due to strong exact-match symbol matching on technical constants.
+> In contrast, Hybrid RRF excels on Numerical Reasoning (Hit@5: 1.0000, Recall@5: 0.9625, MRR: 0.9250) and achieves 100% proper abstention on out-of-corpus negative controls.
+> These results represent an honest scientific baseline, not an artificially inflated pass.
 
 ---
 
@@ -32,7 +41,7 @@ The evaluation dataset (`evaluation/datasets/frozen_eval_100.json`) contains exa
 |---|---|---|---|
 | **Exact Technical Facts** | 25 | Labs 3–6, ADR-001, Post-mortem, Runbook | Precise keyword and symbol alignment |
 | **Semantic Paraphrase** | 20 | Labs 3–6, API Spec, Architecture Docs | Abstracted conceptual representations |
-| **Cross-Document Comparison** | 20 | Pairs (e.g. Lab 4 vs Lab 5, ADR vs Runbook) | Multi-target routing & synthesis |
+| **Cross-Document Comparison** | 20 | Document pairs (e.g., Lab 4 vs Lab 5) | Multi-target routing & synthesis |
 | **Numerical Reasoning** | 20 | Quantitative benchmarks & SLAs | Arithmetic expression extraction & tool execution |
 | **Unsupported Negative Controls** | 15 | None (Out-of-corpus queries) | Abstention, refusal & hallucination suppression |
 | **Total** | **100** | **All 8 Corpus Documents** | **Comprehensive Engineering Coverage** |
@@ -62,13 +71,16 @@ The evaluation dataset (`evaluation/datasets/frozen_eval_100.json`) contains exa
 
 ## 4. Category Breakdown Analysis (Hybrid Retrieval)
 
+![Category Performance Breakdown](../artifacts/portfolio/category_performance_breakdown.png)
+*Figure 3: Retrieval performance broken down by query category.*
+
 | Category | Query Count ($n$) | Hit@5 | MRR | Recall@1 | Recall@5 | Primary Driver |
 |---|---|---|---|---|---|---|
-| **Numerical Reasoning** | 20 | **1.0000** | **0.9167** | **0.8500** | **1.0000** | Exact metric and numeric token alignment |
-| **Exact Technical Facts** | 25 | **0.8800** | **0.7833** | **0.7200** | **0.8800** | High BM25 symbol precision |
-| **Semantic Paraphrase** | 20 | **0.8000** | **0.4517** | 0.2500 | **0.8000** | Dense vector conceptual mapping |
-| **Cross-Document Comparison** | 20 | 0.7500 | 0.3858 | 0.2000 | 0.4000 | Multi-document quota partitioning |
-| **Negative Controls (Abstention)** | 15 | N/A | N/A | N/A | N/A | Zero false positive citation generation |
+| **Numerical Reasoning** | 20 | **1.0000** | **0.9250** | **0.7125** | **0.9625** | Exact metric and numeric token alignment |
+| **Exact Technical Facts** | 25 | **0.8400** | **0.7413** | **0.5533** | **0.7567** | High BM25 symbol precision |
+| **Semantic Paraphrase** | 20 | **0.7000** | **0.4617** | **0.3000** | **0.6250** | Dense vector conceptual mapping |
+| **Cross-Document Comparison** | 20 | **0.6500** | **0.4417** | **0.1500** | **0.4500** | Multi-document quota partitioning |
+| **Negative Controls (Abstention)** | 15 | N/A | N/A | N/A | N/A | 100% correct refusal rate |
 
 ---
 
@@ -76,28 +88,31 @@ The evaluation dataset (`evaluation/datasets/frozen_eval_100.json`) contains exa
 
 Measured on local CPU inference environment (`evaluation/baselines/benchmark_results.json`):
 
-| Retrieval Mode | Latency P50 | Latency P95 | Mean Latency |
-|---|---|---|---|
-| **BM25 Lexical** | **19.10 ms** | **25.46 ms** | **20.15 ms** |
-| **Dense Search** | **92.10 ms** | **415.07 ms** | **162.30 ms** |
-| **Hybrid (Dense + BM25)** | **146.92 ms** | **559.41 ms** | **241.25 ms** |
+![Latency Distribution](../artifacts/portfolio/retrieval_latency_distribution.png)
+*Figure 4: Retrieval latency percentiles (P50, Mean, P90, P95) across retrieval modes.*
+
+| Retrieval Mode | Latency P50 | Latency P90 | Latency P95 | Mean Latency |
+|---|---|---|---|---|
+| **BM25 Lexical** | **2.12 ms** | **2.97 ms** | **3.48 ms** | **2.24 ms** |
+| **Dense Search** | **44.11 ms** | **85.91 ms** | **89.12 ms** | **53.86 ms** |
+| **Hybrid (Dense + BM25)** | **47.78 ms** | **96.00 ms** | **98.86 ms** | **57.30 ms** |
 
 ---
 
 ## 6. Ablation Findings: Dense vs. Lexical vs. Hybrid
 
 1. **BM25 Lexical Retrieval**:
-   - Ultra-low latency (P50: 19.10 ms).
-   - High precision on specific identifiers (`PNDMScheduler`, `864031264`, `WAL`).
-   - Weak on multilingual paraphrases (Ukrainian colloquial phrasing mapping to technical English terms).
-2. **Dense Vector Retrieval (multilingual-e5-small)**:
-   - Robust cross-lingual representation between Ukrainian queries and English technical specs.
-   - Higher latency due to local CPU transformer token encoding.
-   - Lower top-1 recall on exact configuration parameters compared to BM25.
+   - Extremely low latency (P50: 2.12 ms).
+   - High precision on specific identifiers (`PNDMScheduler`, `864031264`, `WAL`, exact revision SHAs).
+   - Fails on semantic paraphrasing where terms differ from the source document vocabulary.
+2. **Dense Vector Retrieval (`multilingual-e5-small`)**:
+   - Strong cross-lingual representation between Ukrainian queries and English technical specs.
+   - P50 latency is ~44 ms on CPU due to local transformer token encoding.
+   - Lower top-1 precision on exact numerical parameters compared to BM25.
 3. **Hybrid RRF Fusion ($k=60$)**:
-   - Combines lexical exactness with semantic recall.
-   - Superior Recall@1 (0.5176 vs 0.4588) and MRR (0.6431 vs 0.5949) over BM25 alone.
-   - 0 truncation violations observed across all 100 queries.
+   - Combines lexical precision with semantic recall.
+   - Outperforms Dense on MRR (0.6482 vs 0.5933) and achieves the best numerical reasoning score.
+   - Zero truncation violations observed across all 100 queries.
 
 ---
 
@@ -107,10 +122,10 @@ Execute the frozen benchmark suite using the project virtual environment:
 
 ```powershell
 # 1. Ensure Redis Stack container is running on port 6380
-docker ps
+docker compose -f labs/lab07_final_project/docker-compose.yml up -d redis
 
 # 2. Run the multi-mode benchmark runner script
-labs\lab07_final_project\.venv\Scripts\python.exe labs\lab07_final_project\evaluation\run_benchmark.py
+.\labs\lab07_final_project\.venv\Scripts\python.exe labs\lab07_final_project\evaluation\run_benchmark.py --dataset labs\lab07_final_project\evaluation\datasets\frozen_eval_100.json
 ```
 
 The output report is automatically versioned to `labs/lab07_final_project/evaluation/baselines/benchmark_results.json`.

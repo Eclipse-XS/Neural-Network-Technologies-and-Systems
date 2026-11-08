@@ -5,37 +5,46 @@
 [![FastAPI: 0.115+](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)](https://fastapi.tiangolo.com)
 [![Streamlit: 1.42+](https://img.shields.io/badge/Streamlit-1.42+-FF4B4B.svg)](https://streamlit.io)
 [![VectorDB: Redis Stack](https://img.shields.io/badge/VectorDB-Redis%20Stack%20(Port%206380)-DC382D.svg)](https://redis.io)
-[![Inference: Local LM Studio](https://img.shields.io/badge/Inference-LM%20Studio%20(Local%20Port%201234)-8A2BE2.svg)](https://lmstudio.ai)
+[![Inference: Local LM Studio](https://img.shields.io/badge/Inference-LM%20Studio%20(Port%201234)-8A2BE2.svg)](https://lmstudio.ai)
 
-An enterprise-grade, privacy-oriented **Local Engineering Knowledge Copilot** designed to ingest complex technical documentation, perform hybrid dense-lexical retrieval, reason over multi-document evidence, execute safe AST-sandboxed calculations, and persist isolated multi-turn conversations without external cloud dependencies.
+A local-first engineering prototype and reproducible research system designed to ingest technical documentation, perform hybrid dense-lexical retrieval with Reciprocal Rank Fusion, reason over multi-document evidence, execute safe AST-sandboxed calculations, and persist isolated multi-turn conversations without external cloud dependencies.
 
----
-
-## 1. Product Capabilities and Supported Use Cases
-
-The Copilot is engineered as a modular monolith adhering to strict local execution boundaries.
-
-| Use Case ID | Name | Description | Key Guarantees |
-|---|---|---|---|
-| **UC-01** | **Document Ingestion & Lifecycle** | Ingest Markdown, plain text, and text-based PDFs into dual SQLite/Redis storage. | Strict 10MB limit; explicit rejection of scanned/empty PDFs requiring OCR (`ExtractionError`); idempotent uploads. |
-| **UC-02** | **Document-Grounded Q&A** | Answer user queries grounded strictly in indexed documentation. | Returns synthesized answer, cited passages, exact chunk IDs, and source document filenames. |
-| **UC-03** | **Cross-Document Comparison** | Contrast findings, metrics, and parameters across multiple disparate technical reports. | Multi-target cross-comparison routing; attributes claims to individual source documents. |
-| **UC-04** | **Numerical & Arithmetic Analysis** | Answer quantitative queries requiring calculation over retrieved facts. | AST-sandboxed arithmetic evaluator (`calculate`); operands traceable to retrieved passages; deterministic recovery for missed tool calls. |
-| **UC-05** | **Unsupported Information Refusal** | Abstain from hallucinating answers when evidence is absent from the corpus. | Strict negative control filtering; outputs explicit refusal and flags confidence as `insufficient_evidence`. |
-| **UC-06** | **Session Memory & Isolation** | Maintain multi-turn context across chat sessions. | SQLite WAL-backed conversation store; session isolation; graceful degradation on transaction errors. |
-| **UC-07** | **Knowledge Management** | Manage indexed documents (list, inspect status, delete, reindex). | Real-time status reporting (`processing`, `indexed`, `failed`); atomic cascading delete across Redis and SQLite. |
-| **UC-08** | **Scientific Evaluation** | Run frozen evaluation benchmarks to measure retrieval quality and agent fidelity. | 100-query frozen benchmark; automated reporting of Recall@1/3/5, Hit@5, MRR, and latency. |
-| **UC-09** | **System Diagnostics & Telemetry** | Inspect application health, dependencies, and operational metrics. | Structured JSON logs; Prometheus `/metrics` endpoint; `/api/v1/health/live` and `/ready` probes. |
+![Recall Comparison](artifacts/portfolio/retrieval_recall_comparison.png)
+*Figure 1: Retrieval Recall@K across Dense, BM25 Lexical, and Hybrid RRF modes on the 100-query frozen benchmark.*
 
 ---
 
-## 2. System Architecture
+## 1. Project Overview
 
-The Copilot is built as a **modular monolith** with clean architectural layers:
+### Problem Statement
+General-purpose Large Language Models (LLMs) frequently hallucinate quantitative values, conflate separate technical specifications, and fail to provide exact provenance when answering complex engineering queries. Relying on commercial cloud APIs introduces vendor lock-in, recurring operational cost, and severe privacy risks for proprietary codebases and confidential technical reports.
+
+### Solution: Local Engineering Knowledge Copilot
+The Copilot is engineered as a privacy-preserving, local-first RAG (Retrieval-Augmented Generation) and agentic assistant. It runs entirely on localhost using consumer workstation hardware:
+- **Corpus Grounding**: Answers are synthesized strictly from indexed Markdown, plain text, and PDF engineering documents.
+- **Auditable Provenance**: Every factual claim is paired with exact document filenames and chunk identifiers (`[filename#chunk-id]`).
+- **Deterministic Math**: Mathematical operations are delegated to an AST-sandboxed calculator tool rather than relying on probabilistic next-token prediction.
+- **Graceful Abstention**: When evidence is absent from the indexed corpus, the system explicitly refuses to answer rather than fabricating plausible misinformation.
+
+---
+
+## 2. Key Features
+
+- **Document Ingestion Lifecycle**: Supports Markdown, plain text, and digital PDFs with structure-aware chunking (hierarchical headers, token-bounded sub-splitting to $\le 240$ tokens, SHA-256 deduplication, and scanned/empty PDF rejection via `ExtractionError`).
+- **Hybrid Retrieval Engine**: Combines 384-dimensional dense semantic embeddings (`multilingual-e5-small`) with BM25 lexical token matching via Reciprocal Rank Fusion ($k=60$).
+- **Source-Grounded Answering & Citation Gate**: Enforces strict evidence verification; answers lacking valid citations or evidence backing are flagged and refused.
+- **AST-Sandboxed Calculator Tool**: Evaluates arithmetic expressions safely through Python's `ast` module, preventing code injection while guaranteeing mathematical correctness.
+- **Isolated Multi-Turn Session Memory**: Thread-safe SQLite persistence with Write-Ahead Logging (WAL) and strict session isolation across distinct user sessions.
+- **Modular Monolith Architecture**: Decoupled domain, application, RAG, agent, infrastructure, and presentation layers exposed via FastAPI REST endpoints and an interactive Streamlit UI.
+- **Telemetry & Health Probes**: `/api/v1/health/live` and `/ready` probes monitoring Redis, SQLite, and LM Studio connectivity, complemented by Prometheus `/metrics` and structured JSON logs.
+
+---
+
+## 3. System Architecture
 
 ```mermaid
 flowchart TD
-    User["Engineering User / Web Client"] -->|HTTP / UI| Streamlit["Streamlit UI (Port 8501)"]
+    User["Engineering User / Web Browser"] -->|HTTP / UI| Streamlit["Streamlit UI (Port 8501)"]
     User -->|REST API Requests| FastAPI["FastAPI Server (Port 8000)"]
     Streamlit -->|HTTP Client / Services| FastAPI
 
@@ -43,12 +52,12 @@ flowchart TD
         FastAPI --> IngestSvc["Application: IngestionService"]
         FastAPI --> QuerySvc["Application: QueryService"]
         FastAPI --> SessionSvc["Application: SessionService"]
-        
+
         QuerySvc --> Agent["Agent: AgentOrchestrator (ReAct <= 10 turns)"]
         Agent --> CalcTool["Tool: AST Calculator (Safe Math)"]
         Agent --> Verifier["Evidence Verifier & Citations Gate"]
-        
-        QuerySvc --> HybridEngine["RAG: Hybrid Engine (BM25 + Dense)"]
+
+        QuerySvc --> HybridEngine["RAG: Hybrid Engine (BM25 + Dense RRF)"]
         IngestSvc --> HybridEngine
     end
 
@@ -70,186 +79,240 @@ flowchart TD
 ```
 
 ### Storage and Persistence Model
-- **SQLite (WAL Mode)**: Authoritative system of record for session history, turns, document metadata, and chunk text bodies (`outputs/sessions/assistant_memory.sqlite`).
-- **Redis Stack**: High-performance vector database on port `6380` utilizing COSINE distance metric and Tag metadata filtering (`lab07:kb:*`).
+- **SQLite (WAL Mode)**: System of record for conversation sessions, turns, document metadata, and chunk text bodies (`outputs/sessions/assistant_memory.sqlite`).
+- **Redis Stack**: In-memory vector database on port `6380` utilizing COSINE distance metric and tag metadata filtering (`lab07:kb:*`).
 - **Local LLM Inference**: Fully offline OpenAI-compatible REST server (LM Studio) hosted on `http://localhost:1234/v1`.
 
----
+### Canonical vs. Legacy Implementation
 
-## 3. Scientific Evaluation & Benchmarking
-
-The system is validated against a frozen **100-query scientific benchmark** (`evaluation/datasets/frozen_eval_100.json`) spanning 8 technical documents (4 university laboratory reports and 4 real-world engineering architecture specifications).
-
-### Benchmark Results (100 Frozen Queries)
-
-| Evaluation Metric | Target Threshold | Measured Baseline | Final Status |
-|---|---|---|---|
-| **Evidence Recall@1** | $\ge 0.6500$ | **0.7059** | **PASS** |
-| **Evidence Recall@3** | $\ge 0.8000$ | **0.8000** | **PASS** |
-| **Evidence Recall@5** | $\ge 0.8500$ | **0.9118** | **PASS** |
-| **Hit@5** | $\ge 0.9200$ | **0.9882** | **PASS** |
-| **Mean Reciprocal Rank (MRR)** | $\ge 0.7500$ | **0.8182** | **PASS** |
-| **Silent Truncation Violations** | $= 0$ | **0** | **PASS** |
-
-### Benchmark Query Breakdown
-- **Exact Technical Facts (25 queries)**: Exact parameters, model revisions, dataset shapes, and command flags.
-- **Semantic Paraphrase (20 queries)**: Conceptual descriptions of system components, trade-offs, and architectures.
-- **Cross-Document Comparison (20 queries)**: Contrasting findings across multiple documents with source attribution.
-- **Numerical Reasoning (20 queries)**: Retrieving quantitative facts and executing verified arithmetic operations.
-- **Unsupported Negative Controls (15 queries)**: Out-of-corpus queries verifying graceful abstention and refusal.
-- **Linguistic Distribution**: 50 queries in Ukrainian, 50 queries in English.
+| Subsystem | Modern Implementation (CANONICAL) | Historical Implementation (LEGACY COMPATIBILITY) |
+|---|---|---|
+| **Directory** | `src/knowledge_copilot/` | `src/` (`agent.py`, `knowledge_base.py`, `experiments.py`) |
+| **REST Server** | `src/knowledge_copilot/api/app.py` | None |
+| **Web UI** | `src/knowledge_copilot/ui/streamlit_app.py` | `web_app.py` |
+| **CLI App** | Streamlit / REST API | `app.py` |
+| **Retrieval** | Hybrid RRF ($k=60$): `multilingual-e5-small` + BM25 | Dense-only: `all-MiniLM-L6-v2` |
 
 ---
 
-## 4. Defect Resolution Matrix (Audit Traceability)
+## 4. How It Works
 
-All 8 architectural and functional defects identified during the repository audit were resolved and verified with dedicated tests:
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Engineer / User
+    participant UI as Streamlit UI / API
+    participant Orch as AgentOrchestrator
+    participant RAG as Hybrid RAG Engine
+    participant Calc as AST Calculator
+    participant Verifier as Evidence Verifier
+    participant LLM as Local LM Studio
 
-| Defect ID | Description & Severity | Root Cause | Implemented Resolution | Verification Artifact |
-|---|---|---|---|---|
-| **DEFECT-01** | `CRITICAL`: Fragile Coursework CLI / Missing Production API | Only a basic Streamlit script existed without REST contracts. | Implemented FastAPI REST application (`/api/v1`) with Pydantic request/response schemas, CORS, and request ID tracing. | `tests/contracts/test_api_contracts.py` |
-| **DEFECT-02** | `CRITICAL`: Broken Ingestion Lifecycle & Scanned PDF Silently Accepted | Empty/scanned PDFs were silently indexed as valid empty documents; deletions did not clear Redis vectors. | Added PyMuPDF text validation raising `ExtractionError` for scanned files; implemented atomic Redis/SQLite deletion. | `tests/integration/test_document_lifecycle.py` |
-| **DEFECT-03** | `CRITICAL`: Session Persistence Integrity & Concurrency | SQLite transactions lacked WAL mode, foreign keys, or turn isolation. | Enabled `PRAGMA journal_mode=WAL`, foreign key enforcement, transaction rollbacks, and idempotency keys. | `tests/contracts/test_session_contract.py` |
-| **DEFECT-04** | `HIGH`: Fragile Agent Orchestration & Silent Arithmetic Failures | Small local LLMs occasionally generated math inline instead of calling the tool. | Implemented AST-sandboxed calculator with deterministic recovery that executes formulas and tags origin as `recovery_executed`. | `tests/unit/test_recovery.py` |
-| **DEFECT-05** | `HIGH`: Overfitted Academic Corpus | Corpus contained only Labs 3–6, failing to represent production engineering knowledge. | Added 4 production engineering documents (ADR-001, Post-mortem, API Spec, Runbook) under `assets/knowledge/engineering/`. | `evaluation/baselines/benchmark_results.json` |
-| **DEFECT-06** | `HIGH`: Underpowered Evaluation Suite | Historical evaluation had only 15 queries and used substring matching for metrics. | Constructed 100-query frozen benchmark with exact set overlap metrics, MRR, and zero-truncation verification. | `evaluation/datasets/frozen_eval_100.json` |
-| **DEFECT-07** | `HIGH`: Broken CI Workflow & Offline Runner Incompatibility | CI had invalid `if: ${{ false }}` syntax and lacked dependency caches. | Repaired `labs-6-7-ci.yml` and `lab5-ci.yml`, added offline mocks for embeddings and Redis, enabling 100% green CI. | GitHub Actions Run ID `41861178786` |
-| **DEFECT-08** | `MEDIUM`: Missing Observability & Tracing | No metrics, request tracing, or structured health monitoring. | Added Prometheus client (`/metrics`), JSON structured logger, and `/api/v1/health/live` & `/ready` endpoints. | `src/knowledge_copilot/observability/` |
+    User->>UI: Submit Question ("What is the difference in runs between Lab 5 and Lab 4?")
+    UI->>Orch: Dispatch query with session_id
 
----
+    Orch->>LLM: ReAct prompt with tools (search_knowledge_base, calculate)
+    LLM-->>Orch: Tool Call: search_knowledge_base(query="Lab 4 Lab 5 runs")
 
-## 5. Academic Traceability Matrix
+    Orch->>RAG: Hybrid search across Redis & BM25
+    RAG-->>Orch: Evidence chunks [lab04#chunk-1], [lab05#chunk-1]
 
-The product preserves full academic compliance with the original university coursework requirements while elevating engineering execution to production standards:
+    Orch->>LLM: Provide evidence to context
+    LLM-->>Orch: Tool Call: calculate(expression="17 - 13")
 
-| Coursework Requirement | Academic Objective | Production Implementation in Lab 7 | Verification Evidence |
-|---|---|---|---|
-| **REQ-01: Corpus Ingestion** | Ingest Markdown reports from Labs 3–6. | Extended ingestion service supporting Labs 3–6 + 4 production engineering documents with SHA-256 fingerprinting. | `assets/knowledge/`, `test_knowledge_base.py` |
-| **REQ-02: Local RAG Pipeline** | Dense vector search using local embeddings and Redis. | Hybrid retrieval engine combining Multilingual-E5-small dense search and BM25 with Reciprocal Rank Fusion ($k=60$). | `src/knowledge_copilot/rag/`, `run_benchmark.py` |
-| **REQ-03: Tool Integration** | Calculator tool for quantitative calculations. | AST-sandboxed arithmetic evaluator (`ast.parse`) with strict bounds checking and deterministic recovery. | `src/knowledge_copilot/agents/tools.py` |
-| **REQ-04: Conversation Memory** | Multi-turn chat with persistent session memory. | SQLite WAL session repository with turn history, evidence logging, and session isolation. | `src/knowledge_copilot/infrastructure/sqlite_repo.py` |
-| **REQ-05: Grounding & Citations** | Prevent hallucinations and attribute facts to sources. | Post-generation citation verifier enforcing `[filename:section]` format against current evidence chunks. | `src/knowledge_copilot/agents/verifier.py` |
-| **REQ-06: Scientific Reporting** | Measure Recall and MRR across queries. | 100-query frozen evaluation suite exceeding all baseline targets (Recall@5 = 0.9118, MRR = 0.8182). | `evaluation/datasets/frozen_eval_100.json` |
+    Orch->>Calc: Execute AST math safely
+    Calc-->>Orch: Result: 4
 
----
+    Orch->>LLM: Provide calculation result
+    LLM-->>Orch: Final answer with citations
 
-## 6. REST API Reference
+    Orch->>Verifier: Audit claims against retrieved citations
+    Verifier-->>Orch: Citations Verified (Grounded)
 
-The FastAPI application provides OpenAPI documentation at `http://localhost:8000/docs`.
-
-### 6.1 `POST /api/v1/chat`
-Submit a question to the Copilot.
-
-**Request**:
-```json
-{
-  "query": "What was the peak memory consumption during the Redis OOM incident?",
-  "session_id": "eng_session_01",
-  "retrieval_mode": "hybrid",
-  "top_k": 5
-}
-```
-
-**Response**:
-```json
-{
-  "session_id": "eng_session_01",
-  "query": "What was the peak memory consumption during the Redis OOM incident?",
-  "answer": "During the incident, Redis memory consumption peaked at 4.2 GB against a 4.0 GB limit [incident_postmortem_redis_oom.md:Incident Overview].",
-  "evidence": [
-    {
-      "chunk_id": "postmortem_001",
-      "document_id": "incident_postmortem_redis_oom",
-      "filename": "incident_postmortem_redis_oom.md",
-      "section": "Incident Overview",
-      "text": "Redis memory consumption peaked at 4.2 GB...",
-      "score": 0.0322,
-      "retrieval_method": "hybrid"
-    }
-  ],
-  "tool_calls": [],
-  "turn_count": 2,
-  "execution_time_ms": 1420.5,
-  "confidence": "high",
-  "trace_id": "req-9b8f2c"
-}
-```
-
-### 6.2 `POST /api/v1/documents`
-Upload and index a technical document (`.md`, `.txt`, `.pdf`).
-
-**Request**: Multipart form-data with `file` and optional `collection`.
-
-**Response**:
-```json
-{
-  "document_id": "doc_a1b2c3d4",
-  "filename": "architecture_spec.pdf",
-  "status": "indexed",
-  "chunk_count": 14,
-  "size_bytes": 1048576,
-  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "collection": "default",
-  "created_at": "2026-11-04T17:00:00Z"
-}
-```
-
-### 6.3 `GET /api/v1/health/live` & `GET /api/v1/health/ready`
-Liveness and readiness probes returning component status:
-```json
-{
-  "status": "ready",
-  "redis_connected": true,
-  "sqlite_connected": true,
-  "llm_available": true,
-  "indexed_documents": 8,
-  "version": "2.0.0"
-}
+    Orch-->>UI: Authoritative answer + source citations + tool trace
+    UI-->>User: Render grounded response with inspectable evidence
 ```
 
 ---
 
-## 7. Quickstart Installation and Deployment
+## 5. Technology Stack
 
-### 7.1 Prerequisites
-- Python 3.11+
-- Docker Desktop (for Redis Stack)
-- LM Studio (or local OpenAI-compatible inference server on port `1234`)
+| Layer | Component | Version / Specification |
+|---|---|---|
+| **Runtime & Language** | Python | 3.11 / 3.12 / 3.13 (Python 3.13 tested) |
+| **Vector Store** | Redis Stack | Redis 7.4.0 (RediSearch + RedisJSON, port `6380`) |
+| **Relational Storage** | SQLite 3 | WAL mode, thread-safe session & chunk persistence |
+| **Dense Embeddings** | Hugging Face Transformers | `intfloat/multilingual-e5-small` (384 dimensions) |
+| **Lexical Engine** | Rank-BM25 | Parameterized BM25 ($k_1=1.5, b=0.75$) with NLTK tokenization |
+| **Rank Fusion** | Reciprocal Rank Fusion | RRF algorithm with smoothing parameter $k=60$ |
+| **API Framework** | FastAPI | 0.115+, Pydantic v2 schemas, Starlette middleware |
+| **Frontend UI** | Streamlit | 1.42+, wide layout, multi-session chat interface |
+| **Local Inference Host** | LM Studio | OpenAI-compatible REST API on port `1234` |
+| **Test Framework** | Pytest | 9.1.1 (185 automated tests across unit, contract, integration, security) |
 
-### 7.2 Step-by-Step Setup
+---
 
+## 6. Quickstart
+
+### Prerequisites
+1. Docker Desktop installed and running.
+2. LM Studio running with a function-calling model on port 1234 (`http://localhost:1234/v1`).
+
+### Step 1: Start Redis Stack Service
 ```bash
-# 1. Clone repository and navigate to Lab 7
+# From repository root:
+docker compose -f labs/lab07_final_project/docker-compose.yml up -d redis
+```
+
+### Step 2: Install Dependencies
+```powershell
 cd labs/lab07_final_project
-
-# 2. Start Redis Stack container (port 6380)
-docker compose up -d lab07-redis
-
-# 3. Create virtual environment and install dependencies
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+.\.venv\Scripts\activate
 pip install -r requirements.txt
+```
 
-# 4. Start local model in LM Studio
-# Ensure model 'mistralai/ministral-3-3b' is loaded and server is started on port 1234.
+### Step 3: Launch FastAPI Backend Server
+```powershell
+# From repository root:
+.\labs\lab07_final_project\.venv\Scripts\python.exe -m uvicorn labs.lab07_final_project.src.knowledge_copilot.api.app:app --host 0.0.0.0 --port 8000 --reload
+```
 
-# 5. Launch FastAPI application server (port 8000)
-uvicorn src.knowledge_copilot.api.app:app --host 0.0.0.0 --port 8000
+### Step 4: Launch Streamlit Web Interface
+```powershell
+# From repository root:
+.\labs\lab07_final_project\.venv\Scripts\streamlit.exe run labs/lab07_final_project/src/knowledge_copilot/ui/streamlit_app.py --server.port 8501
+```
 
-# 6. Launch Streamlit UI (port 8501) in a separate terminal
-streamlit run src/knowledge_copilot/ui/streamlit_app.py
+Access the UI at `http://localhost:8501`.
+
+---
+
+## 7. Example Interaction
+
+### User Query
+> *"What is the difference between the number of verified runs in Lab 5 and the number of generations in Lab 4?"*
+
+### Tool Invocation Trace
+```json
+[
+  {
+    "event_type": "tool_call",
+    "tool_name": "search_knowledge_base",
+    "tool_arguments": {"query": "Lab 5 verified runs Lab 4 generations count"}
+  },
+  {
+    "event_type": "tool_result",
+    "tool_name": "search_knowledge_base",
+    "result": {
+      "chunks": [
+        {
+          "citation": "[lab05_multimodal_report.md#chunk-0]",
+          "text": "Матриця містить 10 baseline-питань... 19 експериментальних рядків відповідають 17 фізичним генераціям."
+        },
+        {
+          "citation": "[lab04_stable_diffusion_report.md#chunk-0]",
+          "text": "Зафіксовано 13 унікальних генерацій разом із параметрами, часом виконання..."
+        }
+      ]
+    }
+  },
+  {
+    "event_type": "tool_call",
+    "tool_name": "calculate",
+    "tool_arguments": {"expression": "17 - 13"}
+  },
+  {
+    "event_type": "tool_result",
+    "tool_name": "calculate",
+    "result": {"result": 4.0, "status": "SUCCESS"}
+  }
+]
+```
+
+### Synthesized Response
+> "Based on the verified laboratory documentation, Lab 5 recorded **17** physical multimodal inference runs [[lab05_multimodal_report.md#chunk-0]](file:///labs/lab05_multimodal/report/report.md), while Lab 4 recorded **13** unique diffusion image generations [[lab04_stable_diffusion_report.md#chunk-0]](file:///labs/lab04_stable_diffusion/report/report.md). The difference is **4** runs, verified via AST calculation ($17 - 13 = 4$)."
+
+---
+
+## 8. Experimental Evaluation & Scientific Benchmarking
+
+The system was evaluated against a frozen **100-query scientific benchmark** (`evaluation/datasets/frozen_eval_100.json`) spanning 8 technical documents (4 laboratory reports and 4 architecture/operational specifications).
+
+### Distinguishing CI Pass from Retrieval Quality Targets
+
+- **Infrastructure & Automated Test Suite: PASS (185/185 tests)**: All unit, integration, contract, security, schema, and API tests pass cleanly in CI and local execution.
+- **Retrieval Quality Targets: FAIL (Sub-target baseline)**: Under strict passage-level evidence span verification ($\ge 75\%$ token overlap), ambitious retrieval thresholds were not met. We report these empirical findings transparently without fabricating scores.
+
+### 100-Query Frozen Benchmark Results
+
+Data drawn directly from authoritative artifact [`evaluation/baselines/benchmark_results.json`](evaluation/baselines/benchmark_results.json):
+
+| Metric | Target Threshold | Dense Only | Lexical (BM25) | Hybrid (RRF $k=60$) | Quality Status |
+|---|---|---|---|---|---|
+| **Evidence Recall@1** | $\ge 0.6500$ | 0.4176 | **0.4882** | 0.4363 | **Sub-target (FAIL)** |
+| **Evidence Recall@3** | $\ge 0.8000$ | 0.6588 | **0.6647** | 0.6103 | **Sub-target (FAIL)** |
+| **Evidence Recall@5** | $\ge 0.8500$ | 0.7647 | **0.7765** | 0.7020 | **Sub-target (FAIL)** |
+| **Hit@5** | $\ge 0.9200$ | 0.8235 | **0.8588** | 0.8000 | **Near-target (FAIL)** |
+| **Mean Reciprocal Rank (MRR)** | $\ge 0.7500$ | 0.5933 | **0.6584** | 0.6482 | **Sub-target (FAIL)** |
+| **Silent Truncation Violations** | $= 0$ | **0** | **0** | **0** | **PASS** |
+
+![MRR and Hit@5 Comparison](artifacts/portfolio/retrieval_mrr_hit_comparison.png)
+*Figure 2: MRR and Hit@5 across retrieval modes.*
+
+### Category Breakdown Analysis (Hybrid Mode)
+
+![Category Breakdown](artifacts/portfolio/category_performance_breakdown.png)
+*Figure 3: Hybrid retrieval performance across query complexity categories.*
+
+- **Numerical Reasoning ($n=20$)**: **Hit@5 = 1.0000**, **MRR = 0.9250**, **Recall@5 = 0.9625**. Highest performing category due to distinct numeric tokens.
+- **Exact Technical Facts ($n=25$)**: **Hit@5 = 0.8400**, **MRR = 0.7413**, **Recall@5 = 0.7567**. Strong lexical symbol matching.
+- **Semantic Paraphrase ($n=20$)**: **Hit@5 = 0.7000**, **MRR = 0.4617**, **Recall@5 = 0.6250**. Dense vectors bridge cross-lingual phrasing.
+- **Cross-Document Comparison ($n=20$)**: **Hit@5 = 0.6500**, **MRR = 0.4417**, **Recall@5 = 0.4500**. Challenging due to multi-target document quota competition.
+- **Negative Controls ($n=15$)**: **100% correct refusal**. Zero hallucinations on out-of-corpus queries.
+
+### Latency Profile
+
+![Latency Distribution](artifacts/portfolio/retrieval_latency_distribution.png)
+*Figure 4: Retrieval latency percentiles (P50, Mean, P90, P95) measured on CPU.*
+
+- **BM25 Lexical**: P50 = **2.12 ms**, P95 = **3.48 ms**, Mean = **2.24 ms**.
+- **Dense Search**: P50 = **44.11 ms**, P95 = **89.12 ms**, Mean = **53.86 ms**.
+- **Hybrid (Dense + BM25)**: P50 = **47.78 ms**, P95 = **98.86 ms**, Mean = **57.30 ms**.
+
+---
+
+## 9. Reproducibility
+
+### Fast Offline Test Suite
+```powershell
+# Run the 185 tests in the Lab 7 virtual environment:
+.\labs\lab07_final_project\.venv\Scripts\python.exe -m pytest labs/lab07_final_project/tests -q
+```
+Expected result: `185 passed, 2 skipped in ~120s`.
+
+### Live Acceptance Suite
+The live acceptance suite tests the complete 8-step lifecycle against live Redis and LM Studio:
+```powershell
+.\labs\lab07_final_project\.venv\Scripts\python.exe -m pytest labs/lab07_final_project/tests/e2e/test_live_lm_studio_acceptance.py -v
 ```
 
 ---
 
-## 8. Verification and Quality Gates
+## 10. Limitations
 
-Execute the full automated test suite (127 items spanning unit, contract, integration, and security tests):
+- **Retrieval Threshold Gap**: Recall@1 (0.4363) and MRR (0.6482) on the 100-query benchmark remain below the ambitious targets ($\ge 0.6500$ and $\ge 0.7500$). Fine-tuning dense embeddings or implementing a cross-encoder reranker would improve these figures.
+- **Cross-Document Competition**: When a query requires evidence from two distinct documents, RRF top-5 ranking frequently biases toward the single document with the highest dense similarity, leaving the second document unretrieved in top-5.
+- **Local Model Capacity**: Quantized 3B models occasionally attempt mental arithmetic before falling back to the AST calculator. Prompt hardening and deterministic recovery logic mitigate but do not entirely eliminate this behavior.
+- **Hardware Dependency**: While offline tests run on CPU, full live execution requires a host machine capable of running Docker and hosting a local LLM in LM Studio.
 
-```bash
-# Run complete test suite:
-pytest tests -v
+---
 
-# Run 100-query frozen benchmark:
-python evaluation/run_benchmark.py --dataset evaluation/datasets/frozen_eval_100.json
-```
+## 11. Documentation
+
+- **[Primary Notebook (`notebooks/01_final_project.ipynb`)](notebooks/01_final_project.ipynb)**: Complete 22-step educational walkthrough of the modern Knowledge Copilot system.
+- **[Academic Report (`report/report.md`)](report/report.md)**: Formal academic report in Ukrainian covering all 11 comprehensive chapters.
+- **[Oral Defense Notes (`report/defense_notes.md`)](report/defense_notes.md)**: Targeted preparation for oral defense and committee examination.
+- **[Detailed System Architecture (`docs/architecture.md`)](docs/architecture.md)**: Architectural specifications, data models, and C4 container design.
+- **[Operations Runbook (`docs/runbook.md`)](docs/runbook.md)**: Step-by-step operations, setup, and troubleshooting guide.
+- **[Scientific Evaluation Specification (`docs/evaluation.md`)](docs/evaluation.md)**: Authoritative documentation of the 100-query benchmark methodology.
+- **[System Limitations Analysis (`docs/limitations.md`)](docs/limitations.md)**: Comprehensive engineering analysis of constraints and failure modes.
