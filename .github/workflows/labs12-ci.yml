@@ -35,7 +35,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch
-          python -m pip install pytest nbformat pandas numpy matplotlib scikit-learn openai
+          python -m pip install pytest nbformat pandas numpy matplotlib scikit-learn nltk openai
 
       - name: Compile Lab 1 & Lab 2 Python modules
         run: |
