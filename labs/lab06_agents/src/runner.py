@@ -3,11 +3,25 @@ import asyncio
 import dataclasses
 import hashlib
 import json
+import re
 import time
 import uuid
 from datetime import datetime, timezone
 from agents import Runner, RunConfig, RunHooks
 from .config import OUTPUTS, WORKSPACE, INSTRUCTIONS
+
+
+def sanitize_final_output(text: str | None) -> str | None:
+    """Strip leaked inline ChatCompletions tool-call syntax from final model output."""
+    if not text:
+        return text
+    cleaned = re.sub(
+        r"\s*(?:list_workspace_files|search_workspace|read_workspace_file|calculate)\s*\[ARGS\]\s*\{.*?\}\s*$",
+        "",
+        text,
+        flags=re.DOTALL,
+    )
+    return cleaned.strip()
 
 
 def json_default(value):
@@ -69,11 +83,11 @@ async def execute(agent, settings, scenario, session=None, batch_id="manual"):
             max_turns=settings.max_turns, hooks=trace,
             run_config=RunConfig(tracing_disabled=True, trace_include_sensitive_data=False)),
             settings.run_timeout_seconds)
-        record["final_output"] = result.final_output
+        record["final_output"] = sanitize_final_output(result.final_output)
         record["status"] = "SUCCESS"
         record["usage"] = dataclasses.asdict(result.context_wrapper.usage)
         record["sdk_item_types"] = [i.type for i in result.new_items]
-        trace.add("final_output", text=result.final_output)
+        trace.add("final_output", text=record["final_output"])
     except Exception as exc:
         record["error_type"] = type(exc).__name__
         record["error_message"] = str(exc)

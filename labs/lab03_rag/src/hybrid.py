@@ -99,11 +99,14 @@ def _attribute_mask(frame: pd.DataFrame, attribute: str) -> pd.Series:
 
 
 def route_and_retrieve(frame: pd.DataFrame, question: str,
-                       semantic_product_ids: Iterable[str] = (), k: int = 5) -> RetrievalResult:
+                       semantic_product_ids: Iterable[str] = (), k: int = 5,
+                       *, category: str | None = None,
+                       intent: Intent | None = None) -> RetrievalResult:
     """Select a strategy and retrieve without accepting evaluation objects or labels."""
     if k < 1:
         raise ValueError("k must be positive")
-    intent = parse_intent(question, frame["product_id"])
+    if intent is None:
+        intent = parse_intent(question, frame["product_id"])
     result = frame.copy()
     diagnostics = {"strategy": intent.strategy, "conditions": {
         "product_ids": list(intent.product_ids), "unknown_product_ids": list(intent.unknown_product_ids),
@@ -119,8 +122,9 @@ def route_and_retrieve(frame: pd.DataFrame, question: str,
         result = result[result["product_id"].isin(intent.product_ids)]
         result = result.assign(_order=result["product_id"].map(order)).sort_values("_order")
     elif intent.strategy == "structured":
-        if intent.category:
-            result = result[result["category"] == intent.category]
+        effective_category = category or intent.category
+        if effective_category:
+            result = result[result["category"] == effective_category]
         for attribute in intent.attributes:
             result = result[_attribute_mask(result, attribute)]
         if intent.rating_min is not None:

@@ -59,7 +59,10 @@ class WorkspaceTools:
 def safe_calculate(expression: str):
     if not isinstance(expression, str) or not expression.strip() or len(expression) > 200:
         raise ValueError("Expression must contain 1–200 characters")
-    tree = ast.parse(expression, mode="eval")
+    try:
+        tree = ast.parse(expression, mode="eval")
+    except (SyntaxError, RecursionError, MemoryError) as exc:
+        raise ValueError(f"Invalid arithmetic syntax: {exc}") from exc
     if len(list(ast.walk(tree))) > 64:
         raise ValueError("Expression too complex")
     operations = {ast.Add: operator.add, ast.Sub: operator.sub, ast.Mult: operator.mul, ast.Div: operator.truediv}
@@ -69,7 +72,12 @@ def safe_calculate(expression: str):
         elif isinstance(node, ast.UnaryOp) and isinstance(node.op, (ast.UAdd, ast.USub)):
             result = visit(node.operand) * (-1 if isinstance(node.op, ast.USub) else 1)
         elif isinstance(node, ast.BinOp) and type(node.op) in operations:
-            result = operations[type(node.op)](visit(node.left), visit(node.right))
+            try:
+                result = operations[type(node.op)](visit(node.left), visit(node.right))
+            except ZeroDivisionError as exc:
+                raise ValueError("Division by zero is not allowed") from exc
+            except OverflowError as exc:
+                raise ValueError("Arithmetic overflow") from exc
         else:
             raise ValueError("Only numbers, parentheses and + - * / are allowed")
         if not math.isfinite(result) or abs(result) > 1e15:

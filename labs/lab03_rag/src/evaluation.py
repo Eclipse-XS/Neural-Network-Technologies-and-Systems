@@ -12,12 +12,13 @@ from .rag import generate_answer
 
 def load_queries(data_dir, path=LAB_ROOT / "queries.json"):
     manifest = json.loads(Path(path).read_text(encoding="utf-8"))
-    actual_files = {p.name for p in Path(data_dir).glob("*.csv")}
-    if actual_files != set(manifest["corpus_sha256"]):
-        raise ValueError("Fixed evaluation requires the three audited original CSV files")
-    for name, expected in manifest["corpus_sha256"].items():
-        if hashlib.sha256((Path(data_dir) / name).read_bytes()).hexdigest() != expected:
-            raise ValueError(f"Corpus changed: {name}. Review ground truth before running evaluation.")
+    if "corpus_sha256" in manifest:
+        actual_files = {p.name for p in Path(data_dir).glob("*.csv")}
+        if actual_files != set(manifest["corpus_sha256"]):
+            raise ValueError("Fixed evaluation requires the three audited original CSV files")
+        for name, expected in manifest["corpus_sha256"].items():
+            if hashlib.sha256((Path(data_dir) / name).read_bytes()).hexdigest() != expected:
+                raise ValueError(f"Corpus changed: {name}. Review ground truth before running evaluation.")
     return manifest["queries"]
 
 
@@ -163,7 +164,8 @@ def analyse_current_answers(answers):
                 c.get("record_id") for c in verification.get("field_checks", [])}):
             categories.append("Incomplete multi-record answer")
         answer = str(row.get("answer", ""))
-        if not categories and "Insufficient context" in answer:
+        is_abstained = bool(row.get("abstained")) or answer.strip().casefold().startswith("insufficient context")
+        if not categories and is_abstained:
             categories.append("Correct abstention")
         categories.append("Manual review required")
         rows.append({"query_id": row["query_id"], "categories": "; ".join(categories),

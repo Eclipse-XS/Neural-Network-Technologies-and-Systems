@@ -1,0 +1,35 @@
+```mermaid
+flowchart TD
+    User["Engineering User / Developer"] -->|HTTP / Web Browser| UI["Streamlit UI (Port 8501)"]
+    User -->|REST API Requests| API["FastAPI Application Server (Port 8000)"]
+    UI -->|Async HTTP Client / Direct Service| API
+
+    subgraph Core ["Local Knowledge Copilot Modular Monolith"]
+        API --> IngestionService["Application: IngestionService"]
+        API --> QueryService["Application: QueryService"]
+        API --> SessionService["Application: SessionService"]
+        
+        QueryService --> Agent["Agent: AgentOrchestrator"]
+        Agent --> ASTCalc["Tool: AST Calculator (Safe Math)"]
+        Agent --> Verifier["Evidence Verifier & Citations Gate"]
+        
+        QueryService --> RAG["RAG Engine (Hybrid BM25 + Dense)"]
+        IngestionService --> RAG
+    end
+
+    subgraph Storage ["Persistence & Retrieval Adapters"]
+        RAG -->|Vector Search & Hash Chunks| Redis["Redis Stack (Port 6380)"]
+        IngestionService -->|Vector Indexing / Deletion| Redis
+        SessionService -->|WAL Mode Sessions & Turns| SQLite["SQLite Database (assistant_memory.sqlite)"]
+        IngestionService -->|Metadata & Content Chunks| SQLite
+    end
+
+    subgraph Inference ["Local Inference Provider"]
+        Agent -->|OpenAI-Compatible REST (Port 1234)| LMStudio["LM Studio (Mistral / Qwen GGUF)"]
+    end
+
+    subgraph Telemetry ["Observability"]
+        API --> Prometheus["Prometheus Metrics (/metrics)"]
+        API --> StructLog["JSON Structured Logging & Tracing"]
+    end
+```

@@ -76,6 +76,15 @@ dump.rdb
 labs/*/outputs/*
 !labs/*/outputs/.gitkeep
 !labs/lab05_multimodal/outputs/README.md
+!labs/lab05_multimodal/outputs/figures/
+!labs/lab05_multimodal/outputs/figures/token_budget.png
+!labs/lab06_agents/outputs/metadata/
+!labs/lab06_agents/outputs/metadata/*.json
+labs/lab06_agents/outputs/metadata/initial_file_hashes.json
+!labs/lab06_agents/outputs/runs/
+!labs/lab06_agents/outputs/runs/runs.jsonl
+!labs/lab06_agents/outputs/traces/
+!labs/lab06_agents/outputs/traces/*.json
 
 # Curated, small, verified portfolio artifacts are versioned explicitly.
 !labs/lab03_rag/artifacts/
@@ -100,4 +109,3 @@ desktop.ini
 # Isolated student work
 /max/
 /NNTS_VARIANT_2/
-

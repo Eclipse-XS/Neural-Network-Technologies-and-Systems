@@ -1,0 +1,28 @@
+```mermaid
+flowchart TD
+    DocFile["Raw Document (MD, TXT, PDF)"] --> Validate["File Validation (MIME, size <= 10MB, sanitize path)"]
+    Validate --> SHA["SHA-256 Fingerprint Calculation"]
+    SHA --> IdempCheck{"Exists in SQLite with INDEXED status?"}
+    
+    IdempCheck -- Yes --> CacheHit["Return Cached Document (Idempotent 200 OK)"]
+    
+    IdempCheck -- No --> Extract["Text Extraction"]
+    Extract --> PDFCheck{"Is PDF Scanned / Empty Text?"}
+    PDFCheck -- Yes (No Text) --> ErrFail["Raise ExtractionError (Status: FAILED, OCR Required)"]
+    PDFCheck -- No (Has Text) --> Chunking["Structure-Aware Markdown/PDF Splitter"]
+    
+    Chunking --> Bounding["Token Budget Enforcement (<= 240 tokens per chunk)"]
+    Bounding --> TruncCheck{"Tokens > Max Limit?"}
+    TruncCheck -- Yes --> Subsplit["Hierarchical Sentence Subsplit (0 Truncation Violations)"]
+    TruncCheck -- No --> ChunksReady["Generate Chunks with SHA-256 & Provenance"]
+    Subsplit --> ChunksReady
+    
+    ChunksReady --> AtomicWrite["Atomic Dual-Storage Ingestion"]
+    AtomicWrite --> SQLiteStore["Persist Document & Chunks in SQLite (WAL)"]
+    AtomicWrite --> RedisStore["Index Embeddings & Tags in Redis Vector Store"]
+    
+    SQLiteStore --> FinalIndexed["Status: INDEXED & Metrics Updated"]
+    RedisStore --> FinalIndexed
+    
+    ErrFail --> Rollback["Atomic Rollback (Remove partial Redis vectors)"]
+```

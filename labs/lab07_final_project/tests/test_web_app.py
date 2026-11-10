@@ -7,7 +7,7 @@ from streamlit.testing.v1 import AppTest
 WEB_APP_PATH = str((Path(__file__).resolve().parent.parent / "web_app.py"))
 
 
-def is_live_available() -> bool:
+def is_redis_available() -> bool:
     try:
         with socket.create_connection(("localhost", 6380), timeout=1):
             return True
@@ -15,13 +15,26 @@ def is_live_available() -> bool:
         return False
 
 
-live_required = pytest.mark.skipif(
-    not is_live_available(),
+def is_lm_studio_available() -> bool:
+    try:
+        with socket.create_connection(("localhost", 1234), timeout=1):
+            return True
+    except OSError:
+        return False
+
+
+live_redis_required = pytest.mark.skipif(
+    not is_redis_available(),
     reason="Requires live Redis on localhost:6380"
 )
 
+live_full_e2e_required = pytest.mark.skipif(
+    not (is_redis_available() and is_lm_studio_available()),
+    reason="Requires live Redis on localhost:6380 and LM Studio on localhost:1234"
+)
 
-@live_required
+
+@live_redis_required
 def test_streamlit_initial_render_and_catalog():
     at = AppTest.from_file(WEB_APP_PATH, default_timeout=120)
     at.run()
@@ -33,7 +46,7 @@ def test_streamlit_initial_render_and_catalog():
     assert bool(at.chat_input)
 
 
-@live_required
+@live_full_e2e_required
 def test_streamlit_live_e2e_question_and_answer():
     at = AppTest.from_file(WEB_APP_PATH, default_timeout=120)
     at.run()
@@ -61,7 +74,7 @@ def test_streamlit_live_e2e_question_and_answer():
     assert "lab06" in details.get("sources_retrieved", [])
 
 
-@live_required
+@live_redis_required
 def test_streamlit_session_controls():
     at = AppTest.from_file(WEB_APP_PATH, default_timeout=60)
     at.run()

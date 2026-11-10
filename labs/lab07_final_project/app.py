@@ -1,4 +1,10 @@
-"""Interactive CLI: run from any working directory with the Lab 7 interpreter."""
+"""Legacy Compatibility Interactive CLI for Coursework Knowledge Assistant.
+
+Note: The canonical production services live in `src/knowledge_copilot/`
+(FastAPI app at `src/knowledge_copilot/api/app.py` and Streamlit UI at `src/knowledge_copilot/ui/streamlit_app.py`).
+This CLI wrapper delegates to the compatibility adapter (`src/agent.py` & `src/knowledge_base.py`)
+which is backed by the canonical `knowledge_copilot` domain and infrastructure layers.
+"""
 import argparse
 import asyncio
 from src.config import Settings

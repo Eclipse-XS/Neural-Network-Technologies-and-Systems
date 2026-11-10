@@ -60,6 +60,8 @@ jobs:
           PY
 
       - name: Execute CPU analysis notebook
+        env:
+          LAB05_MODE: REPLAY
         run: |
           python - <<'PY'
           from pathlib import Path

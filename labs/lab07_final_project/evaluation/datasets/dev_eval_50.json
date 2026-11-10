@@ -1,0 +1,1299 @@
+[
+  {
+    "id": "eval_001",
+    "category": "exact_fact",
+    "language": "uk",
+    "query": "Яку розмірність ембеддінгів формує модель all-MiniLM-L6-v2 у Lab 3?",
+    "expected_answer": "all-MiniLM-L6-v2 формує 384-вимірні нормалізовані embeddings.",
+    "relevant_doc_ids": [
+      "lab03_rag_report.md"
+    ],
+    "gold_chunks": [
+      "all-MiniLM-L6-v2",
+      "384-вимірні embeddings"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "all-MiniLM-L6-v2",
+      "384-вимірні embeddings"
+    ],
+    "target_sections": [
+      "Звіт до лабораторної роботи №3 / Реалізація"
+    ],
+    "gold_passage_ids": [
+      "chunk-073b9da90cf9c792"
+    ]
+  },
+  {
+    "id": "eval_003",
+    "category": "exact_fact",
+    "language": "uk",
+    "query": "Який планувальник (scheduler) використовується для генерації в Lab 4?",
+    "expected_answer": "Використовується PNDMScheduler у StableDiffusionPipeline.",
+    "relevant_doc_ids": [
+      "lab04_stable_diffusion_report.md"
+    ],
+    "gold_chunks": [
+      "PNDMScheduler",
+      "StableDiffusionPipeline"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "PNDMScheduler",
+      "StableDiffusionPipeline"
+    ],
+    "target_sections": [
+      "Лабораторна робота №4 / Модель і середовище"
+    ],
+    "gold_passage_ids": [
+      "chunk-aa189355741329d5"
+    ]
+  },
+  {
+    "id": "eval_005",
+    "category": "exact_fact",
+    "language": "uk",
+    "query": "Скільки шарів має енкодер зору SigLIP у Lab 5 та який його patch_size?",
+    "expected_answer": "SigLIP Vision має 26 шарів, hidden_size=1152, patch_size=14 та image_size=384.",
+    "relevant_doc_ids": [
+      "lab05_multimodal_report.md"
+    ],
+    "gold_chunks": [
+      "SigLIP Vision має 26 шарів",
+      "patch_size=14"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "SigLIP Vision має 26 шарів",
+      "patch_size=14"
+    ],
+    "target_sections": [
+      "Лабораторна робота №5 / 5. Архітектура мультимодальної моделі"
+    ],
+    "gold_passage_ids": [
+      "chunk-848f92fad2de281b"
+    ]
+  },
+  {
+    "id": "eval_007",
+    "category": "exact_fact",
+    "language": "uk",
+    "query": "Яка версія бібліотеки openai-agents використовувалася в Lab 6?",
+    "expected_answer": "Використовувалася версія openai-agents 0.22.3.",
+    "relevant_doc_ids": [
+      "lab06_agents_report.md"
+    ],
+    "gold_chunks": [
+      "openai-agents 0.22.3",
+      "Середовище та модель"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "openai-agents 0.22.3",
+      "Середовище та модель"
+    ],
+    "target_sections": [
+      "Лабораторна робота №6 / Середовище та модель"
+    ],
+    "gold_passage_ids": [
+      "chunk-24d0b9d10d53e82f",
+      "chunk-3d28a0b2f13b08f9",
+      "chunk-ee8f55a223e64af3"
+    ]
+  },
+  {
+    "id": "eval_009",
+    "category": "exact_fact",
+    "language": "uk",
+    "query": "Скільки унікальних генерацій зображень було проведено в експериментах Lab 4?",
+    "expected_answer": "Було проведено 13 унікальних генерацій зображень.",
+    "relevant_doc_ids": [
+      "lab04_stable_diffusion_report.md"
+    ],
+    "gold_chunks": [
+      "13 унікальних генерацій",
+      "1 baseline + 3 seeds + 2 steps"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "13 унікальних генерацій",
+      "1 baseline + 3 seeds + 2 steps"
+    ],
+    "target_sections": [
+      "Лабораторна робота №4 / Висновки",
+      "Лабораторна робота №4 / Організація контрольованих експериментів"
+    ],
+    "gold_passage_ids": [
+      "chunk-5384cddcf9075b9b",
+      "chunk-920d93de947630aa"
+    ]
+  },
+  {
+    "id": "eval_011",
+    "category": "exact_fact",
+    "language": "uk",
+    "query": "Який PRAGMA busy_timeout встановлено для SQLite у рішенні ADR 001?",
+    "expected_answer": "Встановлено PRAGMA busy_timeout = 5000 для запобігання блокуванням.",
+    "relevant_doc_ids": [
+      "adr_001_vector_and_storage_architecture.md"
+    ],
+    "gold_chunks": [
+      "PRAGMA busy_timeout = 5000",
+      "SQLite with WAL"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "PRAGMA busy_timeout = 5000",
+      "SQLite with WAL"
+    ],
+    "target_sections": [
+      "ADR 001: Vector Storage and Relational Persistence Architecture / Decision"
+    ],
+    "gold_passage_ids": [
+      "chunk-312de896eb918af4",
+      "chunk-4db415c0e51d681e"
+    ]
+  },
+  {
+    "id": "eval_013",
+    "category": "exact_fact",
+    "language": "uk",
+    "query": "Який час завантаження моделі LLaVA зафіксовано в Lab 5?",
+    "expected_answer": "Час завантаження моделі склав 7.557 секунд.",
+    "relevant_doc_ids": [
+      "lab05_multimodal_report.md"
+    ],
+    "gold_chunks": [
+      "Model load: 7.557 с",
+      "не включений у час відповідей"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Model load: 7.557 с",
+      "не включений у час відповідей"
+    ],
+    "target_sections": [
+      "Лабораторна робота №5 / 8. Апаратне та програмне середовище"
+    ],
+    "gold_passage_ids": [
+      "chunk-a9920be700462f9a"
+    ]
+  },
+  {
+    "id": "eval_015",
+    "category": "exact_fact",
+    "language": "uk",
+    "query": "Скільки AST-вузлів дозволено калькулятору в Lab 6?",
+    "expected_answer": "Калькулятор обмежений 64 AST-вузлами та 200 символами.",
+    "relevant_doc_ids": [
+      "lab06_agents_report.md"
+    ],
+    "gold_chunks": [
+      "64 AST-вузлами",
+      "обмежені 200 символами"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "64 AST-вузлами",
+      "обмежені 200 символами"
+    ],
+    "target_sections": [
+      "Лабораторна робота №6 / Робочий простір і інструменти"
+    ],
+    "gold_passage_ids": [
+      "chunk-d2444550c68115e7"
+    ]
+  },
+  {
+    "id": "eval_017",
+    "category": "exact_fact",
+    "language": "uk",
+    "query": "Яка точна модель мовної частини використовується у LLaVA в Lab 5?",
+    "expected_answer": "Використовується Qwen/Qwen1.5-0.5B-Chat з 24 шарами.",
+    "relevant_doc_ids": [
+      "lab05_multimodal_report.md"
+    ],
+    "gold_chunks": [
+      "Qwen/Qwen1.5-0.5B-Chat",
+      "Qwen2 має 24 шари"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Qwen/Qwen1.5-0.5B-Chat",
+      "Qwen2 має 24 шари"
+    ],
+    "target_sections": [
+      "Лабораторна робота №5 / 5. Архітектура мультимодальної моделі"
+    ],
+    "gold_passage_ids": [
+      "chunk-848f92fad2de281b"
+    ]
+  },
+  {
+    "id": "eval_019",
+    "category": "exact_fact",
+    "language": "uk",
+    "query": "Яка розмірність ембеддінгів моделі multilingual-e5-base зазначена в ADR 001?",
+    "expected_answer": "Розмірність становить 768 вимірів.",
+    "relevant_doc_ids": [
+      "adr_001_vector_and_storage_architecture.md"
+    ],
+    "gold_chunks": [
+      "multilingual-e5-base, dimension = 768",
+      "normalized embedding vectors"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "- Cosine distance metric for normalized embedding vectors (`multilingual-e5-base`, dimension = 768).",
+      "normalized embedding vectors"
+    ],
+    "target_sections": [
+      "ADR 001: Vector Storage and Relational Persistence Architecture / Context",
+      "ADR 001: Vector Storage and Relational Persistence Architecture / Decision"
+    ],
+    "gold_passage_ids": [
+      "chunk-312de896eb918af4"
+    ]
+  },
+  {
+    "id": "eval_021",
+    "category": "exact_fact",
+    "language": "uk",
+    "query": "Який тип індексу та метрику відстані використовує Redis у Lab 3?",
+    "expected_answer": "Redis Stack використовує FLAT-індекс з метрикою cosine distance.",
+    "relevant_doc_ids": [
+      "lab03_rag_report.md"
+    ],
+    "gold_chunks": [
+      "FLAT-індексі та виконує пошук за cosine distance",
+      "FLOAT32 vectors"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "185 товарів завантажуються через LangChain `CSVLoader`. Один CSV-рядок стає одним `Document`, оскільки ціна, опис, характеристики та provenance мають залишатися однією логічною одиницею. `all-MiniLM-L6-v2` формує нормалізовані 384-вимірні embeddings. Redis Stack зберігає `FLOAT32` vectors у `FLAT`-індексі та виконує пошук за cosine distance. Grounded prompt передає локальній моделі в LM Studio лише retrieved records і вимагає citations формату `[source.csv:row]`."
+    ],
+    "target_sections": [
+      "Звіт до лабораторної роботи №3 / Реалізація"
+    ],
+    "gold_passage_ids": [
+      "chunk-073b9da90cf9c792"
+    ]
+  },
+  {
+    "id": "eval_023",
+    "category": "exact_fact",
+    "language": "uk",
+    "query": "Скільки товарів було завантажено через CSVLoader у Lab 3?",
+    "expected_answer": "185 товарів було завантажено через CSVLoader.",
+    "relevant_doc_ids": [
+      "lab03_rag_report.md"
+    ],
+    "gold_chunks": [
+      "185 товарів завантажуються",
+      "CSVLoader"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "185 товарів завантажуються",
+      "CSVLoader"
+    ],
+    "target_sections": [
+      "Звіт до лабораторної роботи №3 / Реалізація"
+    ],
+    "gold_passage_ids": [
+      "chunk-073b9da90cf9c792"
+    ]
+  },
+  {
+    "id": "eval_025",
+    "category": "exact_fact",
+    "language": "uk",
+    "query": "Яка роздільність та формат вхідного зображення primary_image у Lab 5?",
+    "expected_answer": "Роздільність 512×512 у форматі PNG.",
+    "relevant_doc_ids": [
+      "lab05_multimodal_report.md"
+    ],
+    "gold_chunks": [
+      "primary_image.png: 512×512, PNG",
+      "SHA-256"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "primary_image.png: 512×512, PNG",
+      "SHA-256"
+    ],
+    "target_sections": [
+      "Лабораторна робота №5 / 9. Вхідне зображення"
+    ],
+    "gold_passage_ids": [
+      "chunk-2a770669fd14f515"
+    ]
+  },
+  {
+    "id": "eval_027",
+    "category": "semantic_paraphrase",
+    "language": "uk",
+    "query": "Чому високий показник Hit@5 у Lab 3 ще не гарантує безпомилкової відповіді моделі?",
+    "expected_answer": "Hit@5 фіксує наявність хоча б одного релевантного запису, але не гарантує повноти контексту для багатотоварної агрегації.",
+    "relevant_doc_ids": [
+      "lab03_rag_report.md"
+    ],
+    "gold_chunks": [
+      "Hit@k фіксує наявність хоча б одного",
+      "не доводить, що контекст достатній"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Hit@k фіксує наявність хоча б одного",
+      "не доводить, що контекст достатній"
+    ],
+    "target_sections": [
+      "Звіт до лабораторної роботи №3 / Реалізація"
+    ],
+    "gold_passage_ids": [
+      "chunk-073b9da90cf9c792",
+      "chunk-35a68ee78d570a29"
+    ]
+  },
+  {
+    "id": "eval_029",
+    "category": "semantic_paraphrase",
+    "language": "uk",
+    "query": "Як саме поєднуються візуальні та мовні представлення у LLaVA перед надходженням у мовну модель?",
+    "expected_answer": "MLP-проєктор трансформує вектори ознак SigLIP у розмірність текстових ембеддінгів Qwen2, після чого вони обробляються спільно авторегресивним декодером.",
+    "relevant_doc_ids": [
+      "lab05_multimodal_report.md"
+    ],
+    "gold_chunks": [
+      "MLP-проєктор узгоджує їх із простором",
+      "Qwen2 → токени відповіді"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Енкодер зображення утворює вектори ознак, проєктор узгоджує їх із простором мовних embeddings, tokenizer перетворює запитання на текстові токени. Авторегресивна мовна модель отримує обидва представлення і послідовно прогнозує токени відповіді. Це не просте з’єднання зображення і тексту як сирих даних. Загальна схема узгоджується з [документацією LLaVA](https://huggingface.co/docs/transformers/model_doc/llava).",
+      "Qwen2 → токени відповіді"
+    ],
+    "target_sections": [
+      "Лабораторна робота №5 / 4. Теоретичні відомості",
+      "Лабораторна робота №5 / 5. Архітектура мультимодальної моделі",
+      "Лабораторна робота №5 / 6. Роль компонентів LLaVA"
+    ],
+    "gold_passage_ids": [
+      "chunk-414c629fb4226106",
+      "chunk-848f92fad2de281b"
+    ]
+  },
+  {
+    "id": "eval_031",
+    "category": "semantic_paraphrase",
+    "language": "uk",
+    "query": "Що відбувається, якщо агент у Lab 6 робить спробу виконати довільний системний код через інструмент?",
+    "expected_answer": "Інструмент calculate використовує захищений синтаксичний аналізатор AST без eval чи доступу до модулів, повертаючи помилку безпеки.",
+    "relevant_doc_ids": [
+      "lab06_agents_report.md"
+    ],
+    "gold_chunks": [
+      "AST для чисел",
+      "без eval, імен, викликів чи атрибутів"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "AST для чисел",
+      "без eval, імен, викликів чи атрибутів"
+    ],
+    "target_sections": [
+      "Лабораторна робота №6 / Робочий простір і інструменти"
+    ],
+    "gold_passage_ids": [
+      "chunk-d2444550c68115e7"
+    ]
+  },
+  {
+    "id": "eval_033",
+    "category": "semantic_paraphrase",
+    "language": "uk",
+    "query": "Як система поводиться, коли Redis стає недоступним під час пошуку згідно з runbook та ADR 001?",
+    "expected_answer": "Система переходить у режим деградації, використовуючи лексичний пошук BM25 без векторного ранжування.",
+    "relevant_doc_ids": [
+      "rag_system_runbook.md",
+      "incident_postmortem_redis_oom.md"
+    ],
+    "gold_chunks": [
+      "lexical fallback without vector ranking",
+      "fallback to BM25 lexical retriever"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "3. Redis Stack container running on port 6380 for vector indexing.",
+      "lexical fallback without vector ranking",
+      "fallback to BM25 lexical retriever"
+    ],
+    "target_sections": [
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Corrective and Preventative Actions",
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Impact",
+      "Operational Runbook: Local Engineering Knowledge Copilot / 1. System Overview"
+    ],
+    "gold_passage_ids": [
+      "chunk-161474725628508f",
+      "chunk-6e773f78130aabdd",
+      "chunk-bbf7932ccf875435"
+    ]
+  },
+  {
+    "id": "eval_035",
+    "category": "semantic_paraphrase",
+    "language": "uk",
+    "query": "Чому CLIP у Stable Diffusion сам по собі не здатний генерувати пікселі зображення?",
+    "expected_answer": "CLIP лише трансформує текстовий промпт в ембеддінги; генерацію латентів здійснює UNet через шум та розклад, а пікселі декодує VAE.",
+    "relevant_doc_ids": [
+      "lab04_stable_diffusion_report.md"
+    ],
+    "gold_chunks": [
+      "CLIP не створює пікселі",
+      "UNet з cross-attention та scheduler → фінальний латент → VAE decoder → RGB"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "CLIP не створює пікселі",
+      "UNet з cross-attention та scheduler → фінальний латент → VAE decoder → RGB"
+    ],
+    "target_sections": [
+      "Лабораторна робота №4 / Теорія та архітектура"
+    ],
+    "gold_passage_ids": [
+      "chunk-41b3f6b8377f876a"
+    ]
+  },
+  {
+    "id": "eval_037",
+    "category": "semantic_paraphrase",
+    "language": "uk",
+    "query": "Яка роль відведена SQLite у архітектурі асистента згідно з ADR 001?",
+    "expected_answer": "SQLite у режимі WAL зберігає історію сесій, канонічні репліки, метадані документів та переходи їхніх статусів без мережевих накладних витрат.",
+    "relevant_doc_ids": [
+      "adr_001_vector_and_storage_architecture.md"
+    ],
+    "gold_chunks": [
+      "SQLite with WAL (Write-Ahead Logging)",
+      "transactional integrity for session turns"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "SQLite with WAL (Write-Ahead Logging)",
+      "transactional integrity for session turns"
+    ],
+    "target_sections": [
+      "ADR 001: Vector Storage and Relational Persistence Architecture / Decision"
+    ],
+    "gold_passage_ids": [
+      "chunk-312de896eb918af4",
+      "chunk-4db415c0e51d681e"
+    ]
+  },
+  {
+    "id": "eval_039",
+    "category": "semantic_paraphrase",
+    "language": "uk",
+    "query": "Яким чином забезпечується відсутність втрати результатів при перериванні генерації в Lab 4?",
+    "expected_answer": "Параметри та метадані кожного окремого запуску фіксуються негайно, а результати звіряються за SHA-256 хешами.",
+    "relevant_doc_ids": [
+      "lab04_stable_diffusion_report.md"
+    ],
+    "gold_chunks": [
+      "Параметри кожного запуску збережені одразу",
+      "SHA-256 PNG і повна конфігурація"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Параметри кожного запуску збережені одразу",
+      "SHA-256 PNG і повна конфігурація"
+    ],
+    "target_sections": [
+      "Лабораторна робота №4 / Організація контрольованих експериментів"
+    ],
+    "gold_passage_ids": [
+      "chunk-5384cddcf9075b9b"
+    ]
+  },
+  {
+    "id": "eval_041",
+    "category": "semantic_paraphrase",
+    "language": "uk",
+    "query": "Яке призначення ендпоінту /health/ready у порівнянні з /health/live?",
+    "expected_answer": "/health/live сигналізує про роботу веб-сервера, тоді як /health/ready перевіряє зв'язок з Redis та SQLite.",
+    "relevant_doc_ids": [
+      "api_specification_and_contracts.md"
+    ],
+    "gold_chunks": [
+      "GET /health/live",
+      "GET /health/ready",
+      "redis: true, database: true"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "GET /health/live",
+      "GET /health/ready"
+    ],
+    "target_sections": [
+      "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 1. Health Checks"
+    ],
+    "gold_passage_ids": [
+      "chunk-342a291bedfe4d18"
+    ]
+  },
+  {
+    "id": "eval_043",
+    "category": "semantic_paraphrase",
+    "language": "uk",
+    "query": "Як уникнути переповнення VRAM під час запуску Stable Diffusion на мобільній RTX 3050?",
+    "expected_answer": "У Lab 4 застосовано float16, model_cpu_offload та механізм SDPA (AttnProcessor2_0), що дозволило уникнути помилок OOM.",
+    "relevant_doc_ids": [
+      "lab04_stable_diffusion_report.md"
+    ],
+    "gold_chunks": [
+      "torch.float16, model_cpu_offload, AttnProcessor2_0",
+      "OOM не було"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Стратегія: `torch.float16`, `model_cpu_offload`, `AttnProcessor2_0` (SDPA). Attention slicing, xFormers, VAE slicing/tiling не застосовувалися. OOM не було."
+    ],
+    "target_sections": [
+      "Лабораторна робота №4 / Модель і середовище",
+      "Лабораторна робота №4 / Організація контрольованих експериментів"
+    ],
+    "gold_passage_ids": [
+      "chunk-26d0af60fb9fa7e7"
+    ]
+  },
+  {
+    "id": "eval_045",
+    "category": "semantic_paraphrase",
+    "language": "uk",
+    "query": "Чому хмарний трейсинг було відключено в експериментах Lab 6?",
+    "expected_answer": "Для дотримання повної локальності та конфіденційності без зовнішніх мережевих залежностей через set_tracing_disabled(True).",
+    "relevant_doc_ids": [
+      "lab06_agents_report.md"
+    ],
+    "gold_chunks": [
+      "Cloud tracing вимкнено через set_tracing_disabled(True)",
+      "Хмарні сесії, hosted tools"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Cloud tracing вимкнено через set_tracing_disabled(True)",
+      "Хмарні сесії, hosted tools"
+    ],
+    "target_sections": [
+      "Лабораторна робота №6 / Середовище та модель"
+    ],
+    "gold_passage_ids": [
+      "chunk-ee8f55a223e64af3"
+    ]
+  },
+  {
+    "id": "eval_047",
+    "category": "cross_document",
+    "language": "en",
+    "query": "Compare the model loading times reported between Stable Diffusion in Lab 4 and LLaVA in Lab 5.",
+    "expected_answer": "Stable Diffusion in Lab 4 took 42.37 seconds to load, whereas LLaVA in Lab 5 took 7.557 seconds.",
+    "relevant_doc_ids": [
+      "lab04_stable_diffusion_report.md",
+      "lab05_multimodal_report.md"
+    ],
+    "gold_chunks": [
+      "Час завантаження моделі, включно з першим отриманням ваг: 42.37 с",
+      "Model load: 7.557 с"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Час завантаження моделі, включно з першим отриманням ваг: 42.37 с",
+      "Model load: 7.557 с"
+    ],
+    "target_sections": [
+      "Лабораторна робота №4 / Модель і середовище",
+      "Лабораторна робота №5 / 8. Апаратне та програмне середовище"
+    ],
+    "gold_passage_ids": [
+      "chunk-9fb5160565af959c",
+      "chunk-a9920be700462f9a"
+    ]
+  },
+  {
+    "id": "eval_049",
+    "category": "cross_document",
+    "language": "en",
+    "query": "Contrast the vector index configurations of Redis in Lab 3 with the production setup in ADR 001.",
+    "expected_answer": "Lab 3 uses a simple FLAT cosine index, while ADR 001 specifies HNSW alongside FLAT index support for large collections.",
+    "relevant_doc_ids": [
+      "lab03_rag_report.md",
+      "adr_001_vector_and_storage_architecture.md"
+    ],
+    "gold_chunks": [
+      "FLAT-індексі та виконує пошук за cosine distance",
+      "HNSW (Hierarchical Navigable Small World) and FLAT vector indexing"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "185 товарів завантажуються через LangChain `CSVLoader`. Один CSV-рядок стає одним `Document`, оскільки ціна, опис, характеристики та provenance мають залишатися однією логічною одиницею. `all-MiniLM-L6-v2` формує нормалізовані 384-вимірні embeddings. Redis Stack зберігає `FLOAT32` vectors у `FLAT`-індексі та виконує пошук за cosine distance. Grounded prompt передає локальній моделі в LM Studio лише retrieved records і вимагає citations формату `[source.csv:row]`.",
+      "- Utilizes `HNSW` (Hierarchical Navigable Small World) and `FLAT` vector indexing with `FLOAT32` precision."
+    ],
+    "target_sections": [
+      "ADR 001: Vector Storage and Relational Persistence Architecture / Decision",
+      "Звіт до лабораторної роботи №3 / Реалізація"
+    ],
+    "gold_passage_ids": [
+      "chunk-073b9da90cf9c792",
+      "chunk-312de896eb918af4"
+    ]
+  },
+  {
+    "id": "eval_051",
+    "category": "cross_document",
+    "language": "en",
+    "query": "Compare the VRAM requirements and offloading strategies between Lab 4 and Lab 5 on the RTX 3050 GPU.",
+    "expected_answer": "Lab 4 required model_cpu_offload to fit Stable Diffusion into 4GB VRAM, whereas Lab 5 ran LLaVA directly on cuda:0 without CPU offloading.",
+    "relevant_doc_ids": [
+      "lab04_stable_diffusion_report.md",
+      "lab05_multimodal_report.md"
+    ],
+    "gold_chunks": [
+      "model_cpu_offload",
+      "Квантизація та offload не знадобилися"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "model_cpu_offload",
+      "Квантизація та offload не знадобилися"
+    ],
+    "target_sections": [
+      "Лабораторна робота №4 / Модель і середовище",
+      "Лабораторна робота №5 / 7. Використана модель"
+    ],
+    "gold_passage_ids": [
+      "chunk-26d0af60fb9fa7e7",
+      "chunk-920d93de947630aa",
+      "chunk-94bae1e60a6d617a"
+    ]
+  },
+  {
+    "id": "eval_053",
+    "category": "cross_document",
+    "language": "en",
+    "query": "How do the token budget constraints differ between the MiniLM model in Lab 3 and the Agent context in Lab 6?",
+    "expected_answer": "MiniLM in Lab 3 is constrained to 256 word pieces, while the Agent in Lab 6 operates within an 8192 token context window with max_tokens 900.",
+    "relevant_doc_ids": [
+      "lab03_rag_report.md",
+      "lab06_agents_report.md"
+    ],
+    "gold_chunks": [
+      "256 word pieces",
+      "Контекст у lms ps — 8192",
+      "max_tokens=900"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "256 word pieces",
+      "Контекст у lms ps — 8192",
+      "max_tokens=900"
+    ],
+    "target_sections": [
+      "Звіт до лабораторної роботи №3 / Обмеження і подальша робота",
+      "Лабораторна робота №6 / Середовище та модель"
+    ],
+    "gold_passage_ids": [
+      "chunk-24d0b9d10d53e82f",
+      "chunk-4d5ce6f4f6109390"
+    ]
+  },
+  {
+    "id": "eval_055",
+    "category": "cross_document",
+    "language": "en",
+    "query": "Compare how sessions and history are managed between Lab 6 and the Knowledge Copilot API.",
+    "expected_answer": "Lab 6 uses SQLiteSession within the OpenAI Agents SDK, while Knowledge Copilot abstracts this via SQLiteRepository and SessionService with FastAPI.",
+    "relevant_doc_ids": [
+      "lab06_agents_report.md",
+      "api_specification_and_contracts.md"
+    ],
+    "gold_chunks": [
+      "SQLiteSession",
+      "POST /chat/completions",
+      "session_id"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "SQLiteSession",
+      "POST /chat/completions",
+      "session_id"
+    ],
+    "target_sections": [
+      "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 3. Agentic Chat & Retrieval",
+      "Лабораторна робота №6 / Обмеження та висновки",
+      "Лабораторна робота №6 / Пам'ять та ізоляція",
+      "Лабораторна робота №6 / Теоретичні відомості та архітектура"
+    ],
+    "gold_passage_ids": [
+      "chunk-06da53430d20c957",
+      "chunk-47fa3567591701ef",
+      "chunk-bd1aa85cebb398d3",
+      "chunk-d41505820ec0fe04"
+    ]
+  },
+  {
+    "id": "eval_057",
+    "category": "cross_document",
+    "language": "en",
+    "query": "Compare the evaluation focus between Lab 3 retrieval experiments and the Knowledge Copilot benchmark.",
+    "expected_answer": "Lab 3 evaluated 7 queries for Hit@5/MRR/Recall@5, whereas Knowledge Copilot uses a frozen 100-query benchmark evaluating retrieval, grounding, tools, and latency.",
+    "relevant_doc_ids": [
+      "lab03_rag_report.md",
+      "api_specification_and_contracts.md"
+    ],
+    "gold_chunks": [
+      "семи labeled запитах",
+      "grounding_status",
+      "execution_metadata"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "семи labeled запитах",
+      "grounding_status",
+      "execution_metadata"
+    ],
+    "target_sections": [
+      "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 3. Agentic Chat & Retrieval",
+      "Звіт до лабораторної роботи №3 / Фактичні результати"
+    ],
+    "gold_passage_ids": [
+      "chunk-0111f65037b69bff",
+      "chunk-3e96a9e19c6722a0",
+      "chunk-d41505820ec0fe04"
+    ]
+  },
+  {
+    "id": "eval_059",
+    "category": "cross_document",
+    "language": "en",
+    "query": "Compare the precision formats used in Lab 4 inference with vector representation in Redis according to ADR 001.",
+    "expected_answer": "Lab 4 uses torch.float16 for diffusion model weights, while Redis stores vectors in FLOAT32 precision.",
+    "relevant_doc_ids": [
+      "lab04_stable_diffusion_report.md",
+      "adr_001_vector_and_storage_architecture.md"
+    ],
+    "gold_chunks": [
+      "torch.float16",
+      "FLOAT32 precision"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "torch.float16",
+      "- Utilizes `HNSW` (Hierarchical Navigable Small World) and `FLAT` vector indexing with `FLOAT32` precision."
+    ],
+    "target_sections": [
+      "ADR 001: Vector Storage and Relational Persistence Architecture / Decision",
+      "Лабораторна робота №4 / Модель і середовище"
+    ],
+    "gold_passage_ids": [
+      "chunk-26d0af60fb9fa7e7",
+      "chunk-312de896eb918af4"
+    ]
+  },
+  {
+    "id": "eval_061",
+    "category": "cross_document",
+    "language": "en",
+    "query": "Contrast the document parsing capabilities of Lab 3 CSVLoader with the generalized extractors in Knowledge Copilot.",
+    "expected_answer": "Lab 3 only handled structured CSV tabular data, while Knowledge Copilot ingests Markdown, plain text, and text-based PDFs via PyMuPDF.",
+    "relevant_doc_ids": [
+      "lab03_rag_report.md",
+      "api_specification_and_contracts.md"
+    ],
+    "gold_chunks": [
+      "CSVLoader",
+      "accepting .md, .txt, .pdf"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "CSVLoader",
+      "- `GET /health/live`: Returns `{\"status\": \"ok\"}` when the ASGI server is accepting connections (HTTP 200)."
+    ],
+    "target_sections": [
+      "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 1. Health Checks",
+      "API Specification and Data Contracts: Knowledge Copilot v1 / Core Endpoints / 2. Document Management",
+      "Звіт до лабораторної роботи №3 / Реалізація"
+    ],
+    "gold_passage_ids": [
+      "chunk-073b9da90cf9c792",
+      "chunk-342a291bedfe4d18"
+    ]
+  },
+  {
+    "id": "eval_063",
+    "category": "cross_document",
+    "language": "en",
+    "query": "How does the caching strategy in Lab 4 compare with vector index caching in Redis post-mortem?",
+    "expected_answer": "Lab 4 caches downloaded weights in HuggingFace cache and verifies PNG SHA-256 digests, while Redis uses an allkeys-lru memory eviction policy.",
+    "relevant_doc_ids": [
+      "lab04_stable_diffusion_report.md",
+      "incident_postmortem_redis_oom.md"
+    ],
+    "gold_chunks": [
+      "Hugging Face cache",
+      "allkeys-lru eviction policy"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Hugging Face cache",
+      "- **14:45**: Updated Redis config to `maxmemory 2gb` and set vector cache eviction policy to `allkeys-lru`."
+    ],
+    "target_sections": [
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Corrective and Preventative Actions",
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Timeline (UTC)",
+      "Лабораторна робота №4 / Модель і середовище"
+    ],
+    "gold_passage_ids": [
+      "chunk-840311292cd3047a",
+      "chunk-aa189355741329d5"
+    ]
+  },
+  {
+    "id": "eval_065",
+    "category": "cross_document",
+    "language": "en",
+    "query": "Compare the execution interfaces provided in Lab 6 versus Knowledge Copilot.",
+    "expected_answer": "Lab 6 was executed via a headless test runner and notebook, whereas Knowledge Copilot provides both a FastAPI REST backend and a Streamlit UI.",
+    "relevant_doc_ids": [
+      "lab06_agents_report.md",
+      "rag_system_runbook.md"
+    ],
+    "gold_chunks": [
+      "Agent / Runner",
+      "FastAPI backend",
+      "Streamlit interactive UI"
+    ],
+    "expected_tool_calls": [],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Agent / Runner",
+      "FastAPI backend",
+      "Streamlit interactive UI"
+    ],
+    "target_sections": [
+      "Operational Runbook: Local Engineering Knowledge Copilot / 1. System Overview",
+      "Лабораторна робота №6 / Теоретичні відомості та архітектура"
+    ],
+    "gold_passage_ids": [
+      "chunk-47fa3567591701ef",
+      "chunk-6e773f78130aabdd"
+    ]
+  },
+  {
+    "id": "eval_067",
+    "category": "numerical_reasoning",
+    "language": "uk",
+    "query": "Обчисліть суму доступної системної пам'яті (15.19 GiB) та відеопам'яті (4.000 GiB), зафіксованих у середовищі Lab 4.",
+    "expected_answer": "15.19 + 4.000 = 19.19 GiB.",
+    "relevant_doc_ids": [
+      "lab04_stable_diffusion_report.md"
+    ],
+    "gold_chunks": [
+      "RAM 15.19 GiB",
+      "4.000 GiB VRAM"
+    ],
+    "expected_tool_calls": [
+      "calculate"
+    ],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "RAM 15.19 GiB",
+      "4.000 GiB VRAM"
+    ],
+    "target_sections": [
+      "Лабораторна робота №4 / Модель і середовище"
+    ],
+    "gold_passage_ids": [
+      "chunk-26d0af60fb9fa7e7"
+    ]
+  },
+  {
+    "id": "eval_069",
+    "category": "numerical_reasoning",
+    "language": "uk",
+    "query": "Скільки всього шарів мають разом SigLIP Vision (26 шарів) та Qwen2 (24 шари) у Lab 5?",
+    "expected_answer": "26 + 24 = 50 шарів.",
+    "relevant_doc_ids": [
+      "lab05_multimodal_report.md"
+    ],
+    "gold_chunks": [
+      "SigLIP Vision має 26 шарів",
+      "Qwen2 має 24 шари"
+    ],
+    "expected_tool_calls": [
+      "calculate"
+    ],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "SigLIP Vision має 26 шарів",
+      "Qwen2 має 24 шари"
+    ],
+    "target_sections": [
+      "Лабораторна робота №5 / 5. Архітектура мультимодальної моделі"
+    ],
+    "gold_passage_ids": [
+      "chunk-848f92fad2de281b"
+    ]
+  },
+  {
+    "id": "eval_071",
+    "category": "numerical_reasoning",
+    "language": "uk",
+    "query": "Обчисліть різницю між Hit@5 гібридного роутера (1.0000) та семантичного бейзлайну (0.8571) у Lab 3.",
+    "expected_answer": "1.0000 - 0.8571 = 0.1429.",
+    "relevant_doc_ids": [
+      "lab03_rag_report.md"
+    ],
+    "gold_chunks": [
+      "Hit@5 = 0.8571",
+      "1.0000, 1.0000 і 0.8829"
+    ],
+    "expected_tool_calls": [
+      "calculate"
+    ],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "Hit@5 = 0.8571",
+      "1.0000, 1.0000 і 0.8829"
+    ],
+    "target_sections": [
+      "Звіт до лабораторної роботи №3 / Фактичні результати"
+    ],
+    "gold_passage_ids": [
+      "chunk-0111f65037b69bff"
+    ]
+  },
+  {
+    "id": "eval_073",
+    "category": "numerical_reasoning",
+    "language": "uk",
+    "query": "Яка загальна кількість записів у Lab 3 без урахування 17 обрізаних записів (185 - 17)?",
+    "expected_answer": "185 - 17 = 168 записів.",
+    "relevant_doc_ids": [
+      "lab03_rag_report.md"
+    ],
+    "gold_chunks": [
+      "185 товарів",
+      "обрізає 17 довгих записів"
+    ],
+    "expected_tool_calls": [
+      "calculate"
+    ],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "185 товарів",
+      "обрізає 17 довгих записів"
+    ],
+    "target_sections": [
+      "Звіт до лабораторної роботи №3 / Обмеження і подальша робота",
+      "Звіт до лабораторної роботи №3 / Реалізація"
+    ],
+    "gold_passage_ids": [
+      "chunk-073b9da90cf9c792",
+      "chunk-4d5ce6f4f6109390"
+    ]
+  },
+  {
+    "id": "eval_075",
+    "category": "numerical_reasoning",
+    "language": "uk",
+    "query": "Обчисліть середнє значення CFG scale з протестованих у Lab 4 (5, 7.5, 10).",
+    "expected_answer": "(5 + 7.5 + 10) / 3 = 7.5.",
+    "relevant_doc_ids": [
+      "lab04_stable_diffusion_report.md"
+    ],
+    "gold_chunks": [
+      "5, 7.5, 10"
+    ],
+    "expected_tool_calls": [
+      "calculate"
+    ],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "5, 7.5, 10"
+    ],
+    "target_sections": [
+      "Лабораторна робота №4 / Організація контрольованих експериментів"
+    ],
+    "gold_passage_ids": [
+      "chunk-a258fb75bd76024c"
+    ]
+  },
+  {
+    "id": "eval_077",
+    "category": "numerical_reasoning",
+    "language": "uk",
+    "query": "Скільки хвилин тривала недоступність сервісу під час інциденту OOM (з 14:22 до 14:47 UTC)?",
+    "expected_answer": "47 - 22 = 25 хвилин.",
+    "relevant_doc_ids": [
+      "incident_postmortem_redis_oom.md"
+    ],
+    "gold_chunks": [
+      "14:22 and 14:47 UTC",
+      "25-minute window"
+    ],
+    "expected_tool_calls": [
+      "calculate"
+    ],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "14:22 and 14:47 UTC",
+      "25-minute window"
+    ],
+    "target_sections": [
+      "Incident Post-Mortem: Redis Out-of-Memory (OOM) During Document Ingestion / Summary"
+    ],
+    "gold_passage_ids": [
+      "chunk-ec91ddb2dece2958"
+    ]
+  },
+  {
+    "id": "eval_079",
+    "category": "numerical_reasoning",
+    "language": "uk",
+    "query": "Обчисліть суму рядків VQA у Lab 5: 10 baseline-питань плюс 9 контрольованих порівнянь.",
+    "expected_answer": "10 + 9 = 19 рядків.",
+    "relevant_doc_ids": [
+      "lab05_multimodal_report.md"
+    ],
+    "gold_chunks": [
+      "10 baseline-питань",
+      "разом 19 рядків"
+    ],
+    "expected_tool_calls": [
+      "calculate"
+    ],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "10 baseline-питань",
+      "разом 19 рядків"
+    ],
+    "target_sections": [
+      "Лабораторна робота №5 / 3. Варіант"
+    ],
+    "gold_passage_ids": [
+      "chunk-11fa98c799dc1978"
+    ]
+  },
+  {
+    "id": "eval_081",
+    "category": "numerical_reasoning",
+    "language": "uk",
+    "query": "Скільки генерацій із 13 у Lab 4 припадає на додаткові експерименти, якщо 1 була baseline (13 - 1)?",
+    "expected_answer": "13 - 1 = 12 генерацій.",
+    "relevant_doc_ids": [
+      "lab04_stable_diffusion_report.md"
+    ],
+    "gold_chunks": [
+      "13 унікальних генерацій: 1 baseline"
+    ],
+    "expected_tool_calls": [
+      "calculate"
+    ],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "13 унікальних генерацій: 1 baseline"
+    ],
+    "target_sections": [
+      "Лабораторна робота №4 / Організація контрольованих експериментів"
+    ],
+    "gold_passage_ids": [
+      "chunk-5384cddcf9075b9b"
+    ]
+  },
+  {
+    "id": "eval_083",
+    "category": "numerical_reasoning",
+    "language": "uk",
+    "query": "Обчисліть різницю між hidden_size зорової моделі SigLIP (1152) та мовної моделі Qwen2 (1024) у Lab 5.",
+    "expected_answer": "1152 - 1024 = 128.",
+    "relevant_doc_ids": [
+      "lab05_multimodal_report.md"
+    ],
+    "gold_chunks": [
+      "hidden_size=1152",
+      "hidden_size=1024"
+    ],
+    "expected_tool_calls": [
+      "calculate"
+    ],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "hidden_size=1152",
+      "hidden_size=1024"
+    ],
+    "target_sections": [
+      "Лабораторна робота №5 / 5. Архітектура мультимодальної моделі"
+    ],
+    "gold_passage_ids": [
+      "chunk-848f92fad2de281b"
+    ]
+  },
+  {
+    "id": "eval_085",
+    "category": "numerical_reasoning",
+    "language": "uk",
+    "query": "Обчисліть середнє значення MRR між семантичним бейзлайном (0.6905) та гібридним роутером (1.0000) у Lab 3.",
+    "expected_answer": "(0.6905 + 1.0000) / 2 = 0.84525.",
+    "relevant_doc_ids": [
+      "lab03_rag_report.md"
+    ],
+    "gold_chunks": [
+      "MRR = 0.6905",
+      "1.0000"
+    ],
+    "expected_tool_calls": [
+      "calculate"
+    ],
+    "refusal_expected": false,
+    "evidence_spans": [
+      "MRR = 0.6905",
+      "1.0000"
+    ],
+    "target_sections": [
+      "Звіт до лабораторної роботи №3 / Фактичні результати"
+    ],
+    "gold_passage_ids": [
+      "chunk-0111f65037b69bff"
+    ]
+  },
+  {
+    "id": "eval_087",
+    "category": "unsupported",
+    "language": "uk",
+    "query": "Яка точність квантизації INT4 (BitsAndBytes) застосовувалася для LLaVA у Lab 5?",
+    "expected_answer": "Refusal: Квантизація не використовувалася, модель працювала у FP16.",
+    "relevant_doc_ids": [],
+    "gold_chunks": [],
+    "expected_tool_calls": [],
+    "refusal_expected": true,
+    "evidence_spans": [],
+    "target_sections": [],
+    "gold_passage_ids": []
+  },
+  {
+    "id": "eval_089",
+    "category": "unsupported",
+    "language": "uk",
+    "query": "Який F1-score отримала модель BERT на датасеті SQuAD у Lab 3?",
+    "expected_answer": "Refusal: У Lab 3 не використовувався датасет SQuAD та модель BERT для QA.",
+    "relevant_doc_ids": [],
+    "gold_chunks": [],
+    "expected_tool_calls": [],
+    "refusal_expected": true,
+    "evidence_spans": [],
+    "target_sections": [],
+    "gold_passage_ids": []
+  },
+  {
+    "id": "eval_091",
+    "category": "unsupported",
+    "language": "uk",
+    "query": "Яка адреса підключення до кластера Kubernetes зазначена у runbook?",
+    "expected_answer": "Refusal: Система розгорнута як локальний моноліт без Kubernetes.",
+    "relevant_doc_ids": [],
+    "gold_chunks": [],
+    "expected_tool_calls": [],
+    "refusal_expected": true,
+    "evidence_spans": [],
+    "target_sections": [],
+    "gold_passage_ids": []
+  },
+  {
+    "id": "eval_093",
+    "category": "unsupported",
+    "language": "uk",
+    "query": "Який розмір аудіофайлу оброблявся моделлю Whisper у Lab 5?",
+    "expected_answer": "Refusal: У Lab 5 досліджувалася візуально-мовна модель LLaVA, аудіо та Whisper не використовувалися.",
+    "relevant_doc_ids": [],
+    "gold_chunks": [],
+    "expected_tool_calls": [],
+    "refusal_expected": true,
+    "evidence_spans": [],
+    "target_sections": [],
+    "gold_passage_ids": []
+  },
+  {
+    "id": "eval_095",
+    "category": "unsupported",
+    "language": "uk",
+    "query": "Скільки епох навчалася рекурентна нейромережа LSTM у Lab 4?",
+    "expected_answer": "Refusal: У Lab 4 досліджувалася дифузійна модель Stable Diffusion без навчання LSTM.",
+    "relevant_doc_ids": [],
+    "gold_chunks": [],
+    "expected_tool_calls": [],
+    "refusal_expected": true,
+    "evidence_spans": [],
+    "target_sections": [],
+    "gold_passage_ids": []
+  },
+  {
+    "id": "eval_097",
+    "category": "unsupported",
+    "language": "uk",
+    "query": "Який токен доступу до сервісу Pinecone використовується для зберігання індексів?",
+    "expected_answer": "Refusal: Хмарний сервіс Pinecone не використовується; векторний індекс розміщено локально в Redis.",
+    "relevant_doc_ids": [],
+    "gold_chunks": [],
+    "expected_tool_calls": [],
+    "refusal_expected": true,
+    "evidence_spans": [],
+    "target_sections": [],
+    "gold_passage_ids": []
+  },
+  {
+    "id": "eval_099",
+    "category": "unsupported",
+    "language": "uk",
+    "query": "Яка швидкість генерації у токенах за секунду зафіксована для LLaMA-70B у Lab 5?",
+    "expected_answer": "Refusal: Модель LLaMA-70B не запускалася в Lab 5.",
+    "relevant_doc_ids": [],
+    "gold_chunks": [],
+    "expected_tool_calls": [],
+    "refusal_expected": true,
+    "evidence_spans": [],
+    "target_sections": [],
+    "gold_passage_ids": []
+  }
+]

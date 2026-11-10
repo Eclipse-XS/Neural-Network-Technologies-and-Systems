@@ -11,6 +11,8 @@ DEFAULT_MODEL = "mistralai/ministral-3-3b"
 DEFAULT_SYSTEM_PROMPT = "You are a helpful assistant."
 DEFAULT_TEMPERATURE = 0.7
 DEFAULT_MAX_TOKENS = 256
+DEFAULT_TIMEOUT = 60.0
+DEFAULT_MAX_RETRIES = 2
 
 
 def normalize_base_url(base_url: str) -> str:
@@ -20,8 +22,21 @@ def normalize_base_url(base_url: str) -> str:
     return normalized
 
 
-def create_client(base_url: str = DEFAULT_BASE_URL) -> OpenAI:
-    return OpenAI(base_url=normalize_base_url(base_url), api_key="lm-studio")
+def create_client(
+    base_url: str = DEFAULT_BASE_URL,
+    timeout: float = DEFAULT_TIMEOUT,
+    max_retries: int = DEFAULT_MAX_RETRIES,
+) -> OpenAI:
+    if isinstance(timeout, bool) or not isinstance(timeout, Real) or timeout <= 0:
+        raise ValueError("Timeout must be a positive number of seconds.")
+    if isinstance(max_retries, bool) or not isinstance(max_retries, int) or max_retries < 0:
+        raise ValueError("Max retries must be a non-negative integer.")
+    return OpenAI(
+        base_url=normalize_base_url(base_url),
+        api_key="lm-studio",
+        timeout=float(timeout),
+        max_retries=max_retries,
+    )
 
 
 def validate_generation_settings(
@@ -43,7 +58,10 @@ def validate_generation_settings(
 
 def list_model_ids(client: Any) -> list[str]:
     models = client.models.list()
-    return [model.id for model in models.data if getattr(model, "id", None)]
+    data = getattr(models, "data", None)
+    if not isinstance(data, Sequence):
+        raise RuntimeError("LM Studio returned a malformed models response.")
+    return [model.id for model in data if getattr(model, "id", None)]
 
 
 def ensure_model_available(client: Any, model: str) -> list[str]:
@@ -72,9 +90,13 @@ def request_chat_completion(
         temperature=temperature,
         max_tokens=max_tokens,
     )
-    if not response.choices:
+    choices = getattr(response, "choices", None)
+    if not choices:
         raise RuntimeError("LM Studio returned no completion choices.")
-    content = response.choices[0].message.content
-    if content is None or not content.strip():
+    message = getattr(choices[0], "message", None)
+    if message is None:
+        raise RuntimeError("LM Studio returned a choice without a message payload.")
+    content = getattr(message, "content", None)
+    if content is None or not str(content).strip():
         raise RuntimeError("LM Studio returned an empty assistant response.")
-    return content.strip()
+    return str(content).strip()

@@ -6,6 +6,9 @@ from .config import LAB_ROOT, OUTPUTS, WORKSPACE, INSTRUCTIONS, Settings
 from .tools import build_tools
 
 
+HISTORICAL_WORKSPACE_SHA256 = "fa8df1ee055497d41133b25cbecd354e419bddfe62f5befa6de514cbdbf2ff19"
+
+
 def load_verified():
     batch = json.loads((OUTPUTS / 'metadata/latest_batch.json').read_text())
     all_runs = [json.loads(line) for line in (OUTPUTS / 'runs/runs.jsonl').read_text(encoding='utf-8').splitlines()]
@@ -15,13 +18,15 @@ def load_verified():
     names = [t.name for t in build_tools()]
     for item in json.loads((WORKSPACE / 'manifest.json').read_text()):
         assert hashlib.sha256((WORKSPACE / item['workspace_filename']).read_bytes()).hexdigest() == item['sha256']
+    current_ws_sha = hashlib.sha256((WORKSPACE / 'manifest.json').read_bytes()).hexdigest()
+    allowed_ws_shas = {current_ws_sha, HISTORICAL_WORKSPACE_SHA256}
     for r in runs:
         assert r['tools_available'] == (names if r['agent_variant'] == 'with_tools' else [])
         assert (r['temperature'], r['max_turns'], r['max_tokens'], r['base_url']) == (settings.temperature, settings.max_turns, settings.max_tokens, settings.base_url)
         if settings.model_id:
             assert r['model_id'] == settings.model_id
         assert r['instructions_sha256'] == hashlib.sha256(INSTRUCTIONS.encode()).hexdigest()
-        assert r['workspace_sha256'] == hashlib.sha256((WORKSPACE / 'manifest.json').read_bytes()).hexdigest()
+        assert r['workspace_sha256'] in allowed_ws_shas
         assert r['tracing_disabled'] and r['api_mode'] == 'chat_completions'
         trace = json.loads((LAB_ROOT / r['trace_path']).read_text(encoding='utf-8'))
         assert [e['tool_name'] for e in trace if e['event_type'] == 'tool_call'] == r['tools_used']

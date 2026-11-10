@@ -74,18 +74,33 @@ class LocalTrace(RunHooks):
 
 
 def validate_citations(answer: str, events: list[dict]) -> dict:
-    """Check identifiers against this turn's retrieval, not merely the corpus."""
-    supplied = {c['citation'] for e in events if e['event_type'] == 'tool_result' and e['tool_name'] == 'search_knowledge'
-        and isinstance(e['result'], dict) for c in e['result'].get('chunks', [])}
-    cited = re.findall(r'\[lab\d+#[^\]\n]+\]', answer)
+    """Check identifiers against this turn's retrieval and classify semantic grounding (DEFECT-02)."""
+    chunks_dicts = [c for e in events if e['event_type'] == 'tool_result' and e['tool_name'] == 'search_knowledge'
+                    and isinstance(e['result'], dict) for c in e['result'].get('chunks', [])]
+    supplied = {c['citation'] for c in chunks_dicts}
+    cited = re.findall(r'\[[a-zA-Z0-9_-]+#[a-zA-Z0-9_-]+\]', answer)
     invalid = [c for c in cited if c not in supplied]
-    # Filename-style or malformed chunk citations must not silently count as valid.
     suspicious = re.findall(r'\[[^\]\n]*(?:chunk-|_report\.md)[^\]\n]*\]', answer)
     invalid += [c for c in suspicious if c not in supplied and c not in invalid]
-    abstained = bool(re.search(r"\b(?:cannot determine|insufficient evidence|not available)\b|не можу визначити|недостатньо (?:даних|доказів)|не містить .*?(?:інформац|даних)|даних .*? не виявлено|не було зазначено", answer, re.I))
+    abstained = bool(re.search(r"\b(?:cannot determine|insufficient evidence|not available)\b|не можу визначити|недостатньо (?:даних|доказів)|не містить .*?(?:інформац|даних)|даних .*? не виявлено|не було зазначено|інформація відсутня", answer, re.I))
+
+    # Multi-dimensional Grounding Status Model
+    if abstained and not invalid:
+        grounding_status = 'INSUFFICIENT_EVIDENCE'
+    elif invalid:
+        grounding_status = 'VALIDATION_FAILED'
+    elif not cited and supplied:
+        grounding_status = 'VALIDATION_FAILED'
+    elif cited and not invalid:
+        grounding_status = 'GROUNDED'
+    else:
+        grounding_status = 'INSUFFICIENT_EVIDENCE'
+
+    citation_status = ('FAIL' if invalid and not any(c in supplied for c in cited) else 'PARTIAL' if invalid else
+                       'PASS' if cited else 'PASS' if abstained else 'FAIL' if supplied else 'NOT_APPLICABLE')
+
     return dict(citations=cited, invalid_citations=invalid, supplied_citations=sorted(supplied),
-        citation='FAIL' if invalid and not any(c in supplied for c in cited) else 'PARTIAL' if invalid else
-        'PASS' if cited else 'PASS' if abstained else 'FAIL' if supplied else 'NOT_APPLICABLE')
+                citation=citation_status, grounding_status=grounding_status, evidence=chunks_dicts)
 
 
 async def execute(agent, settings: Settings, user_input: str, *, scenario_id='interactive',
@@ -155,7 +170,8 @@ async def execute(agent, settings: Settings, user_input: str, *, scenario_id='in
                                 relevant = ' '.join(part for part in re.split(r'(?<=[.!?])\s+|\n',chunk['text'])
                                                     if re.search(r'unique|унікальн|загальн.*кільк|total',part,re.I))
                                 values = {float(x) for x in re.findall(r'(?<![\w.])-?\d+(?:\.\d+)?', relevant)}
-                                values.discard(float(chunk['lab_number']))
+                                if 'lab_number' in chunk:
+                                    values.discard(float(chunk['lab_number']))
                                 by_source.setdefault(source,set()).update(values & answer_numbers)
                         operands = [next(iter(values)) for source,values in sorted(by_source.items()) if len(values)==1]
                         if len(operands)==2:
@@ -167,11 +183,13 @@ async def execute(agent, settings: Settings, user_input: str, *, scenario_id='in
                                 expression = None
                             if expression:
                                 call_id = 'policy_' + uuid.uuid4().hex[:12]
+                                # DEFECT-03: Explicit origin tagging
                                 trace.add('tool_call',tool_name='calculate',call_id=call_id,
-                                          arguments=json.dumps({'expression':expression}),policy_enforced=True)
+                                          arguments=json.dumps({'expression':expression}),policy_enforced=True,
+                                          origin='RECOVERY_EXECUTED')
                                 calculation = safe_calculate(expression)
                                 trace.add('tool_result',tool_name='calculate',call_id=call_id,result=calculation,
-                                          policy_enforced=True)
+                                          policy_enforced=True, origin='RECOVERY_EXECUTED')
                                 verifier = Agent(name='Arithmetic result editor',model=agent.model,tools=[],instructions="""Answer the original question using only retrieved evidence and the verified calculator result. Cite only exact supplied citations. Never create identifiers or recalculate in prose.""")
                                 final_prompt=json.dumps({'question':user_input,'evidence':evidence,'calculation':calculation},ensure_ascii=False)
                                 final_result=await asyncio.wait_for(Runner.run(verifier,final_prompt,max_turns=2,hooks=trace,
@@ -181,8 +199,6 @@ async def execute(agent, settings: Settings, user_input: str, *, scenario_id='in
             audit = validate_citations(answer, trace.events)
             evidence = [c for e in trace.events if e['event_type']=='tool_result' and e['tool_name']=='search_knowledge'
                         and isinstance(e['result'],dict) for c in e['result'].get('chunks',[])]
-            # Citation syntax alone cannot detect a false claim attached to a valid chunk.
-            # Every evidence-backed answer therefore gets a claim/evidence editing pass.
             if evidence and not ('calculate' in used_tools and audit['citation'] == 'PASS'):
                 verifier = Agent(name='Grounded answer editor', model=agent.model, tools=[], instructions="""Rewrite the draft using only the supplied evidence. Remove unsupported claims. Cite factual claims only with exact citation strings shown with the evidence. Never output placeholders, filenames, nested brackets, or new identifiers. Prefer explicit observed behavior over generic limitations. Do not describe deliberate tool permission boundaries as model weaknesses. Distinguish unique executions from table rows and reused results. If evidence is insufficient, abstain clearly. Return only the corrected answer.""")
                 prompt = json.dumps({'question':user_input,'draft':answer,'evidence':evidence},ensure_ascii=False)
@@ -200,17 +216,30 @@ async def execute(agent, settings: Settings, user_input: str, *, scenario_id='in
                         run_config=RunConfig(tracing_disabled=True,trace_include_sensitive_data=False)),settings.run_timeout_seconds)
                     record['final_answer'] = str(corrected.final_output)
                     trace.add('citation_retry', corrected_answer=record['final_answer'])
-            # Canonicalize formatting only; this never creates a citation not supplied by retrieval.
+            # Canonicalize formatting only
             record['final_answer'] = record['final_answer'].replace('[source_id#chunk_id]', '')
             record['final_answer'] = re.sub(
-                r'\[(?:Джерело|Citation|Source):\s*`?(\[lab\d+#chunk-[0-9a-f]+\])`?\]', r'\1', record['final_answer'], flags=re.I)
+                r'\[(?:Джерело|Citation|Source):\s*`?(\[[a-zA-Z0-9_-]+#chunk-[0-9a-f]+\])`?\]', r'\1', record['final_answer'], flags=re.I)
             record['final_answer'] = re.sub(
-                r'(\[lab\d+#chunk-[0-9a-f]+\])\(\1\)', r'\1', record['final_answer'])
+                r'(\[[a-zA-Z0-9_-]+#chunk-[0-9a-f]+\])\(\1\)', r'\1', record['final_answer'])
             record['final_answer'] = re.sub(
-                r'(\[lab\d+#chunk-[0-9a-f]+\])\(lab\d+#chunk-[0-9a-f]+\)', r'\1', record['final_answer'])
+                r'(\[[a-zA-Z0-9_-]+#chunk-[0-9a-f]+\])\([a-zA-Z0-9_-]+#chunk-[0-9a-f]+\)', r'\1', record['final_answer'])
             record['final_answer'] = re.sub(
                 r'\[calculation:\s*([^\]]+)\]\(\[calculation:[^\]]+\]\)', r'\1', record['final_answer'], flags=re.I)
             record['final_answer'] = re.sub(r'\*\*\s*\*\*', '', record['final_answer'])
+
+        # DEFECT-01: SQLite memory synchronization
+        # Synchronize authoritative canonical turn into SQLiteSession turn history
+        if session:
+            try:
+                last_item = await session.pop_item()
+                if last_item and last_item.get('role') == 'assistant':
+                    await session.add_items([{'role': 'assistant', 'content': record['final_answer']}])
+                elif last_item:
+                    await session.add_items([last_item, {'role': 'assistant', 'content': record['final_answer']}])
+            except Exception as sync_exc:
+                trace.add('session_sync_warning', error=str(sync_exc))
+
         trace.add('final_answer', text=record['final_answer'])
     except Exception as exc:
         record['error'] = f'{type(exc).__name__}: {exc}'
@@ -218,6 +247,9 @@ async def execute(agent, settings: Settings, user_input: str, *, scenario_id='in
     record['runtime_seconds'] = round(time.perf_counter() - start, 3)
     record['tools_used'] = [e['tool_name'] for e in trace.events if e['event_type'] == 'tool_call']
     record['tool_call_count'] = len(record['tools_used'])
+    # DEFECT-03: Distinguish autonomous from recovered tool execution
+    record['autonomous_tools'] = [e['tool_name'] for e in trace.events if e['event_type'] == 'tool_call' and not e.get('policy_enforced')]
+    record['recovered_tools'] = [e['tool_name'] for e in trace.events if e['event_type'] == 'tool_call' and e.get('policy_enforced')]
     record.update(validate_citations(record['final_answer'], trace.events))
     record['sources_retrieved'] = sorted({c['source_id'] for e in trace.events if e['event_type'] == 'tool_result'
         and e['tool_name'] == 'search_knowledge' and isinstance(e['result'], dict) for c in e['result'].get('chunks', [])})

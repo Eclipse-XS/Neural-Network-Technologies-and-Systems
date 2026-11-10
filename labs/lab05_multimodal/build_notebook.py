@@ -145,7 +145,10 @@ if MODE == "LIVE":
         "processor": type(pipe.processor.image_processor).__name__,
     }
 else:
-    recorded_model = json.loads((OUTPUT_ROOT / "metadata/model.json").read_text(encoding="utf-8"))
+    model_meta_file = OUTPUT_ROOT / "metadata/model.json"
+    if not model_meta_file.exists():
+        model_meta_file = LAB_ROOT / "evidence/model_metadata.json"
+    recorded_model = json.loads(model_meta_file.read_text(encoding="utf-8"))
     cfg = recorded_model["model_config"]
     architecture = {
         "provenance": "historical outputs/metadata/model.json",
@@ -286,7 +289,12 @@ if MODE == "LIVE" and RUN_FULL_MATRIX:
     display(pd.DataFrame([control_live]))""")
 
 md("## 14. Аналіз історичних результатів (REPLAY)\n\nДалі читається перевірений manifest: 19 рядків, 17 унікальних `run_id`. Це історичні GPU-відповіді, не результат поточного запуску notebook. Ручні оцінки зв'язані з `run_id`, exact answer та image SHA.")
-code("""historical_rows = json.loads((OUTPUT_ROOT / "metadata/manifest.json").read_text(encoding="utf-8"))
+code("""manifest_file = OUTPUT_ROOT / "metadata/manifest.json"
+if manifest_file.exists():
+    historical_rows = json.loads(manifest_file.read_text(encoding="utf-8"))
+else:
+    from labs.lab05_multimodal.src.evidence import historical_experiment_rows
+    historical_rows = historical_experiment_rows()
 assert len(historical_rows) == 19
 assert len({row["run_id"] for row in historical_rows}) == 17
 historical = evaluated_results(historical_rows)
