@@ -90,26 +90,28 @@ def test_lab07_benchmark_numbers_in_docs():
         bench = json.load(f)
 
     # Hybrid
-    assert round(bench["modes"]["hybrid"]["evidence_recall_1"], 4) == 0.4363
-    assert round(bench["modes"]["hybrid"]["evidence_recall_5"], 4) == 0.7020
-    assert round(bench["modes"]["hybrid"]["hit_at_5"], 4) == 0.8000
-    assert round(bench["modes"]["hybrid"]["mrr"], 4) == 0.6482
-    assert round(bench["modes"]["hybrid"]["latency"]["mean_ms"], 2) == 57.30
+    assert round(bench["modes"]["hybrid"]["evidence_recall_1"], 4) == 0.5721
+    assert round(bench["modes"]["hybrid"]["evidence_recall_3"], 4) == 0.8500
+    assert round(bench["modes"]["hybrid"]["evidence_recall_5"], 4) == 0.9029
+    assert round(bench["modes"]["hybrid"]["hit_at_5"], 4) == 0.9647
+    assert round(bench["modes"]["hybrid"]["mrr"], 4) == 0.8363
+    assert round(bench["modes"]["hybrid"]["latency"]["mean_ms"], 2) == 37.92
 
     # Lexical / BM25
-    assert round(bench["modes"]["lexical"]["evidence_recall_3"], 4) == 0.6647
-    assert round(bench["modes"]["lexical"]["hit_at_5"], 4) == 0.8588
-    assert round(bench["modes"]["lexical"]["latency"]["mean_ms"], 2) == 2.24
+    assert round(bench["modes"]["lexical"]["evidence_recall_3"], 4) == 0.8588
+    assert round(bench["modes"]["lexical"]["hit_at_5"], 4) == 0.9765
+    assert round(bench["modes"]["lexical"]["latency"]["mean_ms"], 2) == 2.27
 
     # Dense
-    assert round(bench["modes"]["dense"]["latency"]["mean_ms"], 2) == 53.86
+    assert round(bench["modes"]["dense"]["latency"]["mean_ms"], 2) == 47.61
 
     root_readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
-    assert "0.6647" in root_readme  # BM25 Recall@3
-    assert "0.8588" in root_readme  # BM25 Hit@5
-    assert "53.86" in root_readme   # Dense mean latency
-    assert "2.24" in root_readme    # BM25 mean latency
-    assert "57.30" in root_readme   # Hybrid mean latency
+    assert "0.5721" in root_readme  # Hybrid Recall@1
+    assert "0.8588" in root_readme  # BM25 Recall@3
+    assert "0.9765" in root_readme  # BM25 Hit@5
+    assert "47.61" in root_readme   # Dense mean latency
+    assert "2.27" in root_readme    # BM25 mean latency
+    assert "37.92" in root_readme   # Hybrid mean latency
     assert "0.6941" not in root_readme  # Fabricated old BM25 recall@3
 
 

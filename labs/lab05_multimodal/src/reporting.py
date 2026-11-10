@@ -46,6 +46,9 @@ def build_figure(frame):
     path = OUTPUT_ROOT / 'figures/token_budget.png'
     path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(path, dpi=160)
+    ev_path = LAB_ROOT / 'evidence/figures/token_budget.png'
+    ev_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(ev_path, dpi=160)
     plt.close(fig)
     return path
 

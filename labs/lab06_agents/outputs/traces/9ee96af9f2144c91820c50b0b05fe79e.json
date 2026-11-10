@@ -1,0 +1,404 @@
+[
+  {
+    "step_index": 1,
+    "event_type": "user_input",
+    "text": "What was the exact outdoor temperature in Lviv when Lab 4 was executed?"
+  },
+  {
+    "step_index": 2,
+    "event_type": "tool_call",
+    "tool_name": "list_workspace_files",
+    "call_id": "Zmlmhefah6plU0V0ppkuUsYLz3DnrvCL",
+    "tool_arguments": "{}"
+  },
+  {
+    "step_index": 3,
+    "event_type": "tool_result",
+    "tool_name": "list_workspace_files",
+    "call_id": "Zmlmhefah6plU0V0ppkuUsYLz3DnrvCL",
+    "tool_output": {
+      "files": [
+        {
+          "filename": "lab03_report.md",
+          "size_bytes": 20169
+        },
+        {
+          "filename": "lab04_report.md",
+          "size_bytes": 16033
+        },
+        {
+          "filename": "lab05_report.md",
+          "size_bytes": 25125
+        }
+      ]
+    },
+    "tool_output_preview": "{'files': [{'filename': 'lab03_report.md', 'size_bytes': 20169}, {'filename': 'lab04_report.md', 'size_bytes': 16033}, {'filename': 'lab05_report.md', 'size_bytes': 25125}]}",
+    "error_type": null
+  },
+  {
+    "step_index": 4,
+    "event_type": "tool_call",
+    "tool_name": "search_workspace",
+    "call_id": "ZfwlnArOwiCdljfSQ1Kb5aSFKMawtef4",
+    "tool_arguments": "{\"query\":\"Lviv\",\"filename\":\"lab04_report.md\"}"
+  },
+  {
+    "step_index": 5,
+    "event_type": "tool_result",
+    "tool_name": "search_workspace",
+    "call_id": "ZfwlnArOwiCdljfSQ1Kb5aSFKMawtef4",
+    "tool_output": {
+      "matches": [],
+      "limit_reached": false
+    },
+    "tool_output_preview": "{'matches': [], 'limit_reached': False}",
+    "error_type": null
+  },
+  {
+    "step_index": 6,
+    "event_type": "tool_call",
+    "tool_name": "read_workspace_file",
+    "call_id": "DCgKJMvjrpTaESkr0MLf91cWmmq6MKM8",
+    "tool_arguments": "{\"filename\":\"lab04_report.md\",\"start_line\":1,\"end_line\":80}"
+  },
+  {
+    "step_index": 7,
+    "event_type": "tool_result",
+    "tool_name": "read_workspace_file",
+    "call_id": "DCgKJMvjrpTaESkr0MLf91cWmmq6MKM8",
+    "tool_output": {
+      "filename": "lab04_report.md",
+      "total_lines": 158,
+      "lines": [
+        {
+          "line": 1,
+          "text": "# Лабораторна робота №4"
+        },
+        {
+          "line": 2,
+          "text": ""
+        },
+        {
+          "line": 3,
+          "text": "**Тема:** Генерування зображень за допомогою Stable Diffusion.  "
+        },
+        {
+          "line": 4,
+          "text": "**Мета:** дослідити параметри локального text-to-image inference у контрольованих порівняннях.  "
+        },
+        {
+          "line": 5,
+          "text": "**Варіант:** 1. Модель не навчалась і не донавчалась."
+        },
+        {
+          "line": 6,
+          "text": ""
+        },
+        {
+          "line": 7,
+          "text": "## Теорія та архітектура"
+        },
+        {
+          "line": 8,
+          "text": ""
+        },
+        {
+          "line": 9,
+          "text": "Під час навчання forward-процес додає шум до латентів зображень. UNet вчиться передбачати шум за латентом, timestep і текстовою умовою. У text-to-image inference починаємо з шуму без вхідного фото. Текст → tokenizer/CLIP text encoder → embeddings; латентний шум → UNet з cross-attention та scheduler → фінальний латент → VAE decoder → RGB. CLIP не створює пікселі. CFG керує силою умови, а не «точністю»; negative prompt змінює опорну гілку CFG."
+        },
+        {
+          "line": 10,
+          "text": ""
+        },
+        {
+          "line": 11,
+          "text": "## Модель і середовище"
+        },
+        {
+          "line": 12,
+          "text": ""
+        },
+        {
+          "line": 13,
+          "text": "Методичка називає `runwayml/stable-diffusion-v1-5`. Фактичний API цього ID перенаправляє на `stable-diffusion-v1-5/stable-diffusion-v1-5`; використано цей еквівалент **Stable Diffusion v1.5**, без зміни сімейства. Revision: `451f4fe16113bff5a5d2269ed5ad43b0592e9a14`. Є safetensors FP16 усіх компонентів; ваги збережено тільки у стандартному Hugging Face cache."
+        },
+        {
+          "line": 14,
+          "text": ""
+        },
+        {
+          "line": 15,
+          "text": "Фактичний клас: `StableDiffusionPipeline`. Scheduler: `PNDMScheduler`, його повна конфігурація зафіксована у sidecars. Роздільність усіх PNG — 512×512, batch size 1. Safety checker збережено, жоден із 13 результатів ним не заблокований."
+        },
+        {
+          "line": 16,
+          "text": ""
+        },
+        {
+          "line": 17,
+          "text": "Windows, Python 3.13.5; torch 2.14.0+cu130, diffusers 0.40.0, transformers 5.17.0, accelerate 1.15.0, safetensors 0.8.0, Pillow 12.3.0, numpy 2.5.3, pandas 3.0.6, matplotlib 3.11.2, nbformat 5.11.1, nbclient 0.11.0, ipykernel 7.3.0, pytest 9.1.1. CUDA runtime 13.0; GPU NVIDIA GeForce RTX 3050 Laptop GPU, 4.000 GiB VRAM. RAM 15.19 GiB. До завантаження моделі було 8.65 GB вільного диска; доступна RAM у записаному preflight — 236 MiB."
+        },
+        {
+          "line": 18,
+          "text": ""
+        },
+        {
+          "line": 19,
+          "text": "Стратегія: `torch.float16`, `model_cpu_offload`, `AttnProcessor2_0` (SDPA). Attention slicing, xFormers, VAE slicing/tiling не застосовувалися. OOM не було. Наявний CUDA-enabled torch не замінено. Час завантаження моделі, включно з першим отриманням ваг: 42.37 с; він не входить у час inference."
+        },
+        {
+          "line": 20,
+          "text": ""
+        },
+        {
+          "line": 21,
+          "text": "## Організація контрольованих експериментів"
+        },
+        {
+          "line": 22,
+          "text": ""
+        },
+        {
+          "line": 23,
+          "text": "Baseline: seed 42, steps 30, CFG 7.5, negative=None. Positive prompt незмінний для baseline, seed, steps, CFG і negative-пар:"
+        },
+        {
+          "line": 24,
+          "text": ""
+        },
+        {
+          "line": 25,
+          "text": "> a futuristic city street at sunset, neon signs, wet pavement reflections, detailed architecture, cinematic lighting, pedestrians in the distance"
+        },
+        {
+          "line": 26,
+          "text": ""
+        },
+        {
+          "line": 27,
+          "text": "Negative prompt:"
+        },
+        {
+          "line": 28,
+          "text": ""
+        },
+        {
+          "line": 29,
+          "text": "> blurry, low quality, watermark, text, distorted architecture, deformed objects, artifacts"
+        },
+        {
+          "line": 30,
+          "text": ""
+        },
+        {
+          "line": 31,
+          "text": "Друга семантична сцена: `a small mountain cabin beside a calm lake, surrounded by pine trees, soft morning light`. До неї додається лише стильовий suffix із config.py. Фіксовані seed 42, steps 30, CFG 7.5, negative=None."
+        },
+        {
+          "line": 32,
+          "text": ""
+        },
+        {
+          "line": 33,
+          "text": "| Серія | Змінний фактор | Значення | Сталі фактори |"
+        },
+        {
+          "line": 34,
+          "text": "|---|---|---|---|"
+        },
+        {
+          "line": 35,
+          "text": "| Seed | seed | 42, 123, 777, 2026 | prompt, negative, steps, CFG, model, scheduler, resolution |"
+        },
+        {
+          "line": 36,
+          "text": "| Steps | num_inference_steps | 20, 30, 50 | prompt, negative, seed, CFG, model, scheduler, resolution |"
+        },
+        {
+          "line": 37,
+          "text": "| CFG | guidance_scale | 5, 7.5, 10 | prompt, negative, seed, steps, model, scheduler, resolution |"
+        },
+        {
+          "line": 38,
+          "text": "| Negative | negative_prompt | None / configured, дві пари | усе інше всередині кожної пари |"
+        },
+        {
+          "line": 39,
+          "text": "| Styles | стильовий suffix | watercolor, isometric, photorealistic | друга сцена, seed, steps, CFG, negative, model, scheduler, resolution |"
+        },
+        {
+          "line": 40,
+          "text": ""
+        },
+        {
+          "line": 41,
+          "text": "13 унікальних генерацій: 1 baseline + 3 seeds + 2 steps + 2 CFG + 2 negative + 3 styles. Baseline повторно використано для seed=42, steps=30, CFG=7.5 і negative=None при seed=42; seed=123 — для другої negative-пари. SHA-256 PNG і повна конфігурація перевіряються перед повторним використанням. Параметри кожного запуску збережені одразу, тому переривання не втрачає попередніх результатів."
+        },
+        {
+          "line": 42,
+          "text": ""
+        },
+        {
+          "line": 43,
+          "text": "Ключовий фрагмент реалізації (`src/generation.py`):"
+        },
+        {
+          "line": 44,
+          "text": ""
+        },
+        {
+          "line": 45,
+          "text": "```python"
+        },
+        {
+          "line": 46,
+          "text": "generator = torch.Generator(device=\"cpu\").manual_seed(spec.seed)"
+        },
+        {
+          "line": 47,
+          "text": "with torch.inference_mode():"
+        },
+        {
+          "line": 48,
+          "text": "    result = pipe("
+        },
+        {
+          "line": 49,
+          "text": "        prompt=spec.prompt, negative_prompt=spec.negative_prompt,"
+        },
+        {
+          "line": 50,
+          "text": "        num_inference_steps=spec.num_inference_steps,"
+        },
+        {
+          "line": 51,
+          "text": "        guidance_scale=spec.guidance_scale,"
+        },
+        {
+          "line": 52,
+          "text": "        width=spec.width, height=spec.height, generator=generator,"
+        },
+        {
+          "line": 53,
+          "text": "    )"
+        },
+        {
+          "line": 54,
+          "text": "```"
+        },
+        {
+          "line": 55,
+          "text": ""
+        },
+        {
+          "line": 56,
+          "text": "## Базова генерація"
+        },
+        {
+          "line": 57,
+          "text": ""
+        },
+        {
+          "line": 58,
+          "text": "![Baseline](../outputs/images/baseline/baseline_seed42_steps30_cfg7p5_b0126393ec9c8f32.png)"
+        },
+        {
+          "line": 59,
+          "text": ""
+        },
+        {
+          "line": 60,
+          "text": "Це перший реальний inference і офіційний baseline, а не окреме тестове зображення. Фактичні параметри наведено у таблиці нижче."
+        },
+        {
+          "line": 61,
+          "text": ""
+        },
+        {
+          "line": 62,
+          "text": "## Дослідження seed"
+        },
+        {
+          "line": 63,
+          "text": ""
+        },
+        {
+          "line": 64,
+          "text": "![Дослідження seed](../outputs/figures/seed_comparison.png)"
+        },
+        {
+          "line": 65,
+          "text": ""
+        },
+        {
+          "line": 66,
+          "text": "Seed змінив композицію і палітру: 42 — відкрита вулиця з рожевим небом та пішоходами справа; 123 — вузький простір між яскравими синьо-червоними вивісками; 777 — низький ракурс із широкою калюжею; 2026 — коридор висотних будівель із центральною групою силуетів. Незмінний prompt не задає єдиного розташування об’єктів."
+        },
+        {
+          "line": 67,
+          "text": ""
+        },
+        {
+          "line": 68,
+          "text": "## Дослідження steps"
+        },
+        {
+          "line": 69,
+          "text": ""
+        },
+        {
+          "line": 70,
+          "text": "![Дослідження steps](../outputs/figures/steps_comparison.png)"
+        },
+        {
+          "line": 71,
+          "text": ""
+        },
+        {
+          "line": 72,
+          "text": "Усі три зображення зберігають центральну висотну будівлю й рожеве небо. На 20 кроках передній план більше схожий на суцільну відбивну поверхню; на 30 і 50 з’являються виразніші лінії мощення/колій. На 50 змінюються фасад зліва та дрібні об’єкти, але однозначної переваги якості над 30 не видно. Час: 20 — 6,76 с; 30 — 18,88 с; 50 — 13,95 с. 30-крокова baseline була першою генерацією, тому ефект прогрівання й стан пам’яті не дозволяють ранжувати швидкість за цими одиничними вимірами."
+        },
+        {
+          "line": 73,
+          "text": ""
+        },
+        {
+          "line": 74,
+          "text": "## Дослідження CFG"
+        },
+        {
+          "line": 75,
+          "text": ""
+        },
+        {
+          "line": 76,
+          "text": "![Дослідження CFG](../outputs/figures/cfg_comparison.png)"
+        },
+        {
+          "line": 77,
+          "text": ""
+        },
+        {
+          "line": 78,
+          "text": "За CFG 5 фасад зліва має більше дрібних вікон і присутні автомобілі. За 7,5 центральна башта зберігається, змінюються фасад і мощення. За 10 башти стають гладкими округлими формами, сцена — більш стилізованою, а великі кольорові площини виразнішими. Збільшення CFG змінило також геометрію, тому його не можна трактувати як універсальне покращення або «точність»."
+        },
+        {
+          "line": 79,
+          "text": ""
+        },
+        {
+          "line": 80,
+          "text": "## Negative prompt, seed 42"
+        }
+      ],
+      "next_line": 81
+    },
+    "tool_output_preview": "{'filename': 'lab04_report.md', 'total_lines': 158, 'lines': [{'line': 1, 'text': '# Лабораторна робота №4'}, {'line': 2, 'text': ''}, {'line': 3, 'text': '**Тема:** Генерування зображень за допомогою Stable Diffusion.  '}, {'line': 4, 'text': '**Мета:** дослідити параметри локального text-to-image inference у контрольованих порівняннях.  '}, {'line': 5, 'text': '**Варіант:** 1. Модель не навчалась і не донавчалась.'}, {'line': 6, 'text': ''}, {'",
+    "error_type": null
+  },
+  {
+    "step_index": 8,
+    "event_type": "final_output",
+    "text": "The report does not contain any explicit mention of the outdoor temperature in Lviv during Lab 4 execution. The available data focuses on model parameters, prompts, and inference results but does not reference environmental conditions like temperature.\n\nIf you need this information for a specific experiment or context, it may be missing from the provided reports. Would you like to check another report file or clarify if there is additional metadata elsewhere?"
+  }
+]

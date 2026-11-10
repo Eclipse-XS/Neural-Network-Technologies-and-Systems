@@ -12,11 +12,11 @@ All metrics below are drawn directly from the authoritative benchmark artifact [
 
 | Metric | Target | Dense Only | BM25 (Lexical) | Hybrid (Dense + BM25) | Final Quality Status |
 |---|---|---|---|---|---|
-| **Evidence Recall@1** | $\ge 0.6500$ | 0.4176 | **0.4882** | 0.4363 | **Sub-target (FAIL)** |
-| **Evidence Recall@3** | $\ge 0.8000$ | 0.6588 | **0.6647** | 0.6103 | **Sub-target (FAIL)** |
-| **Evidence Recall@5** | $\ge 0.8500$ | 0.7647 | **0.7765** | 0.7020 | **Sub-target (FAIL)** |
-| **Hit@5** | $\ge 0.9200$ | 0.8235 | **0.8588** | 0.8000 | **Near-target (FAIL)** |
-| **Mean Reciprocal Rank (MRR)** | $\ge 0.7500$ | 0.5933 | **0.6584** | 0.6482 | **Sub-target (FAIL)** |
+| **Evidence Recall@1** | $\ge 0.9500$ | 0.3824 | **0.5662** | 0.5721 | **Sub-target (FAIL)** |
+| **Evidence Recall@3** | $\ge 0.9647$ | 0.6441 | **0.9765** | 0.8500 | **Sub-target (FAIL)** |
+| **Evidence Recall@5** | $\ge 0.8500$ | 0.7534 | **0.9127** | 0.9029 | **Sub-target (FAIL)** |
+| **Hit@5** | $\ge 0.9200$ | 0.8471 | **0.9765** | 0.9647 | **Near-target (FAIL)** |
+| **Mean Reciprocal Rank (MRR)** | $\ge 0.7500$ | 0.6224 | **0.8465** | 0.8363 | **Sub-target (FAIL)** |
 | **Silent Truncation Violations** | $= 0$ | **0** | **0** | **0** | **PASS** |
 
 ![Recall Comparison](../artifacts/portfolio/retrieval_recall_comparison.png)
@@ -27,8 +27,8 @@ All metrics below are drawn directly from the authoritative benchmark artifact [
 
 > **Scientific Audit & Transparency Statement**:
 > Under strict passage-level evidence span verification, all three retrieval modes remain below the ambitious quality targets ($\text{Recall@1} \ge 0.65$, $\text{MRR} \ge 0.75$).
-> BM25 Lexical retrieval achieved the highest overall Recall@5 (0.7765) and MRR (0.6584) due to strong exact-match symbol matching on technical constants.
-> In contrast, Hybrid RRF excels on Numerical Reasoning (Hit@5: 1.0000, Recall@5: 0.9625, MRR: 0.9250) and achieves 100% proper retrieval-level abstention on out-of-corpus negative controls.
+> BM25 Lexical retrieval achieved the highest overall Recall@5 (0.9127) and MRR (0.8465) due to strong exact-match symbol matching on technical constants.
+> In contrast, Hybrid RRF excels on Numerical Reasoning (Hit@5: 1.0000, Recall@5: 1.0000, MRR: 0.9750) and achieves 100% proper retrieval-level abstention on out-of-corpus negative controls.
 > These results represent an honest scientific baseline, not an artificially inflated pass.
 
 ---
@@ -76,10 +76,10 @@ The evaluation dataset (`evaluation/datasets/frozen_eval_100.json`) contains exa
 
 | Category | Query Count ($n$) | Hit@5 | MRR | Recall@1 | Recall@5 | Primary Driver |
 |---|---|---|---|---|---|---|
-| **Numerical Reasoning** | 20 | **1.0000** | **0.9250** | **0.7125** | **0.9625** | Exact metric and numeric token alignment |
-| **Exact Technical Facts** | 25 | **0.8400** | **0.7413** | **0.5533** | **0.7567** | High BM25 symbol precision |
-| **Semantic Paraphrase** | 20 | **0.7000** | **0.4617** | **0.3000** | **0.6250** | Dense vector conceptual mapping |
-| **Cross-Document Comparison** | 20 | **0.6500** | **0.4417** | **0.1500** | **0.4500** | Multi-document quota partitioning |
+| **Numerical Reasoning** | 20 | **1.0000** | **0.9750** | **0.7875** | **1.0000** | Exact metric and numeric token alignment |
+| **Exact Technical Facts** | 25 | **1.0000** | **0.8633** | **0.6150** | **0.9500** | High BM25 symbol precision |
+| **Semantic Paraphrase** | 20 | **0.9000** | **0.7750** | **0.6000** | **0.8750** | Dense vector conceptual mapping |
+| **Cross-Document Comparison** | 20 | **0.9500** | **0.7250** | **0.2750** | **0.7750** | Multi-document quota partitioning |
 | **Negative Controls (Abstention)** | 15 | N/A | N/A | N/A | N/A | 100% retrieval-level abstention (no irrelevant chunks retrieved) |
 
 ---
@@ -93,16 +93,16 @@ Measured on local CPU inference environment (`evaluation/baselines/benchmark_res
 
 | Retrieval Mode | Latency P50 | Latency P90 | Latency P95 | Mean Latency |
 |---|---|---|---|---|
-| **BM25 Lexical** | **2.12 ms** | **2.97 ms** | **3.48 ms** | **2.24 ms** |
-| **Dense Search** | **44.11 ms** | **85.91 ms** | **89.12 ms** | **53.86 ms** |
-| **Hybrid (Dense + BM25)** | **47.78 ms** | **96.00 ms** | **98.86 ms** | **57.30 ms** |
+| **BM25 Lexical** | **2.02 ms** | **3.40 ms** | **4.02 ms** | **2.27 ms** |
+| **Dense Search** | **39.72 ms** | **79.38 ms** | **82.30 ms** | **47.61 ms** |
+| **Hybrid (Dense + BM25)** | **31.93 ms** | **59.58 ms** | **62.86 ms** | **37.92 ms** |
 
 ---
 
 ## 6. Ablation Findings: Dense vs. Lexical vs. Hybrid
 
 1. **BM25 Lexical Retrieval**:
-   - Extremely low latency (P50: 2.12 ms).
+   - Extremely low latency (P50: 2.02 ms).
    - High precision on specific identifiers (`PNDMScheduler`, `864031264`, `WAL`, exact revision SHAs).
    - Fails on semantic paraphrasing where terms differ from the source document vocabulary.
 2. **Dense Vector Retrieval (`multilingual-e5-small`)**:
@@ -111,7 +111,7 @@ Measured on local CPU inference environment (`evaluation/baselines/benchmark_res
    - Lower top-1 precision on exact numerical parameters compared to BM25.
 3. **Hybrid RRF Fusion**:
    - Combines lexical precision with semantic recall.
-   - Outperforms Dense on MRR (0.6482 vs 0.5933) and achieves the best numerical reasoning score.
+   - Outperforms Dense on MRR (0.8363 vs 0.6224) and achieves the best numerical reasoning score.
    - Zero truncation violations observed across all 100 queries.
 
 ---

@@ -249,11 +249,11 @@ Data drawn directly from authoritative artifact [`evaluation/baselines/benchmark
 
 | Metric | Target Threshold | Dense Only | Lexical (BM25) | Hybrid (Dense + BM25 RRF) | Quality Status |
 |---|---|---|---|---|---|
-| **Evidence Recall@1** | $\ge 0.6500$ | 0.4176 | **0.4882** | 0.4363 | **Sub-target (FAIL)** |
-| **Evidence Recall@3** | $\ge 0.8000$ | 0.6588 | **0.6647** | 0.6103 | **Sub-target (FAIL)** |
-| **Evidence Recall@5** | $\ge 0.8500$ | 0.7647 | **0.7765** | 0.7020 | **Sub-target (FAIL)** |
-| **Hit@5** | $\ge 0.9200$ | 0.8235 | **0.8588** | 0.8000 | **Near-target (FAIL)** |
-| **Mean Reciprocal Rank (MRR)** | $\ge 0.7500$ | 0.5933 | **0.6584** | 0.6482 | **Sub-target (FAIL)** |
+| **Evidence Recall@1** | $\ge 0.6500$ | 0.3824 | **0.5662** | 0.5721 | **Sub-target (FAIL)** |
+| **Evidence Recall@3** | $\ge 0.9647$ | 0.6441 | **0.9765** | 0.8500 | **Sub-target (FAIL)** |
+| **Evidence Recall@5** | $\ge 0.8500$ | 0.7534 | **0.9127** | 0.9029 | **Sub-target (FAIL)** |
+| **Hit@5** | $\ge 0.9200$ | 0.8471 | **0.9765** | 0.9647 | **Near-target (FAIL)** |
+| **Mean Reciprocal Rank (MRR)** | $\ge 0.7500$ | 0.6224 | **0.8465** | 0.8363 | **Sub-target (FAIL)** |
 | **Silent Truncation Violations** | $= 0$ | **0** | **0** | **0** | **PASS** |
 
 ![MRR and Hit@5 Comparison](artifacts/portfolio/retrieval_mrr_hit_comparison.png)
@@ -264,10 +264,10 @@ Data drawn directly from authoritative artifact [`evaluation/baselines/benchmark
 ![Category Breakdown](artifacts/portfolio/category_performance_breakdown.png)
 *Figure 3: Hybrid retrieval performance across query complexity categories.*
 
-- **Numerical Reasoning ($n=20$)**: **Hit@5 = 1.0000**, **MRR = 0.9250**, **Recall@5 = 0.9625**. Highest performing category due to distinct numeric tokens.
-- **Exact Technical Facts ($n=25$)**: **Hit@5 = 0.8400**, **MRR = 0.7413**, **Recall@5 = 0.7567**. Strong lexical symbol matching.
-- **Semantic Paraphrase ($n=20$)**: **Hit@5 = 0.7000**, **MRR = 0.4617**, **Recall@5 = 0.6250**. Dense vectors bridge cross-lingual phrasing.
-- **Cross-Document Comparison ($n=20$)**: **Hit@5 = 0.6500**, **MRR = 0.4417**, **Recall@5 = 0.4500**. Challenging due to multi-target document quota competition.
+- **Numerical Reasoning ($n=20$)**: **Hit@5 = 1.0000**, **MRR = 0.9750**, **Recall@5 = 1.0000**. Highest performing category due to distinct numeric tokens.
+- **Exact Technical Facts ($n=25$)**: **Hit@5 = 1.0000**, **MRR = 0.8633**, **Recall@5 = 0.9500**. Strong lexical symbol and header matching.
+- **Semantic Paraphrase ($n=20$)**: **Hit@5 = 0.9000**, **MRR = 0.7750**, **Recall@5 = 0.8750**. Bilingual expansion and dense vectors bridge cross-lingual phrasing.
+- **Cross-Document Comparison ($n=20$)**: **Hit@5 = 0.9500**, **MRR = 0.7250**, **Recall@5 = 0.7750**. Improved via section diversity quota.
 - **Negative Controls ($n=15$)**: 100% retrieval-level abstention (no irrelevant chunks retrieved above threshold). In live inference, model answers require independent verification as tested in live scenarios.
 
 ### Latency Profile
@@ -275,9 +275,9 @@ Data drawn directly from authoritative artifact [`evaluation/baselines/benchmark
 ![Latency Distribution](artifacts/portfolio/retrieval_latency_distribution.png)
 *Figure 4: Retrieval latency percentiles (P50, Mean, P90, P95) measured on CPU.*
 
-- **BM25 Lexical**: P50 = **2.12 ms**, P95 = **3.48 ms**, Mean = **2.24 ms**.
-- **Dense Search**: P50 = **44.11 ms**, P95 = **89.12 ms**, Mean = **53.86 ms**.
-- **Hybrid (Dense + BM25)**: P50 = **47.78 ms**, P95 = **98.86 ms**, Mean = **57.30 ms**.
+- **BM25 Lexical**: P50 = **2.02 ms**, P95 = **4.02 ms**, Mean = **2.27 ms**.
+- **Dense Search**: P50 = **39.72 ms**, P95 = **82.30 ms**, Mean = **47.61 ms**.
+- **Hybrid (Dense + BM25)**: P50 = **31.93 ms**, P95 = **62.86 ms**, Mean = **37.92 ms**.
 
 ---
 
@@ -300,7 +300,7 @@ The live acceptance suite tests the complete 8-step lifecycle against live Redis
 
 ## 10. Limitations
 
-- **Retrieval Threshold Gap**: Recall@1 (0.4363) and MRR (0.6482) on the 100-query benchmark remain below the ambitious targets ($\ge 0.6500$ and $\ge 0.7500$). Fine-tuning dense embeddings or implementing a cross-encoder reranker would improve these figures.
+- **Retrieval Threshold Gap**: Recall@1 (0.5721) and MRR (0.8363) on the 100-query benchmark remain below the ambitious targets ($\ge 0.6500$ and $\ge 0.7500$). Fine-tuning dense embeddings or implementing a cross-encoder reranker would improve these figures.
 - **Cross-Document Competition**: When a query requires evidence from two distinct documents, RRF top-5 ranking frequently biases toward the single document with the highest dense similarity, leaving the second document unretrieved in top-5.
 - **Local Model Capacity**: Quantized 3B models occasionally attempt mental arithmetic before falling back to the AST calculator. Prompt hardening and deterministic recovery logic mitigate but do not entirely eliminate this behavior.
 - **Hardware Dependency**: While offline tests run on CPU, full live execution requires a host machine capable of running Docker and hosting a local LLM in LM Studio.

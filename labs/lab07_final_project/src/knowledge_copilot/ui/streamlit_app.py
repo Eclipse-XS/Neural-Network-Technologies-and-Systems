@@ -64,6 +64,20 @@ def get_services():
                         )
                     except Exception:
                         pass
+        # Also ingest engineering documents from subdirectories (matching FastAPI lifespan)
+        for fpath in knowledge_dir.glob("**/*"):
+            if fpath.is_file() and fpath.suffix.lower() in {".md", ".txt", ".pdf"} and fpath.name != "manifest.json":
+                doc_id = fpath.stem
+                if ingestion_service.sqlite_repo.get_document(doc_id) is None:
+                    try:
+                        ingestion_service.ingest_file(
+                            filename=fpath.name,
+                            content=fpath.read_bytes(),
+                            collection="engineering",
+                            document_id=doc_id,
+                        )
+                    except Exception:
+                        pass
     return {
         "sqlite": sqlite_repo,
         "redis": redis_adapter,

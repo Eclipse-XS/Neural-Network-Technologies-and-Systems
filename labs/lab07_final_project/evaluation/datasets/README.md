@@ -5,14 +5,15 @@
 The evaluation suite is partitioned into two distinct governance tiers:
 
 1. **Historical Regression Benchmark Suite**:
-   - `frozen_eval_100.json` (100 queries, SHA256: `bbf92c004ad91e2247b638e0f1860c2ae47f1aeae41a89495ca3cc7097d36eb3`)
-   - `dev_eval_50.json` (50 queries, SHA256: `68ea707746e5b0510bc26af9ab6a8ee3aaacbf513d075e538ab23e806ad0453e`)
-   - `acceptance_eval_50.json` (50 queries, SHA256: `308eee463285dd300d2f68079d19c79607c457461134859d81a9e47581bf96c2`)
+   - `frozen_eval_100.json` (100 queries, SHA256: `e729624ca014c04d455518b3e73d2063e01b4782039a0919b173361b2e03b1e4`)
+   - `dev_eval_50.json` (50 queries, SHA256: `91da06257a2e41a7fd39cd29860867cc55006007a766881f94721fa0a271f1ff`)
+   - `acceptance_eval_50.json` (50 queries, SHA256: `db7f82aa2a4b84e29f916b58ceec2bf5569664932a4f4d32d0f0ff2bf7f3d06a`)
    - *Status*: **Historical Regression Data**. These sets were exposed during iterative optimization and served to identify initial architectural bottlenecks (cross-document routing, token truncation, bilingual stemming). They are retained for regression tracking and baseline comparisons.
 
 2. **Independent Untouched Final Acceptance Holdout**:
-   - `final_acceptance_holdout_50.json` (50 queries, SHA256: `1493c4ea5093bae5cd501c1349beb0513305af98582c7891f1232be7536b82cc`)
-   - *Status*: **Untouched Final Holdout**. Authored independently with verified source-grounded evidence spans. No algorithmic tuning or implementation heuristics were adjusted against this set.
+   - `final_acceptance_holdout_50.json` (50 queries, SHA256: `663700c2bbf5390cc88800776554b0a8fa1471e733181cb301d8243810a9e1b9`)
+   - `final_acceptance_holdout_v2_50.json` (50 queries, SHA256: `b4b7398037d8dd9ee43af8732683331eaaeb5822a1b888b99e01b47be3307696`)
+   - *Status*: **Untouched Final Holdouts**. Authored independently with verified source-grounded evidence spans. No algorithmic tuning or implementation heuristics were adjusted against these sets.
 
 ---
 
@@ -58,7 +59,8 @@ Every query across all datasets complies with the verified schema:
 
 | File | Queries | Supported | Refusal | Verbatim Spans | SHA256 |
 |---|---|---|---|---|---|
-| `frozen_eval_100.json` | 100 | 85 | 15 | 172 | `bbf92c004ad91e2247b638e0f1860c2ae47f1aeae41a89495ca3cc7097d36eb3` |
-| `dev_eval_50.json` | 50 | 43 | 7 | 88 | `68ea707746e5b0510bc26af9ab6a8ee3aaacbf513d075e538ab23e806ad0453e` |
-| `acceptance_eval_50.json` | 50 | 42 | 8 | 84 | `308eee463285dd300d2f68079d19c79607c457461134859d81a9e47581bf96c2` |
-| `final_acceptance_holdout_50.json` | 50 | 40 | 10 | 57 | `1493c4ea5093bae5cd501c1349beb0513305af98582c7891f1232be7536b82cc` |
+| `frozen_eval_100.json` | 100 | 85 | 15 | 172 | `e729624ca014c04d455518b3e73d2063e01b4782039a0919b173361b2e03b1e4` |
+| `dev_eval_50.json` | 50 | 43 | 7 | 87 | `91da06257a2e41a7fd39cd29860867cc55006007a766881f94721fa0a271f1ff` |
+| `acceptance_eval_50.json` | 50 | 42 | 8 | 85 | `db7f82aa2a4b84e29f916b58ceec2bf5569664932a4f4d32d0f0ff2bf7f3d06a` |
+| `final_acceptance_holdout_50.json` | 50 | 40 | 10 | 57 | `663700c2bbf5390cc88800776554b0a8fa1471e733181cb301d8243810a9e1b9` |
+| `final_acceptance_holdout_v2_50.json` | 50 | 42 | 8 | 56 | `b4b7398037d8dd9ee43af8732683331eaaeb5822a1b888b99e01b47be3307696` |

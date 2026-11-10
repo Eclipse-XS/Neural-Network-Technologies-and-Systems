@@ -9,11 +9,11 @@ def reciprocal_rank_fusion(
     dense_results: List[Tuple[Chunk, float]],  # (chunk, cosine_distance) sorted by distance asc
     lexical_results: List[Tuple[Chunk, float]],  # (chunk, bm25_score) sorted by score desc
     k: int = 5,
-    rrf_k: int = 30,
-    dense_weight: float = 1.5,
-    lexical_weight: float = 1.0,
-    max_per_section: int = 1,
-    min_lexical_score: float = 2.0,
+    rrf_k: int = 10,
+    dense_weight: float = 1.0,
+    lexical_weight: float = 2.3,
+    max_per_section: int = 3,
+    min_lexical_score: float = 0.5,
 ) -> List[EvidenceChunk]:
     """Combine dense and lexical rankings using RRF with section-level diversity."""
     scores: Dict[str, float] = {}

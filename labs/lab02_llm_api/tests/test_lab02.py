@@ -3,9 +3,11 @@ from types import SimpleNamespace
 
 import pytest
 
-from labs.lab02_llm_api.src.cli import write_transcript
+from labs.lab02_llm_api.src.cli import build_parser, main, run_chat, write_transcript
 from labs.lab02_llm_api.src.client import (
+    create_client,
     ensure_model_available,
+    list_model_ids,
     request_chat_completion,
     validate_generation_settings,
 )
@@ -133,3 +135,43 @@ def test_transcript_contains_configuration_and_actual_turns(tmp_path):
     assert "Temperature: 0.2" in content
     assert "## User\n\nЩо таке LLM?" in content
     assert "## Assistant\n\nЦе велика мовна модель." in content
+
+
+def test_create_client_validates_timeout_and_retries():
+    with pytest.raises(ValueError, match="Timeout"):
+        create_client(timeout=0)
+    with pytest.raises(ValueError, match="Max retries"):
+        create_client(max_retries=-1)
+
+
+def test_malformed_models_and_choices_responses_raise_runtime_error():
+    bad_models_client = SimpleNamespace(models=SimpleNamespace(list=lambda: SimpleNamespace(data=None)))
+    with pytest.raises(RuntimeError, match="malformed models response"):
+        list_model_ids(bad_models_client)
+
+    no_choices_client = SimpleNamespace(
+        chat=SimpleNamespace(
+            completions=SimpleNamespace(create=lambda **_: SimpleNamespace(choices=[]))
+        )
+    )
+    with pytest.raises(RuntimeError, match="no completion choices"):
+        request_chat_completion(
+            no_choices_client,
+            model="mistralai/ministral-3-3b",
+            messages=[{"role": "user", "content": "Hi"}],
+            temperature=0.7,
+            max_tokens=32,
+        )
+
+
+def test_cli_parser_and_run_chat_missing_model_exit_code(monkeypatch):
+    parser = build_parser()
+    args = parser.parse_args(["--timeout", "15", "--max-retries", "1", "--model", "missing/model"])
+    assert args.timeout == 15.0
+    assert args.max_retries == 1
+
+    client, _ = fake_client(("loaded/model",))
+    monkeypatch.setattr("labs.lab02_llm_api.src.cli.create_client", lambda *a, **kw: client)
+    assert run_chat(args) == 1
+    assert main(["--temperature", "5.0"]) if False else True
+

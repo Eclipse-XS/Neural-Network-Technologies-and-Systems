@@ -288,21 +288,50 @@ def main():
         print(f"  [{cat.upper()}] (n={metrics['count']}):")
         print(f"    Hit@5: {metrics['hit_5']:.4f} | MRR: {metrics['mrr']:.4f} | Recall@1: {metrics['recall_1']:.4f} | Recall@5: {metrics['recall_5']:.4f}")
 
-    # Output artifact containing all modes
+    quality_gate_passed = bool(all_targets_passed and summary["truncation_violations"] == 0)
+    quality_gate_status = "QUALITY_TARGETS_PASSED" if quality_gate_passed else "TARGET_NOT_MET"
+    target_comparison = {
+        metric: {
+            "target": threshold,
+            "observed": observed,
+            "passed": bool(observed >= threshold),
+        }
+        for metric, (threshold, observed) in targets.items()
+    }
+    target_comparison["truncation_violations"] = {
+        "target": 0,
+        "observed": summary["truncation_violations"],
+        "passed": bool(summary["truncation_violations"] == 0),
+    }
+
+    # Output artifact containing all modes and explicit status separation
     final_output = {
+        "execution_status": "EXECUTION_SUCCESS",
+        "evaluation_status": "EVALUATION_COMPLETE",
+        "quality_gate_status": quality_gate_status,
+        "targets_passed": quality_gate_passed,
+        "target_comparison": target_comparison,
         "modes": all_summaries,
         "summary": summary,
-        "targets_passed": all_targets_passed,
         "itemized_results": itemized_results,
     }
     output_path.write_text(json.dumps(final_output, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"\nSaved full multi-mode benchmark results to {output_path}")
+    print(
+        f"Benchmark Status Summary: execution_status=EXECUTION_SUCCESS | "
+        f"evaluation_status=EVALUATION_COMPLETE | quality_gate_status={quality_gate_status}"
+    )
 
-    if args.fail_under and (not all_targets_passed or summary["truncation_violations"] > 0):
-        print("\nWARNING: Some benchmark targets were not met. Inspect category breakdowns.")
-        sys.exit(1)
+    if not quality_gate_passed:
+        failed_metric_names = [m for m, info in target_comparison.items() if not info["passed"]]
+        print(
+            f"\n[QUALITY GATE: {quality_gate_status}] Benchmark execution completed without runtime errors, "
+            f"but the following quality targets were not met: {', '.join(failed_metric_names)}."
+        )
+        if args.fail_under:
+            sys.exit(1)
     else:
-        print("\nSUCCESS: Multi-mode benchmark execution complete and recorded!")
+        print(f"\n[QUALITY GATE: {quality_gate_status}] All retrieval quality targets and truncation invariants passed!")
 
 
 if __name__ == "__main__":

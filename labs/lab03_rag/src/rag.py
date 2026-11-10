@@ -75,7 +75,7 @@ def answer_query(store, llm, question, k=5, category=None, *, catalog=None, mode
     if intent.strategy == "semantic":
         semantic_pairs, _ = retrieve(store, question, k, category)
         semantic_ids = [str(doc.metadata.get("product_id", "")) for doc, _ in semantic_pairs]
-    result = route_and_retrieve(catalog, question, semantic_ids, k)
+    result = route_and_retrieve(catalog, question, semantic_ids, k, category=category, intent=intent)
     documents = dataframe_to_documents(result.rows)
     score_by_id = {str(doc.metadata.get("product_id")): score for doc, score in semantic_pairs}
     pairs = [(doc, score_by_id.get(str(doc.metadata.get("product_id")))) for doc in documents]

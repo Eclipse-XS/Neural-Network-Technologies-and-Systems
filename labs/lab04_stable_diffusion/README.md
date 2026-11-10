@@ -33,7 +33,7 @@ The study isolates five key generation variables—random seed, inference step b
 | **Denoising Core** | Latent U-Net | Cross-attention conditioning, 860M parameters |
 | **Autoencoder** | AutoencoderKL (VAE) | 8x spatial downsampling ($512\times 512 \to 64\times 64$), 84M parameters |
 | **Scheduler** | PNDMScheduler | Pseudo Numerical Methods for Diffusion Models (1000 train timesteps) |
-| **Deep Learning Framework** | PyTorch & Diffusers | PyTorch 2.14.1+cu130, Hugging Face Diffusers 0.40.0, Accelerate 1.15.0 |
+| **Deep Learning Framework** | PyTorch & Diffusers | PyTorch 2.14.0+cu130, Hugging Face Diffusers 0.40.0, Accelerate 1.15.0 |
 | **Hardware Environment** | NVIDIA RTX 3050 Laptop | 4096 MiB VRAM, CUDA 13.0, FP16 precision with `model_cpu_offload` |
 
 ---
@@ -118,7 +118,7 @@ The study executes a controlled matrix of **13 unique image generations** rather
 
 ## Key Results
 
-1. **VRAM Optimization Feasibility**: Stable Diffusion 1.5 operates stably within 4 GB VRAM when combining FP16 precision, PyTorch SDPA, and Hugging Face `model_cpu_offload()`. Peak allocated CUDA memory remained bounded between 2.18 GiB and 2.29 GiB across all runs.
+1. **VRAM Optimization Feasibility**: Stable Diffusion 1.5 operates stably within 4 GB VRAM when combining FP16 precision, PyTorch SDPA, and Hugging Face `model_cpu_offload()`. Peak allocated CUDA memory remained bounded at 2373.1 MiB (~2.32 GiB) across all runs.
 2. **Latent Space Compression Efficiency**: Compressing the $512\times 512\times 3$ pixel space into a $64\times 64\times 4$ latent space reduces dimensionality by a factor of 48, making iterative diffusion feasible on consumer GPUs.
 3. **Denoising Trajectory Dynamics**: The first 10–15 steps establish coarse global composition and architectural geometry; subsequent steps refine high-frequency details (pavement reflections, structural edges, sign boundaries).
 4. **CFG Trade-off**: Across the evaluated scales (5.0, 7.5, 10.0), CFG 5.0 yields lower contrast with detailed facade elements, CFG 7.5 provides balanced contrast and scene coherence, and CFG 10.0 introduces pronounced stylization and saturated contrast planes. Scales outside this discrete range were not evaluated.

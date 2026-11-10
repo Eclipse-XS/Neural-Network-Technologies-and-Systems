@@ -26,8 +26,9 @@ To maintain scientific integrity and prevent data leakage, the evaluation corpus
 - **Role**: Preserved for regression tracking, performance history auditing, and ablation comparisons. Exposed during initial optimization.
 
 ### 2.2 Tier 2: Independent Untouched Final Acceptance Holdout (50 Queries)
-- `final_acceptance_holdout_50.json` (50 queries, SHA256: `1493c4ea5093bae5cd501c1349beb0513305af98582c7891f1232be7536b82cc`).
-- **Role**: **Frozen and untouched final certification holdout.** Authored independently with verified source-grounded evidence spans. No implementation or algorithmic tuning was performed against this set.
+- `final_acceptance_holdout_50.json` (50 queries, SHA256: `663700c2bbf5390cc88800776554b0a8fa1471e733181cb301d8243810a9e1b9`).
+- `final_acceptance_holdout_v2_50.json` (50 queries, SHA256: `b4b7398037d8dd9ee43af8732683331eaaeb5822a1b888b99e01b47be3307696`).
+- **Role**: **Frozen and untouched final certification holdouts.** Authored independently with verified source-grounded evidence spans. No implementation or algorithmic tuning was performed against these sets.
 
 ### Distribution by Category across Splits:
 1. **Exact Fact (`exact_fact`)**: Single-hop factual queries requiring exact architectural constants, configuration keys, or quantitative specifications.

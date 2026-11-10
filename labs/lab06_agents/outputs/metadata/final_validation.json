@@ -1,0 +1,22 @@
+{
+  "outside_lab6_hash_changes": [],
+  "outside_lab6_git_status_unchanged": true,
+  "git_status": " M labs/lab03_rag/README.md\n M labs/lab04_stable_diffusion/README.md\n M labs/lab05_multimodal/README.md\n M labs/lab06_agents/README.md\n?? labs/lab03_rag/dataset_audit.md\n?? labs/lab03_rag/docker-compose.yml\n?? labs/lab03_rag/notebooks/01_redis_csv_rag.ipynb\n?? labs/lab03_rag/queries.json\n?? labs/lab03_rag/report/\n?? labs/lab03_rag/requirements.txt\n?? labs/lab03_rag/setup.ps1\n?? labs/lab03_rag/src/__init__.py\n?? labs/lab03_rag/src/config.py\n?? labs/lab03_rag/src/data.py\n?? labs/lab03_rag/src/documents.py\n?? labs/lab03_rag/src/embeddings.py\n?? labs/lab03_rag/src/evaluation.py\n?? labs/lab03_rag/src/llm.py\n?? labs/lab03_rag/src/rag.py\n?? labs/lab03_rag/src/redis_store.py\n?? labs/lab03_rag/src/retrieval.py\n?? labs/lab03_rag/tests/\n?? labs/lab04_stable_diffusion/notebooks/01_text_to_image.ipynb\n?? labs/lab04_stable_diffusion/report/\n?? labs/lab04_stable_diffusion/requirements.txt\n?? labs/lab04_stable_diffusion/src/__init__.py\n?? labs/lab04_stable_diffusion/src/config.py\n?? labs/lab04_stable_diffusion/src/experiments.py\n?? labs/lab04_stable_diffusion/src/generation.py\n?? labs/lab04_stable_diffusion/src/pipeline.py\n?? labs/lab04_stable_diffusion/src/run.py\n?? labs/lab04_stable_diffusion/src/visualization.py\n?? labs/lab04_stable_diffusion/tests/\n?? labs/lab05_multimodal/assets/\n?? labs/lab05_multimodal/notebooks/01_llava_vqa.ipynb\n?? labs/lab05_multimodal/questions.json\n?? labs/lab05_multimodal/report/\n?? labs/lab05_multimodal/requirements.txt\n?? labs/lab05_multimodal/src/__init__.py\n?? labs/lab05_multimodal/src/config.py\n?? labs/lab05_multimodal/src/evaluation.py\n?? labs/lab05_multimodal/src/experiments.py\n?? labs/lab05_multimodal/src/inference.py\n?? labs/lab05_multimodal/src/model.py\n?? labs/lab05_multimodal/src/reporting.py\n?? labs/lab05_multimodal/src/run.py\n?? labs/lab05_multimodal/tests/\n?? labs/lab06_agents/.env.example\n?? labs/lab06_agents/assets/\n?? labs/lab06_agents/experiments/\n?? labs/lab06_agents/report/\n?? labs/lab06_agents/requirements.txt\n?? labs/lab06_agents/src/__init__.py\n?? labs/lab06_agents/src/agent.py\n?? labs/lab06_agents/src/config.py\n?? labs/lab06_agents/src/evaluation.py\n?? labs/lab06_agents/src/experiments.py\n?? labs/lab06_agents/src/preflight.py\n?? labs/lab06_agents/src/reporting.py\n?? labs/lab06_agents/src/runner.py\n?? labs/lab06_agents/src/tools.py\n?? labs/lab06_agents/tests/\n",
+  "cloud_config": "loopback only; tracing disabled; no hosted tools",
+  "source_report_hashes_verified": true,
+  "pytest": {
+    "passed": 32,
+    "skipped": 1,
+    "skip_reason": "Windows symlink creation not permitted"
+  },
+  "compileall": "PASS",
+  "notebook_schema": "PASS",
+  "notebook_error_outputs": 0,
+  "git_diff_check": "PASS",
+  "completed_runs": 24,
+  "final_batch_runs": 13,
+  "all_run_trace_scenario_checks": "PASS",
+  "workspace_hashes": "PASS",
+  "commit": false,
+  "push": false
+}

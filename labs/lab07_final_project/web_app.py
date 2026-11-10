@@ -1,4 +1,8 @@
-"""Streamlit UI for Local Engineering Knowledge Copilot."""
+"""Legacy Compatibility Streamlit UI for Local Engineering Knowledge Copilot.
+
+Canonical multi-tab Streamlit entrypoint:
+  streamlit run labs/lab07_final_project/src/knowledge_copilot/ui/streamlit_app.py --server.port 8501
+"""
 import asyncio
 import os
 import sys
@@ -13,6 +17,7 @@ if str(root_dir) not in sys.path:
 from src.agent import connect, create_agent, create_session, execute
 from src.config import Settings
 from src.knowledge_base import KnowledgeBase
+from src.knowledge_copilot.api.dependencies import get_ingestion_service
 from src.knowledge_copilot.rag.extractors import extract_text_from_bytes, validate_file_content
 
 st.set_page_config(page_title="Coursework Knowledge Assistant", layout="wide")
@@ -77,7 +82,14 @@ with st.sidebar:
                 data = uploaded_file.read()
                 clean_name, sha256_hash, size_bytes = validate_file_content(data, uploaded_file.name)
                 extracted_text = extract_text_from_bytes(data, clean_name)
-                st.success(f"Validated and extracted '{clean_name}' ({size_bytes} bytes).")
+                doc = get_ingestion_service().ingest_file(
+                    filename=clean_name,
+                    content=data,
+                    collection="user_uploads",
+                )
+                st.success(
+                    f"Validated and indexed '{doc.filename}' ({size_bytes} bytes, {doc.chunk_count} chunks)."
+                )
             except Exception as e:
                 st.error(f"Ingestion failed: {type(e).__name__}: {e}")
 

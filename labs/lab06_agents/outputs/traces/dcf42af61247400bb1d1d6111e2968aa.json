@@ -1,0 +1,12 @@
+[
+  {
+    "step_index": 1,
+    "event_type": "user_input",
+    "text": "For this conversation, call Lab 5 'Vision Lab'."
+  },
+  {
+    "step_index": 2,
+    "event_type": "final_output",
+    "text": "Understood. I will use **\"Vision Lab\"** as an alias for **Lab 5** throughout this conversation."
+  }
+]

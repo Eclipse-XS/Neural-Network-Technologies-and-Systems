@@ -243,3 +243,27 @@ def test_final_notebooks_are_executed_valid_and_error_free(name, expected_output
 def test_missing_dataset_errors_explain_required_location(tmp_path):
     with pytest.raises(FileNotFoundError, match=r"spam\.csv.*data/raw"):
         inspect_data(tmp_path / "spam.csv")
+
+
+def test_causal_language_model_zero_memory_cross_attention_is_token_invariant():
+    """Verify that the single-token zero memory passed to TransformerDecoder prevents cross-token leakage."""
+    torch.manual_seed(42)
+    model = CausalLanguageModel(20, 12, d_model=8, nhead=2, num_layers=2).eval()
+    seq_a = torch.tensor([[BOS, 4, 5, 6, 7]])
+    seq_b = torch.tensor([[BOS, 4, 5, 11, 12]])
+    with torch.no_grad():
+        logits_a = model(seq_a)
+        logits_b = model(seq_b)
+        # Changing tokens at positions 3, 4 must have zero effect on positions 0, 1, 2
+        torch.testing.assert_close(logits_a[:, :3], logits_b[:, :3], atol=1e-6, rtol=1e-5)
+        # Expanding dummy zero memory along sequence dimension (B, S, D) vs (B, 1, D) must yield identical logits
+        # because softmax over identical zero keys sums to 1.0 * V(0), a constant per-head bias vector.
+        hidden = model.position(model.embedding(seq_a) * math.sqrt(model.config["d_model"]))
+        mask = causal_mask(seq_a.size(1), seq_a.device)
+        pad_mask = seq_a.eq(PAD)
+        mem_1 = hidden.new_zeros(seq_a.size(0), 1, model.config["d_model"])
+        mem_s = hidden.new_zeros(seq_a.size(0), seq_a.size(1), model.config["d_model"])
+        out_1 = model.projection(model.decoder(hidden, mem_1, tgt_mask=mask, tgt_key_padding_mask=pad_mask))
+        out_s = model.projection(model.decoder(hidden, mem_s, tgt_mask=mask, tgt_key_padding_mask=pad_mask))
+        torch.testing.assert_close(out_1, out_s, atol=1e-6, rtol=1e-5)
+

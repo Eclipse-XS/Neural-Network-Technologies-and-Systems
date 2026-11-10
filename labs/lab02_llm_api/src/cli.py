@@ -5,14 +5,16 @@ from datetime import datetime
 from pathlib import Path
 from typing import Sequence
 
-from openai import APIConnectionError, APIError
+from openai import APIConnectionError, APIError, APITimeoutError
 
 from .client import (
     DEFAULT_BASE_URL,
+    DEFAULT_MAX_RETRIES,
     DEFAULT_MAX_TOKENS,
     DEFAULT_MODEL,
     DEFAULT_SYSTEM_PROMPT,
     DEFAULT_TEMPERATURE,
+    DEFAULT_TIMEOUT,
     create_client,
     ensure_model_available,
     normalize_base_url,
@@ -33,6 +35,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--system-prompt", default=DEFAULT_SYSTEM_PROMPT)
     parser.add_argument("--temperature", type=float, default=DEFAULT_TEMPERATURE)
     parser.add_argument("--max-tokens", type=int, default=DEFAULT_MAX_TOKENS)
+    parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
+    parser.add_argument("--max-retries", type=int, default=DEFAULT_MAX_RETRIES)
     return parser
 
 
@@ -75,10 +79,20 @@ def write_transcript(
 def run_chat(args: argparse.Namespace) -> int:
     validate_generation_settings(args.model, args.temperature, args.max_tokens)
     base_url = normalize_base_url(args.base_url)
-    client = create_client(base_url)
+    client = create_client(
+        base_url,
+        timeout=getattr(args, "timeout", DEFAULT_TIMEOUT),
+        max_retries=getattr(args, "max_retries", DEFAULT_MAX_RETRIES),
+    )
 
     try:
         ensure_model_available(client, args.model)
+    except APITimeoutError:
+        print(
+            f"Перевищено час очікування від LM Studio API за {base_url}. "
+            "Перевірте стан сервера або збільште --timeout."
+        )
+        return 1
     except APIConnectionError:
         print(
             f"Не вдалося підключитися до LM Studio API за {base_url}. "
@@ -88,7 +102,7 @@ def run_chat(args: argparse.Namespace) -> int:
     except APIError as error:
         print(f"LM Studio API відхилив перевірку моделей: {error}")
         return 1
-    except ValueError as error:
+    except (ValueError, RuntimeError) as error:
         print(error)
         return 1
 
@@ -123,6 +137,11 @@ def run_chat(args: argparse.Namespace) -> int:
                     temperature=args.temperature,
                     max_tokens=args.max_tokens,
                 )
+            except APITimeoutError:
+                print(
+                    f"Перевищено час очікування відповіді від LM Studio API за {base_url}."
+                )
+                continue
             except APIConnectionError:
                 print(
                     f"Не вдалося підключитися до LM Studio API за {base_url}. "

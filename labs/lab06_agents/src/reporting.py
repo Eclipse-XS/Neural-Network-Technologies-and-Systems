@@ -210,4 +210,3 @@ def build_notebook():
 
 if __name__ == '__main__':
     build_report()
-    build_notebook()

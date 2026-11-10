@@ -1,0 +1,50 @@
+[
+  {
+    "step_index": 1,
+    "event_type": "user_input",
+    "text": "Which model was used in Vision Lab?"
+  },
+  {
+    "step_index": 2,
+    "event_type": "tool_call",
+    "tool_name": "list_workspace_files",
+    "call_id": "nMZ9ZcVggJpYFO9wEqmrAWI3LY4K5WY0",
+    "tool_arguments": "{}"
+  },
+  {
+    "step_index": 3,
+    "event_type": "tool_result",
+    "tool_name": "list_workspace_files",
+    "call_id": "nMZ9ZcVggJpYFO9wEqmrAWI3LY4K5WY0",
+    "tool_output": {
+      "files": [
+        {
+          "filename": "lab03_report.md",
+          "size_bytes": 20169
+        },
+        {
+          "filename": "lab04_report.md",
+          "size_bytes": 16033
+        },
+        {
+          "filename": "lab05_report.md",
+          "size_bytes": 25125
+        }
+      ]
+    },
+    "tool_output_preview": "{'files': [{'filename': 'lab03_report.md', 'size_bytes': 20169}, {'filename': 'lab04_report.md', 'size_bytes': 16033}, {'filename': 'lab05_report.md', 'size_bytes': 25125}]}"
+  },
+  {
+    "step_index": 4,
+    "event_type": "tool_call",
+    "tool_name": "search_workspace",
+    "call_id": "zbPloYju1DW2WdkszU5nzpQCertJgeih",
+    "tool_arguments": "{\"query\":\"модель\",\"filename\":\"Lab 5\"}"
+  },
+  {
+    "step_index": 5,
+    "event_type": "error",
+    "error_type": "UserError",
+    "message": "Error running tool search_workspace: File is not an allowed workspace report"
+  }
+]

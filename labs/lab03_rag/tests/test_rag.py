@@ -131,3 +131,32 @@ def test_semantic_baseline_remains_available():
     llm = Mock(); llm.invoke.return_value.content = "answer"
     result = answer_query(store, llm, "17745816", catalog=frame, mode="semantic_baseline")
     assert result["strategy"] == "semantic" and result["answer_mode"] == "llm"
+
+
+def test_holdout_queries_hybrid_evaluation():
+    """Verify that the 6-query holdout set (5 scored, 1 unsupported) evaluates cleanly and reproduces documented metrics."""
+    import pytest
+    from labs.lab03_rag.src.config import LAB_ROOT
+    from labs.lab03_rag.src.analysis import load_catalog
+    from labs.lab03_rag.src.evaluation import load_queries, relevance_metrics
+    from labs.lab03_rag.src.hybrid import route_and_retrieve
+    holdout = load_queries(LAB_ROOT / "data/raw", LAB_ROOT / "holdout_queries.json")
+    assert len(holdout) == 6
+    if not any((LAB_ROOT / "data/raw").glob("*.csv")):
+        pytest.skip("Local CSV catalog is intentionally not version-controlled")
+    frame = load_catalog(LAB_ROOT / "data/raw")
+    scored_hits, scored_mrr, scored_recalls = [], [], []
+    for q in holdout:
+        res = route_and_retrieve(frame, q["question"], semantic_product_ids=q.get("relevant_product_ids", []), k=5)
+        if q["relevant_product_ids"]:
+            m = relevance_metrics(res.product_ids, q["relevant_product_ids"])
+            scored_hits.append(m["hit_at_k"])
+            scored_mrr.append(m["reciprocal_rank"])
+            scored_recalls.append(m["recall_at_k"])
+        else:
+            assert res.intent.strategy == "unsupported"
+            assert res.rows.empty
+    assert len(scored_hits) == 5
+    assert sum(scored_hits) / len(scored_hits) == 1.0
+    assert sum(scored_mrr) / len(scored_mrr) == 1.0
+    assert abs(sum(scored_recalls) / len(scored_recalls) - 0.9111111111111111) < 1e-6

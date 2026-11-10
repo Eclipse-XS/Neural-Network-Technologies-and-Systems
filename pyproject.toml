@@ -7,6 +7,6 @@ requires-python = ">=3.11"
 dependencies = []
 
 [tool.pytest.ini_options]
-testpaths = ["tests", "labs/lab05_multimodal/tests", "labs/lab06_agents/tests", "labs/lab07_final_project/tests"]
+testpaths = ["tests", "labs/lab01_transformer/tests", "labs/lab02_llm_api/tests", "labs/lab03_rag/tests", "labs/lab04_stable_diffusion/tests", "labs/lab05_multimodal/tests", "labs/lab06_agents/tests", "labs/lab07_final_project/tests"]
 pythonpath = ["."]
 addopts = ["--import-mode=importlib"]

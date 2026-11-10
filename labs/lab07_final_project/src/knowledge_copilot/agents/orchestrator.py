@@ -301,7 +301,7 @@ class AgentOrchestrator:
             
             # Semantic Grounding Verification (DEFECT-02)
             grounding_status, cited, invalid_cited, claims = verify_grounding(
-                canonical_answer, evidence_accum
+                canonical_answer, evidence_accum, tool_executions=trace_hooks.tool_records
             )
             
             tracer.add_event(
