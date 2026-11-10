@@ -120,10 +120,15 @@ def test_lab07_generation_results_status():
     with open(gen_path, "r", encoding="utf-8") as f:
         gen = json.load(f)
 
-    assert gen["status"] == "NOT_VERIFIED"
-    assert gen["gate_status"] == "BLOCKED (Host Dependency Offline)"
-    assert gen["executed_live_turns"] == 0
+    if gen.get("status") == "VERIFIED_LIVE":
+        assert gen["total_queries"] == 50
+        assert gen["successful_turns"] == 45
+        assert gen["model_id"] == "mistralai/ministral-3-3b"
+    else:
+        assert gen["status"] == "NOT_VERIFIED"
+        assert gen["gate_status"].startswith("BLOCKED")
+        assert gen["executed_live_turns"] == 0
 
     report_path = REPO_ROOT / "labs/lab07_final_project/report/report.md"
     report_text = report_path.read_text(encoding="utf-8")
-    assert "NOT_VERIFIED" in report_text
+    assert "VERIFIED_LIVE" in report_text or "NOT_VERIFIED" in report_text

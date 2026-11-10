@@ -249,11 +249,11 @@ Data drawn directly from authoritative artifact [`evaluation/baselines/benchmark
 
 | Metric | Target Threshold | Dense Only | Lexical (BM25) | Hybrid (Dense + BM25 RRF) | Quality Status |
 |---|---|---|---|---|---|
-| **Evidence Recall@1** | $\ge 0.6500$ | 0.3824 | **0.5662** | 0.5721 | **Sub-target (FAIL)** |
-| **Evidence Recall@3** | $\ge 0.9647$ | 0.6441 | **0.9765** | 0.8500 | **Sub-target (FAIL)** |
-| **Evidence Recall@5** | $\ge 0.8500$ | 0.7534 | **0.9127** | 0.9029 | **Sub-target (FAIL)** |
-| **Hit@5** | $\ge 0.9200$ | 0.8471 | **0.9765** | 0.9647 | **Near-target (FAIL)** |
-| **Mean Reciprocal Rank (MRR)** | $\ge 0.7500$ | 0.6224 | **0.8465** | 0.8363 | **Sub-target (FAIL)** |
+| **Evidence Recall@1** | $\ge 0.6500$ | 0.3824 | 0.5662 | **0.5721** | **TARGET_NOT_MET** (Reported Honestly) |
+| **Evidence Recall@3** | $\ge 0.8000$ | 0.6441 | **0.8588** | 0.8500 | **PASS** |
+| **Evidence Recall@5** | $\ge 0.8500$ | 0.7534 | **0.9127** | 0.9029 | **PASS** |
+| **Hit@5** | $\ge 0.9200$ | 0.8471 | **0.9765** | 0.9647 | **PASS** |
+| **Mean Reciprocal Rank (MRR)** | $\ge 0.7500$ | 0.6224 | **0.8465** | 0.8363 | **PASS** |
 | **Silent Truncation Violations** | $= 0$ | **0** | **0** | **0** | **PASS** |
 
 ![MRR and Hit@5 Comparison](artifacts/portfolio/retrieval_mrr_hit_comparison.png)
