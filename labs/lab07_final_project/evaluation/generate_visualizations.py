@@ -55,7 +55,7 @@ def plot_recall_comparison():
 
     rects1 = ax.bar(x - width, dense_vals, width, label="Dense (multilingual-e5-small)", color=COLOR_DENSE)
     rects2 = ax.bar(x, bm25_vals, width, label="Lexical (BM25)", color=COLOR_BM25)
-    rects3 = ax.bar(x + width, hybrid_vals, width, label="Hybrid (RRF, k=60)", color=COLOR_HYBRID)
+    rects3 = ax.bar(x + width, hybrid_vals, width, label="Hybrid (Dense + BM25 RRF)", color=COLOR_HYBRID)
 
     # Threshold targets
     targets = [0.65, 0.80, 0.85]
@@ -200,7 +200,7 @@ def plot_category_breakdown():
     rects4 = ax.bar(x + 1.5 * width, mrr, width, label="MRR", color="#293241")
 
     ax.set_ylabel("Metric Value")
-    ax.set_title("Hybrid Retrieval Performance by Query Complexity Category\n(100-Query Frozen Benchmark, 15 Negative Controls Refused 100%)")
+    ax.set_title("Hybrid Retrieval Performance by Query Complexity Category\n(100-Query Frozen Benchmark, 85 Supported Queries across 4 Categories)")
     ax.set_xticks(x)
     ax.set_xticklabels(cat_names)
     ax.set_ylim(0, 1.15)

@@ -28,7 +28,7 @@ All metrics below are drawn directly from the authoritative benchmark artifact [
 > **Scientific Audit & Transparency Statement**:
 > Under strict passage-level evidence span verification, all three retrieval modes remain below the ambitious quality targets ($\text{Recall@1} \ge 0.65$, $\text{MRR} \ge 0.75$).
 > BM25 Lexical retrieval achieved the highest overall Recall@5 (0.7765) and MRR (0.6584) due to strong exact-match symbol matching on technical constants.
-> In contrast, Hybrid RRF excels on Numerical Reasoning (Hit@5: 1.0000, Recall@5: 0.9625, MRR: 0.9250) and achieves 100% proper abstention on out-of-corpus negative controls.
+> In contrast, Hybrid RRF excels on Numerical Reasoning (Hit@5: 1.0000, Recall@5: 0.9625, MRR: 0.9250) and achieves 100% proper retrieval-level abstention on out-of-corpus negative controls.
 > These results represent an honest scientific baseline, not an artificially inflated pass.
 
 ---
@@ -80,7 +80,7 @@ The evaluation dataset (`evaluation/datasets/frozen_eval_100.json`) contains exa
 | **Exact Technical Facts** | 25 | **0.8400** | **0.7413** | **0.5533** | **0.7567** | High BM25 symbol precision |
 | **Semantic Paraphrase** | 20 | **0.7000** | **0.4617** | **0.3000** | **0.6250** | Dense vector conceptual mapping |
 | **Cross-Document Comparison** | 20 | **0.6500** | **0.4417** | **0.1500** | **0.4500** | Multi-document quota partitioning |
-| **Negative Controls (Abstention)** | 15 | N/A | N/A | N/A | N/A | 100% correct refusal rate |
+| **Negative Controls (Abstention)** | 15 | N/A | N/A | N/A | N/A | 100% retrieval-level abstention (no irrelevant chunks retrieved) |
 
 ---
 
@@ -109,7 +109,7 @@ Measured on local CPU inference environment (`evaluation/baselines/benchmark_res
    - Strong cross-lingual representation between Ukrainian queries and English technical specs.
    - P50 latency is ~44 ms on CPU due to local transformer token encoding.
    - Lower top-1 precision on exact numerical parameters compared to BM25.
-3. **Hybrid RRF Fusion ($k=60$)**:
+3. **Hybrid RRF Fusion**:
    - Combines lexical precision with semantic recall.
    - Outperforms Dense on MRR (0.6482 vs 0.5933) and achieves the best numerical reasoning score.
    - Zero truncation violations observed across all 100 queries.

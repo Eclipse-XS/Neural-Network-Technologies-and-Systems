@@ -82,8 +82,10 @@ labs/lab05_multimodal/
 │   ├── run.py                          # CLI runner for live or cached inference
 │   └── visualization.py                # Publication-quality plotting from verified records
 ├── assets/
-│   ├── input_image.png                 # Canonical 512x512 test image (SHA-256 verified)
-│   └── architecture_diagram.png        # Architecture visualization
+│   └── input/
+│       ├── primary_image.png           # Canonical 512x512 test image (SHA-256 verified)
+│       └── source.json                 # Image provenance metadata
+
 ├── evidence/
 │   ├── verified_runs.json              # 17 physically verified inference runs with runtimes and token counts
 │   └── model_metadata.json             # Pinned Hugging Face configuration and revision manifest
@@ -111,22 +113,22 @@ To avoid misleading "Run All" behavior that falsely claims historical evidence w
 | **Role** | Canonical academic walkthrough & historical evidence analysis | Dedicated practical live inference harness |
 | **Execution Environment** | Any standard CPU environment (no GPU required) | Dedicated CUDA environment (`torch.cuda.is_available() == True`) |
 | **Model Weights** | Does **not** download model weights; reads versioned evidence | Downloads and loads `llava-interleave-qwen-0.5b-hf` in FP16 |
-| **Data Source** | Reads `evidence/verified_runs.json` and `report/manual_evaluation.json` | Generates a fresh live prediction on `assets/input_image.png` |
+| **Data Source** | Reads `evidence/verified_runs.json` and `report/manual_evaluation.json` | Generates a fresh live prediction on `assets/input/primary_image.png` |
 | **Output Treatment** | Evaluated and audited results | Written separately as `NOT_REVIEWED` to prevent evidence corruption |
 
 ---
 
 ## Experimental Design & Key Results
 
-The experimental matrix comprises **10 baseline VQA questions**, **3 temperature conditions**, **3 token budget conditions**, and **3 linguistic paraphrasings** on a fixed input image. Two conditions overlap with the baseline, resulting in **17 physical runs** across **19 analytical rows**.
+The experimental matrix comprises **10 baseline VQA questions** (3 descriptive, 3 factual, 3 analytical, 1 negative coordinate control), **3 temperature conditions**, **3 token budget conditions**, and **3 linguistic paraphrasings** on a canonical input image (`assets/input/primary_image.png`, 512×512 photorealistic rendering of a cabin by a calm lake with pine trees). Two conditions overlap with the baseline, resulting in **17 physical runs** across **19 analytical rows**. This constitutes a controlled single-image investigation of multimodal perception and decoding parameters rather than a multi-image domain benchmark.
 
 | Experiment Group | Conditions Tested | Key Empirical Observation | Limitations & Findings |
 |---|---|---|---|
-| **Baseline VQA** | 10 factual questions (objects, attributes, spatial relationships) | High accuracy on qualitative object recognition (`"chair"`, `"table"`, `"yellow"`); correct spatial orientation (`"left"`). | Exactly 3/3 audited factual baseline assertions scored `CORRECT`. Broad spatial queries often trigger wordy descriptive continuations. |
-| **Temperature** | $T \in \{0.2, 0.7, 1.0\}$ (Fixed prompt & seed) | Generated token lengths: 19 ($T=0.2$), 23 ($T=0.7$), 23 ($T=1.0$). Semantic content remained consistent (`"The yellow chair is located on the left side..."`). | Single runs per condition demonstrate directional behavior, but do not constitute a statistically significant distribution. |
-| **Token Budget** | $\text{max\_new\_tokens} \in \{24, 64, 128\}$ | Outputs consumed 24, 48, and 48 tokens respectively. The 24-token budget truncated mid-sentence without emitting `<\|im_end\|>`. Budgets 64 and 128 reached natural EOS at token 48. | Hard token limits without structured stopping criteria cause syntactic truncation. 64 tokens was sufficient for complete answers. |
-| **Linguistic Paraphrasing** | 3 prompt formulations for the same spatial question | Returned answers: `"left"`, `"center"`, and `"Left"`. | Case differences (`"left"` vs `"Left"`) preserve meaning; however, the formulation prompting `"center"` demonstrated spatial drift under rephrased focus. |
-| **Hallucination Control** | Precise coordinate query (`"Give bounding box coordinates [ymin, xmin, ymax, xmax]"`) | Model hallucinated arbitrary numeric sequences (`[120, 45, 300, 220]`) that do not correspond to image features. | Rated `HALLUCINATED`. The 0.5B parameter model lacks specialized grounding heads and produces pseudo-coordinate syntax. |
+| **Baseline VQA** | 10 baseline questions (3 descriptive, 3 factual, 3 analytical, 1 coordinate control) | Qualitative object recognition identified cabin, lake, trees, and water reflections. Simple facts scored 3/3 CORRECT: orientation (`"left"`, run `76dd14bbaa`), wall color (`"Brown"`, run `adec88d1e9`), and reflections (`"Yes"`, run `99afb78ad7`). | Descriptive queries exhibited minor hallucinations (unsupported `"wooden roof"`, run `183d0c1716`); analytical queries relied on tautological reasoning rather than geometric depth proofs. |
+| **Temperature** | $T \in \{0.2, 0.7, 1.0\}$ (Fixed prompt & seed 42, question `analysis_01`) | Generated token lengths: 19 ($T=0.2$, run `49843402a6`), 23 ($T=0.7$, run `1ee29e1f20`), 23 ($T=1.0$, run `5ab9d15008`). Semantic content remained stable: all runs affirmed calm water supported by cabin and tree reflections. | Single runs per condition demonstrate directional behavior, but do not constitute a statistically significant distribution. |
+| **Token Budget** | $\text{max\_new\_tokens} \in \{24, 64, 128\}$ (Question `desc_01`, greedy) | Outputs consumed 24, 48, and 48 tokens respectively. The 24-token budget truncated mid-sentence (`"...The cabin"`, run `58c3114a5c`) without emitting EOS. Budgets 64 and 128 reached natural EOS at token 48 (runs `183d0c1716`, `286c314bb4`). | Hard token limits without structured stopping criteria cause syntactic truncation. Expanding token budget to 128 produced identical text and did not eliminate the unsupported roof material claim. |
+| **Linguistic Paraphrasing** | 3 prompt formulations for cabin horizontal location (greedy) | Returned answers: `"left"` (run `76dd14bbaa`, CORRECT), `"center"` (run `ab48c819f9`, INCORRECT), and `"Left"` (run `cf22ad74fcc`, CORRECT). | Rephrasing the question caused spatial drift to the erroneous answer `"center"`, despite identical greedy decoding parameters and unchanged input image. |
+| **Hallucination Control** | Geographic coordinate query (`"What are the exact geographic coordinates of this cabin?"`) | Model hallucinated arbitrary numeric sequence `[0.542,0.544,0.856,0.731]` (run `cf0c78a34f`) mimicking bounding box format. | Rated `HALLUCINATED`. The compact model produced pseudo-coordinate syntax instead of refusing the unanswerable query per the grounding prompt. |
 
 ---
 

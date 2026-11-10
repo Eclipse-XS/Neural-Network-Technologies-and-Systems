@@ -31,7 +31,7 @@ The Copilot is engineered as a privacy-preserving, local-first RAG (Retrieval-Au
 ## 2. Key Features
 
 - **Document Ingestion Lifecycle**: Supports Markdown, plain text, and digital PDFs with structure-aware chunking (hierarchical headers, token-bounded sub-splitting to $\le 240$ tokens, SHA-256 deduplication, and scanned/empty PDF rejection via `ExtractionError`).
-- **Hybrid Retrieval Engine**: Combines 384-dimensional dense semantic embeddings (`multilingual-e5-small`) with BM25 lexical token matching via Reciprocal Rank Fusion ($k=60$).
+- **Hybrid Retrieval Engine**: Combines 384-dimensional dense semantic embeddings (`multilingual-e5-small`) with BM25 lexical token matching via Reciprocal Rank Fusion (RRF).
 - **Source-Grounded Answering & Citation Gate**: Enforces strict evidence verification; answers lacking valid citations or evidence backing are flagged and refused.
 - **AST-Sandboxed Calculator Tool**: Evaluates arithmetic expressions safely through Python's `ast` module, preventing code injection while guaranteeing mathematical correctness.
 - **Isolated Multi-Turn Session Memory**: Thread-safe SQLite persistence with Write-Ahead Logging (WAL) and strict session isolation across distinct user sessions.
@@ -91,7 +91,7 @@ flowchart TD
 | **REST Server** | `src/knowledge_copilot/api/app.py` | None |
 | **Web UI** | `src/knowledge_copilot/ui/streamlit_app.py` | `web_app.py` |
 | **CLI App** | Streamlit / REST API | `app.py` |
-| **Retrieval** | Hybrid RRF ($k=60$): `multilingual-e5-small` + BM25 | Dense-only: `all-MiniLM-L6-v2` |
+| **Retrieval** | Hybrid RRF: `multilingual-e5-small` + BM25 | Dense-only: `all-MiniLM-L6-v2` |
 
 ---
 
@@ -144,7 +144,7 @@ sequenceDiagram
 | **Relational Storage** | SQLite 3 | WAL mode, thread-safe session & chunk persistence |
 | **Dense Embeddings** | Hugging Face Transformers | `intfloat/multilingual-e5-small` (384 dimensions) |
 | **Lexical Engine** | Rank-BM25 | Parameterized BM25 ($k_1=1.5, b=0.75$) with NLTK tokenization |
-| **Rank Fusion** | Reciprocal Rank Fusion | RRF algorithm with smoothing parameter $k=60$ |
+| **Rank Fusion** | Reciprocal Rank Fusion | RRF algorithm combining dense semantic and BM25 lexical rankings |
 | **API Framework** | FastAPI | 0.115+, Pydantic v2 schemas, Starlette middleware |
 | **Frontend UI** | Streamlit | 1.42+, wide layout, multi-session chat interface |
 | **Local Inference Host** | LM Studio | OpenAI-compatible REST API on port `1234` |
@@ -247,7 +247,7 @@ The system was evaluated against a frozen **100-query scientific benchmark** (`e
 
 Data drawn directly from authoritative artifact [`evaluation/baselines/benchmark_results.json`](evaluation/baselines/benchmark_results.json):
 
-| Metric | Target Threshold | Dense Only | Lexical (BM25) | Hybrid (RRF $k=60$) | Quality Status |
+| Metric | Target Threshold | Dense Only | Lexical (BM25) | Hybrid (Dense + BM25 RRF) | Quality Status |
 |---|---|---|---|---|---|
 | **Evidence Recall@1** | $\ge 0.6500$ | 0.4176 | **0.4882** | 0.4363 | **Sub-target (FAIL)** |
 | **Evidence Recall@3** | $\ge 0.8000$ | 0.6588 | **0.6647** | 0.6103 | **Sub-target (FAIL)** |
@@ -268,7 +268,7 @@ Data drawn directly from authoritative artifact [`evaluation/baselines/benchmark
 - **Exact Technical Facts ($n=25$)**: **Hit@5 = 0.8400**, **MRR = 0.7413**, **Recall@5 = 0.7567**. Strong lexical symbol matching.
 - **Semantic Paraphrase ($n=20$)**: **Hit@5 = 0.7000**, **MRR = 0.4617**, **Recall@5 = 0.6250**. Dense vectors bridge cross-lingual phrasing.
 - **Cross-Document Comparison ($n=20$)**: **Hit@5 = 0.6500**, **MRR = 0.4417**, **Recall@5 = 0.4500**. Challenging due to multi-target document quota competition.
-- **Negative Controls ($n=15$)**: **100% correct refusal**. Zero hallucinations on out-of-corpus queries.
+- **Negative Controls ($n=15$)**: 100% retrieval-level abstention (no irrelevant chunks retrieved above threshold). In live inference, model answers require independent verification as tested in live scenarios.
 
 ### Latency Profile
 

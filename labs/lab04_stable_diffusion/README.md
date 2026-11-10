@@ -3,7 +3,7 @@
 A reproducible, controlled experimental study of latent text-to-image diffusion using **Stable Diffusion v1.5** under consumer GPU memory constraints (NVIDIA GeForce RTX 3050 Laptop GPU, 4 GB VRAM).
 
 ![Stable Diffusion Baseline Image](artifacts/portfolio/baseline.png)
-*Representative baseline generation: "A cinematic photo of an ancient stone library overgrown with ivy, dusty sunbeams streaming through stained glass windows, highly detailed, photorealistic, 8k resolution" (Seed: 42, Steps: 30, CFG: 7.5, PNDM Scheduler).*
+*Representative baseline generation: "a futuristic city street at sunset, neon signs, wet pavement reflections, detailed architecture, cinematic lighting, pedestrians in the distance" (Seed: 42, Steps: 30, CFG: 7.5, PNDM Scheduler, 512x512, Duration: 18.88s).*
 
 ---
 
@@ -105,11 +105,11 @@ The study executes a controlled matrix of **13 unique image generations** rather
 
 | Experimental Variable | Controlled Settings | What is Measured | Key Visual Finding |
 |---|---|---|---|
-| **Random Seed** | `42`, `123`, `777`, `2026` | Image composition, spatial layout, architectural details | Different seeds completely restructure the library geometry, window placement, and aisle arrangement while preserving prompt semantics. |
-| **Inference Steps** | `20`, `30`, `50` steps | Edge definition, textural clarity, per-step runtime | Moving from 20 to 30 steps sharpens architectural lines and ivy leaf texture; 50 steps yields marginal perceptual gain (+0.43s latency) with minor background shifts. |
-| **CFG Scale** | `5.0`, `7.5`, `10.0` | Prompt adherence vs. color oversaturation and contrast | CFG 5.0 produces soft, painterly lighting; CFG 7.5 provides optimal balance; CFG 10.0 increases contrast and edge sharpness, slightly over-saturating highlights. |
-| **Negative Prompt** | Without vs. With suppression (Seeds `42` & `123`) | Unwanted feature suppression and compositional shifts | Suppressing `"blurry, modern, people, distorted"` removes anomalous background figures, but alters the overall scene layout because negative guidance modifies the entire U-Net trajectory. |
-| **Style Prompts** | `watercolor`, `isometric`, `photorealistic` | Stylistic divergence and texture rendering | Appending explicit stylistic modifiers dramatically changes spatial representation (e.g., isometric cuts away the ceiling to show an axonometric diorama). |
+| **Random Seed** | `42`, `123`, `777`, `2026` | Image composition, spatial layout, architectural details | Different seeds completely restructure street perspective, sign placement, and pedestrian positions while preserving prompt semantics (e.g., seed 42 open street, 123 narrow neon canyon, 777 low-angle wet reflections, 2026 high-rise corridor). |
+| **Inference Steps** | `20`, `30`, `50` steps | Edge definition, textural clarity, per-step runtime | Moving from 20 to 30 steps sharpens architectural outlines and pavement reflections; 50 steps yields marginal structural shifts without unequivocal quality gain. Latencies (20: 6.76s, 30: 18.88s, 50: 13.95s) reflect initial baseline warm-up/memory state rather than pure step scaling. |
+| **CFG Scale** | `5.0`, `7.5`, `10.0` | Prompt adherence vs. stylization and contrast | CFG 5.0 renders finer window divisions and visible vehicles; CFG 7.5 balances lighting and reflections; CFG 10.0 yields smoother, stylized geometric forms with higher contrast. Increasing CFG alters geometry rather than providing monotonic quality improvement. |
+| **Negative Prompt** | Without vs. With suppression (Seeds `42` & `123`) | Unwanted feature suppression and compositional shifts | Suppressing `"blurry, low quality, watermark, text, distorted architecture, deformed objects, artifacts"` modifies overall street layout, vehicle prominence, and reflections. Negative guidance shifts the entire U-Net trajectory; pseudo-text remains visible due to prompt interaction with "neon signs". |
+| **Style Prompts** | `watercolor`, `isometric`, `photorealistic` | Stylistic divergence and texture rendering | Evaluated on secondary scene ("a small mountain cabin beside a calm lake, surrounded by pine trees, soft morning light"). Watercolor exhibits paper texture and wash effects; isometric simplifies cabin geometry and trees (without true orthographic projection); photorealistic yields finer forest detail and water reflections. |
 
 ![Seed Comparison Grid](artifacts/portfolio/seed_comparison.png)
 *Impact of Random Seed variation across identical prompts and hyperparameter settings (Seeds 42, 123, 777, 2026).*
@@ -120,8 +120,8 @@ The study executes a controlled matrix of **13 unique image generations** rather
 
 1. **VRAM Optimization Feasibility**: Stable Diffusion 1.5 operates stably within 4 GB VRAM when combining FP16 precision, PyTorch SDPA, and Hugging Face `model_cpu_offload()`. Peak allocated CUDA memory remained bounded between 2.18 GiB and 2.29 GiB across all runs.
 2. **Latent Space Compression Efficiency**: Compressing the $512\times 512\times 3$ pixel space into a $64\times 64\times 4$ latent space reduces dimensionality by a factor of 48, making iterative diffusion feasible on consumer GPUs.
-3. **Denoising Trajectory Dynamics**: The first 10–15 steps establish coarse global composition and architectural geometry; subsequent steps refine high-frequency details (ivy leaves, book spines, dust motes).
-4. **CFG Trade-off**: The optimal Classifier-Free Guidance window is $7.0 \le w \le 8.5$. Values below 5.0 drift away from prompt constraints; values above 12.0 exhibit high-contrast saturation artifacts.
+3. **Denoising Trajectory Dynamics**: The first 10–15 steps establish coarse global composition and architectural geometry; subsequent steps refine high-frequency details (pavement reflections, structural edges, sign boundaries).
+4. **CFG Trade-off**: Across the evaluated scales (5.0, 7.5, 10.0), CFG 5.0 yields lower contrast with detailed facade elements, CFG 7.5 provides balanced contrast and scene coherence, and CFG 10.0 introduces pronounced stylization and saturated contrast planes. Scales outside this discrete range were not evaluated.
 5. **Negative Prompting Side Effects**: Negative prompts act as global repulsion vectors in the cross-attention space, not localized eraser tools. Consequently, introducing a negative prompt alters the primary composition even when the seed is held constant.
 
 ---

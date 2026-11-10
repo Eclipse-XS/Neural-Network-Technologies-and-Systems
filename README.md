@@ -25,7 +25,7 @@ flowchart TD
     subgraph Core_Monolith["knowledge_copilot Core Application"]
         Orchestrator["Agent Orchestrator (ReAct Loop)"]
         Verifier["Grounding & Citation Verifier"]
-        HybridEngine["Hybrid Retrieval (RRF, k=60)"]
+        HybridEngine["Hybrid Retrieval (RRF)"]
         ASTCalc["AST Arithmetic Sandbox"]
     end
 
@@ -50,7 +50,7 @@ flowchart TD
 
 ### Key Engineering Capabilities
 - **Modular Monolith Architecture**: Strict hexagonal boundaries across `domain/`, `rag/`, `agents/`, `infrastructure/`, `api/`, and `ui/`.
-- **Hybrid Retrieval (RRF)**: Combines dense semantic search (`intfloat/multilingual-e5-small`, 384-d) in Redis Stack with lexical `BM25Okapi` using Reciprocal Rank Fusion ($k=60$).
+- **Hybrid Retrieval (RRF)**: Combines dense semantic search (`intfloat/multilingual-e5-small`, 384-d) in Redis Stack with lexical `BM25Okapi` using Reciprocal Rank Fusion (RRF).
 - **Deterministic AST Calculator**: Eliminates LLM arithmetic hallucinations and injection risks via Python Abstract Syntax Tree expression parsing (no unsafe `eval()`).
 - **Multi-Dimensional Grounding Verifier**: Automatically detects fabricated citations, validates passage provenance, and flags ungrounded claims.
 - **Zero Silent Truncation**: Guarantees `0 Truncation Violations` through hierarchical Markdown header-aware chunking bounded by strict token budgets.
@@ -68,7 +68,7 @@ The repository follows a structured, bottom-up progression in neural architectur
 | **02** | [Local LLM API Client](labs/lab02_llm_api/README.md) | OpenAI-compatible APIs, vLLM, LM Studio, Streaming completions, Token limits | Controlled prompt engineering, parameter sweeps (temperature, top_p), and latency benchmarks. | [CLI Client](labs/lab02_llm_api/src/client.py) |
 | **03** | [Redis Vector RAG](labs/lab03_rag/README.md) | LangChain, RedisVectorStore, `all-MiniLM-L6-v2`, Cosine similarity, Context prompts | Dense document retrieval, semantic similarity queries, and prompt grounding on tabular/CSV data. | [Lab 3 Notebook](labs/lab03_rag/notebooks/01_redis_csv_rag.ipynb) |
 | **04** | [Stable Diffusion v1.5](labs/lab04_stable_diffusion/README.md) | Latent Diffusion Models, UNet, VAE, CLIP ViT-L/14, PNDM/DDIM Schedulers, CUDA fp16 | Controlled 5-parameter grid sweep (seed, steps, CFG, negative prompts, artistic styles); 13 verified image generations. | [Lab 4 Notebook](labs/lab04_stable_diffusion/notebooks/01_text_to_image.ipynb) |
-| **05** | [Multimodal LLaVA VQA](labs/lab05_multimodal/README.md) | Visual Instruction Tuning, SigLIP/CLIP Encoder, Qwen2/Vicuna LLM, Visual QA | 17 physical GPU runs across 19 prompt evaluations; systematic hallucination audit across 4 image classes; dual notebooks. | [Notebook 01 (Replay)](labs/lab05_multimodal/notebooks/01_llava_vqa.ipynb) / [Notebook 02 (Practical)](labs/lab05_multimodal/notebooks/02_llava_live_inference.ipynb) |
+| **05** | [Multimodal LLaVA VQA](labs/lab05_multimodal/README.md) | Visual Instruction Tuning, SigLIP Encoder, Qwen2 LLM, Visual QA | 17 physical GPU runs across 19 analytical evaluations; controlled single-image investigation of VQA perception and hallucination; dual notebooks. | [Notebook 01 (Replay)](labs/lab05_multimodal/notebooks/01_llava_vqa.ipynb) / [Notebook 02 (Practical)](labs/lab05_multimodal/notebooks/02_llava_live_inference.ipynb) |
 | **06** | [Agentic Function Calling](labs/lab06_agents/README.md) | OpenAI Agents SDK, ReAct Loop, Function Tools, SQLite Session Memory | Autonomous tool-calling agent with 4 deterministic tools, multi-turn session persistence, and failure recovery. | [Lab 6 Notebook](labs/lab06_agents/notebooks/01_openai_agents_sdk.ipynb) |
 | **07** | [Engineering Copilot (Capstone)](labs/lab07_final_project/README.md) | Hybrid RAG, BM25, E5 Embeddings, AST Sandbox, Grounding Verifier, FastAPI, Streamlit | Full modular monolith, 100-query frozen benchmark, 185 unit tests, 4 publication-quality plots, live LM Studio traces. | [Lab 7 Notebook](labs/lab07_final_project/notebooks/01_final_project.ipynb) |
 
@@ -78,42 +78,42 @@ The repository follows a structured, bottom-up progression in neural architectur
 
 ### Lab 04 — Stable Diffusion Controlled Image Synthesis
 - **Model**: `runwayml/stable-diffusion-v1.5` in CUDA fp16 on NVIDIA RTX 3050 Laptop GPU (4 GB VRAM).
-- **Core Investigation**: Systematic analysis of scheduler dynamics, Classifier-Free Guidance (CFG scale 1.0 to 20.0), deterministic seed variance, negative prompting, and artistic style transfer.
+- **Core Investigation**: Systematic analysis of scheduler dynamics, Classifier-Free Guidance (CFG scales 5.0, 7.5, 10.0), step budgets (20, 30, 50), deterministic seed variance, negative prompting, and artistic style transfer.
 - **Committed Evidence**: 13 verified generation artifacts preserved in `labs/lab04_stable_diffusion/artifacts/`, including side-by-side prompt comparisons and latency benchmarks.
 
 ### Lab 05 — Multimodal Visual Question Answering (LLaVA)
-- **Model**: `llava-hf/llava-1.5-7b-hf` and lightweight quantized checkpoints.
+- **Model**: `llava-hf/llava-interleave-qwen-0.5b-hf` in CUDA FP16 on NVIDIA RTX 3050 Laptop GPU (4 GB VRAM).
 - **Dual Notebook Strategy**:
   - `01_llava_vqa.ipynb`: Primary self-contained educational and offline evidence walkthrough (runs on any CPU without GPU dependencies).
   - `02_llava_live_inference.ipynb`: Supplementary interactive CUDA practical notebook for live GPU experimentation.
-- **Experimental Findings**: Documented 17 physical GPU runs covering 19 prompt variations across 4 image archetypes (Technical Architecture, Chart/Diagram, Abstract Art, Photographic Reality), identifying bounding box hallucination and fine-grained text misinterpretation patterns.
+- **Experimental Findings**: Documented 17 physical GPU runs covering 19 analytical prompt evaluations on a canonical image, systematically auditing factual accuracy, temperature stability, token truncation, linguistic paraphrasing sensitivity, and pseudo-coordinate hallucination.
 
 ### Lab 06 — Autonomous Agentic Workflows & Tool Calling
 - **Framework**: `openai-agents` (v0.22.3) + `openai` (v3.17.0) with local LM Studio inference.
 - **Integrated Tool Suite**:
-  1. `calculate(expression)`: Deterministic mathematical computation via AST parsing.
-  2. `search_knowledge(query, k)`: Grounded evidence retrieval from local indexed corpora.
-  3. `list_knowledge_sources()`: Directory and manifest inspection.
-  4. `check_environment()`: Host hardware, memory, and runtime diagnostics.
+  1. `list_workspace_files()`: Discover available coursework report filenames and byte sizes in the workspace sandbox.
+  2. `search_workspace(query, filename)`: Literal case-insensitive search across workspace report lines.
+  3. `read_workspace_file(filename, start_line, end_line)`: Bounded line reader returning numbered evidence lines (1–80 lines).
+  4. `calculate(expression)`: Deterministic mathematical computation via bounded AST parsing (no `eval()`).
 - **Persistence & Auditing**: Dialogue histories backed by thread-safe SQLite session tables; explicit workspace drift analysis documenting `REPLAY_UNVERIFIED_WORKSPACE_MISMATCH` provenance.
 
 ---
 
 ## 📊 Scientific Benchmark Visualizations (Lab 7 Capstone)
 
-The Lab 7 Knowledge Copilot was evaluated against an immutable **100-Query Frozen Benchmark** (`benchmark_results.json`) consisting of 85 factual queries across 5 technical categories and 15 unsupported negative control queries.
+The Lab 7 Knowledge Copilot was evaluated against an immutable **100-Query Frozen Benchmark** (`benchmark_results.json`) consisting of 85 answerable queries across 4 technical categories and 15 unsupported negative control queries.
 
 | Evaluation Metric | Dense (`multilingual-e5`) | BM25Okapi (Lexical) | Hybrid (Dense + BM25 RRF) | Quality Target | Status |
 |:---|:---:|:---:|:---:|:---:|
 | **Evidence Recall@1** | 0.4176 | **0.4882** | 0.4363 | $\ge 0.75$ | Failed Target (Reported Honestly) |
-| **Evidence Recall@3** | 0.6588 | **0.6941** | 0.6103 | — | Intermediate metric |
+| **Evidence Recall@3** | 0.6588 | **0.6647** | 0.6103 | — | Intermediate metric |
 | **Evidence Recall@5** | 0.7647 | **0.7765** | 0.7020 | — | Intermediate metric |
-| **Hit@5 (Evidence in Top-5)** | 0.8235 | **0.8471** | 0.8000 | — | Satisfactory |
+| **Hit@5 (Evidence in Top-5)** | 0.8235 | **0.8588** | 0.8000 | — | Satisfactory |
 | **Mean Reciprocal Rank (MRR)**| 0.5933 | **0.6584** | 0.6482 | $\ge 0.80$ | Failed Target (Reported Honestly) |
 | **Silent Truncation Violations** | **0** | **0** | **0** | $0$ | **100% PASS** |
-| **Numerical Reasoning Hit@5** | 0.9333 | 0.9333 | **1.0000** | $1.00$ | **100% PASS** |
-| **Unsupported Refusal Rate** | 100% | 100% | **100%** | $100\%$ | **100% PASS (15/15)** |
-| **Mean Latency (CPU)** | 9.87 ms | **0.42 ms** | 10.35 ms | $< 30\text{ ms}$ | **100% PASS** |
+| **Numerical Reasoning Hit@5** | 0.9000 | **1.0000** | **1.0000** | $1.00$ | **100% PASS** |
+| **Negative Control Filtering** | 100% | 100% | **100%** | $100\%$ | **100% (15/15 retrieval abstention)** |
+| **Mean Latency (CPU)** | 53.86 ms | **2.24 ms** | 57.30 ms | $< 30\text{ ms}$ | Target Missed (Hybrid 57.30 ms vs <30 ms) |
 
 ### Publication-Quality Performance Plots
 Generated via `labs/lab07_final_project/evaluation/generate_visualizations.py` and stored in `labs/lab07_final_project/artifacts/portfolio/`:
@@ -163,7 +163,7 @@ docker compose -f labs/lab07_final_project/docker-compose.yml up -d redis
 
 2. **Launch the FastAPI REST Service**:
    ```powershell
-   .\labs\lab07_final_project\.venv\Scripts\python.exe -m uvicorn labs.lab07_final_project.src.knowledge_copilot.api.main:app --host 127.0.0.1 --port 8000
+   .\labs\lab07_final_project\.venv\Scripts\python.exe -m uvicorn labs.lab07_final_project.src.knowledge_copilot.api.app:app --host 127.0.0.1 --port 8000
    ```
 
 3. **Launch the Streamlit Web Application**:
