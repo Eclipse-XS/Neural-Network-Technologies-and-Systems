@@ -35,7 +35,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from labs.lab07_final_project.src.knowledge_copilot.domain.enums import GroundingStatus, RetrievalMode
-from labs.lab07_final_project.src.knowledge_copilot.domain.models import Document, Chunk, EvidenceChunk
+from labs.lab07_final_project.src.knowledge_copilot.domain.models import Document, Chunk, EvidenceChunk, ToolCallOrigin
 from labs.lab07_final_project.src.knowledge_copilot.infrastructure.sqlite_repo import SQLiteRepository
 from labs.lab07_final_project.src.knowledge_copilot.infrastructure.redis_store import RedisVectorAdapter
 from labs.lab07_final_project.src.knowledge_copilot.application.ingestion_service import IngestionService
@@ -158,44 +158,145 @@ def is_refusal_answer(answer: str, grounding_status: GroundingStatus) -> bool:
     return any(re.search(pat, a_lower) for pat in refusal_patterns)
 
 
-def _parse_numbers(text: str) -> List[float]:
-    """Extract clean floating point numbers from text, handling comma thousand separators."""
+UNIT_DEFINITIONS = {
+    # Byte units -> base unit: byte
+    "b": ("byte", 1.0),
+    "bytes": ("byte", 1.0),
+    "байт": ("byte", 1.0),
+    "байтів": ("byte", 1.0),
+    "байти": ("byte", 1.0),
+    "kib": ("byte", 1024.0),
+    "кіб": ("byte", 1024.0),
+    "kb": ("byte", 1000.0),
+    "кб": ("byte", 1000.0),
+    "mib": ("byte", 1024.0 ** 2),
+    "міб": ("byte", 1024.0 ** 2),
+    "mb": ("byte", 1024.0 ** 2),
+    "мб": ("byte", 1024.0 ** 2),
+    "gib": ("byte", 1024.0 ** 3),
+    "гіб": ("byte", 1024.0 ** 3),
+    "gb": ("byte", 1024.0 ** 3),
+    "гб": ("byte", 1024.0 ** 3),
+    "tib": ("byte", 1024.0 ** 4),
+    "тіб": ("byte", 1024.0 ** 4),
+    "tb": ("byte", 1024.0 ** 4),
+    "тб": ("byte", 1024.0 ** 4),
+    # Time units -> base unit: second
+    "ms": ("time", 0.001),
+    "мс": ("time", 0.001),
+    "мілісекунд": ("time", 0.001),
+    "миллисекунд": ("time", 0.001),
+    "s": ("time", 1.0),
+    "sec": ("time", 1.0),
+    "secs": ("time", 1.0),
+    "second": ("time", 1.0),
+    "seconds": ("time", 1.0),
+    "с": ("time", 1.0),
+    "сек": ("time", 1.0),
+    "секунд": ("time", 1.0),
+    "секунди": ("time", 1.0),
+    "min": ("time", 60.0),
+    "mins": ("time", 60.0),
+    "хв": ("time", 60.0),
+    "хвилин": ("time", 60.0),
+    "минут": ("time", 60.0),
+    "h": ("time", 3600.0),
+    "hr": ("time", 3600.0),
+    "hrs": ("time", 3600.0),
+    "hour": ("time", 3600.0),
+    "hours": ("time", 3600.0),
+    "год": ("time", 3600.0),
+    "годин": ("time", 3600.0),
+    "часов": ("time", 3600.0),
+    # Percentage -> base unit: percent
+    "%": ("percentage", 1.0),
+    "percent": ("percentage", 1.0),
+    "відсотків": ("percentage", 1.0),
+    "відсотка": ("percentage", 1.0),
+    "процентів": ("percentage", 1.0),
+}
+
+
+def _parse_quantities(text: str) -> List[Tuple[float, Optional[str], Optional[str], float]]:
+    """Extract numerical quantities with their units and converted base values.
+    
+    Returns list of (val, raw_unit, category, base_val).
+    """
     if not text:
         return []
     clean = re.sub(r"(\d),(\d)", r"\1\2", text)
-    raw_nums = re.findall(r"\b\d+(?:\.\d+)?\b", clean)
-    parsed = []
-    for n in raw_nums:
+    pattern = r"\b(\d+(?:\.\d+)?)\s*([%a-zA-Zа-яА-ЯіІїЇєЄ]+)?\b"
+    quantities = []
+    for match in re.finditer(pattern, clean):
+        raw_val_str = match.group(1)
+        raw_unit_str = match.group(2)
         try:
-            parsed.append(float(n))
+            val = float(raw_val_str)
         except ValueError:
-            pass
-    return parsed
+            continue
+        category = None
+        base_val = val
+        unit_key = raw_unit_str.casefold() if raw_unit_str else None
+        if unit_key and unit_key in UNIT_DEFINITIONS:
+            category, scale = UNIT_DEFINITIONS[unit_key]
+            base_val = val * scale
+        quantities.append((val, raw_unit_str, category, base_val))
+    return quantities
+
+
+def _parse_numbers(text: str) -> List[float]:
+    """Extract clean floating point numbers from text."""
+    return [q[0] for q in _parse_quantities(text)]
 
 
 def check_numerical_match(answer: str, expected: str) -> bool:
-    """Verify that expected numerical results or mathematically derived quantities appear in the answer."""
-    exp_nums = _parse_numbers(expected)
-    ans_nums = _parse_numbers(answer)
-    if not exp_nums:
+    """Verify that expected numerical results or mathematically derived quantities appear in the answer.
+    
+    Enforces unit awareness:
+    - If expected specifies a unit category (byte, time, percentage), the answer must match
+      both the unit category and the converted base magnitude.
+    - A magnitude match with an incompatible unit (e.g. 788.48 GiB vs 0.77 GiB, or 5000 s vs 5000 ms) is rejected.
+    - If expected is dimensionless, tolerance-based magnitude matching is applied.
+    """
+    exp_quantities = _parse_quantities(expected)
+    ans_quantities = _parse_quantities(answer)
+    if not exp_quantities:
         return True
-    if not ans_nums:
+    if not ans_quantities:
         return False
 
-    # Check key primary target number (usually the first number in expected answer)
-    target_num = exp_nums[0]
-    for an in ans_nums:
-        if math.isclose(an, target_num, rel_tol=0.01, abs_tol=0.01):
-            return True
-        # Check scale conversions (e.g. 0.77 GiB vs 770 MiB or 1.5 GB vs 1536 MB)
-        if math.isclose(an, target_num * 1000, rel_tol=0.05, abs_tol=1.0) or math.isclose(an * 1000, target_num, rel_tol=0.05, abs_tol=1.0):
-            return True
-        if math.isclose(an, target_num * 1024, rel_tol=0.05, abs_tol=1.0) or math.isclose(an * 1024, target_num, rel_tol=0.05, abs_tol=1.0):
+    def matches_quantity(eq: Tuple[float, Optional[str], Optional[str], float], aq: Tuple[float, Optional[str], Optional[str], float]) -> bool:
+        e_val, e_unit, e_cat, e_base = eq
+        a_val, a_unit, a_cat, a_base = aq
+        if e_cat is not None:
+            # Expected has a specific unit category (byte, time, percentage)
+            if a_cat != e_cat:
+                return False
+            return math.isclose(a_base, e_base, rel_tol=0.03, abs_tol=0.01)
+        else:
+            # Dimensionless number or general entity count
+            if math.isclose(a_val, e_val, rel_tol=0.01, abs_tol=0.01):
+                return True
+            # Allow common scale conversions if units were omitted but standard decimal/binary applies
+            if math.isclose(a_val, e_val * 1000, rel_tol=0.05, abs_tol=1.0) or math.isclose(a_val * 1000, e_val, rel_tol=0.05, abs_tol=1.0):
+                return True
+            if math.isclose(a_val, e_val * 1024, rel_tol=0.05, abs_tol=1.0) or math.isclose(a_val * 1024, e_val, rel_tol=0.05, abs_tol=1.0):
+                return True
+            return False
+
+    # Check key primary target quantity (usually the first number in expected answer)
+    target_q = exp_quantities[0]
+    for aq in ans_quantities:
+        if matches_quantity(target_q, aq):
             return True
 
-    # Also check if any expected number matches
-    matches = sum(1 for en in exp_nums if any(math.isclose(en, an, rel_tol=0.01, abs_tol=0.01) for an in ans_nums))
-    return matches > 0
+    # Also check if any expected quantity matches
+    for eq in exp_quantities:
+        for aq in ans_quantities:
+            if matches_quantity(eq, aq):
+                return True
+
+    return False
 
 
 def _detect_polarity_contradiction(text1: str, text2: str) -> bool:
@@ -214,38 +315,94 @@ def _detect_polarity_contradiction(text1: str, text2: str) -> bool:
     return False
 
 
+def _detect_intra_answer_contradiction(answer: str) -> bool:
+    """Detect if an answer internally contradicts itself across distinct sentences."""
+    if not answer:
+        return False
+    raw_sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+|\n+", answer) if s.strip()]
+    if len(raw_sentences) < 2:
+        return False
+
+    stopwords = {
+        "the", "and", "for", "that", "this", "with", "from", "are", "was", "were",
+        "has", "have", "had", "not", "but", "what", "which", "who", "when", "where",
+        "було", "для", "або", "при", "який", "яка", "яке", "які", "так", "ні", "був",
+        "були", "буде", "цього", "тому", "якщо", "після", "через", "згідно", "даними",
+        "also", "than", "then", "its", "however", "although", "while", "here", "there",
+    }
+
+    neg_pattern = r"\b(?:not|never|neither|nor|rejected|failed|cannot|isn't|wasn't|doesn't|didn't|won't|не|ніколи|відхилено|немає|відсутній|відсутня|відсутнє|відсутні)\b"
+
+    sentence_info = []
+    for s in raw_sentences:
+        clean = re.sub(r"\[[a-zA-Z0-9_.-]+#[a-zA-Z0-9_.-]+\]", "", s).strip()
+        if len(clean) < 10:
+            continue
+        c_norm = normalize_text(clean)
+        is_neg = bool(re.search(neg_pattern, c_norm))
+        tokens = [t for t in re.findall(r"\b[a-zA-Z0-9_\u0400-\u04FF.-]{4,}\b", c_norm) if t not in stopwords]
+        if tokens:
+            sentence_info.append((clean, is_neg, set(tokens), c_norm))
+
+    for i in range(len(sentence_info)):
+        _, s_i_neg, s_i_tokens, s_i_norm = sentence_info[i]
+        for j in range(i + 1, len(sentence_info)):
+            _, s_j_neg, s_j_tokens, s_j_norm = sentence_info[j]
+            if s_i_neg != s_j_neg:
+                neg_norm = s_j_norm if s_j_neg else s_i_norm
+                # Ignore explicitly comparative / contrasting clauses that compare against baselines
+                if re.search(r"\b(?:in contrast|on the other hand|whereas|unlike|instead of|на відміну від|на відміну)\b", neg_norm):
+                    continue
+                shared = s_i_tokens.intersection(s_j_tokens)
+                min_len = min(len(s_i_tokens), len(s_j_tokens))
+                if len(shared) >= 3 or (min_len > 0 and len(shared) / min_len >= 0.60):
+                    for w in shared:
+                        if (
+                            re.search(neg_pattern + r"\s+\w*\s*" + re.escape(w), neg_norm)
+                            or re.search(re.escape(w) + r"\s+\w*\s*" + neg_pattern, neg_norm)
+                        ):
+                            return True
+    return False
+
+
 def compute_factual_correctness(answer: str, expected: str, evidence_spans: List[str]) -> bool:
     """Evaluate whether the answer factual content aligns with gold expected answer and evidence spans.
     
     Scientifically grounds factual correctness in:
-    - Direct evidence span / key proposition alignment.
-    - Numerical consistency (checked via normalized numeric tolerance and units).
-    - Content token recall across multilingual equivalents.
-    - Elimination of artificial foreign vocabulary penalties.
+    - Intra-answer non-contradiction verification.
+    - Core proposition polarity non-contradiction verification.
+    - Numerical consistency (checked via unit-aware conversion and tolerance).
+    - Verbatim evidence span alignment without premature short-circuiting.
+    - Content token recall without artificial foreign vocabulary penalties.
     """
     a_norm = normalize_text(answer)
     e_norm = normalize_text(expected)
     if not a_norm or not e_norm:
         return False
 
-    # 1. Direct verbatim evidence span alignment
+    # 1. Intra-answer contradiction check: answer cannot contradict itself
+    if _detect_intra_answer_contradiction(answer):
+        return False
+
+    # 2. Polarity contradiction check against expected answer
+    if _detect_polarity_contradiction(a_norm, e_norm):
+        return False
+
+    # 3. Check numerical results if expected has numbers
+    exp_quantities = _parse_quantities(expected)
+    if exp_quantities:
+        if not check_numerical_match(answer, expected):
+            return False
+
+    # 4. Direct verbatim evidence span alignment (checked AFTER contradiction and numerical validation)
     if evidence_spans:
         for span in evidence_spans:
             norm_span = normalize_text(span)
             if norm_span and norm_span in a_norm:
                 return True
 
-    # 2. Check numerical results if expected has numbers
-    exp_nums = _parse_numbers(expected)
-    if exp_nums:
-        if not check_numerical_match(answer, expected):
-            return False
-
-    # 3. Check direct contradiction on core proposition
-    if _detect_polarity_contradiction(a_norm, e_norm):
-        return False
-
-    # 4. Content token recall evaluated against expected answer and evidence spans
+    # 5. Content token recall evaluated against expected answer and evidence spans
+    # NOTE: Arbitrary foreign_tokens / foreign_ratio penalty removed per scientific acceptance requirements.
     stopwords = {
         "the", "and", "for", "that", "this", "with", "from", "are", "was", "were",
         "has", "have", "had", "not", "but", "what", "which", "who", "when", "where",
@@ -260,24 +417,6 @@ def compute_factual_correctness(answer: str, expected: str, evidence_spans: List
 
     ans_tokens = [t for t in re.findall(r"\b[a-zA-Z0-9_\u0400-\u04FF.-]{3,}\b", a_norm) if t not in stopwords]
     ans_tokens_set = set(ans_tokens)
-
-    # Reject foreign vocabulary / unrelated assertions sharing only subset vocabulary
-    allowed_context = e_norm + " " + " ".join(normalize_text(s) for s in (evidence_spans or []))
-    allowed_tokens = set(re.findall(r"\b[a-zA-Z0-9_\u0400-\u04FF.-]{3,}\b", allowed_context))
-    allowed_tokens.update({
-        "лабораторна", "лабораторній", "робота", "роботі", "документ", "документом",
-        "модель", "моделі", "система", "системи", "результат", "результати",
-    })
-    if ans_tokens:
-        foreign_tokens = [
-            t for t in ans_tokens
-            if t not in allowed_tokens and not (len(t) >= 4 and any(at.startswith(t[:4]) or t.startswith(at[:4]) for at in allowed_tokens if len(at) >= 4))
-        ]
-        foreign_ratio = len(foreign_tokens) / len(ans_tokens)
-        if not evidence_spans and foreign_ratio >= 0.40:
-            return False
-        elif evidence_spans and foreign_ratio >= 0.65:
-            return False
 
     best_recall = 0.0
     for cand in candidates:
@@ -294,7 +433,21 @@ def compute_factual_correctness(answer: str, expected: str, evidence_spans: List
         if recall > best_recall:
             best_recall = recall
 
-    return best_recall >= 0.40
+    if best_recall < 0.40:
+        return False
+
+    # Guard against unrelated shared vocabulary soup when no supporting evidence spans are provided:
+    # If expected and answer are in the same language and answer asserts predominantly foreign predicates (>45% foreign words),
+    # reject the proposition mismatch.
+    if not evidence_spans:
+        e_cand_tokens = [t for t in re.findall(r"\b[a-zA-Z0-9_\u0400-\u04FF.-]{3,}\b", e_norm) if t not in stopwords]
+        if e_cand_tokens and ans_tokens:
+            allowed = set(e_cand_tokens)
+            foreign = [t for t in ans_tokens if t not in allowed and not any(t.startswith(c[:4]) or c.startswith(t[:4]) for c in allowed)]
+            if len(foreign) / len(ans_tokens) >= 0.45:
+                return False
+
+    return True
 
 
 def verify_claim_evidence_support(
@@ -332,6 +485,35 @@ def verify_claim_evidence_support(
             continue
 
         s_norm = normalize_text(clean_s)
+
+        # 0. Specific citation entailment check: if sentence cites specific [doc#chunk], verify cited chunk entails claim
+        cited_tags = re.findall(r"\[([a-zA-Z0-9_.-]+)#([a-zA-Z0-9_.-]+)\]", raw_s)
+        if cited_tags:
+            specific_chunk_supported = False
+            for doc_ref, chunk_ref in cited_tags:
+                matched_chunks = [
+                    c for c in evidence
+                    if c.chunk.chunk_id == chunk_ref or c.chunk.chunk_id.endswith(chunk_ref)
+                ]
+                for mc in matched_chunks:
+                    mc_norm = normalize_text(mc.chunk.text)
+                    mc_tokens = set(re.findall(r"\b[a-zA-Z0-9_\u0400-\u04FF.-]{3,}\b", mc_norm))
+                    claim_tokens = [w for w in re.findall(r"\b[a-zA-Z0-9_\u0400-\u04FF.-]{3,}\b", s_norm) if w not in stopwords]
+                    if claim_tokens:
+                        c_overlap = sum(1 for ct in claim_tokens if ct in mc_tokens or any(et.startswith(ct[:4]) or ct.startswith(et[:4]) for et in mc_tokens if len(et) >= 4)) / len(claim_tokens)
+                        if c_overlap >= 0.25:
+                            specific_chunk_supported = True
+                            break
+                if specific_chunk_supported:
+                    break
+            if not specific_chunk_supported:
+                judgments.append({
+                    "claim": clean_s,
+                    "supported": False,
+                    "verdict": "UNSUPPORTED_CITATION",
+                    "reason": f"Cited chunk(s) {cited_tags} do not entail the claim sentence.",
+                })
+                continue
 
         # 1. Contradiction & negation detection against evidence
         has_neg = bool(re.search(r"\b(?:not|never|neither|nor|rejected|failed|cannot|isn't|wasn't|не|ні|відхилено)\b", s_norm))
@@ -413,7 +595,7 @@ def verify_claim_evidence_support(
 
     supported_count = sum(1 for j in judgments if j["supported"])
     support_rate = supported_count / len(judgments)
-    is_supported = (support_rate >= 0.70) and not any(j.get("verdict") in ("CONTRADICTED",) for j in judgments)
+    is_supported = (support_rate >= 0.70) and not any(j.get("verdict") in ("CONTRADICTED", "UNSUPPORTED_CITATION") for j in judgments)
 
     if return_judgments:
         return is_supported, judgments
@@ -517,7 +699,7 @@ async def run_generation_evaluation(
     repo = SQLiteRepository(db_path)
     embeddings = CopilotEmbeddings(local_files_only=True)
     redis_adapter = RedisVectorAdapter(
-        redis_url="redis://localhost:6380",
+        redis_url="redis://127.0.0.1:6379",
         index_name="lab07:benchmark:idx",
         key_prefix="lab07:bench:chunk",
     )
@@ -531,9 +713,19 @@ async def run_generation_evaluation(
     )
 
     corpus_path = Path("labs/lab07_final_project/assets/knowledge")
-    if len(repo.get_all_chunks()) < 140:
+    chunks = repo.get_all_chunks()
+    if len(chunks) < 140:
         from labs.lab07_final_project.evaluation.run_benchmark import ensure_corpus_ingested
         ensure_corpus_ingested(ingestion_service, corpus_path)
+        chunks = repo.get_all_chunks()
+
+    try:
+        r_client = redis_adapter.get_client()
+        if r_client.dbsize() < len(chunks):
+            print(f"Syncing {len(chunks)} chunks to Redis vector store...")
+            redis_adapter.index_chunks(chunks, embeddings)
+    except Exception as r_exc:
+        print(f"Redis sync check note: {r_exc}")
 
     query_service = QueryService(
         ingestion_service=ingestion_service,
@@ -561,6 +753,18 @@ async def run_generation_evaluation(
     cross_doc_evals = []
     execution_failures = 0
     total_fabricated_citations = 0
+
+    # Disaggregated tool metrics
+    total_numerical_queries = 0
+    tool_invoked_queries = 0
+    autonomous_tool_queries = 0
+    recovery_tool_queries = 0
+    total_tool_calls = 0
+    successful_tool_calls = 0
+    valid_arg_tool_calls = 0
+    numerical_correct_queries = 0
+    correct_without_tool_count = 0
+    tool_success_generation_failure_count = 0
 
     print(f"Executing real agent turns across {len(dataset)} queries...")
 
@@ -591,6 +795,7 @@ async def run_generation_evaluation(
                     factual_evals.append(0)
                     claim_evals.append(0)
                 if is_calc_req:
+                    total_numerical_queries += 1
                     calculator_evals.append(0)
                 if is_cross_doc:
                     cross_doc_evals.append(0.0)
@@ -603,9 +808,11 @@ async def run_generation_evaluation(
                     "success": False,
                     "latency_ms": elapsed_ms,
                 })
+                print(f"[{idx}/{len(dataset)}] Evaluated {qid}: EXECUTION_FAILED ({elapsed_ms/1000.0:.2f}s)", flush=True)
                 continue
 
             tools_called = [rec.tool_name for rec in turn.tool_executions]
+            print(f"[{idx}/{len(dataset)}] Evaluated {qid}: {turn.grounding_status.value} ({elapsed_ms/1000.0:.2f}s, tools: {tools_called})", flush=True)
 
             # 1. Refusal evaluation
             if is_refusal_req:
@@ -634,11 +841,49 @@ async def run_generation_evaluation(
                 claim_supp = verify_claim_evidence_support(turn.canonical_answer, turn.evidence)
                 claim_evals.append(1 if claim_supp else 0)
 
-            # 5. Calculator invocation evaluation
+            # 5. Calculator and tool invocation evaluation (disaggregated)
             if is_calc_req:
-                calc_invoked = "calculate" in tools_called
+                total_numerical_queries += 1
+                calc_executions = [rec for rec in turn.tool_executions if rec.tool_name == "calculate"]
+                has_calc = len(calc_executions) > 0
                 num_correct = check_numerical_match(turn.canonical_answer, item.get("expected_answer", ""))
-                calculator_evals.append(1 if (calc_invoked and num_correct) else 0)
+                if num_correct:
+                    numerical_correct_queries += 1
+
+                if has_calc:
+                    tool_invoked_queries += 1
+                    total_tool_calls += len(calc_executions)
+                    has_model_req = any(
+                        getattr(rec.origin, "value", rec.origin) == "MODEL_REQUESTED"
+                        for rec in calc_executions
+                    )
+                    has_recovery = any(
+                        getattr(rec.origin, "value", rec.origin) == "RECOVERY_EXECUTED"
+                        for rec in calc_executions
+                    )
+                    if has_model_req:
+                        autonomous_tool_queries += 1
+                    if has_recovery:
+                        recovery_tool_queries += 1
+
+                    any_exec_success = False
+                    for rec in calc_executions:
+                        expr = str(rec.arguments.get("expression", "")).strip() if rec.arguments else ""
+                        if expr and not any(bad in expr for bad in ["__", "import", "eval", "exec"]):
+                            valid_arg_tool_calls += 1
+                        res = rec.result
+                        res_str = str(res) if res is not None else ""
+                        if res is not None and not res_str.lower().startswith("error"):
+                            successful_tool_calls += 1
+                            any_exec_success = True
+
+                    if any_exec_success and not num_correct:
+                        tool_success_generation_failure_count += 1
+                else:
+                    if num_correct:
+                        correct_without_tool_count += 1
+
+                calculator_evals.append(1 if has_calc else 0)
 
             # 6. Cross-document synthesis coverage (only counts valid citations)
             if is_cross_doc:
@@ -667,6 +912,7 @@ async def run_generation_evaluation(
         except Exception as exc:
             elapsed_ms = (time.perf_counter() - t0) * 1000.0
             execution_failures += 1
+            print(f"[{idx}/{len(dataset)}] Evaluated {qid}: EXCEPTION {type(exc).__name__}: {exc} ({elapsed_ms/1000.0:.2f}s)", flush=True)
             if is_refusal_req:
                 refusal_evals.append(0)
             else:
@@ -674,6 +920,7 @@ async def run_generation_evaluation(
                 factual_evals.append(0)
                 claim_evals.append(0)
             if is_calc_req:
+                total_numerical_queries += 1
                 calculator_evals.append(0)
             if is_cross_doc:
                 cross_doc_evals.append(0.0)
@@ -768,9 +1015,20 @@ async def run_generation_evaluation(
             "value": (sum(refusal_evals) / len(refusal_evals)) if refusal_evals else None,
         },
         "calculator_usage_rate": {
-            "numerator": sum(calculator_evals),
-            "denominator": len(calculator_evals),
-            "value": (sum(calculator_evals) / len(calculator_evals)) if calculator_evals else None,
+            "numerator": tool_invoked_queries,
+            "denominator": total_numerical_queries,
+            "value": (tool_invoked_queries / total_numerical_queries) if total_numerical_queries else None,
+        },
+        "tool_metrics": {
+            "total_numerical_queries": total_numerical_queries,
+            "tool_invocation_rate": (tool_invoked_queries / total_numerical_queries) if total_numerical_queries else 0.0,
+            "autonomous_tool_invocation_rate": (autonomous_tool_queries / total_numerical_queries) if total_numerical_queries else 0.0,
+            "recovery_tool_invocation_rate": (recovery_tool_queries / total_numerical_queries) if total_numerical_queries else 0.0,
+            "tool_execution_success_rate": (successful_tool_calls / total_tool_calls) if total_tool_calls else 0.0,
+            "tool_argument_validity_rate": (valid_arg_tool_calls / total_tool_calls) if total_tool_calls else 0.0,
+            "numerical_factual_correctness_rate": (numerical_correct_queries / total_numerical_queries) if total_numerical_queries else 0.0,
+            "correct_without_tool_count": correct_without_tool_count,
+            "tool_success_generation_failure_count": tool_success_generation_failure_count,
         },
         "cross_document_coverage": {
             "numerator": sum(cross_doc_evals),

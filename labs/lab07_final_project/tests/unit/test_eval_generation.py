@@ -126,6 +126,28 @@ class TestNumericalVerification:
             "Різниця становить 501 (8501 - 8000).",
         )
 
+    def test_adversarial_unit_mismatch(self):
+        # Magnitude match with wrong unit category or wrong scaled unit MUST FAIL
+        # 788.48 GiB is 1024 times larger than 0.77 GiB (expected 788.48 MiB)
+        assert not check_numerical_match(
+            "The remaining free VRAM is 788.48 GiB.",
+            "The used VRAM is 0.770 GiB (4.000 - 3.230).",
+        )
+        # 5000 s is 1000 times larger than 5000 ms (expected 5 s)
+        assert not check_numerical_match(
+            "Latency is 5000 s.",
+            "The latency threshold is 5000 ms.",
+        )
+        # Matching units with correct scale conversion MUST PASS
+        assert check_numerical_match(
+            "Latency is 5 s.",
+            "The latency threshold is 5000 ms.",
+        )
+        assert check_numerical_match(
+            "The remaining free VRAM is 788.48 MiB.",
+            "The used VRAM is 0.770 GiB (4.000 - 3.230).",
+        )
+
 
 class TestFactualCorrectness:
     """Validate factual equivalence across languages and structured technical paraphrases."""
@@ -150,6 +172,33 @@ class TestFactualCorrectness:
         expected = "SQLite with WAL is used for chat memory persistence."
         answer = "SQLite with WAL is NOT used for chat memory persistence, it was rejected."
         assert not compute_factual_correctness(answer, expected, [])
+
+    def test_intra_answer_contradiction_fails(self):
+        expected = "FastAPI backend is used for serving HTTP endpoints."
+        evidence_spans = ["FastAPI backend runs on port 8000 for serving HTTP endpoints."]
+        # Answer first affirms and then negates the same proposition
+        answer = (
+            "FastAPI backend is used for serving HTTP endpoints on port 8000. "
+            "However, FastAPI backend is not used for serving HTTP endpoints in this system."
+        )
+        assert not compute_factual_correctness(answer, expected, evidence_spans)
+
+    def test_domain_technical_vocabulary_not_penalized(self):
+        expected = "RRF combines BM25 ranking and dense cosine distance scores."
+        evidence_spans = ["RRF combines reciprocal ranks from BM25 and vector search."]
+        # Answer has rich Ukrainian domain explanation with terms not in any fixed vocabulary
+        answer = (
+            "Алгоритм реципрокного злиття рангів (Reciprocal Rank Fusion, RRF) обчислює "
+            "гармонізовані скори для документів, комбінуючи розріджений пошук BM25 та векторний скоринг."
+        )
+        assert compute_factual_correctness(answer, expected, evidence_spans)
+
+    def test_verbatim_span_with_wrong_numbers_fails(self):
+        expected = "Used VRAM is 0.77 GiB."
+        evidence_spans = ["Used VRAM is 0.77 GiB."]
+        # Contains the span text partially but asserts an incorrect number (e.g. 50.0 GiB)
+        answer = "Used VRAM is 50.0 GiB according to the test report."
+        assert not compute_factual_correctness(answer, expected, evidence_spans)
 
 
 class TestClaimEvidenceSupport:
@@ -177,3 +226,15 @@ class TestClaimEvidenceSupport:
         )
         answer = "The remaining free VRAM is 770 MiB (or 0.77 GiB), calculated as 4.000 minus 3.230 GiB."
         assert verify_claim_evidence_support(answer, [ev1])
+
+    def test_adversarial_unsupported_citation(self):
+        ev1 = make_evidence(
+            doc_id="adr_001",
+            chunk_id="chunk-001",
+            text="FastAPI backend runs on port 8000 for serving HTTP endpoints.",
+        )
+        # Sentence cites chunk-001 for a claim that is completely unrelated to chunk-001
+        answer = "Quantum computing algorithms accelerate cryptographic key exchange [adr_001#chunk-001]."
+        is_supported, judgments = verify_claim_evidence_support(answer, [ev1], return_judgments=True)
+        assert not is_supported
+        assert any(j.get("verdict") == "UNSUPPORTED_CITATION" for j in judgments)

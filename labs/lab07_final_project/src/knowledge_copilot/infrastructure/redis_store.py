@@ -1,6 +1,8 @@
 """Redis Stack vector store and index management."""
 import hashlib
 import json
+import subprocess
+import re
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
@@ -44,12 +46,31 @@ class RedisVectorAdapter:
 
     def get_client(self) -> Redis:
         if self._client is None:
-            self._client = Redis.from_url(
-                self.redis_url,
-                socket_connect_timeout=3,
-                socket_timeout=10,
-                decode_responses=False,
-            )
+            candidate_urls = [self.redis_url]
+            if ':6380' in self.redis_url:
+                candidate_urls.append(self.redis_url.replace(':6380', ':6379'))
+                candidate_urls.append('redis://127.0.0.1:6379')
+            elif ':6379' in self.redis_url:
+                candidate_urls.append(self.redis_url.replace(':6379', ':6380'))
+                candidate_urls.append('redis://127.0.0.1:6380')
+
+
+            last_err = None
+            for url in candidate_urls:
+                try:
+                    client = Redis.from_url(
+                        url,
+                        socket_connect_timeout=5,
+                        socket_timeout=30,
+                        decode_responses=False,
+                    )
+                    client.ping()
+                    self.redis_url = url
+                    self._client = client
+                    return self._client
+                except Exception as err:
+                    last_err = err
+            raise last_err or RuntimeError(f'Could not connect to Redis via {self.redis_url}')
         return self._client
 
     def ping(self) -> bool:

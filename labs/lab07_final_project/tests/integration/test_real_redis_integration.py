@@ -46,13 +46,24 @@ class RealSyntheticEmbeddings(Embeddings):
 
 @pytest.fixture(scope="module")
 def live_redis_adapter():
-    redis_url = "redis://localhost:6380"
-    raw_client = redis.from_url(redis_url)
-    try:
-        if not raw_client.ping():
-            pytest.fail("Mandatory Gate P0-10: Real Redis Stack on port 6380 did not respond to PING!")
-    except Exception as exc:
-        pytest.fail(f"Mandatory Gate P0-10: Real Redis Stack on port 6380 is unreachable: {exc}")
+    import os
+    candidate_urls = [os.environ.get("REDIS_URL"), "redis://localhost:6380", "redis://localhost:6379"]
+    raw_client = None
+    redis_url = None
+    last_exc = None
+    for url in candidate_urls:
+        if not url:
+            continue
+        try:
+            c = redis.from_url(url, socket_connect_timeout=2)
+            if c.ping():
+                raw_client = c
+                redis_url = url
+                break
+        except Exception as exc:
+            last_exc = exc
+    if raw_client is None:
+        pytest.fail(f"Mandatory Gate P0-10: Real Redis Stack on ports 6380/6379 is unreachable: {last_exc}")
 
     uid = uuid.uuid4().hex[:8]
     test_idx = f"real_redis_test_idx_{uid}"

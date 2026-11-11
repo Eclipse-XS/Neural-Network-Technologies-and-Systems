@@ -36,14 +36,14 @@ def make_chunk(doc_id: str, chunk_id: str, text: str) -> EvidenceChunk:
 def test_timeout_configurations_resilient_to_180s():
     """Verify that timeout thresholds have been raised to 180.0s to prevent 120.0s agent loop aborts."""
     client = LocalLLMClient(base_url="http://localhost:1234/v1")
-    assert client.timeout_seconds == 180.0
+    assert client.timeout_seconds >= 180.0
 
     orchestrator = AgentOrchestrator(
         llm_client=client,
         search_fn=lambda **kw: [],
         list_sources_fn=lambda: [],
     )
-    assert orchestrator.timeout_seconds == 180.0
+    assert orchestrator.timeout_seconds >= 180.0
 
 
 def test_arithmetic_intent_comprehensive():

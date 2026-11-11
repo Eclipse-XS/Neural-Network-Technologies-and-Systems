@@ -394,6 +394,17 @@ class QueryService:
             history_messages.append({"role": "assistant", "content": t.canonical_answer})
             session_evidence.extend(t.evidence)
 
+        # Pre-retrieve candidate chunks for the query to seed evidence context and accelerate cross-document synthesis
+        try:
+            pre_chunks = self.search(query=query, mode=retrieval_mode, k=5)
+            existing_cids = {se.chunk.chunk_id for se in session_evidence}
+            for pc in pre_chunks:
+                if pc.chunk.chunk_id not in existing_cids:
+                    session_evidence.append(pc)
+                    existing_cids.add(pc.chunk.chunk_id)
+        except Exception:
+            pass
+
         if not self.orchestrator:
             raise RuntimeError("AgentOrchestrator is not configured on QueryService.")
 

@@ -257,7 +257,7 @@ class LocalLLMClient:
         self,
         base_url: str = "http://localhost:1234/v1",
         model_id: str = "mistralai/ministral-3-3b",
-        timeout_seconds: float = 180.0,
+        timeout_seconds: float = 240.0,
     ):
         validate_loopback_url(base_url)
         self.base_url = base_url

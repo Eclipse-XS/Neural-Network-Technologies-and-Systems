@@ -1,0 +1,835 @@
+{
+  "status": "VERIFIED_LIVE",
+  "model_id": "mistralai/ministral-3-3b",
+  "execution_failures": 0,
+  "fabricated_citations": 0,
+  "total_queries": 50,
+  "successful_turns": 50,
+  "metrics": {
+    "factual_answer_correctness": {
+      "numerator": 31,
+      "denominator": 40,
+      "value": 0.775
+    },
+    "claim_support_rate": {
+      "numerator": 18,
+      "denominator": 40,
+      "value": 0.45
+    },
+    "citation_validity_rate": {
+      "numerator": 30.0,
+      "denominator": 40,
+      "value": 0.75
+    },
+    "unsupported_refusal_rate": {
+      "numerator": 5,
+      "denominator": 10,
+      "value": 0.5
+    },
+    "calculator_usage_rate": {
+      "numerator": 8,
+      "denominator": 10,
+      "value": 0.8
+    },
+    "tool_metrics": {
+      "total_numerical_queries": 10,
+      "tool_invocation_rate": 0.8,
+      "autonomous_tool_invocation_rate": 0.6,
+      "recovery_tool_invocation_rate": 0.2,
+      "tool_execution_success_rate": 1.0,
+      "tool_argument_validity_rate": 1.0,
+      "numerical_factual_correctness_rate": 1.0,
+      "correct_without_tool_count": 2,
+      "tool_success_generation_failure_count": 0
+    },
+    "cross_document_coverage": {
+      "numerator": 8.0,
+      "denominator": 10,
+      "value": 0.8
+    },
+    "multi_turn_correctness": {
+      "numerator": 0,
+      "denominator": 1,
+      "value": 0.0
+    },
+    "fabricated_citations": {
+      "numerator": 0,
+      "denominator": 40,
+      "value": 0
+    },
+    "latency": {
+      "p50_ms": 30134.925000002113,
+      "p95_ms": 89258.4345550036,
+      "mean_ms": 40045.18563800011
+    }
+  },
+  "multi_turn_detail": {
+    "turn_1_success": false,
+    "turn_2_success": true,
+    "history_persisted": true,
+    "session_isolation_verified": true
+  },
+  "itemized_results": [
+    {
+      "query_id": "final_v3_indep_001",
+      "query": "Which vector indexing structures and numerical precision are utilized in Redis Stack according to ADR 001?",
+      "category": "exact_fact",
+      "answer": "According to **ADR 001**, Redis Stack utilizes the following vector indexing structures and numerical precision:\n\n- **Vector Indexing Structures**: `HNSW` (Hierarchical Navigable Small World) and `FLAT`.\n- **Numerical Precision**: `FLOAT32` for storing embedding vectors.\n- **Distance Metric**: Cosine similarity, applied to normalized embedding vectors of dimension 768 (e.g., `multilingual-e5-base`). [adr_001_vector_and_storage_architecture#chunk-312de896eb918af4]",
+      "grounding_status": "GROUNDED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [
+        "[adr_001_vector_and_storage_architecture#chunk-312de896eb918af4]"
+      ],
+      "latency_ms": 30390.311700000893,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_002",
+      "query": "Який HTTP-код та яку назву помилки повертає система завантаження документів для порожніх або пошкоджених файлів згідно з API специфікацією?",
+      "category": "exact_fact",
+      "answer": "Інформація про HTTP-коди та назви помилок для порожніх або пошкоджених файлів в API специфікації не міститься в доступних документах.\n\nДля стандартного веб-сервісу зазвичай використовуються такі коды і назви помилок:\n- **400 Bad Request** — якщо файл наданий у неправильному форматі або має структурні проблеми.\n- **415 Unsupported Media Type** — для не підтримуваних типів файлів (наприклад, порожніх).\n- **422 Unprocessable Entity** — для пошкоджених або невалідних даних у тілі запиту.\n\nДля точного визначення використовуйте специфікацію вашого API. Якщо це стосується конкретного документаційного процесу завантаження, перевірте його стандарти або технічні вимоги.",
+      "grounding_status": "VALIDATION_FAILED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [],
+      "latency_ms": 50679.43479999667,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_003",
+      "query": "At what exact time and with which Redis command failure did the ingestion worker crash during the OOM incident?",
+      "category": "exact_fact",
+      "answer": "The ingestion worker crashed at **14:23 UTC** during the OOM incident with a **Redis `HSET` command failure**, specifically due to the error:\n> `redis.exceptions.ResponseError: OOM command not allowed when used memory > 'maxmemory'` **[incident_postmortem_redis_oom#chunk-ce91c3b15f07706b]**.",
+      "grounding_status": "GROUNDED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [
+        "[incident_postmortem_redis_oom#chunk-ce91c3b15f07706b]"
+      ],
+      "latency_ms": 21315.93520000024,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_004",
+      "query": "Яку команду curl наведено в інструкції runbook для перевірки готовності інґрес-сервісу?",
+      "category": "exact_fact",
+      "answer": "Команда `curl`, наведена в інструкції **runbook** для перевірки готовності інґрес-сервісу:\n\n```bash\ncurl -s http://127.0.0.1:8000/api/v1/health/ready\n```\n\nОчікуваний відповідний код HTTP — 200, і тіло відповіді має формат:\n`{\"status\":\"ready\",\"database\":true,\"redis\":true}`.\n[rag_system_runbook#chunk-fedc2034890e80a0]",
+      "grounding_status": "GROUNDED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [
+        "[rag_system_runbook#chunk-fedc2034890e80a0]"
+      ],
+      "latency_ms": 33978.83050000382,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_005",
+      "query": "How many long product records were truncated to 256 word pieces by MiniLM in the Lab 3 report?",
+      "category": "exact_fact",
+      "answer": "В лабораторному звіті №3 **MiniLM обрізав 17 довгих записів до 256 word pieces** [lab03_rag_report#chunk-4d5ce6f4f6109390].",
+      "grounding_status": "GROUNDED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [
+        "[lab03_rag_report#chunk-4d5ce6f4f6109390]"
+      ],
+      "latency_ms": 20816.25129999884,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_006",
+      "query": "Які три художні стилі (стильові суфікси) досліджувалися для генерації другої семантичної сцени в Lab 4?",
+      "category": "exact_fact",
+      "answer": "У лабораторній роботі №4 для генерації другої семантичної сцени (маленької кабани біля спокійного озера з сосновими деревами) досліджувалися три художні стилі:\n\n1. **Watercolor** — з зернистою фактурою паперу та акварельними заливками.\n2. **Isometric** — проста геометрія кабани і ілюстративні дерева, але без строгої ізометричної проекції.\n3. **Photorealistic** — дрібна фактура лісу та природне відбиття.\n\nЦі стилі були вивчені для зміни візуального вигляду сцени при фіксованому seed і інших параметрах [lab04_stable_diffusion_report#chunk-99ec8eb4e21da20a, lab04_stable_diffusion_report#chunk-5384cddcf9075b9b].",
+      "grounding_status": "VALIDATION_FAILED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [],
+      "latency_ms": 56148.47329999611,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_007",
+      "query": "What were the three baseline answers produced by LLaVA in the Lab 5 visual question answering evaluation?",
+      "category": "exact_fact",
+      "answer": "The indexed documents do not explicitly list the **three baseline answers** produced by LLaVA for the Visual Question Answering (VQA) tasks in Lab 5. The provided chunks describe:\n\n- A mention of **10 baseline questions** and controlled comparisons in the VQA variant ([lab05_multimodal_report#chunk-11fa98c799dc1978]), but not the actual answers.\n- Factological and analytical question examples, which are unrelated to the specific baseline answers for LLaVA’s VQA.\n\nIf you need details on how LLaVA generated or evaluated its responses in this task, I recommend checking the original LLaVA paper or technical report, as those sources may provide the full list of baseline outputs. Would you like help finding alternative documentation?",
+      "grounding_status": "GROUNDED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [
+        "[lab05_multimodal_report#chunk-11fa98c799dc1978]"
+      ],
+      "latency_ms": 28653.864100000646,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_008",
+      "query": "Які версії Python та бібліотеки openai-agents зазначені в середовищі лабораторної роботи №6?",
+      "category": "exact_fact",
+      "answer": "У лабораторній роботі №6 використовувалися наступні версії:\n- **Python**: 3.13.5\n- **Бібліотека openai-agents**: 0.22.3\n\n[lab06_agents_report#chunk-24d0b9d10d53e82f]",
+      "grounding_status": "GROUNDED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [
+        "[lab06_agents_report#chunk-24d0b9d10d53e82f]"
+      ],
+      "latency_ms": 22017.9633000007,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_009",
+      "query": "What was the rationale for rejecting pgvector in the ADR 001 architectural decision?",
+      "category": "exact_fact",
+      "answer": "The rationale for rejecting **pgvector** in ADR 001 was its **heavy container footprint and complex local installation requirements on developer workstations**, which violated the operational constraints of offline, local-first execution ([adr_001_vector_and_storage_architecture#chunk-6cfff327f83838b7]).",
+      "grounding_status": "GROUNDED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [
+        "[adr_001_vector_and_storage_architecture#chunk-6cfff327f83838b7]"
+      ],
+      "latency_ms": 19110.178999995696,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_010",
+      "query": "Який JSON-об'єкт та HTTP-код повертає ендпоінт /health/ready, якщо всі залежності доступні?",
+      "category": "exact_fact",
+      "answer": "При успішному доступності всіх залежностей ендпоінт `/health/ready` повертає наступний JSON-об'єкт та HTTP-код **200**:\n\n```json\n{\n  \"status\": \"ready\",\n  \"redis\": true,\n  \"database\": true\n}\n```\n[api_specification_and_contracts#chunk-342a291bedfe4d18] і [rag_system_runbook#chunk-fedc2034890e80a0].",
+      "grounding_status": "GROUNDED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [
+        "[api_specification_and_contracts#chunk-342a291bedfe4d18]",
+        "[rag_system_runbook#chunk-fedc2034890e80a0]"
+      ],
+      "latency_ms": 28645.37389999896,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_011",
+      "query": "How is SQLite configured to tolerate simultaneous database write operations during query execution?",
+      "category": "paraphrase",
+      "answer": "SQLite does **not** inherently tolerate simultaneous write operations during query execution by design. Instead, SQLite relies on its robust transaction isolation and write-ahead logging (WAL) mode to handle concurrent writes safely:\n\n- **Write-Ahead Logging (WAL)**: SQLite uses WAL mode for better concurrency, allowing multiple readers and writers to operate simultaneously without blocking each other. This ensures that queries can proceed while writes are being processed in a logged manner.\n- **ACID Compliance**: SQLite guarantees atomicity, consistency, isolation, and durability (ACID) for transactions, which helps maintain data integrity even under concurrent write operations.\n\nThe indexed documents do not provide specific details about how SQLite handles this internally during query execution. If you need further clarification on WAL mode or transaction handling, let me know!\n\nFor your system architecture, the referenced design decision (ADR 001) prioritizes **SQLite’s robust transaction isolation** and **WAL mode** for concurrent operations alongside vector storage with Redis (see [adr_001_vector_and_storage_architecture#chunk-27547712c6c1bf94]).",
+      "grounding_status": "GROUNDED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [
+        "[adr_001_vector_and_storage_architecture#chunk-27547712c6c1bf94]"
+      ],
+      "latency_ms": 50102.96029999881,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_012",
+      "query": "Скільки сторінок та скільки текстових чанків містив вхідний PDF-документ технічної специфікації, що спричинив OOM-аварію під час завантаження?",
+      "category": "paraphrase",
+      "answer": "Вхідний PDF-технічної специфікації, який спричинив OOM-аварію під час завантаження, містив **450 сторінок** і складався з **12 400 текстових чанків** [incident_postmortem_redis_oom#chunk-ce91c3b15f07706b].",
+      "grounding_status": "GROUNDED",
+      "tools_executed": [
+        "list_knowledge_sources",
+        "search_knowledge"
+      ],
+      "citations": [
+        "[incident_postmortem_redis_oom#chunk-ce91c3b15f07706b]"
+      ],
+      "latency_ms": 20344.617499999003,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_013",
+      "query": "Which dedicated port is reserved for the Redis Stack container for vector operations according to the system runbook?",
+      "category": "paraphrase",
+      "answer": "The **dedicated port reserved for the Redis Stack container for vector operations** is **port 6380**, as explicitly stated in the runbook:\n\n- **[rag_system_runbook#chunk-407f9e5fb7119a9e]** and\n- **[rag_system_runbook#chunk-6e773f78130aabdd]**.",
+      "grounding_status": "GROUNDED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [
+        "[rag_system_runbook#chunk-407f9e5fb7119a9e]",
+        "[rag_system_runbook#chunk-6e773f78130aabdd]"
+      ],
+      "latency_ms": 21536.65170000022,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_014",
+      "query": "Який формат посилань на джерела вимагається від генератора відповідей у звіті Lab 3?",
+      "category": "paraphrase",
+      "answer": "У звіті **Lab 3** формат посилань на джерела, який вимагається для генерації відповідей, має такий вид:\n\n**[джерело.csv: рядок]**\n\nНаприклад, якщо запис взято зі файлу `source.csv` на строки 45–67, то цитування буде `[source.csv:45-67]`.\nЦей формат гарантує відносну унікальність та логічну приналежність до конкретного CSV-файлу і рядка (або діапазону рядків) [lab03_rag_report#chunk-073b9da90cf9c792].",
+      "grounding_status": "PARTIALLY_SUPPORTED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [
+        "[lab03_rag_report#chunk-073b9da90cf9c792]"
+      ],
+      "latency_ms": 39798.69160000089,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_015",
+      "query": "According to the Lab 4 report, what is the theoretical role of classifier-free guidance (CFG) in the diffusion process?",
+      "category": "paraphrase",
+      "answer": "The indexed documents from **Lab 4** do not explicitly describe the *theoretical role* of classifier-free guidance (CFG) in diffusion processes. The retrieved chunks focus on experimental setup (e.g., `guidance_scale`, hyperparameter tuning for CFG), but no foundational explanation or theoretical justification is provided.\n\nFor a detailed theoretical overview, you may need to consult broader literature on diffusion models and classifier-free guidance (e.g., papers like *\"Classifier-Free Diffusion Guidance\"* by Ho et al.). Would you like help finding relevant external sources?",
+      "grounding_status": "VALIDATION_FAILED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [],
+      "latency_ms": 21709.137999998347,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_016",
+      "query": "Яка функція відводиться проектору в мультимодальній архітектурі LLaVA згідно з теоретичним описом Lab 5?",
+      "category": "paraphrase",
+      "answer": "У мультимодальній архітектурі LLaVA проектор (MLP-проєктор) виконує функцію **узгодження візуальних ознак** з простором мовних embeddings, перетворюючи вихідні вектори з SigLIP Vision до розмірності `hidden_size=1024`, яка відповідає розміру мовної моделі (наприклад, Qwen2) [lab05_multimodal_report#chunk-848f92fad2de281b]. Цей проєктор дозволяє з'єднувати візуальні дані з текстом для генерації відповіді.",
+      "grounding_status": "GROUNDED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [
+        "[lab05_multimodal_report#chunk-848f92fad2de281b]"
+      ],
+      "latency_ms": 29879.538300003333,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_017",
+      "query": "How does the Lab 6 report characterize its architectural scope regarding multi-agent coordination versus a single agent?",
+      "category": "paraphrase",
+      "answer": "The **Lab 6 report** characterizes its architectural scope as implementing a **single-agent system**, specifically an agent-based assistant designed for local LLM execution with memory, tools, and multi-step decision-making.\n\nKey points from the report:\n- The practical scenario involves **one agent** (e.g., using OpenAI Agents SDK), while a separate control example is created without tools to compare configurations under the same architecture.\n- There is **no explicit mention of multi-agent coordination**; instead, it focuses on a single-agent workflow with controlled runs for comparison purposes. The architecture relies on sequential tool calls and local LLM interactions, as described in the theoretical section:\n  > *\"Запит → Agent / Runner → локальна LLM у LM Studio\"* (Request → Agent/Runner → Local LLM in LM Studio).\n  > *\"Окремого Planner немає. Планування спостерігається через послідовність вибраних дій.\"* (No separate planner exists; planning is observed through the sequence of chosen actions).\n\nThe report does not describe or evaluate multi-agent coordination, only single-agent behavior with controlled experiments for validation ([lab06_agents_report#chunk-95d6051c3dc554a5], [lab06_agents_report#chunk-47fa3567591701ef]). If you need further clarification on alternatives or comparisons, let me know!",
+      "grounding_status": "GROUNDED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [
+        "[lab06_agents_report#chunk-95d6051c3dc554a5]",
+        "[lab06_agents_report#chunk-47fa3567591701ef]"
+      ],
+      "latency_ms": 66108.91309999715,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_018",
+      "query": "Які обмеження частоти запитів (rate limits) встановлені для генерації відповідей та завантаження документів?",
+      "category": "paraphrase",
+      "answer": "Обмежень частот запитів (rate limits) для генерації відповідей та завантаження документів в індексі не виявлено прямо у зведених документах.\n\nУ лабораторних роботах описуються технічні обмеження, пов'язані з навчальними експериментами (наприклад, розмір кадру, точність, контекст), але **не наводяться конкретні цифрові значення для обмежень частот запитів** (rate limits) для API-сервісів чи систем генерації.\n\nЯкщо це стосується зовнішніх сервісів або платформ, то інформацію про rate limits потрібно шукати в документації цих систем. Документи лабораторних робіт не містять таких деталей.",
+      "grounding_status": "VALIDATION_FAILED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [],
+      "latency_ms": 44063.75870000193,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_019",
+      "query": "What query speed advantage is cited in ADR 001 for choosing Redis Stack as the vector database?",
+      "category": "paraphrase",
+      "answer": "The ADR 001 cites **sub-15 ms vector query latency** as the key query speed advantage for choosing Redis Stack as the vector database ([adr_001_vector_and_storage_architecture#chunk-27547712c6c1bf94]).",
+      "grounding_status": "GROUNDED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [
+        "[adr_001_vector_and_storage_architecture#chunk-27547712c6c1bf94]"
+      ],
+      "latency_ms": 16286.237499996787,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_020",
+      "query": "Які базові параметри розміру зображень та розміру батчу використовувалися при генерації у Lab 4?",
+      "category": "paraphrase",
+      "answer": "У **Lab 4** для базової генерації використовувалися такі параметри:\n\n- **Розмір зображення (resolution):** 512 × 768 пикселів (це стандартний розмір для байнендінгу в Stable Diffusion).\n- **Розмір батчу (batch size):** Один образ за раз (single-image inference), оскільки це був контрольований baseline без використання пакетної генерації.\n\nДані витягнуто з секцій про організацію експериментів і відповідність методичці:\n[lab04_stable_diffusion_report#chunk-5384cddcf9075b9b] та [lab04_stable_diffusion_report#chunk-7e93d8b05229cb50].",
+      "grounding_status": "PARTIALLY_SUPPORTED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [
+        "[lab04_stable_diffusion_report#chunk-5384cddcf9075b9b]",
+        "[lab04_stable_diffusion_report#chunk-7e93d8b05229cb50]"
+      ],
+      "latency_ms": 43609.9144999971,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_021",
+      "query": "What port does ADR 001 specify for the Redis Stack service, and what memory limit was crossed during the ingestion incident?",
+      "category": "cross_document",
+      "answer": "The **Redis Stack service** in ADR 001 runs on **port 6380** for live vector operations ([adr_001_vector_and_storage_architecture#chunk-27547712c6c1bf94]).\n\nRegarding the ingestion incident, the document does not explicitly state a specific memory limit that was crossed. However, alternatives like **Milvus/Qdrant** were rejected due to their high memory overhead of **≥2 GB idle RAM**, which exceeded local execution budgets ([adr_001_vector_and_storage_architecture#chunk-6cfff327f83838b7]). If you need details about the ingestion failure, additional context from other documents may be required.",
+      "grounding_status": "GROUNDED",
+      "tools_executed": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "citations": [
+        "[adr_001_vector_and_storage_architecture#chunk-27547712c6c1bf94]",
+        "[adr_001_vector_and_storage_architecture#chunk-6cfff327f83838b7]"
+      ],
+      "latency_ms": 59948.40989999648,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_022",
+      "query": "Як завантажувалися дані каталогу в Lab 3 та яка реляційна база з режимом WAL була обрана в ADR 001 для Lab 7?",
+      "category": "cross_document",
+      "answer": "В **Lab 3** дані каталогу завантажувалися з CSV-файлів через LangChain `CSVLoader`, де кожен рядок CSV перетворювався в окреме документне об'єднання для зберігання у Redis Stack із векторним індексом FLAT (за допомогою `FLOAT32` точности) і пошуку за косинусним подібністю ([lab03_rag_report#chunk-073b9da90cf9c792]).\n\nУ **Lab 7** для реляційної бази даних з режимом Write-Ahead Logging (WAL) була обрана **SQLite**, яка забезпечує локальне зберігання, нульовий зовнішній сетевий перевантаження та підтримку транзакційного журналу для управління станом застосунку і чатової пам'яті ([adr_001_vector_and_storage_architecture#chunk-312de896eb918af4]).",
+      "grounding_status": "GROUNDED",
+      "tools_executed": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "citations": [
+        "[lab03_rag_report#chunk-073b9da90cf9c792]",
+        "[adr_001_vector_and_storage_architecture#chunk-312de896eb918af4]"
+      ],
+      "latency_ms": 80844.79629999987,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_023",
+      "query": "Compare the response contract of /health/ready in the API specification with the curl readiness probe command in the runbook.",
+      "category": "cross_document",
+      "answer": "Here is the comparison between the **API specification** and the **curl readiness probe command** for `/health/ready`:\n\n### **API Specification Contract**\n- **Endpoint**: `GET /health/ready`\n- **Expected Response**:\n  ```json\n  {\"status\": \"ready\", \"redis\": true, \"database\": true}\n  ```\n  - Returns a **HTTP 200 OK** if dependencies (Redis and database) are healthy.\n  - Returns **HTTP 503 Service Unavailable** if any dependency fails.\n\n**[api_specification_and_contracts#chunk-342a291bedfe4d18]**\n\n---\n\n### **Runbook Curl Command**\n- **Command**:\n  ```bash\n  curl -s http://127.0.0.1:8000/api/v1/health/ready\n  ```\n- **Expected Response**:\n  ```json\n  {\"status\": \"ready\", \"database\": true, \"redis\": true}\n  ```\n  - Matches the API specification exactly.\n  - If Redis fails, the system transitions to a degraded state (lexical search only).\n\n**[rag_system_runbook#chunk-fedc2034890e80a0]**\n\n---\n### **Key Observations**\n- The **curl command in the runbook** uses `/api/v1/health/ready` instead of the base path `/health/ready`.\n- Both specify the same response structure (`status`, `redis`, and `database` flags).\n- The runbook explicitly mentions a degraded state if Redis fails, which is not explicitly documented in the API spec.",
+      "grounding_status": "GROUNDED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [
+        "[api_specification_and_contracts#chunk-342a291bedfe4d18]",
+        "[rag_system_runbook#chunk-fedc2034890e80a0]"
+      ],
+      "latency_ms": 73820.82860000082,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_024",
+      "query": "Скільки унікальних генерацій було виконано в експериментах Lab 4 та скільки правильних відповідей отримав baseline LLaVA у Lab 5?",
+      "category": "cross_document",
+      "answer": "У лабораторній роботі **Lab 4** було виконано **13 унікальних генерацій** (включаючи базовий випадок і різні варіації параметрів).\n\nУ **Lab 5** baseline LLaVA отримав **3 правильні відповіді** на три факти з одного кадру ([lab05_multimodal_report#chunk-c2aad010fc951692]).",
+      "grounding_status": "PARTIALLY_SUPPORTED",
+      "tools_executed": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "citations": [
+        "[lab05_multimodal_report#chunk-c2aad010fc951692]"
+      ],
+      "latency_ms": 33052.18869999953,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_025",
+      "query": "How is the agent architecture in Lab 6 structured compared to the main chat completions endpoint in the Copilot API specification?",
+      "category": "cross_document",
+      "answer": "The agent architecture in **Lab 6** and the main `chat/completions` endpoint in the Copilot API specification differ significantly in design and functionality:\n\n### **Agent Architecture (Lab 6)**\n- Uses a **multi-turn, tool-aware workflow**:\n  - Operates via an endpoint at `http://localhost:1234/v1`, executing queries with grounded Retrieval-Augmented Generation (RAG) and agentic verification.\n  - Employs the model `mistralai/ministral-3-3b` for core language processing, while embedding models like `nomic` are not used in the agent workflow.\n  - Supports **tool execution** (e.g., calling tools like `add_numbers`) and tracks tool preflight results in `outputs/metadata/tool_preflight.json`.\n  - Runs locally with a loopback base URL and disabled cloud features (no hosted sessions, web search, or shell).\n  - Example: The agent requests a tool execution (e.g., `add_numbers(17,25)`), receives the result, and integrates it into the final response.\n  - **Key feature**: Explicitly manages agentic workflows with turn-based interactions and tool invocations ([lab06_agents_report#chunk-ee8f55a223e64af3]).\n\n---\n\n### **Main `chat/completions` Endpoint (Copilot API)**\n- Executes **single-turn queries** with grounded RAG but lacks explicit agentic workflows:\n  - Uses a request body like this:\n    ```json\n    {\n      \"query\": \"...\",\n      \"retrieval_mode\": \"hybrid\",\n      \"top_k\": 5\n    }\n    ```\n  - Returns structured responses including:\n    - `answer`: The generated text.\n    - `grounding_status`: Status of evidence grounding (`GROUNDED`, `PARTIALLY_GROUNDED`, etc.).\n    - `citations`: References to supporting sources.\n    - **Optional**: `tool_executions` (origin: `MODEL_REQUESTED` or `RECOVERY_EXECUTED`) and execution metadata ([api_specification_and_contracts#chunk-d41505820ec0fe04], [api_specification_and_contracts#chunk-3e96a9e19c6722a0]).\n  - **Key feature**: Focuses on single-turn reasoning with optional tool execution, but does not enforce multi-step agentic workflows like Lab 6.\n\n---\n### **Summary of Differences**\n| Feature                     | Agent Architecture (Lab 6)                          | `chat/completions` Endpoint (Copilot API)          |\n|-----------------------------|------------------------------------------------------|----------------------------------------------------|\n| Workflow type               | Multi-turn, tool-aware                              | Single-turn, optional tool execution              |\n| Core model                  | `mistralai/ministral-3-3b`                          | Depends on request (e.g., RAG + grounding logic)   |\n| Tool integration            | Explicitly managed via SDK (`tool_preflight.json`)  | Optional (`tool_executions` in response)           |\n| Context/Retrieval mode       | Local, loopback-based                               | Hybrid retrieval (configurable `retrieval_mode`)    |\n\n**Evidence**:\n- Lab 6’s agentic workflow is explicitly documented as a **multi-turn system with tool invocations** ([lab06_agents_report#chunk-ee8f55a223e64af3]).\n- The Copilot API’s `chat/completions` endpoint, while supporting grounding and tools, does not enforce agentic workflows beyond single-turn execution.",
+      "grounding_status": "PARTIALLY_SUPPORTED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [
+        "[lab06_agents_report#chunk-ee8f55a223e64af3]",
+        "[api_specification_and_contracts#chunk-d41505820ec0fe04]",
+        "[api_specification_and_contracts#chunk-3e96a9e19c6722a0]",
+        "[lab06_agents_report#chunk-ee8f55a223e64af3]"
+      ],
+      "latency_ms": 175136.24960000016,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_026",
+      "query": "Як описується деградація системи при відмові Redis у звіті про аварію та в експлуатаційному runbook?",
+      "category": "cross_document",
+      "answer": "Деградація системи при відмові Redis описується наступним чином:\n\n**У звіті про аварію:**\n- При перевищенні порогового значення `maxmemory` (наприклад, 512 МБ) Redis відкидав операції `HSET`, що призводило до краху інгенеційного робота і HTTP-відповіді з кодом **503 UNREADY** для здоров'я API (`/api/v1/health/ready`).\n- Під час OOM-ситуації документні завантаження відкидалися з кодом **HTTP 500**, а активні чат-сесії переходили на деградований режим пошуку — лише лексичний (текстовий) аналіз, що погіршувало якість пошуку векторних даних.\n[incident_postmortem_redis_oom#chunk-ce91c3b15f07706b][incident_postmortem_redis_oom#chunk-ec91ddb2dece2958]\n\n**У експлуатаційному runbook:**\n- Деградація системи виникала через **недостатню пам’ять Redis** (наприклад, `maxmemory 512mb` була недостатньою для високоразмерних векторів і графа HNSW).\n- При відмові Redis система автоматично переходила на деградований режим — **BM25 lexical retriever**, що забезпечувало лише часткову функціональність пошуку.\n[incident_postmortem_redis_oom#chunk-161474725628508f]\n\nУ документах також зазначено, що без належних настроєнь (наприклад, `maxmemory 2gb` з політикою `allkeys-lru`) система не могла витримати навантаження і втрачала функціональність векторного пошуку.",
+      "grounding_status": "GROUNDED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [
+        "[incident_postmortem_redis_oom#chunk-ce91c3b15f07706b]",
+        "[incident_postmortem_redis_oom#chunk-ec91ddb2dece2958]",
+        "[incident_postmortem_redis_oom#chunk-161474725628508f]"
+      ],
+      "latency_ms": 93731.77930000384,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_027",
+      "query": "What embedding model generates vector representations in Lab 3, and what agent framework orchestrates execution in Lab 6?",
+      "category": "cross_document",
+      "answer": "В лабораторній роботі **Lab 3** використовується embedding model `all-MiniLM-L6-v2` для генерації векторних представлень ([lab03_rag_report#chunk-073b9da90cf9c792]).\n\nУ лабораторній роботі **Lab 6** орієнтовано на архітектуру агентів, реалізовану за допомогою **OpenAI Agents SDK** ([lab06_agents_report#chunk-95d6051c3dc554a5]).",
+      "grounding_status": "GROUNDED",
+      "tools_executed": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "citations": [
+        "[lab03_rag_report#chunk-073b9da90cf9c792]",
+        "[lab06_agents_report#chunk-95d6051c3dc554a5]"
+      ],
+      "latency_ms": 49912.12999999698,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_028",
+      "query": "Яка розмірність вектора моделі multilingual-e5-base наведена в ADR 001 та яка структура поля citations у специфікації API?",
+      "category": "cross_document",
+      "answer": "Розмірність вектора моделі **multilingual-e5-base** у ADR 001 становить **768** (зазначено в контексті використання косинусного метрики для нормалізованих векторів [adr_001_vector_and_storage_architecture#chunk-312de896eb918af4]).\n\nСтруктура поля `citations` у специфікації API такої:\n\n- **`citations`** — це список об'єктів типу `Citation`, кожен з яких містить:\n  - **Source document** (документ, з якого посилання береться),\n  - **Line/section** (лінія або розділ у документі),\n  - **Quote** (цитата з тексту).\n\n[api_specification_and_contracts#chunk-d41505820ec0fe04] та [api_specification_and_contracts#chunk-3e96a9e19c6722a0].",
+      "grounding_status": "GROUNDED",
+      "tools_executed": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "citations": [
+        "[adr_001_vector_and_storage_architecture#chunk-312de896eb918af4]",
+        "[api_specification_and_contracts#chunk-d41505820ec0fe04]",
+        "[api_specification_and_contracts#chunk-3e96a9e19c6722a0]"
+      ],
+      "latency_ms": 61273.39159999974,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_029",
+      "query": "Which four integer seeds were evaluated for visual generation in Lab 4, and how many runs were in the initial and refined series in Lab 6?",
+      "category": "cross_document",
+      "answer": "The indexed documents do not explicitly list the four integer seeds evaluated for visual generation in **Lab 4**. However, from **[lab04_stable_diffusion_report#chunk-5384cddcf9075b9b]**, we know that **four seeds** were used in total (including a baseline), but the specific values are not provided in this report.\n\nFor **Lab 6**, the initial and refined series of runs are not explicitly detailed in the available chunks. If you clarify which specific section or report from Lab 6 you’re referring to, I can assist further with relevant details.\n\n---\n**Key findings:**\n- **Four seeds** were tested (baseline + three others) in Lab 4, but their exact values remain unspecified.\n- No explicit data on the number of runs in Lab 6’s series is available in these documents.",
+      "grounding_status": "GROUNDED",
+      "tools_executed": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "citations": [
+        "[lab04_stable_diffusion_report#chunk-5384cddcf9075b9b]"
+      ],
+      "latency_ms": 48748.674200003734,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_030",
+      "query": "Як обґрунтовано створення одного Document з одного CSV-рядка у Lab 3 та як обробляються візуальні ознаки зображення у Lab 5?",
+      "category": "cross_document",
+      "answer": "### Обґрунтування створення одного документа з одного рядка CSV у Lab 3:\nУ лабораторній роботі №3 кожен рядок CSV перетворюється в один **Document**, оскільки ціна, опис, характеристики та provenance (походження) товару мають залишатися логічною одиницею. Це забезпечує збереження контекстуальної повноти для відповіді на запитання про конкретний товар [lab03_rag_report#chunk-073b9da90cf9c792].\n\n---\n\n### Обробка візуальних ознак зображення у Lab 5:\nУ лабораторній роботі №5 візуальні ознаки зображення обробляються наступним чином:\n\n1. **Використання SigLIP Vision**: Зображення (розміром 512×512 пікселів) оброблюється моделью SigLIP, яка витягує повні візуальні ознаки з останнього шару (з 26 шарів), розмір яких становить **hidden_size=1152**.\n2. **Проєкція**: Вилучені візуальні вектори проєктуються до розміру **1024** для узгодження з мовними embeddings.\n3. **Інтеграція з текстом**: Запитання перетворюється на текстові токени, а модель Qwen2 (на основі Qwen/Qwen1.5-0.5B-Chat) використовує як візуальні, так і текстовий вхід для генерації відповіді [lab05_multimodal_report#chunk-848f92fad2de281b].\n\nЦе дозволяє моделі розуміти та обробляти відношення між текстом і візуальними даними.",
+      "grounding_status": "GROUNDED",
+      "tools_executed": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "citations": [
+        "[lab03_rag_report#chunk-073b9da90cf9c792]",
+        "[lab05_multimodal_report#chunk-848f92fad2de281b]"
+      ],
+      "latency_ms": 112457.39650000178,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_031",
+      "query": "According to the post-mortem report, how many bulk upload jobs failed during the OOM incident, and how many bytes of data were corrupted?",
+      "category": "numerical_reasoning",
+      "answer": "During the OOM incident, **14 bulk upload jobs failed** and **no data bytes were corrupted** ([incident_postmortem_redis_oom#chunk-bbf7932ccf875435]). Transactional integrity was maintained by SQLite rollbacks.",
+      "grounding_status": "GROUNDED",
+      "tools_executed": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "citations": [
+        "[incident_postmortem_redis_oom#chunk-bbf7932ccf875435]"
+      ],
+      "latency_ms": 29513.45620000211,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_032",
+      "query": "Обчисліть тривалість інциденту в хвилинах між початком завантаження о 14:20 UTC та перезапуском сервісу о 14:47 UTC.",
+      "category": "numerical_reasoning",
+      "answer": "Тривалість інциденту становить **2 години і 42 хвилини** (або 1625 секунд).\n\n*(Початок: 14:20 UTC, Перезапуск: 14:47 UTC)*",
+      "grounding_status": "VALIDATION_FAILED",
+      "tools_executed": [
+        "calculate"
+      ],
+      "citations": [],
+      "latency_ms": 6500.438900002337,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_033",
+      "query": "Using the 768-dimensional vector size from ADR 001 and 4-byte Float32 values, calculate the uncompressed vector memory required for 1,000 document chunks in bytes.",
+      "category": "numerical_reasoning",
+      "answer": "The uncompressed vector memory required for **1,000 document chunks** is **3.072 MB**.",
+      "grounding_status": "VALIDATION_FAILED",
+      "tools_executed": [
+        "search_knowledge",
+        "calculate"
+      ],
+      "citations": [],
+      "latency_ms": 32129.10849999753,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_034",
+      "query": "Якщо каталог у Lab 3 містить 185 товарів, а MiniLM обрізає 17 довгих записів, скільки записів зберігають повну довжину без обрізання?",
+      "category": "numerical_reasoning",
+      "answer": "Зберігаються **168** записів повної довжини без обрізання.",
+      "grounding_status": "VALIDATION_FAILED",
+      "tools_executed": [
+        "calculate"
+      ],
+      "citations": [],
+      "latency_ms": 3758.484600002703,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_035",
+      "query": "In Lab 4, the inference steps evaluated are 20, 30, and 50. What is the numerical difference between the maximum and minimum step counts?",
+      "category": "numerical_reasoning",
+      "answer": "The difference is **30**.",
+      "grounding_status": "VALIDATION_FAILED",
+      "tools_executed": [
+        "search_knowledge",
+        "calculate"
+      ],
+      "citations": [],
+      "latency_ms": 13236.19509999844,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_036",
+      "query": "У Lab 4 досліджено значення guidance_scale 5, 7.5 та 10. Яка різниця між найбільшим та найменшим значенням шкали?",
+      "category": "numerical_reasoning",
+      "answer": "Різниця між найбільшим і найменшим значенням шкали `guidance_scale` становить **5**.",
+      "grounding_status": "VALIDATION_FAILED",
+      "tools_executed": [
+        "search_knowledge",
+        "calculate"
+      ],
+      "citations": [],
+      "latency_ms": 15512.514699999883,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_037",
+      "query": "In Lab 5, token limits 24, 64, and 128 were evaluated for desc_01. What is the difference in tokens between the maximum (128) and minimum (24) limits?",
+      "category": "numerical_reasoning",
+      "answer": "The difference in tokens between the maximum limit (128) and minimum limit (24) for `desc_01` is **not explicitly stated** in the retrieved documents.\n\nHowever, from the table in **[lab05_multimodal_report#chunk-b884721966e8c889]**, we see that:\n- At 24 tokens, the response was truncated at \"The cabin\" (24 tokens).\n- At 64 and 128 tokens, the full description included additional details (48 tokens).\n\nSince no direct comparison between 128 and 24 is provided in the chunks, I cannot compute the exact difference. If you need this value, please clarify whether you want to compare the **maximum possible response length** at 128 tokens with the **minimum truncation** at 24 tokens (which was not fully generated).\n\nIf you meant the difference between the upper and lower limits of the tested ranges (e.g., 128 - 24 = **104**), let me know! Otherwise, the indexed documents do not provide a direct token count comparison for these two specific limits.\n\n[Розраховано: 128 - 64 = 64] [lab05_multimodal_report#chunk-03547d97e1c806eb] [lab05_multimodal_report#chunk-49b7374f31ab1f43] [lab05_multimodal_report#chunk-50ccbc805017a977] [lab05_multimodal_report#chunk-94bae1e60a6d617a] [lab05_multimodal_report#chunk-b884721966e8c889]",
+      "grounding_status": "PARTIALLY_SUPPORTED",
+      "tools_executed": [
+        "search_knowledge",
+        "calculate"
+      ],
+      "citations": [
+        "[lab05_multimodal_report#chunk-b884721966e8c889]",
+        "[lab05_multimodal_report#chunk-03547d97e1c806eb]",
+        "[lab05_multimodal_report#chunk-49b7374f31ab1f43]",
+        "[lab05_multimodal_report#chunk-50ccbc805017a977]",
+        "[lab05_multimodal_report#chunk-94bae1e60a6d617a]",
+        "[lab05_multimodal_report#chunk-b884721966e8c889]"
+      ],
+      "latency_ms": 36012.55680000031,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_038",
+      "query": "На скільки запусків друга серія (13 запусків) перевищувала початкову серію (11 запусків) в експериментах Lab 6?",
+      "category": "numerical_reasoning",
+      "answer": "Документи про лабораторну роботу №6 не містять інформації про кількість запусків у серіях для експериментів Lab 6.\n\nОднак, якщо ви маєте на увазі **Lab 6** з іншого контексту або конкретні описи в інших документах (наприклад, Lab 5 або інші лабораторні роботи), то можливо потрібно перевірити інші джерела. Наразі відсутня чітка інформація про кількість запусків у серіях для даного експерименту.\n\nЯкщо це стосується інших документів, повідомте, будь ласка, і я перевірю їх.\n\n[Розраховано: 13 - 11 = 2] [lab06_agents_report#chunk-24d0b9d10d53e82f] [lab06_agents_report#chunk-3d28a0b2f13b08f9] [lab06_agents_report#chunk-8fff50ca0752a250] [lab06_agents_report#chunk-95d6051c3dc554a5] [lab06_agents_report#chunk-9cb11aed5b82ae91]",
+      "grounding_status": "GROUNDED",
+      "tools_executed": [
+        "search_knowledge",
+        "calculate"
+      ],
+      "citations": [
+        "[lab06_agents_report#chunk-24d0b9d10d53e82f]",
+        "[lab06_agents_report#chunk-3d28a0b2f13b08f9]",
+        "[lab06_agents_report#chunk-8fff50ca0752a250]",
+        "[lab06_agents_report#chunk-95d6051c3dc554a5]",
+        "[lab06_agents_report#chunk-9cb11aed5b82ae91]"
+      ],
+      "latency_ms": 23020.992099998693,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_039",
+      "query": "If the rate limit is 60 requests per minute for chat completions in the API spec, how many requests are permitted per second on average?",
+      "category": "numerical_reasoning",
+      "answer": "On average, **1 request per second** is permitted under a rate limit of 60 requests per minute for chat completions.",
+      "grounding_status": "VALIDATION_FAILED",
+      "tools_executed": [
+        "calculate"
+      ],
+      "citations": [],
+      "latency_ms": 5071.071999998821,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_040",
+      "query": "Скільки секунд становить параметр PRAGMA busy_timeout (5000 мс) для SQLite згідно з ADR 001?",
+      "category": "numerical_reasoning",
+      "answer": "Параметр `PRAGMA busy_timeout = 5000` в SQLite, зазначений як **5000 мілісекунд**, відповідає значенню:\n\n**5 секунд**.\n\n[adr_001_vector_and_storage_architecture#chunk-312de896eb918af4]",
+      "grounding_status": "GROUNDED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [
+        "[adr_001_vector_and_storage_architecture#chunk-312de896eb918af4]"
+      ],
+      "latency_ms": 13511.197500003618,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_041",
+      "query": "What AWS S3 bucket name and IAM credentials are configured for storing raw knowledge base documents in the cloud?",
+      "category": "unsupported",
+      "answer": "The indexed documents do **not** explicitly mention an AWS S3 bucket name or IAM credentials for storing raw knowledge base documents in the cloud.\n\nIf you need this information, it may be documented elsewhere (e.g., deployment scripts, infrastructure-as-code templates, or operational runbooks) but is not present in the provided sources. Would you like me to check other potential documentation sources?",
+      "grounding_status": "VALIDATION_FAILED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [],
+      "latency_ms": 18775.82010000333,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_042",
+      "query": "Яка версія трансформерної моделі Claude 3.5 Sonnet використовувалася для перекладу текстів у Lab 2?",
+      "category": "unsupported",
+      "answer": "В лабораторній роботі №5 для перекладу текстів використовувалася модель **Qwen/Qwen1.5-0.5B-Chat**, яка є частиною трансформерної архітектури Qwen2 (наступника Qwen1.5) [lab05_multimodal_report#chunk-848f92fad2de281b].\n\nВерсія **Claude 3.5 Sonnet** не використовувалася в даному контексті Lab 2 — це модель іншого автора/платформи.",
+      "grounding_status": "PARTIALLY_SUPPORTED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [
+        "[lab05_multimodal_report#chunk-848f92fad2de281b]"
+      ],
+      "latency_ms": 29779.09229999932,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_043",
+      "query": "How is the Pinecone Serverless vector collection configured for namespace partitioning in ADR 001?",
+      "category": "unsupported",
+      "answer": "The **Pinecone Serverless vector collection** in ADR 001 is configured for namespace partitioning using **prefix-based key deletion and namespace isolation**. Specifically, the Redis Stack backend uses keys prefixed with `lab07:kb:*` to enable namespace separation. This allows multiple independent collections (namespaces) to be managed within a single Redis instance without cross-contamination.\n\n**[adr_001_vector_and_storage_architecture#chunk-312de896eb918af4]**",
+      "grounding_status": "GROUNDED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [
+        "[adr_001_vector_and_storage_architecture#chunk-312de896eb918af4]"
+      ],
+      "latency_ms": 24916.7660000021,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_044",
+      "query": "Які параметри LoRA та частота кадрів використовувалися для генерації відео у Stable Video Diffusion згідно з Lab 4?",
+      "category": "unsupported",
+      "answer": "В документі **Lab 4** про генерацію зображень за допомогою Stable Diffusion не описано параметрів LoRA для відеогенерації в *Stable Video Diffusion*. У лабораторній роботі розглядається лише текстово-зображення інференс (text-to-image) для статичних зображень, а саме:\n\n- Використовувалися **20/30/50 inference steps** (кроків інференсу),\n- Конфігурація CFG (Control Net Scale Factor): 5, 7.5, 10,\n- Дві пари негативних промптів та три стилі для зміни сцен.\n\nДля відеогенерації з використанням *Stable Video Diffusion* у цьому документі **LoRA і частота кадрів не зазначені** — ця інформація відсутня в наведених фрагментах. Ви можете перевірити інші лабораторні роботи або методичні матеріали про відеогенерацію, якщо це потрібно.\n\nЯкщо ви маєте доступ до конкретних інструкцій для *Stable Video Diffusion*, то там можуть бути зазначені ці параметри.",
+      "grounding_status": "INSUFFICIENT_EVIDENCE",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [],
+      "latency_ms": 52034.263499997905,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_045",
+      "query": "What are the benchmark scores of Gemini 1.5 Pro on the MMMU reasoning benchmark reported in Lab 5?",
+      "category": "unsupported",
+      "answer": "The indexed documents for **Lab 5** do not explicitly report benchmark scores for **Gemini 1.5 Pro** on the **MMMU reasoning benchmark**. The provided chunks focus on architectural details, experimental constraints, and model configurations rather than performance metrics.\n\nIf you need further analysis or alternative benchmarks (e.g., from other sources), let me know!",
+      "grounding_status": "VALIDATION_FAILED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [],
+      "latency_ms": 14289.29480000079,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_046",
+      "query": "Як налаштувати Helm chart для кластера Kubernetes з горизонтальним автоскейлінгом (HPA) в runbook Copilot?",
+      "category": "unsupported",
+      "answer": "Наукові документи не містять інформації про налаштування **Helm chart** для кластера Kubernetes з горизонтальним автоскейлінгом (HPA) у контексті Copilot.\n\nДля цього питання вам слід скористатися документацією по **Kubernetes HPA** та специфічними інструкціями для вашого Helm chart, наприклад:\n\n1. **Налаштування HPA в Kubernetes**:\n   - Создайте файл `horizontal-pod-autoscaler.yaml` з наступним змістом:\n     ```yaml\n     apiVersion: autoscaling/v2\n     kind: HorizontalPodAutoscaler\n     metadata:\n       name: ваше-призначення-hpa\n     spec:\n       scaleTargetRef:\n         apiVersion: apps/v1\n         kind: Deployment\n         name: ваш-деплоймент\n       minReplicas: 2\n       maxReplicas: 10\n       metrics:\n       - type: Resource\n         resource:\n           name: cpu\n           target:\n             type: Utilization\n             averageUtilization: 50\n     ```\n   - Примените його до кластера:\n     ```sh\n     kubectl apply -f horizontal-pod-autoscaler.yaml\n     ```\n\n2. **Налаштування Helm chart**:\n   - У вашому `values.yaml` або в шаблонах Helm chart додайте параметри для HPA, наприклад:\n     ```yaml\n     hpa:\n       enabled: true\n       minReplicas: 2\n       maxReplicas: 10\n       cpuUtilizationPercentage: 50\n     ```\n   - У вашому `Chart.yaml` або в шаблонах Helm chart перевірте, чи підтримує ваша версія Chart інструменти HPA.\n\nДля конкретних рекомендацій з вашим Helm chart і кластером Kubernetes слід використовувати офіційні документи та практичні настанови для вашого проекту.",
+      "grounding_status": "INSUFFICIENT_EVIDENCE",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [],
+      "latency_ms": 83791.01320000336,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_047",
+      "query": "Which consensus protocol is configured for the Milvus distributed cluster in the vector storage architecture?",
+      "category": "unsupported",
+      "answer": "The **Milvus distributed cluster** in the vector storage architecture is **not explicitly configured with a consensus protocol** for its distributed operations. The decision document instead specifies that **Redis Stack** (used alongside SQLite) is adopted as the primary vector database, leveraging **HNSW and FLAT indexing** but does not mention Milvus's consensus mechanism.\n\nThe indexed documents do not provide details on Milvus’s consensus protocol (e.g., Raft or Paxos). If you need clarification on Milvus’s distributed consensus, I recommend checking its official documentation or the specific configuration files for the cluster. Could you clarify if you are asking about Redis Stack’s role instead?",
+      "grounding_status": "VALIDATION_FAILED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [],
+      "latency_ms": 26216.176200003247,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_048",
+      "query": "Яка вартість інференсу моделі GPT-4o в розрахунку на 1000 запитів наведена у фінансовому додатку до Lab 6?",
+      "category": "unsupported",
+      "answer": "Інформація про вартість інференсу моделі GPT-4o в фінансовому додатку до **Lab 6** не міститься у відомих документах.\n\nУ даній лабораторній роботі використовувалася локальна модель Mistral (ministral-3-3b) або інші локальні/хмарні LLM, але конкретних згадок про вартість інференсу GPT-4o на 1000 запитів немає. Перевірте фінансовий додаток до **Lab 6** або документацію OpenAI для актуальної цінової інформації.\n\nЯкщо ви маєте доступ до конкретного фінансового відділу чи додатку, розгляньте його окремо.",
+      "grounding_status": "VALIDATION_FAILED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [],
+      "latency_ms": 38388.763000002655,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_049",
+      "query": "Which Apache Kafka bootstrap broker addresses and consumer group IDs are configured for streaming document events?",
+      "category": "unsupported",
+      "answer": "The indexed documents do not explicitly list **Apache Kafka bootstrap broker addresses** or **consumer group IDs** for streaming document events.\n\nIf you need this information, it may be documented in:\n- Deployment configuration files (e.g., `kafka-config.yaml`, `bootstrap-servers` settings),\n- Infrastructure-as-code templates (Terraform/Ansible),\n- Or a dedicated Kafka cluster documentation file.",
+      "grounding_status": "INSUFFICIENT_EVIDENCE",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [],
+      "latency_ms": 19995.550300001923,
+      "success": true
+    },
+    {
+      "query_id": "final_v3_indep_050",
+      "query": "Яка точність класифікації отримана для моделі Llama 3.1 70B при розборі каталогу товарів у Lab 3?",
+      "category": "unsupported",
+      "answer": "В звіті **Lab 3** для моделі Llama 3.1 70B при класифікації каталогу товарів не було прямо зазначено точності, пов'язаної з використанням цієї конкретної версії моделі (наприклад, у контексті RAG-системи над CSV-каталогами). В документі **lab03_rag_report** оцінки базової семантичної системи були зазначені для `all-MiniLM-L6-v2` і включали метрики як **Hit@5 = 0.8571**, **MRR = 0.6905** та **Recall@5 = 0.5734**.\n\nОднак, якщо ви маєте на увазі конкретну класифікацію товарів у контексті Llama 3.1 70B без використання RAG-системи або інших моделей, то в документах **Lab 3** цієї інформації немає.\n\nПотрібні додаткові дослідження чи звіти про пряму класифікацію Llama 3.1 70B для каталогів товарів у Lab 3. Якщо це стосується інших лабораторних робіт або документів, повідомте, будь ласка, для подальшого пошуку.",
+      "grounding_status": "VALIDATION_FAILED",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "citations": [],
+      "latency_ms": 61683.643099997425,
+      "success": true
+    }
+  ],
+  "gate_status": "FAIL",
+  "violations": [
+    "factual_answer_correctness: 0.7750 (target >= 0.80)",
+    "claim_support_rate: 0.4500 (target >= 0.85)",
+    "citation_validity_rate: 0.7500 (target >= 0.85)",
+    "unsupported_refusal_rate: 0.5000 (target >= 0.90)",
+    "multi_turn_correctness: 0.0000 (target >= 1.00)"
+  ]
+}

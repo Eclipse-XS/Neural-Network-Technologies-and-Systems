@@ -39,6 +39,7 @@ DATASET_FILES = [
     "final_acceptance_holdout_50.json",
     "final_acceptance_holdout_v2_50.json",
     "final_acceptance_holdout_v3_50.json",
+    "final_acceptance_holdout_v3_independent_50.json",
 ]
 
 
