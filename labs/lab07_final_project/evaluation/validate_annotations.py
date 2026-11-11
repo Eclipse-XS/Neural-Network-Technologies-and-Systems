@@ -38,13 +38,14 @@ DATASET_FILES = [
     "acceptance_eval_50.json",
     "final_acceptance_holdout_50.json",
     "final_acceptance_holdout_v2_50.json",
+    "final_acceptance_holdout_v3_50.json",
 ]
 
 
 def load_source_documents() -> dict[str, str]:
     docs = {}
     for f in sorted(KNOWLEDGE_DIR.glob("**/*.md")):
-        docs[f.name] = f.read_text(encoding="utf-8")
+        docs[f.name] = f.read_text(encoding="utf-8").replace("\r\n", "\n")
         docs[f.stem] = docs[f.name]
     return docs
 
@@ -57,10 +58,18 @@ def generate_production_chunks(
     chunks_by_id = {}
     chunks_by_doc = {}
 
-    if embeddings.tokenizer is not None:
+    if allow_cached_manifest and CORPUS_CHUNKS_PATH.exists():
+        chunk_source = "CACHED_MANIFEST"
+        stored = json.loads(CORPUS_CHUNKS_PATH.read_text(encoding="utf-8"))
+        for item in stored:
+            c = type("ChunkProxy", (), item)()
+            chunks_by_id[c.chunk_id] = c
+            chunks_by_doc.setdefault(c.document_id, []).append(c)
+            chunks_by_doc.setdefault(c.filename, []).append(c)
+    elif embeddings.tokenizer is not None:
         chunk_source = "DYNAMIC_TOKENIZER"
         for f in sorted(KNOWLEDGE_DIR.glob("**/*.md")):
-            content = f.read_bytes()
+            content = f.read_bytes().replace(b"\r\n", b"\n")
             clean_name, sha256_hash, size_bytes = validate_file_content(content, f.name)
             doc = Document(
                 document_id=f.stem,
@@ -87,14 +96,6 @@ def generate_production_chunks(
             chunks_by_doc[f.name] = chunks
             for c in chunks:
                 chunks_by_id[c.chunk_id] = c
-    elif allow_cached_manifest and CORPUS_CHUNKS_PATH.exists():
-        chunk_source = "CACHED_MANIFEST"
-        stored = json.loads(CORPUS_CHUNKS_PATH.read_text(encoding="utf-8"))
-        for item in stored:
-            c = type("ChunkProxy", (), item)()
-            chunks_by_id[c.chunk_id] = c
-            chunks_by_doc.setdefault(c.document_id, []).append(c)
-            chunks_by_doc.setdefault(c.filename, []).append(c)
     elif not allow_cached_manifest and embeddings.tokenizer is None:
         raise RuntimeError(
             "Production tokenizer is unavailable and --allow-cached-manifest was not provided. "

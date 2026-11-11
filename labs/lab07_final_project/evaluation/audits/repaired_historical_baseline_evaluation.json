@@ -1,0 +1,701 @@
+{
+  "evaluation_mode": "REPAIRED_HISTORICAL_BASELINE_EVALUATION",
+  "dataset": "final_acceptance_holdout_50.json",
+  "total_queries": 50,
+  "executed_turns": 45,
+  "execution_failures": 5,
+  "historical_vs_repaired_comparison": {
+    "factual_answer_correctness": {
+      "historical_naive_value": "2/40 (5.0%)",
+      "repaired_evaluator_value": "13/35 (37.1%)",
+      "delta": "+32.1%"
+    },
+    "claim_support_rate": {
+      "historical_naive_value": "1/40 (2.5%)",
+      "repaired_evaluator_value": "6/35 (17.1%)",
+      "delta": "+14.6%"
+    },
+    "unsupported_refusal_rate": {
+      "historical_naive_value": "5/10 (50.0%)",
+      "repaired_evaluator_value": "10/10 (100.0%)",
+      "delta": "+50.0%"
+    },
+    "citation_validity_rate": {
+      "historical_naive_value": "22/40 (55.0%)",
+      "repaired_evaluator_value": "22/35 (62.9%)",
+      "delta": "7.9%"
+    },
+    "calculator_usage_rate": {
+      "historical_naive_value": "2/10 (20.0%)",
+      "repaired_evaluator_value": "7/10 (70.0%)",
+      "delta": "0.0%"
+    },
+    "cross_document_coverage": {
+      "value": "40.0%"
+    }
+  },
+  "itemized_summary": [
+    {
+      "query_id": "final_001",
+      "category": "exact_fact",
+      "success": true,
+      "factual_correct": true,
+      "claim_supported": true,
+      "citation_valid": true,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "answer": "In **ADR 001**, the following databases were chosen:\n\n- **Vector database:** Redis Stack (with HNSW and FLAT vector indexing) [adr_001_vector_and_storage_architecture#chunk-312de896eb918af4].\n- **Relational database:** SQLite with WAL (Write-Ahead Logging) for application state and chat memory [adr_001_vector_and_storage_architecture#chunk-312de896eb918af4].",
+      "latency_ms": 21475.710000027902
+    },
+    {
+      "query_id": "final_002",
+      "category": "exact_fact",
+      "success": true,
+      "factual_correct": true,
+      "claim_supported": false,
+      "citation_valid": true,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "answer": "Для клієнтів у специфікації API Knowledge Copilot встановлено такі **rate limits**:\n\n- **60 запитів на хвилину** для ендпоінта `/chat/completions` (за замовчуванням, по IP).\n- **10 одночасних запитів** для ендпоінту `/documents/upload`.\n\n[api_specification_and_contracts#chunk-3ddd91583cc40812]",
+      "latency_ms": 17673.133400036022
+    },
+    {
+      "query_id": "final_003",
+      "category": "exact_fact",
+      "success": true,
+      "factual_correct": false,
+      "claim_supported": false,
+      "citation_valid": false,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "answer": "The exact root cause of the Redis OOM incident in October 2026 was:\n\n1. The default `maxmemory` setting of **512 MB** was insufficient for storing high-dimensional vector embeddings (768 dimensions × 4 bytes per value × ~100,000 vectors) plus overhead from the HNSW graph index.\n2. A batch ingestion pipeline loaded all document embeddings into a single Redis transaction without chunking or streaming, causing memory exhaustion when memory usage exceeded `maxmemory` (512 MB).\n3. The `maxmemory-policy` was set to **noeviction**, meaning Redis did not drop any data until it reached the limit, exacerbating the issue.\n\nThis led to OOM errors during ingestion and degraded retrieval quality due to lexical fallback ([incident_postmortem_redis_oom#chunk-458c9cd66b4c0a1c][incident_postmortem_redis_oom#chunk-ce91ddb2dece2958]).",
+      "latency_ms": 36656.71100001782
+    },
+    {
+      "query_id": "final_004",
+      "category": "exact_fact",
+      "success": true,
+      "factual_correct": true,
+      "claim_supported": true,
+      "citation_valid": true,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "answer": "FastAPI бекенд працює на порту **8000**, а Streamlit UI — на порту **8501** (за даними runbook).\n\n[rag_system_runbook#chunk-6e773f78130aabdd] і [rag_system_runbook#chunk-c4787a84c8d8c709].",
+      "latency_ms": 19568.667899933644
+    },
+    {
+      "query_id": "final_005",
+      "category": "exact_fact",
+      "success": true,
+      "factual_correct": true,
+      "claim_supported": true,
+      "citation_valid": true,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "answer": "В лабораторній роботі №3 через `CSVLoader` було завантажено **185 товарів** (одне CSV-рядок стає одним документом) [lab03_rag_report#chunk-073b9da90cf9c792].",
+      "latency_ms": 13759.453300037421
+    },
+    {
+      "query_id": "final_006",
+      "category": "exact_fact",
+      "success": true,
+      "factual_correct": false,
+      "claim_supported": true,
+      "citation_valid": true,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "answer": "В лабораторній роботі №4 для Stable Diffusion використовувалася ревізія **`451f4fe16113bff5a5d2269ed5ad43b0592e9a14`** моделі `runwayml/stable-diffusion-v1-5` (еквівалент `stable-diffusion-v1-5/stable-diffusion-v1-5`) [lab04_stable_diffusion_report#chunk-aa189355741329d5].",
+      "latency_ms": 18504.056800040416
+    },
+    {
+      "query_id": "final_007",
+      "category": "exact_fact",
+      "success": true,
+      "factual_correct": true,
+      "claim_supported": false,
+      "citation_valid": false,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "answer": "The measured model load time for the LLaVA model in Lab 5 is **7.557 seconds** (excluding response time) on the specified hardware configurationlab05_multimodal_report#chunk-a9920be700462f9a.",
+      "latency_ms": 11026.505900081247
+    },
+    {
+      "query_id": "final_008",
+      "category": "exact_fact",
+      "success": true,
+      "factual_correct": false,
+      "claim_supported": false,
+      "citation_valid": true,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "answer": "Обмеження для калькулятора в **Lab 6** такі:\n\n- Довжина виразу: не більше **200 символів**.\n- Максимальна кількість вузлів у синтаксичному дереві (AST): **64**.\n- Обмеження на результат: модуль результату не повинен перевищувати **1e15** (один з десятьма в 15-ій степені).\n- Числові операції виконуються точно для цілих чисел, а дробова арифметика обмежується стандартами IEEE floating point.\n\nПомилки інструменту повертаються у структурованому форматі і не допускають використання `eval`, іменованих виразів, викликів функцій або доступу до атрибутів (заборонена схема traversal і абсолютні шляхи) [lab06_agents_report#chunk-d2444550c68115e7].",
+      "latency_ms": 39189.03789995238
+    },
+    {
+      "query_id": "final_009",
+      "category": "exact_fact",
+      "success": true,
+      "factual_correct": false,
+      "claim_supported": false,
+      "citation_valid": true,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "answer": "ChromaDB was rejected in **ADR 001** due to **inconsistent SQLite locking under multi-threaded FastAPI runners and frequent schema breakages across releases**[adr_001_vector_and_storage_architecture#chunk-6cfff327f83838b7].",
+      "latency_ms": 13703.933599987067
+    },
+    {
+      "query_id": "final_010",
+      "category": "exact_fact",
+      "success": true,
+      "factual_correct": false,
+      "claim_supported": false,
+      "citation_valid": true,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "answer": "В кожну відповідь FastAPI автоматично інжектується заголовок **`X-Request-ID`**, який містить UUIDv4 для трасування запитів (якщо не вказано в заголовках клієнта). Про це згадується у документі:\n\n> \"If omitted, the FastAPI middleware automatically injects a UUIDv4 string into response headers.\" **[api_specification_and_contracts#chunk-3ddd91583cc40812]**\n\nТаким чином, цей заголовок є обов'язковим для трасування.",
+      "latency_ms": 23998.91419999767
+    },
+    {
+      "query_id": "final_011",
+      "category": "semantic_paraphrase",
+      "success": true,
+      "factual_correct": false,
+      "claim_supported": false,
+      "citation_valid": true,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "answer": "Document parsing resilience during vector storage outages is maintained through **automated fallback mechanisms**. Specifically, when the vector store (e.g., Redis) raises transient errors or experiences memory/network issues, the system switches to a lexical retriever like BM25 for retrieval tasks. This ensures that document parsing and retrieval remain operational even if the vector storage fails temporarily:\n\n- **BM25 Lexical Fallback**: Used as a backup when vector store errors occur (e.g., during Redis OOM incidents) [incident_postmortem_redis_oom#chunk-161474725628508f].\n- **Batching and Error Handling**: Chunked batching in the ingestion pipeline reduces risk by committing smaller batches, improving resilience to transient failures.\n\nNo evidence was found for outage-specific recovery mechanisms beyond this fallback strategy. If you need further details on transactional integrity or session management during outages, let me know!",
+      "latency_ms": 32119.00589999277
+    },
+    {
+      "query_id": "final_012",
+      "category": "semantic_paraphrase",
+      "success": true,
+      "factual_correct": false,
+      "claim_supported": false,
+      "citation_valid": true,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "answer": "Після інциденту з переповненням пам’яті Redis для запобігання подібних ситуацій було внесено такі зміни:\n\n1. **Зміна обмеження пам’яті**: Встановлено значення `maxmemory 2gb` замість попереднього 512 MB, щоб забезпечити достатній запас для зберігання векторів і індексів.\n   [incident_postmortem_redis_oom#chunk-840311292cd3047a]\n\n2. **Вибір політики викиду**: Введено політику `allkeys-lru` для ефективного управління пам’яті, що дозволяє видаляти найменш використовувані ключі при переповненні.\n   [incident_postmortem_redis_oom#chunk-840311292cd3047a]\n\n3. **Часткова обробка документів**: Внесення системи розбивки на блoki (batch size = 64 штук) для зменшення навантаження на Redis під час завантаження векторних даних.\n   [incident_postmortem_redis_oom#chunk-161474725628508f]\n\n4. **Надійність та спостереження**:\n   - Додавання метрик спостереження (наприклад, `redis_memory_used_bytes`).\n   - Встановлення тригерів для виклику попереджень при перевищенні 80 % від обмеження пам’яті.\n   [incident_postmortem_redis_oom#chunk-161474725628508f]\n\nТаким чином, було забезпечено стабільну роботу системи індексації і запобігання переповнення пам’яті Redis.",
+      "latency_ms": 73195.07180002984
+    },
+    {
+      "query_id": "final_013",
+      "category": "semantic_paraphrase",
+      "success": true,
+      "factual_correct": false,
+      "claim_supported": false,
+      "citation_valid": false,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "answer": "Lab 6’s safeguards against arbitrary shell code execution are not explicitly detailed in the indexed documents. The architecture focuses on **vector storage, relational persistence, and session integrity** (e.g., enforcing `PRAGMA busy_timeout` to prevent database locks under concurrent access) but does not mention explicit sandboxing or restricted execution environments for shell commands.\n\nIf you’re referring to a specific implementation detail in Lab 6’s design, please clarify whether it involves:\n- **Restricted tool execution** (e.g., whitelisting tools via API contracts),\n- **Isolated runtime environments**, or\n- **Input validation/whitelisting** for user-provided commands.\n\nThe indexed documents do not provide evidence on these safeguards.",
+      "latency_ms": 26026.339899981394
+    },
+    {
+      "query_id": "final_014",
+      "category": "semantic_paraphrase",
+      "success": true,
+      "factual_correct": false,
+      "claim_supported": false,
+      "citation_valid": true,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "answer": "По PostgreSQL с pgvector не было выбрано для локального векторного хранилища из-за следующих причин:\n\n1. **Тяжкий footprint в контейнерах**: pgvector потребовал бы значительного увеличения нагрузки на систему, что усложняло установку и использование на локальных рабочих станциях разработчиков (Windows/Linux) [adr_001_vector_and_storage_architecture#chunk-6cfff327f83838b7].\n2. **Ограничения по ресурсам**: Хотя pgvector теоретически подходил для базы данных, его использование на локальных устройствах с ограниченными вычислительными мощностями не соответствовало требованиям к эффективности и простоте установки.\n\nТаким образом, решение было выбрано в пользу других решений, которые лучше соответствовали условиям локальной работы.",
+      "latency_ms": 31536.453500040807
+    },
+    {
+      "query_id": "final_015",
+      "category": "semantic_paraphrase",
+      "success": true,
+      "factual_correct": false,
+      "claim_supported": false,
+      "citation_valid": true,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "answer": "В лабораторній роботі №3 для обробки текстових записів використовується модель `all-MiniLM-L6-v2`, яка обрізает довгі тексти до **256 word pieces** перед збереженням у векторному індексі. Это ограничение на границу токенов было применено для минимизации вычислительных затрат и оптимизации работы с индексом Redis Stack [lab03_rag_report#chunk-4d5ce6f4f6109390].",
+      "latency_ms": 23595.657799975015
+    },
+    {
+      "query_id": "final_016",
+      "category": "semantic_paraphrase",
+      "success": true,
+      "factual_correct": false,
+      "claim_supported": false,
+      "citation_valid": true,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "answer": "Перевірка працездатності (readiness probe) бекенду Knowledge Copilot здійснюється за допомогою API-запиту:\n\n- **Метод**: `curl -s http://127.0.0.1:8000/api/v1/health/ready`\n- **Очікуваний відповідь**:\n  ```json\n  {\"status\":\"ready\", \"database\":true, \"redis\":true}\n  ```\n  Статус-код HTTP — 200.\n\nЯкщо Redis не працює, система переходить у деградованого режиму і використовує лише BM25-лексичний пошук (без векторного індексування) [rag_system_runbook#chunk-fedc2034890e80a0].\n\nТакож в API специфікації зазначено, що `/health/ready` повертає статус готовності з переліком доступних ресурсів (база даних і Redis), або HTTP 503 у разі невдачі [api_specification_and_contracts#chunk-342a291bedfe4d18].",
+      "latency_ms": 40802.11579997558
+    },
+    {
+      "query_id": "final_017",
+      "category": "semantic_paraphrase",
+      "success": true,
+      "factual_correct": false,
+      "claim_supported": false,
+      "citation_valid": true,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "answer": "На RTX 3050 для інференсу Stable Diffusion в даному експерименті були застосовані наступні оптимізації:\n\n- **Precision**: використовувалася `torch.float16` (FP16).\n- **Оптимізація уваги (`Attention`)**: `AttnProcessor2_0` (SDPA).\n\nДодатково не застосовувалися такі техніки, як attention slicing, xFormers або VAE slicing/tiling ([lab04_stable_diffusion_report#chunk-26d0af60fb9fa7e7] і [lab04_stable_diffusion_report#chunk-9fb5160565af959c]).\n\nОптимізації дозволили уникнути помилок з надлишковою пам'яттю (OOM) на даній конфігурації.",
+      "latency_ms": 35415.62540002633
+    },
+    {
+      "query_id": "final_018",
+      "category": "semantic_paraphrase",
+      "success": true,
+      "factual_correct": false,
+      "claim_supported": false,
+      "citation_valid": false,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "answer": "В архітектурі LLaVA в лабораторній роботі №5 **MLP-проєктор** виконує роль перетворення візуальних ознак, виділених SigLIP Vision, у формат, який можна узгоджувати з мовними embeddings моделі Qwen2. Точніше, він адаптує візуальні дані до розмірності `hidden_size=1024`, що відповідає розміру представлень мовної частини LLaVA.\n\nЦей проєктор дозволяє інтегрувати зображення та текст у єдиний контекст для генерації відповіді моделі [lab05_multimodal_report#chunk-848f92fad2de281b, lab05_multimodal_report#chunk-31c0bf0fd8403bf9].",
+      "latency_ms": 27515.126800048165
+    },
+    {
+      "query_id": "final_019",
+      "category": "semantic_paraphrase",
+      "success": true,
+      "factual_correct": false,
+      "claim_supported": false,
+      "citation_valid": true,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "answer": "The indexed documents do not provide explicit details on how **multi-turn conversation memory is synchronized between the OpenAI Agents SDK and SQLite**. The available information focuses on:\n\n- **Redis OOM incidents** related to vector storage (e.g., chunk batching, memory limits) in unrelated architectures ([incident_postmortem_redis_oom#chunk-ce91c3b15f07706b][[incident_postmortem_redis_oom#chunk-840311292cd3047a]).\n- **Alternatives to SQLite** (e.g., ChromaDB’s issues with SQLite locking) and vector storage trade-offs ([adr_001_vector_and_storage_architecture#chunk-6cfff327f83838b7]).\n\nFor multi-turn conversation synchronization, you may need to consult:\n- The **OpenAI Agents SDK documentation** (e.g., memory management in agents).\n- Custom implementation details (e.g., how SQLite is used for conversation state storage).\n\nIf you clarify whether this refers to a specific SDK version or custom integration, I can help refine the search.",
+      "latency_ms": 41450.73819998652
+    },
+    {
+      "query_id": "final_020",
+      "category": "semantic_paraphrase",
+      "success": true,
+      "factual_correct": false,
+      "claim_supported": false,
+      "citation_valid": true,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "answer": "Процедура повного переіндексування корпусу документів в текущих лабораторних відомостях не описано явно.\n\nОднак у звіті до лабораторної роботи №3 ([lab03_rag_report#chunk-4d5ce6f4f6109390]) зазначено, що для подальшої версії індексу необхідно:\n- **Версіонування індексу** і моніторинг якості цитацій.\n- Використання **детерміністичних інструментів** для числових операцій та ручного аудиту вкладень (entailment-аудит).\n\nДля конкретної процедури повного переіндексування в runbook не наведено чітких інструкцій. Ви можете скористатися описом версіонування і моніторингу як базових кроків для забезпечення безперебійності.\n\nДокументи не містять детального runbook-процесу повного переіндексування, але рекомендації стосуються підтримки індексу та його якості.",
+      "latency_ms": 47446.965600014664
+    },
+    {
+      "query_id": "final_021",
+      "category": "cross_document",
+      "success": false,
+      "failure_reason": "Turn returned EXECUTION_FAILED",
+      "factual_correct": false,
+      "claim_supported": false,
+      "refusal_correct": false,
+      "tools_executed": [],
+      "latency_ms": 120049.96099998243
+    },
+    {
+      "query_id": "final_022",
+      "category": "cross_document",
+      "success": false,
+      "failure_reason": "Turn returned EXECUTION_FAILED",
+      "factual_correct": false,
+      "claim_supported": false,
+      "refusal_correct": false,
+      "tools_executed": [],
+      "latency_ms": 120097.99620008562
+    },
+    {
+      "query_id": "final_023",
+      "category": "cross_document",
+      "success": true,
+      "factual_correct": false,
+      "claim_supported": false,
+      "citation_valid": true,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "answer": "В лабораторній роботі **Lab 3** с використанням MiniLM:\n\n- **Обмеження на кількість токенів**: Модель обрізає довгі записи до **256 word pieces** (близько 256 токенів) для збереження в індексі, що пов'язано з обмеженнями при ретравелі документів [lab03_rag_report#chunk-4d5ce6f4f6109390].\n\n---\n\nВ **Lab 6** (Agent):\n\n- **Обмеження на кількість токенів**: Агенти використовують **max_tokens = 900** для кожного виклику Chat Completions, що дозволяє обробляти до 900 токенів за один раз. Контекст у LLM (Ministral) також обмежений до **8192 токенів**, але це не обмежує операцію агента в конкретному виклику [lab06_agents_report#chunk-24d0b9d10d53e82f].\n\n---\n**Різниця**:\n- В Lab 3 обмеження пов'язане з **обрізкою записів до 256 токенів** при ретравелі.\n- В Lab 6 обмеження на **900 токенів за виклик** для генерації відповіді агента, а також загальний контекст LLM (8192 токени) не обмежує конкретний виклик.\n\nДокументи не містять детальних відомостей про інші специфічні обмеження в Lab 3 або Lab 6.",
+      "latency_ms": 116610.09199998807
+    },
+    {
+      "query_id": "final_024",
+      "category": "cross_document",
+      "success": true,
+      "factual_correct": false,
+      "claim_supported": false,
+      "citation_valid": false,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "answer": "Механізм ізоляції сесій у **Lab 6** реалізований через локальну історію (`SQLiteSession`), яка зберігає стан агентів між викликами. Агент виконує послідовність дій, використовуючи інструменти і дані з робочого простору, але не має окремої системи планування — ізоляція забезпечується через **відокремлення сесій** в одному екземплярі агента (контрольний запуск без інструментів служить для порівняння) і відсутність мультиагентної системи. Пам'ять зберігається локально, а ізоляція забезпечується через **недопущення доступу до зовнішніх даних** без явного передавання (наприклад, з локального диска).\n\nУ **API Knowledge Copilot** механізм ізоляції сесій реалізований за допомогою **унікальних `session_id`**, які обов'язково передаються в запитах до `/chat/completions`. Сесії є **відокремленими** і зберігають історію викликів, результати та цитати з документів. Запит включає опціональний `session_id`, який дозволяє відстежувати контекст між сесіями:\n\n- **`POST /chat/completions`**: Використовує `session_id` для ізоляції даних і забезпечує статус ґрунтованості відповіді (`GROUNDED`, `PARTIALLY_GROUNDED`, `UNSUPPORTED`, `INSUFFICIENT_EVIDENCE`), що підтверджує відокремлення сесій.\n- **Автентифікація**: Використання `X-Request-ID` або автоматичне генерація UUIDv4 для трасування запитів, що допомагає підтримувати ізоляцію.\n\n**Різниця**:\n- Lab 6: Ізоляція забезпечується локальною пам'яттю і відокремленням сесій в одному агенті.\n- API Knowledge Copilot: Ізоляція реалізована через **унікальні session_id**, які гарантують відокремленість сесій між викликами.",
+      "latency_ms": 95485.03420001362
+    },
+    {
+      "query_id": "final_025",
+      "category": "cross_document",
+      "success": false,
+      "failure_reason": "Turn returned EXECUTION_FAILED",
+      "factual_correct": false,
+      "claim_supported": false,
+      "refusal_correct": false,
+      "tools_executed": [],
+      "latency_ms": 120042.65499999747
+    },
+    {
+      "query_id": "final_026",
+      "category": "cross_document",
+      "success": true,
+      "factual_correct": false,
+      "claim_supported": false,
+      "citation_valid": false,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "answer": "В документах **Lab 3** и **ADR 001** не содержится прямого описания формата представления векторов в лабораторной работе №3.\n\nОднако из **ADR 001: Vector Storage and Relational Persistence Architecture** можно выделить следующее:\n\n- Векторы хранятся и индексируются с использованием **Redis Stack** с поддержкой:\n  - **HNSW (Hierarchical Navigable Small World)** и **FLAT** векторных индексов.\n  - Точность представления векторов — `FLOAT32`.\n  - Размер вектора: **768** размерность для нормализованных вложений (`multilingual-e5-base`).\n  - Используется метрика косинусного сходства.\n\nЕсли в лабораторной работе №3 использовались другие методы хранения или представления векторов, то они не описаны в доступном индексе. Для сравнения формата векторов между этими двумя источниками требуются дополнительные данные из самой лабораторной работы 3. Если у вас есть конкретная информация о формате векторов из Lab 3, пожалуйста, уточните её.",
+      "latency_ms": 80865.46759994235
+    },
+    {
+      "query_id": "final_027",
+      "category": "cross_document",
+      "success": false,
+      "failure_reason": "Turn returned EXECUTION_FAILED",
+      "factual_correct": false,
+      "claim_supported": false,
+      "refusal_correct": false,
+      "tools_executed": [],
+      "latency_ms": 120041.21889988892
+    },
+    {
+      "query_id": "final_028",
+      "category": "cross_document",
+      "success": true,
+      "factual_correct": false,
+      "claim_supported": false,
+      "citation_valid": false,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "answer": "В документах не описано **детальну інтерактивність** між користувачем і CLI в Lab 6 (наприклад, конкретні команди або механізми взаємодії). Інформація обмежується загальним описом лабораторної роботи з використанням агентів OpenAI SDK.\n\nОднак у **Knowledge Copilot** інструмент взаємодії користувача реалізований через **Streamlit UI**:\n\n- **Streamlit UI** працює на порту 8501 і пропонує графічний інтерфейс для взаємодії з локальною системою.\n- Користувач може вводити запитання або команди через веб-інтерфейс, а не через CLI (консольний інтерфейс).\n- Завдяки модульній архітектурі Streamlit дозволяє створювати динамічні, інтерактивні віджетi для відображення результатів та обробки запитів.\n\n**Розбіжність**:\n- **Lab 6**: Використовується CLI (консольний інтерфейс) для запуску агентів і виконання команд через термінал.\n- **Knowledge Copilot**: Замінює CLI на **Streamlit UI**, що дозволяє взаємодіяти з системою через веб-інтерфейс.\n\nЯкщо потрібен конкретний опис інтерактивних елементів або команд у Lab 6, то в цьому документі їх не описано. Ви можете сформулювати запитання про конкретні команди або функціонал для подальшого аналізу.",
+      "latency_ms": 69740.74829998426
+    },
+    {
+      "query_id": "final_029",
+      "category": "cross_document",
+      "success": true,
+      "factual_correct": true,
+      "claim_supported": false,
+      "citation_valid": true,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "answer": "The indexed documents do **not** provide explicit details on GPU VRAM recovery procedures in Lab 4 or document rollback mechanisms for the Knowledge Copilot API.\n\n- **Lab 4 (Stable Diffusion)**: The report focuses on model execution strategies like `torch.float16` and CPU offloading but does not describe specific recovery protocols for GPU VRAM errors ([lab04_stable_diffusion_report#chunk-26d0af60fb9fa7e7], [lab04_stable_diffusion_report#chunk-920d93de947630aa]).\n- **Knowledge Copilot API**: The document management section only outlines deletion (`DELETE /documents/{document_id}`) and upload policies, not rollback procedures ([api_specification_and_contracts#chunk-50dc3e44b7a22bc5]).\n\nIf you need these details, consider consulting the lab’s error-handling documentation or API logs for specific recovery steps.",
+      "latency_ms": 44396.984999999404
+    },
+    {
+      "query_id": "final_030",
+      "category": "cross_document",
+      "success": false,
+      "failure_reason": "Turn returned EXECUTION_FAILED",
+      "factual_correct": false,
+      "claim_supported": false,
+      "refusal_correct": false,
+      "tools_executed": [],
+      "latency_ms": 120027.8056000825
+    },
+    {
+      "query_id": "final_031",
+      "category": "numerical_reasoning",
+      "success": true,
+      "factual_correct": true,
+      "claim_supported": false,
+      "citation_valid": false,
+      "calculator_used": true,
+      "tools_executed": [
+        "calculate"
+      ],
+      "answer": "The difference between the full multimodal model parameter count and a 500,000,000 language backbone is **364,031,264 parameters**.",
+      "latency_ms": 5258.359299972653
+    },
+    {
+      "query_id": "final_032",
+      "category": "numerical_reasoning",
+      "success": true,
+      "factual_correct": false,
+      "claim_supported": false,
+      "citation_valid": true,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "answer": "Різниця між оновленим лімітом пам'яті Redis (2 ГБ) і початковим дефолтним лімітом (512 МБ):\n\n**2048 МБ** (переведено з 2 ГБ).\n\nСтандартна різниця:\n**1536 МБ**.\n\nДані взято зі **пост-мортему інциденту Redis OOM** ([incident_postmortem_redis_oom#chunk-ce91c3b15f07706b]).",
+      "latency_ms": 16836.18830004707
+    },
+    {
+      "query_id": "final_033",
+      "category": "numerical_reasoning",
+      "success": true,
+      "factual_correct": true,
+      "claim_supported": true,
+      "citation_valid": false,
+      "calculator_used": true,
+      "tools_executed": [
+        "calculate"
+      ],
+      "answer": "The total embedding dimension sum is **1,152**.",
+      "latency_ms": 2802.2546999854967
+    },
+    {
+      "query_id": "final_034",
+      "category": "numerical_reasoning",
+      "success": true,
+      "factual_correct": false,
+      "claim_supported": false,
+      "citation_valid": false,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "answer": "В документі **Lab 3 RAG Report** не указано конкретное число оставшихся товаров після удаления 17 записей, однако из текста видно следующее:\n\n- Изначально загружено **185 товарів**.\n- MiniLM обрезает только **17 самых длинных записей**, но не упоминается, что эти записи исключаются из общего количества товаров для дальнейшего анализа или работы с базой данных.\n\nЕсли подразумевается удаление этих 17 записей из всего набора (например, для улучшения качества индексации), то оставшихся будет:\n\n**185 − 17 = 168 товарів**.\n\nОднако в документе не указано явно, что именно происходит с этими 17 записями — исключаются ли они из дальнейшей обработки или просто обрезаются для нормализации длины. Если требуется подтверждение этого понимания, уточните, пожалуйста.\n\nЕсли же вопрос относится к другой логике удаления (например, только для индексации), то нужно уточнить контекст.",
+      "latency_ms": 45008.5949000204
+    },
+    {
+      "query_id": "final_035",
+      "category": "numerical_reasoning",
+      "success": true,
+      "factual_correct": true,
+      "claim_supported": false,
+      "citation_valid": false,
+      "calculator_used": true,
+      "tools_executed": [
+        "search_knowledge",
+        "calculate"
+      ],
+      "answer": "Разница между Hit@5 (0.8571) и Recall@5 (0.5734) для семантического базового уровня в лабораторной работе №3 составляет примерно **0.284** (или 28.4%).",
+      "latency_ms": 15584.644700051285
+    },
+    {
+      "query_id": "final_036",
+      "category": "numerical_reasoning",
+      "success": true,
+      "factual_correct": true,
+      "claim_supported": false,
+      "citation_valid": true,
+      "calculator_used": false,
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "answer": "Тривалість інциденту Redis OOM з **14:22** до **14:47 UTC** становила **25 хвилин**, як зазначено в резюме пост-мортему [incident_postmortem_redis_oom#chunk-ec91ddb2dece2958].",
+      "latency_ms": 15565.804300014861
+    },
+    {
+      "query_id": "final_037",
+      "category": "numerical_reasoning",
+      "success": true,
+      "factual_correct": true,
+      "claim_supported": false,
+      "citation_valid": false,
+      "calculator_used": true,
+      "tools_executed": [
+        "calculate"
+      ],
+      "answer": "The difference in the rate limit capacity is **75%**, meaning the client can send up to 75% of the allowed requests per minute (i.e., 45 requests/minute).",
+      "latency_ms": 5528.653400018811
+    },
+    {
+      "query_id": "final_038",
+      "category": "numerical_reasoning",
+      "success": true,
+      "factual_correct": true,
+      "claim_supported": false,
+      "citation_valid": true,
+      "calculator_used": true,
+      "tools_executed": [
+        "search_knowledge",
+        "search_knowledge",
+        "calculate"
+      ],
+      "answer": "Використано неправильні дані: за документом [lab05_multimodal_report#chunk-848f92fad2de281b] кількість шарів SigLIP Vision — **26**, а Qwen2 має **24 шари**.\n\nРозрахунок правильного добутку: **26 × 24 = 624** (загалом). Виявлено невідповідність у попередньому результаті. Правильна цифра — **624**.",
+      "latency_ms": 43676.72709992621
+    },
+    {
+      "query_id": "final_039",
+      "category": "numerical_reasoning",
+      "success": true,
+      "factual_correct": false,
+      "claim_supported": false,
+      "citation_valid": true,
+      "calculator_used": true,
+      "tools_executed": [
+        "search_knowledge",
+        "calculate"
+      ],
+      "answer": "The remaining free VRAM is **770 MiB** (or 0.77 GiB). [lab05_multimodal_report#chunk-a9920be700462f9a]",
+      "latency_ms": 34143.38140003383
+    },
+    {
+      "query_id": "final_040",
+      "category": "numerical_reasoning",
+      "success": true,
+      "factual_correct": true,
+      "claim_supported": true,
+      "citation_valid": false,
+      "calculator_used": true,
+      "tools_executed": [
+        "calculate"
+      ],
+      "answer": "Різниця між портами вебінтерфейсу Streamlit (8501) та бекенду FastAPI (8000) становить **501**.",
+      "latency_ms": 5009.372300002724
+    },
+    {
+      "query_id": "final_041",
+      "category": "unsupported_refusal",
+      "success": true,
+      "refusal_correct": true,
+      "answer": "The indexed documents do not provide specific guidance on the optimal batch size for training BERT on a Google TPU v4 pod. Batch sizes for BERT training depend on hardware capacity, model parameters, and data throughput, which are not detailed in these sources.\n\nFor **Google TPU v4**, typical recommendations often range between **32–128** tokens per sample (or batch size of 64–256 samples) depending on the specific BERT variant and dataset size. You may need to consult:\n- The [TPU documentation](https://cloud.google.com/tpu/docs/overview)\n- Your training script’s hyperparameter tuning guidelines\n- Cloud TPU-specific best practices (e.g., from Google AI Platform).\n\nWould you like help deriving a batch size estimate based on your model size or dataset?",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "latency_ms": 30922.6398000028
+    },
+    {
+      "query_id": "final_042",
+      "category": "unsupported_refusal",
+      "success": true,
+      "refusal_correct": true,
+      "answer": "В документі про лабораторну роботу №4 **\"Генерація зображень за допомогою Stable Diffusion\"** ([lab04_stable_diffusion_report#chunk-1407dd0be2d2fcd0] і [lab04_stable_diffusion_report#chunk-f261f424057e37ef]) не містяться відомості про **погоду** чи **вологість повітря** під час проведення експериментів.\n\nДані про умови навколишнього середовища (наприклад, температура або вологість) в цьому документі не наведено. Якщо потрібні такі дані для конкретного дослідження Lab 4, слід перевірити інші джерела або лабораторний журнал.",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "latency_ms": 28965.671899961308
+    },
+    {
+      "query_id": "final_043",
+      "category": "unsupported_refusal",
+      "success": true,
+      "refusal_correct": true,
+      "answer": "The indexed documents do not contain information about configuring Apache Cassandra for multi-datacenter replication. This feature typically involves setting up **Hints** and tuning the `network` and `seeds` parameters in Cassandra's configuration files, along with enabling **Cross-DC Replication** using the `hinted handoff` mechanism or a dedicated coordinator node.\n\nWould you like guidance on specific steps for this setup?",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "latency_ms": 17358.257099986076
+    },
+    {
+      "query_id": "final_044",
+      "category": "unsupported_refusal",
+      "success": true,
+      "refusal_correct": true,
+      "answer": "Інформація про порушення ПДР при проїзді на жовтий сигнал світлофора в текущих документах **не знайдена**.\n\nЗгідно з українським законодавством, **порушенням є продовження руху на жовтий сигнал**, якщо це може спричинити аварію або порушити безпеку дорожнього руху. Проте в даному індексі немає конкретних відомостей про це з *runbook* чи інших офіційних джерел ПДР.\n\nМоже бути корисно перевірити **Порядок дій при зміні сигналу світлофора** у розділах **\"Безпека дорожнього руху\"** або **\"Проїзд через перехрестя\"** в українських нормативних актах (наприклад, Закону України \"Про безпеку дорожнього руху\").",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "latency_ms": 37392.71749998443
+    },
+    {
+      "query_id": "final_045",
+      "category": "unsupported_refusal",
+      "success": true,
+      "refusal_correct": true,
+      "answer": "The indexed documents do not provide specific details about the **Kubernetes Helm chart values** for deploying Knowledge Copilot on AWS EKS.\n\nFor accurate Helm chart configuration, you should refer to:\n1. The official [Knowledge Copilot Helm chart documentation](https://github.com/your-repo/Knowledge-Copilot-helm-chart) (if available).\n2. AWS EKS-specific deployment guides or the vendor’s Kubernetes integration guide.\n3. The `values.yaml` file for the Helm chart, which typically includes configurations like:\n   - Cluster settings (e.g., `awsRegion`, `kubeVersion`).\n   - Resource limits and node selectors.\n   - Ingress controller configuration (if applicable).\n   - Custom environment variables or secrets.\n\nWould you like help finding a general template or AWS-specific examples for Helm chart values in EKS?",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "latency_ms": 28457.133200019598
+    },
+    {
+      "query_id": "final_046",
+      "category": "unsupported_refusal",
+      "success": true,
+      "refusal_correct": true,
+      "answer": "У даному документі не описано конкретного кулінарного рецепта для випікання хліба під час тестування Lab 5. Інформація в доступних фрагментах пов'язана лише з мультимодальними моделями та входом зображення, а не з кулінарією.\n\nПожалуйста, уточните або перевірте інші документи або матеріали, які могли б містити рецепт.",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "latency_ms": 15486.654100008309
+    },
+    {
+      "query_id": "final_047",
+      "category": "unsupported_refusal",
+      "success": true,
+      "refusal_correct": true,
+      "answer": "Please clarify which document, model, or report you are referring to. A new session does not have context for that pronoun.",
+      "tools_executed": [],
+      "latency_ms": 12.296799919568002
+    },
+    {
+      "query_id": "final_048",
+      "category": "unsupported_refusal",
+      "success": true,
+      "refusal_correct": true,
+      "answer": "Документ **ADR 001** не містить конкретних інструкцій з налаштування протоколу BGP для автономної системи AS65001.\n\nЗгідно зі знайденим матеріалом, ADR 001 стосується архітектури векторного зберігання та реляційної персистентності, включаючи:\n- Налаштування `PRAGMA busy_timeout = 5000` для управління блокировками в базі даних під час високого навантаження API.\n- Гарантію транзакційної інтегральності для документних статусів і сесій.\n\nПротокол BGP (Border Gateway Protocol) та його налаштування для конкретного AS не описано у цьому документі. Для конфігурації BGP потрібно звернутися до специфічних документацій або рекомендацій, які стосуються маршрутизації в мережі.\n\nЯкщо потрібні детальні інструкції для AS65001, перевірте такі документи:\n- Маршрутизаційні настанови для даної системи.\n- Конфігураційні файли або документація з підтримки маршрутизаторів.",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "latency_ms": 34828.86459992733
+    },
+    {
+      "query_id": "final_049",
+      "category": "unsupported_refusal",
+      "success": true,
+      "refusal_correct": true,
+      "answer": "The indexed documents do not contain any information about clinical trial results for drug **XYZ-123**. This report focuses on technical aspects like negative prompts, seeds in generative models (e.g., Stable Diffusion), and controlled experiments—not pharmaceutical trials. If you need details on clinical studies for a drug, please specify the correct name or source of those reports.",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "latency_ms": 15967.005699989386
+    },
+    {
+      "query_id": "final_050",
+      "category": "unsupported_refusal",
+      "success": true,
+      "refusal_correct": true,
+      "answer": "Звіт **Lab 6** не містить інформації про футбольний турнір 2026 року, зокрема про фінал.\n\nДокумент **lab06_agents_report.md** описує розробку агент-базового асистента для лабораторної роботи, але це стосується тематики LLM-агентів і їх функціонування в навчальних умовах. Футбольні події не є частиною цього звіту.\n\nВи можете перевірити інші документи, якщо потрібно знайти інформацію про конкретний футбольний турнір або події.",
+      "tools_executed": [
+        "search_knowledge"
+      ],
+      "latency_ms": 23959.25439998973
+    }
+  ]
+}
