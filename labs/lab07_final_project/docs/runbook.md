@@ -111,7 +111,7 @@ To ingest the laboratory reports and engineering specifications:
 ### 4.2 Execute Test Suite
 
 ```powershell
-# Full test suite (185 tests) with live Redis running on port 6380:
+# Full Lab 7 test suite (232 tests) with live Redis running on port 6380:
 .\labs\lab07_final_project\.venv\Scripts\python.exe -m pytest labs/lab07_final_project/tests -q
 ```
 

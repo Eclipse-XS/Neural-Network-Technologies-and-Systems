@@ -1,0 +1,1148 @@
+[
+  {
+    "id": "final_v4_indep_001",
+    "category": "exact_fact",
+    "language": "en",
+    "query": "What is the local knowledge base scale target (in document chunks) specified under operational constraints in ADR 001?",
+    "expected_answer": "The scale target in ADR 001 is up to 100,000 document chunks per local knowledge base.",
+    "relevant_doc_ids": [
+      "adr_001_vector_and_storage_architecture.md"
+    ],
+    "target_sections": [
+      "## Context"
+    ],
+    "evidence_spans": [
+      "Scale target: up to 100,000 document chunks per local knowledge base."
+    ],
+    "gold_passage_ids": [
+      "chunk-230a9615175364d9"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_002",
+    "category": "exact_fact",
+    "language": "uk",
+    "query": "Які чотири можливі статуси документів повертає ендпоінт GET /documents згідно зі специфікацією API Knowledge Copilot?",
+    "expected_answer": "Ендпоінт GET /documents повертає статуси PENDING, PROCESSING, INDEXED та FAILED.",
+    "relevant_doc_ids": [
+      "api_specification_and_contracts.md"
+    ],
+    "target_sections": [
+      "## Core Endpoints / 2. Document Management"
+    ],
+    "evidence_spans": [
+      "Lists all registered documents with status (`PENDING`, `PROCESSING`, `INDEXED`, `FAILED`)."
+    ],
+    "gold_passage_ids": [
+      "chunk-50dc3e44b7a22bc5"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_003",
+    "category": "exact_fact",
+    "language": "en",
+    "query": "According to the Redis OOM post-mortem, what Prometheus gauge metric and usage threshold percentage trigger the preventative memory alert?",
+    "expected_answer": "The Prometheus gauge redis_memory_used_bytes triggers an alert rule when Redis memory exceeds 80% of maxmemory.",
+    "relevant_doc_ids": [
+      "incident_postmortem_redis_oom.md"
+    ],
+    "target_sections": [
+      "## Corrective and Preventative Actions"
+    ],
+    "evidence_spans": [
+      "Added Prometheus gauge `redis_memory_used_bytes` and alert rule firing when Redis memory exceeds 80% of `maxmemory`."
+    ],
+    "gold_passage_ids": [
+      "chunk-161474725628508f"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_004",
+    "category": "exact_fact",
+    "language": "uk",
+    "query": "Яка команда Lua EVAL у redis-cli наведена в операційному runbook для очищення векторного індексу Redis?",
+    "expected_answer": "У runbook наведено команду redis-cli -p 6380 EVAL \"for i, name in ipairs(redis.call('KEYS', 'lab07:kb:*')) do redis.call('DEL', name) end\" 0.",
+    "relevant_doc_ids": [
+      "rag_system_runbook.md"
+    ],
+    "target_sections": [
+      "## 2. Standard Operating Procedures (SOP) / Reindexing and Disaster Recovery"
+    ],
+    "evidence_spans": [
+      "`redis-cli -p 6380 EVAL \"for i, name in ipairs(redis.call('KEYS', 'lab07:kb:*')) do redis.call('DEL', name) end\" 0`"
+    ],
+    "gold_passage_ids": [
+      "chunk-3a4f3f08614dc268"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_005",
+    "category": "exact_fact",
+    "language": "en",
+    "query": "What Hit@5, MRR, and Recall@5 values did the small five-query holdout achieve in the Lab 3 RAG evaluation?",
+    "expected_answer": "On the five-query holdout in Lab 3, Hit@5 was 1.0000, MRR was 1.0000, and Recall@5 was 0.9111.",
+    "relevant_doc_ids": [
+      "lab03_rag_report.md"
+    ],
+    "target_sections": [
+      "## Фактичні результати"
+    ],
+    "evidence_spans": [
+      "Малий holdout із п'яти запитів дав Hit@5 = 1.0000, MRR = 1.0000 і Recall@5 = 0.9111."
+    ],
+    "gold_passage_ids": [
+      "chunk-0111f65037b69bff"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_006",
+    "category": "exact_fact",
+    "language": "uk",
+    "query": "Які апаратні параметри відеокарти, відеопам'яті та системної RAM зафіксовано у середовищі виконання Lab 4?",
+    "expected_answer": "У Lab 4 зафіксовано GPU NVIDIA GeForce RTX 3050 Laptop GPU з 4.000 GiB VRAM та 15.19 GiB системної RAM.",
+    "relevant_doc_ids": [
+      "lab04_stable_diffusion_report.md"
+    ],
+    "target_sections": [
+      "## Модель і середовище"
+    ],
+    "evidence_spans": [
+      "GPU NVIDIA GeForce RTX 3050 Laptop GPU, 4.000 GiB VRAM. RAM 15.19 GiB."
+    ],
+    "gold_passage_ids": [
+      "chunk-26d0af60fb9fa7e7"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_007",
+    "category": "exact_fact",
+    "language": "en",
+    "query": "What Transformers model class and pipeline class were instantiated in Lab 5 to track generated tokens and EOS?",
+    "expected_answer": "Lab 5 instantiated LlavaForConditionalGeneration and a subclass of ImageTextToTextPipeline to read generated token counts and EOS.",
+    "relevant_doc_ids": [
+      "lab05_multimodal_report.md"
+    ],
+    "target_sections": [
+      "## 7. Використана модель"
+    ],
+    "evidence_spans": [
+      "Фактичний клас `LlavaForConditionalGeneration`, pipeline `ImageTextToTextPipeline` із підкласом для читання кількості згенерованих токенів та EOS."
+    ],
+    "gold_passage_ids": [
+      "chunk-94bae1e60a6d617a"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_008",
+    "category": "exact_fact",
+    "language": "uk",
+    "query": "Яка помилка серіалізації Pydantic виникла під час першої спроби журналювання у розділі Фактичні помилки та застрягання звіту Lab 6?",
+    "expected_answer": "Журналювання впало з винятком TypeError: InputTokensDetails не JSON-serializable, після чого додали serializer для вкладених Pydantic-об'єктів.",
+    "relevant_doc_ids": [
+      "lab06_agents_report.md"
+    ],
+    "target_sections": [
+      "## Фактичні помилки та застрягання"
+    ],
+    "evidence_spans": [
+      "журналювання впало з TypeError: InputTokensDetails не JSON-serializable. Додано serializer для вкладених Pydantic-об'єктів і regression test."
+    ],
+    "gold_passage_ids": [
+      "chunk-5347a184c347b143"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_009",
+    "category": "exact_fact",
+    "language": "en",
+    "query": "What resources does DELETE /documents/{document_id} delete atomically according to the Knowledge Copilot API contract?",
+    "expected_answer": "DELETE /documents/{document_id} atomically deletes the document record, associated SQLite chunks, and Redis vector indexes.",
+    "relevant_doc_ids": [
+      "api_specification_and_contracts.md"
+    ],
+    "target_sections": [
+      "## Core Endpoints / 2. Document Management"
+    ],
+    "evidence_spans": [
+      "Deletes document record, associated SQLite chunks, and Redis vector indexes atomically."
+    ],
+    "gold_passage_ids": [
+      "chunk-50dc3e44b7a22bc5"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_010",
+    "category": "exact_fact",
+    "language": "uk",
+    "query": "Скільки секунд зайняло повторне індексування черги документів після перезапуску сервісу згідно зі звітом про інцидент Redis?",
+    "expected_answer": "Повторне індексування поставлених у чергу документів тривало 84 секунди.",
+    "relevant_doc_ids": [
+      "incident_postmortem_redis_oom.md"
+    ],
+    "target_sections": [
+      "## Timeline (UTC)"
+    ],
+    "evidence_spans": [
+      "Restarted service; queued documents reindexed successfully in 84 seconds."
+    ],
+    "gold_passage_ids": [
+      "chunk-840311292cd3047a"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_011",
+    "category": "paraphrase",
+    "language": "en",
+    "query": "How do administrators perform a backup of stored documents and vector indexes under the ADR 001 design?",
+    "expected_answer": "Backups are performed simply by copying the SQLite .db file and the Redis .rdb snapshot.",
+    "relevant_doc_ids": [
+      "adr_001_vector_and_storage_architecture.md"
+    ],
+    "target_sections": [
+      "## Consequences"
+    ],
+    "evidence_spans": [
+      "trivial backup by copying SQLite `.db` file and Redis `.rdb` snapshot."
+    ],
+    "gold_passage_ids": [
+      "chunk-27547712c6c1bf94"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_012",
+    "category": "paraphrase",
+    "language": "uk",
+    "query": "Чому підвищення ліміту max_new_tokens із 64 до 128 токенів не покращило якість опису desc_01 у моделі LLaVA?",
+    "expected_answer": "За лімітів 64 і 128 модель завершила генерацію з EOS на ідентичних 48 токенах, і більший ліміт не усунув вигаданий матеріал даху.",
+    "relevant_doc_ids": [
+      "lab05_multimodal_report.md"
+    ],
+    "target_sections": [
+      "## 16. Вплив max_new_tokens"
+    ],
+    "evidence_spans": [
+      "За лімітів 64 і 128 отримано дослівно однакову завершену відповідь із 48 токенів включно з EOS. Додатковий бюджет не усунув непідтверджений матеріал даху."
+    ],
+    "gold_passage_ids": [
+      "chunk-49b7374f31ab1f43"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_013",
+    "category": "paraphrase",
+    "language": "en",
+    "query": "Why did putting the word 'text' in the negative prompt create a partial conflict in the seed 123 Stable Diffusion experiment?",
+    "expected_answer": "It partially conflicts with 'neon signs' in the positive prompt, and pseudo-text artifacts still appeared without guaranteed removal.",
+    "relevant_doc_ids": [
+      "lab04_stable_diffusion_report.md"
+    ],
+    "target_sections": [
+      "## Negative prompt, seed 123"
+    ],
+    "evidence_spans": [
+      "Попри слово text у negative prompt, псевдонаписи залишилися. Воно також частково конфліктує з neon signs у positive prompt; гарантованого вилучення тексту чи всіх артефактів немає."
+    ],
+    "gold_passage_ids": [
+      "chunk-ae052c16b966a501"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_014",
+    "category": "paraphrase",
+    "language": "uk",
+    "query": "Чому підсумкова таблиця експериментів у Lab 6 відображає тільки другу серію тестів без об'єднання з початковою?",
+    "expected_answer": "Початкові результати збережено окремо й не замінено успішними, тому таблиця стосується лише другої серії без змішування різних конфігурацій.",
+    "relevant_doc_ids": [
+      "lab06_agents_report.md"
+    ],
+    "target_sections": [
+      "## Дизайн експерименту"
+    ],
+    "evidence_spans": [
+      "Початкові результати збережені; їх не замінено успішними.",
+      "Підсумкова таблиця стосується другої серії, без змішування різних конфігурацій."
+    ],
+    "gold_passage_ids": [
+      "chunk-f25fe1c27cf5f7b0"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_015",
+    "category": "paraphrase",
+    "language": "en",
+    "query": "Which grounding states and execution telemetry fields are returned in ChatResponse from /chat/completions?",
+    "expected_answer": "ChatResponse includes grounding_status (GROUNDED, PARTIALLY_GROUNDED, UNSUPPORTED, INSUFFICIENT_EVIDENCE), tool_executions with origin, and execution_metadata (execution time, token count, retrieval latency in ms).",
+    "relevant_doc_ids": [
+      "api_specification_and_contracts.md"
+    ],
+    "target_sections": [
+      "## Core Endpoints / 3. Agentic Chat & Retrieval"
+    ],
+    "evidence_spans": [
+      "`UNSUPPORTED` | `INSUFFICIENT_EVIDENCE`",
+      "`execution_metadata`: execution time, token count, and retrieval latency in milliseconds."
+    ],
+    "gold_passage_ids": [
+      "chunk-d41505820ec0fe04",
+      "chunk-3e96a9e19c6722a0"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_016",
+    "category": "paraphrase",
+    "language": "uk",
+    "query": "Якими двома командами запуску згідно з операційним runbook стартують сервер FastAPI та веб-інтерфейс Streamlit?",
+    "expected_answer": "FastAPI запускається через uvicorn labs.lab07_final_project.src.knowledge_copilot.api.app:app на порту 8000, а Streamlit — через streamlit run labs/lab07_final_project/src/knowledge_copilot/ui/streamlit_app.py на порту 8501.",
+    "relevant_doc_ids": [
+      "rag_system_runbook.md"
+    ],
+    "target_sections": [
+      "## 2. Standard Operating Procedures (SOP) / Starting Local Services"
+    ],
+    "evidence_spans": [
+      "uvicorn labs.lab07_final_project.src.knowledge_copilot.api.app:app --host 127.0.0.1 --port 8000 --reload",
+      "streamlit run labs/lab07_final_project/src/knowledge_copilot/ui/streamlit_app.py --server.port 8501"
+    ],
+    "gold_passage_ids": [
+      "chunk-407f9e5fb7119a9e",
+      "chunk-c4787a84c8d8c709"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_017",
+    "category": "paraphrase",
+    "language": "en",
+    "query": "Which LLM answer failure modes were documented in Lab 3 beyond pure retrieval metrics?",
+    "expected_answer": "Lab 3 recorded conflicting price fields, unit and citation format errors, incomplete multi-record retrieval, misusing similarity for global aggregation, arithmetic errors, and unsupported claims.",
+    "relevant_doc_ids": [
+      "lab03_rag_report.md"
+    ],
+    "target_sections": [
+      "## Фактичні результати"
+    ],
+    "evidence_spans": [
+      "Зафіксовані failure modes включають суперечливі price fields, помилку одиниць і citation format, неповний multi-record retrieval, неправильне використання similarity для глобальної агрегації, арифметичну помилку та unsupported claim."
+    ],
+    "gold_passage_ids": [
+      "chunk-0111f65037b69bff"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_018",
+    "category": "paraphrase",
+    "language": "uk",
+    "query": "Які вимоги щодо офлайн-режиму на робочих станціях та граничної затримки пошуку зафіксовані в ADR 001?",
+    "expected_answer": "ADR 001 визначає 100% офлайн, локальне виконання на Windows/Linux та затримку пошукового пайплайну менше 50 ms.",
+    "relevant_doc_ids": [
+      "adr_001_vector_and_storage_architecture.md"
+    ],
+    "target_sections": [
+      "## Context"
+    ],
+    "evidence_spans": [
+      "100% offline, local-first execution on developer workstations (Windows/Linux).",
+      "Low query latency (<50ms for retrieval pipeline)."
+    ],
+    "gold_passage_ids": [
+      "chunk-230a9615175364d9"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_019",
+    "category": "paraphrase",
+    "language": "en",
+    "query": "Did LLaVA stay consistent across all three equivalent spatial phrasings asking whether the cabin is left, center, or right?",
+    "expected_answer": "No; phrasing 1 returned 'left' and phrasing 3 returned 'Left', while phrasing 2 erroneously returned 'center' despite identical greedy parameters.",
+    "relevant_doc_ids": [
+      "lab05_multimodal_report.md"
+    ],
+    "target_sections": [
+      "## 17. Узгодженість перефразованих питань"
+    ],
+    "evidence_spans": [
+      "Три рівнозначні запитання про горизонтальне положення дали left, center, Left. Перше й третє семантично узгоджені й правильні; друге хибне. Повної узгодженості немає, хоча всі параметри greedy однакові."
+    ],
+    "gold_passage_ids": [
+      "chunk-45871edc248436c7"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_020",
+    "category": "paraphrase",
+    "language": "uk",
+    "query": "Завдяки чому під час збою Redis OOM у жовтні 2026 року не сталося пошкодження даних і втрати цілісності статусів документів?",
+    "expected_answer": "Пошкоджено 0 байтів даних, тому що транзакційна цілісність забезпечувалася відкатами статусів документів у SQLite.",
+    "relevant_doc_ids": [
+      "incident_postmortem_redis_oom.md"
+    ],
+    "target_sections": [
+      "## Impact"
+    ],
+    "evidence_spans": [
+      "0 bytes corrupted; transactional integrity was maintained by SQLite document status rollbacks."
+    ],
+    "gold_passage_ids": [
+      "chunk-bbf7932ccf875435"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_021",
+    "category": "cross_document",
+    "language": "en",
+    "query": "How does the generated PNG resolution in Lab 4 relate to the image preprocessing resolution handled by SiglipImageProcessor in Lab 5?",
+    "expected_answer": "Lab 4 generates all PNG images at 512x512 resolution, while Lab 5 feeds that 512x512 frame into SiglipImageProcessor, which resizes it automatically to 384x384.",
+    "relevant_doc_ids": [
+      "lab04_stable_diffusion_report.md",
+      "lab05_multimodal_report.md"
+    ],
+    "target_sections": [
+      "## Модель і середовище",
+      "## 5. Архітектура мультимодальної моделі"
+    ],
+    "evidence_spans": [
+      "Роздільність усіх PNG — 512×512, batch size 1.",
+      "Зображення 512×512 обробляє штатний SiglipImageProcessor до 384×384."
+    ],
+    "gold_passage_ids": [
+      "chunk-aa189355741329d5",
+      "chunk-848f92fad2de281b"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_022",
+    "category": "cross_document",
+    "language": "uk",
+    "query": "Які номери портів зазначені для векторного сховища Redis Stack у ADR 001 та для серверів інференсу LM Studio і Redis у runbook?",
+    "expected_answer": "ADR 001 та runbook вказують порт 6380 для Redis Stack, а runbook додатково вказує порт 1234 для локального сервера LM Studio (Ministral-3B).",
+    "relevant_doc_ids": [
+      "adr_001_vector_and_storage_architecture.md",
+      "rag_system_runbook.md"
+    ],
+    "target_sections": [
+      "## Consequences",
+      "## 1. System Overview"
+    ],
+    "evidence_spans": [
+      "Requires Redis Stack Docker container or service on port 6380 for live vector operations",
+      "3. Redis Stack container running on port 6380 for vector indexing.",
+      "4. LM Studio local inference server running on port 1234 serving Ministral-3B."
+    ],
+    "gold_passage_ids": [
+      "chunk-27547712c6c1bf94",
+      "chunk-6e773f78130aabdd"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_023",
+    "category": "cross_document",
+    "language": "en",
+    "query": "How do the SQLite document processing transitions in ADR 001 correspond to the document status values exposed by GET /documents in the API specification?",
+    "expected_answer": "ADR 001 enforces transactional SQLite transitions PENDING -> PROCESSING -> INDEXED, and GET /documents in the API specification lists documents with status values PENDING, PROCESSING, INDEXED, and FAILED.",
+    "relevant_doc_ids": [
+      "adr_001_vector_and_storage_architecture.md",
+      "api_specification_and_contracts.md"
+    ],
+    "target_sections": [
+      "## Decision",
+      "## Core Endpoints / 2. Document Management"
+    ],
+    "evidence_spans": [
+      "document status transitions (`PENDING -> PROCESSING -> INDEXED`)",
+      "Lists all registered documents with status (`PENDING`, `PROCESSING`, `INDEXED`, `FAILED`)."
+    ],
+    "gold_passage_ids": [
+      "chunk-4db415c0e51d681e",
+      "chunk-50dc3e44b7a22bc5"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_024",
+    "category": "cross_document",
+    "language": "uk",
+    "query": "Яким був стан проби /api/v1/health/ready під час інциденту Redis OOM у post-mortem порівняно зі штатною відповіддю в runbook?",
+    "expected_answer": "Під час аварії у post-mortem /api/v1/health/ready перейшла в UNREADY (status_code=503), тоді як у runbook штатна відповідь — HTTP 200 із {\"status\":\"ready\",\"database\":true,\"redis\":true}.",
+    "relevant_doc_ids": [
+      "incident_postmortem_redis_oom.md",
+      "rag_system_runbook.md"
+    ],
+    "target_sections": [
+      "## Timeline (UTC)",
+      "## 2. Standard Operating Procedures (SOP) / Health Probes & Monitoring"
+    ],
+    "evidence_spans": [
+      "Automated health probe `/api/v1/health/ready` transitioned to `UNREADY (status_code=503)`.",
+      "Expected response: `{\"status\":\"ready\",\"database\":true,\"redis\":true}` with HTTP 200."
+    ],
+    "gold_passage_ids": [
+      "chunk-ce91c3b15f07706b",
+      "chunk-fedc2034890e80a0"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_025",
+    "category": "cross_document",
+    "language": "en",
+    "query": "Which Qwen checkpoint backs text_config in Lab 5 LLaVA, and what Ministral model and context window length are configured in LM Studio for Lab 6?",
+    "expected_answer": "Lab 5 LLaVA text_config references Qwen/Qwen1.5-0.5B-Chat, whereas Lab 6 uses mistralai/ministral-3-3b in LM Studio with an 8192 context window.",
+    "relevant_doc_ids": [
+      "lab05_multimodal_report.md",
+      "lab06_agents_report.md"
+    ],
+    "target_sections": [
+      "## 5. Архітектура мультимодальної моделі",
+      "## Середовище та модель"
+    ],
+    "evidence_spans": [
+      "Qwen2 має 24 шари; text_config посилається на Qwen/Qwen1.5-0.5B-Chat.",
+      "Фактично виявлена модель: `mistralai/ministral-3-3b`.",
+      "Контекст у lms ps — 8192."
+    ],
+    "gold_passage_ids": [
+      "chunk-848f92fad2de281b",
+      "chunk-24d0b9d10d53e82f"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_026",
+    "category": "cross_document",
+    "language": "uk",
+    "query": "Яким чином групування записів при завантаженні відрізняється між CSVLoader у Lab 3 та chunked batching у IngestionService після аварії Redis OOM?",
+    "expected_answer": "У Lab 3 185 товарів завантажувалися через CSVLoader як один Document на один CSV-рядок, а в post-mortem для великих файлів впровадили chunked batching у IngestionService розміром 64 чанки за коміт.",
+    "relevant_doc_ids": [
+      "lab03_rag_report.md",
+      "incident_postmortem_redis_oom.md"
+    ],
+    "target_sections": [
+      "## Реалізація",
+      "## Corrective and Preventative Actions"
+    ],
+    "evidence_spans": [
+      "185 товарів завантажуються через LangChain `CSVLoader`. Один CSV-рядок стає одним `Document`",
+      "Implemented chunked batching in `IngestionService` with batch size = 64 chunks per vector index commit."
+    ],
+    "gold_passage_ids": [
+      "chunk-073b9da90cf9c792",
+      "chunk-161474725628508f"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_027",
+    "category": "cross_document",
+    "language": "en",
+    "query": "What input limits constrain calculate execution in Lab 6, and how does the Knowledge Copilot API specification represent tool call provenance?",
+    "expected_answer": "Lab 6 caps calculate expressions at 200 characters, 64 AST nodes, and result magnitude 1e15, while the API contract returns tool_executions as ToolExecutionRecord entries tagged with origin MODEL_REQUESTED vs RECOVERY_EXECUTED.",
+    "relevant_doc_ids": [
+      "lab06_agents_report.md",
+      "api_specification_and_contracts.md"
+    ],
+    "target_sections": [
+      "## Робочий простір і інструменти",
+      "## Core Endpoints / 3. Agentic Chat & Retrieval"
+    ],
+    "evidence_spans": [
+      "Числові вирази обмежені 200 символами, 64 AST-вузлами та модулем результату 1e15.",
+      "list of `ToolExecutionRecord` with origin (`MODEL_REQUESTED` vs `RECOVERY_EXECUTED`)"
+    ],
+    "gold_passage_ids": [
+      "chunk-d2444550c68115e7",
+      "chunk-3e96a9e19c6722a0"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_028",
+    "category": "cross_document",
+    "language": "uk",
+    "query": "Який файл стилю з Lab 4 став джерелом primary_image.png у Lab 5 і чи змінювався оригінал, а також які seed, CFG та час генерації вказані для style_photorealistic у таблиці Lab 4?",
+    "expected_answer": "primary_image.png у Lab 5 скопійовано без зміни оригіналу з photorealistic_seed42_steps30_cfg7p5_df410b01ba0eea49.png, а для кейсу style_photorealistic у таблиці Lab 4 вказано seed=42, CFG=7.5 та час генерації 9.421 с.",
+    "relevant_doc_ids": [
+      "lab04_stable_diffusion_report.md",
+      "lab05_multimodal_report.md"
+    ],
+    "target_sections": [
+      "## Таблиця параметрів генерації",
+      "## 9. Вхідне зображення"
+    ],
+    "evidence_spans": [
+      "| style_photorealistic | 42 | 30 | 7.5 | None | photorealistic | 9.421 |",
+      "Джерело: `labs/lab04_stable_diffusion/outputs/images/styles/photorealistic_seed42_steps30_cfg7p5_df410b01ba0eea49.png`; скопійовано без зміни оригіналу."
+    ],
+    "gold_passage_ids": [
+      "chunk-aa19138611347f87",
+      "chunk-2a770669fd14f515"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_029",
+    "category": "cross_document",
+    "language": "en",
+    "query": "What concurrency setting is configured for SQLite WAL in ADR 001, and how did SQLite preserve integrity during the Redis OOM outage?",
+    "expected_answer": "ADR 001 configures SQLite WAL with PRAGMA busy_timeout = 5000 to prevent database locks under concurrency, and in the Redis OOM post-mortem SQLite document status rollbacks maintained transactional integrity with 0 bytes corrupted.",
+    "relevant_doc_ids": [
+      "adr_001_vector_and_storage_architecture.md",
+      "incident_postmortem_redis_oom.md"
+    ],
+    "target_sections": [
+      "## Decision",
+      "## Impact"
+    ],
+    "evidence_spans": [
+      "Enforces `PRAGMA busy_timeout = 5000` to prevent database locks under concurrent API accesses.",
+      "0 bytes corrupted; transactional integrity was maintained by SQLite document status rollbacks."
+    ],
+    "gold_passage_ids": [
+      "chunk-4db415c0e51d681e",
+      "chunk-bbf7932ccf875435"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_030",
+    "category": "cross_document",
+    "language": "uk",
+    "query": "Порівняйте обмеження довжини тексту в MiniLM у Lab 3 з обмеженням читання файлів інструментом read_workspace_file у Lab 6.",
+    "expected_answer": "У Lab 3 MiniLM обрізає 17 довгих записів до 256 word pieces, тоді як у Lab 6 read_workspace_file обмежує зчитування до 80 рядків і 6500 символів з пагінацією next_line.",
+    "relevant_doc_ids": [
+      "lab03_rag_report.md",
+      "lab06_agents_report.md"
+    ],
+    "target_sections": [
+      "## Обмеження і подальша робота",
+      "## Робочий простір і інструменти"
+    ],
+    "evidence_spans": [
+      "MiniLM обрізає 17 довгих записів до 256 word pieces.",
+      "Нумеровані рядки; до 80 рядків, 6500 символів тексту; next_line"
+    ],
+    "gold_passage_ids": [
+      "chunk-4d5ce6f4f6109390",
+      "chunk-4729e518a0ef7ee6"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_031",
+    "category": "numerical_reasoning",
+    "language": "en",
+    "query": "In the Lab 4 report, look up the model loading time (with initial weight acquisition) and the total measured inference time in seconds, and calculate their sum.",
+    "expected_answer": "The sum of model load time (42.37 s) and total measured inference time (134.57 s) in Lab 4 is 176.94 seconds.",
+    "relevant_doc_ids": [
+      "lab04_stable_diffusion_report.md"
+    ],
+    "target_sections": [
+      "## Модель і середовище",
+      "## Аналіз часу"
+    ],
+    "evidence_spans": [
+      "Час завантаження моделі, включно з першим отриманням ваг: 42.37 с",
+      "Сумарний виміряний inference: 134.57 с."
+    ],
+    "gold_passage_ids": [
+      "chunk-9fb5160565af959c",
+      "chunk-d3a358856bb197e2"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge",
+      "calculate"
+    ]
+  },
+  {
+    "id": "final_v4_indep_032",
+    "category": "numerical_reasoning",
+    "language": "uk",
+    "query": "Знайдіть у таблиці параметрів генерації Lab 4 час виконання (Time, s) для кейсів steps_50 та steps_20 і обчисліть різницю між ними в секундах.",
+    "expected_answer": "Різниця часу виконання між steps_50 (13.950 с) та steps_20 (6.765 с) становить 7.185 с.",
+    "relevant_doc_ids": [
+      "lab04_stable_diffusion_report.md"
+    ],
+    "target_sections": [
+      "## Таблиця параметрів генерації"
+    ],
+    "evidence_spans": [
+      "| steps_20 | 42 | 20 | 7.5 | None | — | 6.765 |",
+      "| steps_50 | 42 | 50 | 7.5 | None | — | 13.950 |"
+    ],
+    "gold_passage_ids": [
+      "chunk-3dfee68eebf183d4"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge",
+      "calculate"
+    ]
+  },
+  {
+    "id": "final_v4_indep_033",
+    "category": "numerical_reasoning",
+    "language": "en",
+    "query": "According to the Lab 5 temperature table, look up the generated token count at temperature 0.200 and temperature 1.000, and compute their arithmetic average.",
+    "expected_answer": "The average generated token count across 19 tokens (temperature 0.200) and 23 tokens (temperature 1.000) is 21 tokens.",
+    "relevant_doc_ids": [
+      "lab05_multimodal_report.md"
+    ],
+    "target_sections": [
+      "## 15. Вплив temperature"
+    ],
+    "evidence_spans": [
+      "| 0.200 | The water appears calm, and the reflection of the cabin and the surrounding trees is visible. | 1.847 | 19 | SUPPORTED_BY_VISIBLE_EVIDENCE |",
+      "| 1.000 | The water appears calm. This is evident from the reflection of the cabin and trees on the water's surface. | 1.392 | 23 | SUPPORTED_BY_VISIBLE_EVIDENCE |"
+    ],
+    "gold_passage_ids": [
+      "chunk-c370f6853372767c",
+      "chunk-a7bce01032e2fe0a"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge",
+      "calculate"
+    ]
+  },
+  {
+    "id": "final_v4_indep_034",
+    "category": "numerical_reasoning",
+    "language": "uk",
+    "query": "Згідно зі звітом Lab 5 про вплив max_new_tokens, знайдіть кількість згенерованих токенів за ліміту 64 та за ліміту 24 і обчисліть різницю між ними.",
+    "expected_answer": "Різниця становить 24 токени (48 - 24 = 24).",
+    "relevant_doc_ids": [
+      "lab05_multimodal_report.md"
+    ],
+    "target_sections": [
+      "## 16. Вплив max_new_tokens"
+    ],
+    "evidence_spans": [
+      "| 24 | The image shows a cabin nestled among trees on a lake, with a reflection of the cabin in the water. The cabin | 24 | 1.379 | True |",
+      "| 64 | The image shows a cabin nestled among trees on a lake, with a reflection of the cabin in the water. The cabin has a wooden roof and a small deck. The surrounding environment is lush with green trees and mountains in the background. | 48 | 2.787 | False |",
+      "За 24 токени продовження обірвано на The cabin, EOS відсутній. За лімітів 64 і 128 отримано дослівно однакову завершену відповідь із 48 токенів включно з EOS."
+    ],
+    "gold_passage_ids": [
+      "chunk-b884721966e8c889",
+      "chunk-49b7374f31ab1f43"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge",
+      "calculate"
+    ]
+  },
+  {
+    "id": "final_v4_indep_035",
+    "category": "numerical_reasoning",
+    "language": "en",
+    "query": "In the Lab 6 summary table, look up the runtime in seconds for the cross scenario and the baseline scenario, and calculate the difference between them.",
+    "expected_answer": "The runtime difference between the cross scenario (75.743 s) and baseline scenario (16.462 s) is 59.281 seconds.",
+    "relevant_doc_ids": [
+      "lab06_agents_report.md"
+    ],
+    "target_sections": [
+      "## Підсумкова таблиця"
+    ],
+    "evidence_spans": [
+      "| cross | SUCCESS | 3 | PARTIAL | APPROPRIATE | PARTIAL | NOT_APPLICABLE | PARTIAL | 75.743 |",
+      "| baseline | SUCCESS | 0 | INCORRECT | MISSING | UNSUPPORTED | NOT_APPLICABLE | FAIL | 16.462 |"
+    ],
+    "gold_passage_ids": [
+      "chunk-24aa52cfd9317892",
+      "chunk-d3398fb2e0e6aeaa"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge",
+      "calculate"
+    ]
+  },
+  {
+    "id": "final_v4_indep_036",
+    "category": "numerical_reasoning",
+    "language": "uk",
+    "query": "Згідно з розділом Фактичні результати звіту Lab 3, знайдіть Recall@5 малого holdout-набору та mean Recall@5 гібридного роутера й обчисліть різницю між ними.",
+    "expected_answer": "Різниця між Recall@5 малого holdout (0.9111) і гібридного роутера (0.8829) становить 0.0282.",
+    "relevant_doc_ids": [
+      "lab03_rag_report.md"
+    ],
+    "target_sections": [
+      "## Фактичні результати"
+    ],
+    "evidence_spans": [
+      "Leakage-free hybrid router, який обробляє exact ID, атрибути та числові умови без доступу до relevance labels, отримав відповідно 1.0000, 1.0000 і 0.8829.",
+      "Малий holdout із п'яти запитів дав Hit@5 = 1.0000, MRR = 1.0000 і Recall@5 = 0.9111."
+    ],
+    "gold_passage_ids": [
+      "chunk-0111f65037b69bff"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge",
+      "calculate"
+    ]
+  },
+  {
+    "id": "final_v4_indep_037",
+    "category": "numerical_reasoning",
+    "language": "en",
+    "query": "Based on the Redis OOM post-mortem timeline, find the UTC times when Redis crossed the maxmemory 512mb threshold and when the Redis config was updated to maxmemory 2gb, and compute the duration in minutes between them.",
+    "expected_answer": "The duration from 14:22 UTC to 14:45 UTC is 23 minutes.",
+    "relevant_doc_ids": [
+      "incident_postmortem_redis_oom.md"
+    ],
+    "target_sections": [
+      "## Timeline (UTC)"
+    ],
+    "evidence_spans": [
+      "**14:22**: Redis memory usage crossed the configured `maxmemory 512mb` threshold.",
+      "**14:45**: Updated Redis config to `maxmemory 2gb` and set vector cache eviction policy to `allkeys-lru`."
+    ],
+    "gold_passage_ids": [
+      "chunk-ce91c3b15f07706b",
+      "chunk-840311292cd3047a"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge",
+      "calculate"
+    ]
+  },
+  {
+    "id": "final_v4_indep_038",
+    "category": "numerical_reasoning",
+    "language": "uk",
+    "query": "За розділом Impact звіту про аварію Redis OOM знайдіть кількість запитів, оброблених у режимі лексичного fallback, та кількість невдалих масових завантажень і обчисліть їхню загальну суму.",
+    "expected_answer": "Загальна сума становить 52 (38 + 14).",
+    "relevant_doc_ids": [
+      "incident_postmortem_redis_oom.md"
+    ],
+    "target_sections": [
+      "## Impact"
+    ],
+    "evidence_spans": [
+      "14 bulk uploads failed",
+      "38 queries processed via lexical fallback without vector ranking"
+    ],
+    "gold_passage_ids": [
+      "chunk-bbf7932ccf875435"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge",
+      "calculate"
+    ]
+  },
+  {
+    "id": "final_v4_indep_039",
+    "category": "numerical_reasoning",
+    "language": "en",
+    "query": "In ADR 001, find the SQLite PRAGMA busy_timeout value in milliseconds and the retrieval pipeline latency constraint in milliseconds, and compute the ratio of busy_timeout to the latency threshold.",
+    "expected_answer": "The ratio of PRAGMA busy_timeout (5000 ms) to the retrieval latency threshold (50 ms) is 100.",
+    "relevant_doc_ids": [
+      "adr_001_vector_and_storage_architecture.md"
+    ],
+    "target_sections": [
+      "## Context",
+      "## Decision"
+    ],
+    "evidence_spans": [
+      "Low query latency (<50ms for retrieval pipeline).",
+      "Enforces `PRAGMA busy_timeout = 5000` to prevent database locks under concurrent API accesses."
+    ],
+    "gold_passage_ids": [
+      "chunk-230a9615175364d9",
+      "chunk-312de896eb918af4"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge",
+      "calculate"
+    ]
+  },
+  {
+    "id": "final_v4_indep_040",
+    "category": "numerical_reasoning",
+    "language": "uk",
+    "query": "Згідно зі звітом Lab 6 про інструмент calculate, знайдіть ліміт довжини виразу в символах та максимальну кількість AST-вузлів і обчисліть їхню суму.",
+    "expected_answer": "Сума ліміту символів (200) та AST-вузлів (64) становить 264.",
+    "relevant_doc_ids": [
+      "lab06_agents_report.md"
+    ],
+    "target_sections": [
+      "## Робочий простір і інструменти"
+    ],
+    "evidence_spans": [
+      "Числові вирази обмежені 200 символами, 64 AST-вузлами та модулем результату 1e15."
+    ],
+    "gold_passage_ids": [
+      "chunk-d2444550c68115e7"
+    ],
+    "refusal_expected": false,
+    "expected_tool_calls": [
+      "search_knowledge",
+      "calculate"
+    ]
+  },
+  {
+    "id": "final_v4_indep_041",
+    "category": "unsupported",
+    "language": "en",
+    "query": "How are Weaviate schema classes and HNSW replication factors configured in ADR 001?",
+    "expected_answer": "Refusal: ADR 001 does not configure or mention Weaviate.",
+    "relevant_doc_ids": [],
+    "target_sections": [],
+    "evidence_spans": [],
+    "gold_passage_ids": [],
+    "refusal_expected": true,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_042",
+    "category": "unsupported",
+    "language": "uk",
+    "query": "Які метрики латентності та пропускної здатності RabbitMQ зафіксовані для черги завантаження документів в API специфікації?",
+    "expected_answer": "Відмова: специфікація API не містить згадок чи метрик щодо RabbitMQ.",
+    "relevant_doc_ids": [],
+    "target_sections": [],
+    "evidence_spans": [],
+    "gold_passage_ids": [],
+    "refusal_expected": true,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_043",
+    "category": "unsupported",
+    "language": "en",
+    "query": "What TensorRT FP8 calibration datasets and engine serialization paths were benchmarked in Lab 4?",
+    "expected_answer": "Refusal: The Lab 4 report does not contain TensorRT FP8 benchmarks or serialization paths.",
+    "relevant_doc_ids": [],
+    "target_sections": [],
+    "evidence_spans": [],
+    "gold_passage_ids": [],
+    "refusal_expected": true,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_044",
+    "category": "unsupported",
+    "language": "uk",
+    "query": "Як налаштовані конвеєри експорту трасувань OpenTelemetry до бекенду Grafana Tempo в операційному runbook?",
+    "expected_answer": "Відмова: в операційному runbook відсутня конфігурація OpenTelemetry та Grafana.",
+    "relevant_doc_ids": [],
+    "target_sections": [],
+    "evidence_spans": [],
+    "gold_passage_ids": [],
+    "refusal_expected": true,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_045",
+    "category": "unsupported",
+    "language": "en",
+    "query": "What OAuth 2.0 client credentials flow and JWT public key rotation interval are mandated in the Knowledge Copilot API specification?",
+    "expected_answer": "Refusal: The API specification does not mention or mandate OAuth 2.0 or JWT key rotation.",
+    "relevant_doc_ids": [],
+    "target_sections": [],
+    "evidence_spans": [],
+    "gold_passage_ids": [],
+    "refusal_expected": true,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_046",
+    "category": "unsupported",
+    "language": "uk",
+    "query": "Які результати показала модель DeepSeek-VL2 на візуальному контрольному наборі у Lab 5?",
+    "expected_answer": "Відмова: звіт Lab 5 не містить результатів для моделі DeepSeek.",
+    "relevant_doc_ids": [],
+    "target_sections": [],
+    "evidence_spans": [],
+    "gold_passage_ids": [],
+    "refusal_expected": true,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_047",
+    "category": "unsupported",
+    "language": "en",
+    "query": "Which HashiCorp Vault dynamic secret engines and Terraform state backends are documented in the runbook or ADR 001?",
+    "expected_answer": "Refusal: Neither HashiCorp Vault nor Terraform state backends are documented in the runbook or ADR 001.",
+    "relevant_doc_ids": [],
+    "target_sections": [],
+    "evidence_spans": [],
+    "gold_passage_ids": [],
+    "refusal_expected": true,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_048",
+    "category": "unsupported",
+    "language": "uk",
+    "query": "Які параметри квантизації індексу FAISS IVF-PQ застосовувалися в експериментах Lab 3?",
+    "expected_answer": "Відмова: у звіті Lab 3 відсутня інформація про індекс FAISS.",
+    "relevant_doc_ids": [],
+    "target_sections": [],
+    "evidence_spans": [],
+    "gold_passage_ids": [],
+    "refusal_expected": true,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_049",
+    "category": "unsupported",
+    "language": "en",
+    "query": "What Databricks or Snowflake warehouse connector credentials and BigQuery dataset targets are defined in Knowledge Copilot?",
+    "expected_answer": "Refusal: The indexed documents do not define Snowflake or BigQuery connectors or credentials.",
+    "relevant_doc_ids": [],
+    "target_sections": [],
+    "evidence_spans": [],
+    "gold_passage_ids": [],
+    "refusal_expected": true,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  },
+  {
+    "id": "final_v4_indep_050",
+    "category": "unsupported",
+    "language": "uk",
+    "query": "Які налаштування двигуна інференсу vLLM або Ray Serve описані для обслуговування агентів у Lab 6?",
+    "expected_answer": "Відмова: звіт Lab 6 не містить налаштувань vLLM або Ray Serve.",
+    "relevant_doc_ids": [],
+    "target_sections": [],
+    "evidence_spans": [],
+    "gold_passage_ids": [],
+    "refusal_expected": true,
+    "expected_tool_calls": [
+      "search_knowledge"
+    ]
+  }
+]

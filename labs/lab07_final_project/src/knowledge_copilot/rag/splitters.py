@@ -137,11 +137,11 @@ def build_chunks_from_document(
         quality = EvidenceQuality.USER_DOCUMENT
         if doc.collection == "coursework" or doc.document_id.startswith("lab"):
             transcript_sections = (
-                "system instructions", "дизайн експерименту", "підсумкова таблиця",
+                "system instructions",
                 "багатокрокове виконання", "додаткова арифметична", "керована діагностика",
                 "без інструментів", "невідома інформація",
                 "ефективність рішень", "фактичні помилки", "зауваження до кожної",
-                "результати", "comparison",
+                "comparison",
             )
             raw_output_markers = (
                 "session a,", "session b,", "to confirm, i will check", "otherwise, based on",

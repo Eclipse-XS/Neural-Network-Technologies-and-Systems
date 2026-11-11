@@ -11,17 +11,19 @@
   "scenarios": {
     "scenario_1_chat_and_citations": {
       "query": "What vector database was chosen in ADR 001?",
-      "answer": "The vector database chosen in **ADR 001** is **Redis Stack**, configured with **HNSW and FLAT vector indexing** using `FLOAT32` precision, cosine distance metric, and the embedding model `multilingual-e5-base` (768-dimensional vectors) ([adr_001_vector_and_storage_architecture#chunk-312de896eb918af4]).",
+      "answer": "The vector database chosen in **ADR 001** is **[Redis Stack](https://redis.io/docs/stack/)** with **HNSW and FLAT indexing**, specifically configured for the `lab07:kb:*` namespace. This was selected over alternatives like pgvector, Milvus/Qdrant, or ChromaDB due to its lightweight footprint and compatibility with local execution on developer workstations.\n\n**[adr_001_vector_and_storage_architecture#chunk-312de896eb918af4]** [adr_001_vector_and_storage_architecture#chunk-6cfff327f83838b7]",
       "grounding_status": "GROUNDED",
       "tools_called": [
         "search_knowledge"
       ],
       "citations": [
-        "[adr_001_vector_and_storage_architecture#chunk-312de896eb918af4]"
+        "[adr_001_vector_and_storage_architecture#chunk-312de896eb918af4]",
+        "[adr_001_vector_and_storage_architecture#chunk-6cfff327f83838b7]"
       ],
       "audit": {
         "valid_citations": [
-          "[adr_001_vector_and_storage_architecture#chunk-312de896eb918af4]"
+          "[adr_001_vector_and_storage_architecture#chunk-312de896eb918af4]",
+          "[adr_001_vector_and_storage_architecture#chunk-6cfff327f83838b7]"
         ],
         "fabricated_citations": [],
         "validity_rate": 1.0,
@@ -29,41 +31,141 @@
       },
       "factual_correctness": true,
       "claim_support": true,
-      "latency_ms": 13899.64,
+      "latency_ms": 55097.23,
       "passed": true
     },
     "scenario_2_numerical_calculator": {
       "query": "In the architecture constraints, if the maximum token limit is 8192 and the system instructions use 900 tokens, calculate the exact difference for remaining capacity.",
-      "answer": "The remaining capacity after accounting for system instructions is **7,292 tokens**.",
+      "answer": "The remaining capacity for tokens after using **900** is **7,292 tokens**[lab06_agents_report#chunk-24d0b9d10d53e82f].",
       "grounding_status": "GROUNDED",
       "tools_called": [
+        "search_knowledge",
         "calculate"
       ],
       "calculator_invoked": true,
       "numerical_result_correct": true,
       "tool_details": [
         {
-          "tool_name": "calculate",
+          "tool_name": "search_knowledge",
           "arguments": {
-            "expression": "(8192 - 900)"
+            "query": "maximum token limit 8192",
+            "k": 3,
+            "document_id": null
           },
           "result": {
-            "expression": "(8192 - 900)",
+            "chunks": [
+              {
+                "chunk_id": "chunk-49b7374f31ab1f43",
+                "document_id": "lab05_multimodal_report",
+                "ordinal": 27,
+                "text": "## Лабораторна робота №5 / 16. Вплив max_new_tokens\n| 128 | The image shows a cabin nestled among trees on a lake, with a reflection of the cabin in the water. The cabin has a wooden roof and a small deck. The surrounding environment is lush with green trees and mountains in the background. | 48 | 2.614 | False |  \nЗа 24 токени продовження обірвано на The cabin, EOS відсутній. За лімітів 64 і 128 отримано дослівно однакову завершену відповідь із 48 токенів включно з EOS. Додатковий бюджет не усунув непідтверджений матеріал даху. max_new_tokens є верхньою межею довжини, не бажаною довжиною і не гарантією якості. Рядок 64 повторно використовує baseline desc_01.  \n![Фактична довжина відповіді](../outputs/figures/token_budget.png)",
+                "section": "Лабораторна робота №5 / 16. Вплив max_new_tokens",
+                "token_count": 227,
+                "sha256": "756029e4204d177ccde03be26a37a0b3f805c9c109c68cfd6fc2d3fc35cee01f",
+                "evidence_quality": "canonical_report",
+                "citation": "[lab05_multimodal_report#chunk-49b7374f31ab1f43]",
+                "metadata": {
+                  "source_id": "lab05_multimodal_report",
+                  "filename": "lab05_multimodal_report.md",
+                  "section": "Лабораторна робота №5 / 16. Вплив max_new_tokens",
+                  "ordinal": 27,
+                  "collection": "default",
+                  "h1": "Лабораторна робота №5",
+                  "h2": "16. Вплив max_new_tokens"
+                },
+                "retrieval_method": "hybrid",
+                "score_type": "rrf_score",
+                "score_value": 0.2924,
+                "ranking_position": 1,
+                "source_id": "lab05_multimodal_report",
+                "filename": "lab05_multimodal_report.md",
+                "lab_number": "",
+                "cosine_distance": 0.2924242424242424
+              },
+              {
+                "chunk_id": "chunk-b884721966e8c889",
+                "document_id": "lab05_multimodal_report",
+                "ordinal": 26,
+                "text": "## Лабораторна робота №5 / 16. Вплив max_new_tokens\n## 16. Вплив max_new_tokens  \n| max_new_tokens | answer | generated_token_count | runtime_seconds | reached_token_limit |\n| --- | --- | --- | --- | --- |\n| 24 | The image shows a cabin nestled among trees on a lake, with a reflection of the cabin in the water. The cabin | 24 | 1.379 | True |\n| 64 | The image shows a cabin nestled among trees on a lake, with a reflection of the cabin in the water. The cabin has a wooden roof and a small deck. The surrounding environment is lush with green trees and mountains in the background. | 48 | 2.787 | False |",
+                "section": "Лабораторна робота №5 / 16. Вплив max_new_tokens",
+                "token_count": 207,
+                "sha256": "463799c51e0ca8316456fb526c8deb0b1e10e695cef31e4223b8f0e6b824e302",
+                "evidence_quality": "canonical_report",
+                "citation": "[lab05_multimodal_report#chunk-b884721966e8c889]",
+                "metadata": {
+                  "source_id": "lab05_multimodal_report",
+                  "filename": "lab05_multimodal_report.md",
+                  "section": "Лабораторна робота №5 / 16. Вплив max_new_tokens",
+                  "ordinal": 26,
+                  "collection": "default",
+                  "h1": "Лабораторна робота №5",
+                  "h2": "16. Вплив max_new_tokens"
+                },
+                "retrieval_method": "hybrid",
+                "score_type": "rrf_score",
+                "score_value": 0.2325,
+                "ranking_position": 2,
+                "source_id": "lab05_multimodal_report",
+                "filename": "lab05_multimodal_report.md",
+                "lab_number": "",
+                "cosine_distance": 0.23247863247863246
+              },
+              {
+                "chunk_id": "chunk-24d0b9d10d53e82f",
+                "document_id": "lab06_agents_report",
+                "ordinal": 2,
+                "text": "## Лабораторна робота №6 / Середовище та модель\n## Середовище та модель  \nPython 3.13.5; openai-agents 0.22.3; openai 3.17.0; pydantic 2.13.5; transport httpx2 2.13.0.  \nEndpoint: `http://localhost:1234/v1`. Фактично виявлена модель: `mistralai/ministral-3-3b`. API — Chat Completions, temperature=0.0, tool_choice=auto, max_turns=10, max_tokens=900. Початкова відповідь /v1/models також містила embedding-модель nomic; вона не використовується для агента. До першого запиту жодна модель не була завантажена; LM Studio завантажив локальну Ministral на запит. Контекст у lms ps — 8192.",
+                "section": "Лабораторна робота №6 / Середовище та модель",
+                "token_count": 180,
+                "sha256": "ea5be099a2a5ee16b49faccbcd9ebfb3c064c40df8480f24690cf44c71ad44d1",
+                "evidence_quality": "canonical_report",
+                "citation": "[lab06_agents_report#chunk-24d0b9d10d53e82f]",
+                "metadata": {
+                  "source_id": "lab06_agents_report",
+                  "filename": "lab06_agents_report.md",
+                  "section": "Лабораторна робота №6 / Середовище та модель",
+                  "ordinal": 2,
+                  "collection": "default",
+                  "h1": "Лабораторна робота №6",
+                  "h2": "Середовище та модель"
+                },
+                "retrieval_method": "hybrid",
+                "score_type": "rrf_score",
+                "score_value": 0.1917,
+                "ranking_position": 3,
+                "source_id": "lab06_agents_report",
+                "filename": "lab06_agents_report.md",
+                "lab_number": "",
+                "cosine_distance": 0.19166666666666665
+              }
+            ],
+            "evidence_note": "Candidates are not proof of relevance. Use only supporting text; otherwise abstain.",
+            "empty": false
+          },
+          "origin": "MODEL_REQUESTED",
+          "execution_time_ms": 526.44
+        },
+        {
+          "tool_name": "calculate",
+          "arguments": {
+            "expression": "8192 - 900"
+          },
+          "result": {
+            "expression": "8192 - 900",
             "result": 7292
           },
           "origin": "MODEL_REQUESTED",
-          "execution_time_ms": 1.39
+          "execution_time_ms": 3.69
         }
       ],
-      "latency_ms": 3138.71,
+      "latency_ms": 22038.1,
       "passed": true
     },
     "scenario_3_cross_document_synthesis": {
       "query": "Compare the models evaluated in Lab 5 versus Lab 6. Which models were tested in each lab?",
-      "answer": "In **Lab 5**, the model tested was:\n- `llava-hf/llava-interleave-qwen-0.5b-hf` (864,031,264 parameters) with a pipeline for image-to-text tasks ([lab05_multimodal_report#chunk-94bae1e60a6d617a]).\n\nIn **Lab 6**, the model tested was:\n- `mistralai/ministral-3-3b` (used in the OpenAI-compatible agent environment) ([lab06_agents_report#chunk-24d0b9d10d53e82f]).",
+      "answer": "В лабораторній роботі **Lab 5** використовувалася модель:\n- `llava-hf/llava-interleave-qwen-0.5b-hf` [lab05_multimodal_report#chunk-94bae1e60a6d617a].\n\nВ лабораторній роботі **Lab 6** використовувалася модель:\n- `mistralai/ministral-3-3b` [lab06_agents_report#chunk-24d0b9d10d53e82f].",
       "grounding_status": "GROUNDED",
       "tools_called": [
-        "search_knowledge",
         "search_knowledge"
       ],
       "citations": [
@@ -85,38 +187,36 @@
         "validity_rate": 1.0,
         "is_valid": true
       },
-      "latency_ms": 32830.08,
+      "latency_ms": 46347.25,
       "passed": true
     },
     "scenario_4_unsupported_refusal": {
       "query": "What were the benchmark results for GPT-4 vision fine-tuning on ImageNet in Lab 6?",
-      "answer": "The indexed documents for **Lab 6** do not contain specific benchmark results for GPT-4 vision fine-tuning on ImageNet. This lab focuses on agent-based systems, memory, and isolation using OpenAI Agents SDK, but no details about vision model fine-tuning or ImageNet evaluations were found in the retrieved chunks.\n\nIf you are referring to a different lab (e.g., **Lab 5** or another external report), please clarify which document or source contains the relevant results.",
+      "answer": "The indexed document **Lab 6** (specifically *lab06_agents_report*) does not contain benchmark results for GPT-4 vision fine-tuning on ImageNet.\n\nIf you meant a different lab or report related to vision models, such as *lab05_multimodal_report* or another technical documentation, please clarify. I can search those sources if needed!",
       "grounding_status": "INSUFFICIENT_EVIDENCE",
       "is_refusal": true,
       "citations": [],
       "fabricated_citations_count": 0,
-      "latency_ms": 17580.69,
+      "latency_ms": 33736.19,
       "passed": true
     },
     "scenario_5_contextual_multiturn": {
       "turn_1": {
         "query": "What vector database was chosen in ADR 001?",
-        "answer": "The vector database chosen in **ADR 001** is **Redis Stack**, configured with **HNSW and FLAT vector indexing** using `FLOAT32` precision, cosine distance metric, and the embedding model `multilingual-e5-base` (768-dimensional vectors) ([adr_001_vector_and_storage_architecture#chunk-312de896eb918af4]).",
+        "answer": "The vector database chosen in **ADR 001** is **[Redis Stack](https://redis.io/docs/stack/)** with **HNSW and FLAT indexing**, specifically configured for the `lab07:kb:*` namespace. This was selected over alternatives like pgvector, Milvus/Qdrant, or ChromaDB due to its lightweight footprint and compatibility with local execution environments.\n\n[adr_001_vector_and_storage_architecture#chunk-312de896eb918af4]",
         "citations": [
           "[adr_001_vector_and_storage_architecture#chunk-312de896eb918af4]"
         ]
       },
       "turn_2": {
         "query": "Why was it selected instead of Milvus and Qdrant? Check ADR 001.",
-        "answer": "In **ADR 001**, Redis Stack was chosen over **Milvus** and **Qdrant** primarily because:\n\n- Both alternatives required **high memory overhead** (at least 2 GB idle RAM), which exceeded the target constraints for local laptop execution ([adr_001_vector_and_storage_architecture#chunk-6cfff327f83838b7]).\n- Redis Stack offered a balance of performance, low resource usage, and ease of integration with existing infrastructure (e.g., Docker container or service on port 6380) while maintaining sub-15ms query latency ([adr_001_vector_and_storage_architecture#chunk-27547712c6c1bf94]).",
+        "answer": "In **ADR 001**, Redis Stack was chosen over **Milvus** and **Qdrant** primarily due to their **high memory overhead requirements**. The document explicitly states:\n\n> **[adr_001_vector_and_storage_architecture#chunk-6cfff327f83838b7]**\n> *\"Milvus / Qdrant: High memory overhead (>= 2 GB idle RAM), exceeding the target budget of local laptop execution.\"*\n\nBoth alternatives were rejected because they required significantly more resources than the system could reliably allocate on developer workstations.",
         "citations": [
-          "[adr_001_vector_and_storage_architecture#chunk-6cfff327f83838b7]",
-          "[adr_001_vector_and_storage_architecture#chunk-27547712c6c1bf94]"
+          "[adr_001_vector_and_storage_architecture#chunk-6cfff327f83838b7]"
         ],
         "audit": {
           "valid_citations": [
-            "[adr_001_vector_and_storage_architecture#chunk-6cfff327f83838b7]",
-            "[adr_001_vector_and_storage_architecture#chunk-27547712c6c1bf94]"
+            "[adr_001_vector_and_storage_architecture#chunk-6cfff327f83838b7]"
           ],
           "fabricated_citations": [],
           "validity_rate": 1.0,
@@ -126,7 +226,7 @@
       "history_persisted_in_sqlite": true,
       "session_isolation_verified": true,
       "context_resolved_correctly": true,
-      "latency_ms": 47816.42,
+      "latency_ms": 69952.39,
       "passed": true
     },
     "scenario_6_document_lifecycle": {
@@ -134,7 +234,7 @@
       "retrieval_successful": true,
       "persistence_after_restart_verified": true,
       "complete_purge_verified": true,
-      "latency_ms": 1095.02,
+      "latency_ms": 918.79,
       "passed": true
     }
   },
@@ -143,5 +243,5 @@
     "passed_scenarios": 6,
     "failed_scenarios": 0
   },
-  "timestamp": "2026-11-10T16:53:32Z"
+  "timestamp": "2026-11-11T17:55:01Z"
 }

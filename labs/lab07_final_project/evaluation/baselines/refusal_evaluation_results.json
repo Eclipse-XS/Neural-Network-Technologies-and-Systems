@@ -5,370 +5,461 @@
     "unanswerable_refusal_accuracy": 1.0,
     "answerable_false_refusal_rate": 0.0,
     "hallucination_interception_rate": 1.0,
-    "grounded_partial_answer_verified": true
+    "grounded_partial_answer_verified": false
   },
   "live_refusal_metrics": {
     "true_refusal_rate": {
-      "numerator": 6,
+      "numerator": 11,
       "denominator": 11,
-      "value": 0.5455,
+      "value": 1.0,
       "target": ">= 0.90",
-      "passed": false
+      "passed": true
     },
     "false_refusal_rate": {
-      "numerator": 0,
-      "denominator": 38,
-      "value": 0.0,
+      "numerator": 4,
+      "denominator": 43,
+      "value": 0.093,
       "target": "<= 0.10",
       "passed": true
     },
     "unsupported_confident_answer_rate": {
-      "numerator": 5,
+      "numerator": 0,
       "denominator": 11,
-      "value": 0.4545,
+      "value": 0.0,
       "target": "<= 0.10",
-      "passed": false
+      "passed": true
     },
     "grounded_partial_answer_rate": {
-      "numerator": 6,
-      "denominator": 11,
-      "value": 0.5455,
+      "numerator": 13,
+      "denominator": 14,
+      "value": 0.9286,
       "target": ">= 0.80",
-      "passed": false
+      "passed": true
     },
     "adversarial_refusal_rate": {
-      "numerator": 5,
-      "denominator": 10,
-      "value": 0.5,
+      "numerator": 11,
+      "denominator": 11,
+      "value": 1.0,
       "target": ">= 0.90",
-      "passed": false
+      "passed": true
     }
   },
   "case_breakdown": [
     {
-      "query_id": "final_001",
+      "query_id": "final_v4_indep_001",
       "role": "answerable",
+      "classification": "ANSWERED_GROUNDED",
       "false_refusal": false,
       "has_citations": true,
       "grounding_status": "GROUNDED"
     },
     {
-      "query_id": "final_002",
+      "query_id": "final_v4_indep_002",
       "role": "answerable",
+      "classification": "ANSWERED_GROUNDED",
       "false_refusal": false,
       "has_citations": true,
       "grounding_status": "GROUNDED"
     },
     {
-      "query_id": "final_003",
+      "query_id": "final_v4_indep_003",
       "role": "answerable",
-      "false_refusal": false,
-      "has_citations": true,
-      "grounding_status": "VALIDATION_FAILED"
-    },
-    {
-      "query_id": "final_004",
-      "role": "answerable",
+      "classification": "ANSWERED_GROUNDED",
       "false_refusal": false,
       "has_citations": true,
       "grounding_status": "GROUNDED"
     },
     {
-      "query_id": "final_005",
+      "query_id": "final_v4_indep_004",
       "role": "answerable",
+      "classification": "ANSWERED_GROUNDED",
       "false_refusal": false,
       "has_citations": true,
       "grounding_status": "GROUNDED"
     },
     {
-      "query_id": "final_006",
+      "query_id": "final_v4_indep_005",
       "role": "answerable",
+      "classification": "ANSWERED_GROUNDED",
       "false_refusal": false,
       "has_citations": true,
       "grounding_status": "GROUNDED"
     },
     {
-      "query_id": "final_007",
+      "query_id": "final_v4_indep_006",
       "role": "answerable",
+      "classification": "ANSWERED_GROUNDED",
       "false_refusal": false,
+      "has_citations": true,
+      "grounding_status": "GROUNDED"
+    },
+    {
+      "query_id": "final_v4_indep_007",
+      "role": "answerable",
+      "classification": "ANSWERED_GROUNDED",
+      "false_refusal": false,
+      "has_citations": true,
+      "grounding_status": "GROUNDED"
+    },
+    {
+      "query_id": "final_v4_indep_008",
+      "role": "answerable",
+      "classification": "FALSE_REFUSAL",
+      "false_refusal": true,
       "has_citations": false,
-      "grounding_status": "VALIDATION_FAILED"
+      "grounding_status": "INSUFFICIENT_EVIDENCE"
     },
     {
-      "query_id": "final_008",
+      "query_id": "final_v4_indep_009",
       "role": "answerable",
+      "classification": "ANSWERED_GROUNDED",
       "false_refusal": false,
       "has_citations": true,
       "grounding_status": "GROUNDED"
     },
     {
-      "query_id": "final_009",
+      "query_id": "final_v4_indep_010",
       "role": "answerable",
+      "classification": "ANSWERED_GROUNDED",
       "false_refusal": false,
       "has_citations": true,
       "grounding_status": "GROUNDED"
     },
     {
-      "query_id": "final_010",
+      "query_id": "final_v4_indep_011",
       "role": "answerable",
+      "classification": "ANSWERED_GROUNDED",
       "false_refusal": false,
       "has_citations": true,
       "grounding_status": "GROUNDED"
     },
     {
-      "query_id": "final_011",
+      "query_id": "final_v4_indep_012",
       "role": "answerable",
+      "classification": "GROUNDED_PARTIAL_ANSWER",
       "false_refusal": false,
       "has_citations": true,
       "grounding_status": "GROUNDED"
     },
     {
-      "query_id": "final_012",
+      "query_id": "final_v4_indep_013",
       "role": "answerable",
+      "classification": "FALSE_REFUSAL",
+      "false_refusal": true,
+      "has_citations": false,
+      "grounding_status": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "query_id": "final_v4_indep_014",
+      "role": "answerable",
+      "classification": "GROUNDED_PARTIAL_ANSWER",
+      "false_refusal": false,
+      "has_citations": true,
+      "grounding_status": "GROUNDED"
+    },
+    {
+      "query_id": "final_v4_indep_015",
+      "role": "answerable",
+      "classification": "ANSWERED_GROUNDED",
+      "false_refusal": false,
+      "has_citations": true,
+      "grounding_status": "GROUNDED"
+    },
+    {
+      "query_id": "final_v4_indep_016",
+      "role": "answerable",
+      "classification": "ANSWERED_GROUNDED",
+      "false_refusal": false,
+      "has_citations": true,
+      "grounding_status": "GROUNDED"
+    },
+    {
+      "query_id": "final_v4_indep_017",
+      "role": "answerable",
+      "classification": "ANSWERED_GROUNDED",
+      "false_refusal": false,
+      "has_citations": true,
+      "grounding_status": "GROUNDED"
+    },
+    {
+      "query_id": "final_v4_indep_018",
+      "role": "answerable",
+      "classification": "ANSWERED_GROUNDED",
+      "false_refusal": false,
+      "has_citations": true,
+      "grounding_status": "GROUNDED"
+    },
+    {
+      "query_id": "final_v4_indep_019",
+      "role": "answerable",
+      "classification": "ANSWERED_GROUNDED",
+      "false_refusal": false,
+      "has_citations": true,
+      "grounding_status": "GROUNDED"
+    },
+    {
+      "query_id": "final_v4_indep_020",
+      "role": "answerable",
+      "classification": "ANSWERED_GROUNDED",
+      "false_refusal": false,
+      "has_citations": true,
+      "grounding_status": "GROUNDED"
+    },
+    {
+      "query_id": "final_v4_indep_021",
+      "role": "answerable",
+      "classification": "GROUNDED_PARTIAL_ANSWER",
       "false_refusal": false,
       "has_citations": true,
       "grounding_status": "PARTIALLY_SUPPORTED"
     },
     {
-      "query_id": "final_013",
+      "query_id": "final_v4_indep_022",
       "role": "answerable",
-      "false_refusal": false,
-      "has_citations": false,
-      "grounding_status": "VALIDATION_FAILED"
-    },
-    {
-      "query_id": "final_014",
-      "role": "answerable",
+      "classification": "GROUNDED_PARTIAL_ANSWER",
       "false_refusal": false,
       "has_citations": true,
       "grounding_status": "GROUNDED"
     },
     {
-      "query_id": "final_015",
+      "query_id": "final_v4_indep_023",
       "role": "answerable",
+      "classification": "GROUNDED_PARTIAL_ANSWER",
       "false_refusal": false,
       "has_citations": true,
       "grounding_status": "GROUNDED"
     },
     {
-      "query_id": "final_016",
+      "query_id": "final_v4_indep_024",
       "role": "answerable",
+      "classification": "GROUNDED_PARTIAL_ANSWER",
       "false_refusal": false,
       "has_citations": true,
       "grounding_status": "GROUNDED"
     },
     {
-      "query_id": "final_017",
+      "query_id": "final_v4_indep_025",
       "role": "answerable",
+      "classification": "GROUNDED_PARTIAL_ANSWER",
       "false_refusal": false,
       "has_citations": true,
       "grounding_status": "GROUNDED"
     },
     {
-      "query_id": "final_018",
+      "query_id": "final_v4_indep_026",
       "role": "answerable",
-      "false_refusal": false,
-      "has_citations": false,
-      "grounding_status": "VALIDATION_FAILED"
-    },
-    {
-      "query_id": "final_019",
-      "role": "answerable",
-      "false_refusal": false,
-      "has_citations": true,
-      "grounding_status": "VALIDATION_FAILED"
-    },
-    {
-      "query_id": "final_020",
-      "role": "answerable",
+      "classification": "GROUNDED_PARTIAL_ANSWER",
       "false_refusal": false,
       "has_citations": true,
       "grounding_status": "GROUNDED"
     },
     {
-      "query_id": "final_023",
+      "query_id": "final_v4_indep_027",
       "role": "answerable",
+      "classification": "GROUNDED_PARTIAL_ANSWER",
       "false_refusal": false,
       "has_citations": true,
       "grounding_status": "GROUNDED"
     },
     {
-      "query_id": "final_024",
+      "query_id": "final_v4_indep_028",
       "role": "answerable",
-      "false_refusal": false,
-      "has_citations": false,
-      "grounding_status": "VALIDATION_FAILED"
-    },
-    {
-      "query_id": "final_026",
-      "role": "answerable",
-      "false_refusal": false,
-      "has_citations": false,
-      "grounding_status": "VALIDATION_FAILED"
-    },
-    {
-      "query_id": "final_028",
-      "role": "answerable",
-      "false_refusal": false,
-      "has_citations": false,
-      "grounding_status": "VALIDATION_FAILED"
-    },
-    {
-      "query_id": "final_029",
-      "role": "answerable",
+      "classification": "GROUNDED_PARTIAL_ANSWER",
       "false_refusal": false,
       "has_citations": true,
       "grounding_status": "GROUNDED"
     },
     {
-      "query_id": "final_031",
+      "query_id": "final_v4_indep_029",
       "role": "answerable",
+      "classification": "GROUNDED_PARTIAL_ANSWER",
       "false_refusal": false,
-      "has_citations": false,
+      "has_citations": true,
       "grounding_status": "GROUNDED"
     },
     {
-      "query_id": "final_032",
+      "query_id": "final_v4_indep_030",
       "role": "answerable",
+      "classification": "GROUNDED_PARTIAL_ANSWER",
+      "false_refusal": false,
+      "has_citations": true,
+      "grounding_status": "GROUNDED"
+    },
+    {
+      "query_id": "final_v4_indep_031",
+      "role": "answerable",
+      "classification": "EXECUTION_FAILED",
+      "grounding_status": "EXECUTION_FAILED"
+    },
+    {
+      "query_id": "final_v4_indep_032",
+      "role": "answerable",
+      "classification": "ANSWERED_GROUNDED",
       "false_refusal": false,
       "has_citations": true,
       "grounding_status": "PARTIALLY_SUPPORTED"
     },
     {
-      "query_id": "final_033",
+      "query_id": "final_v4_indep_033",
       "role": "answerable",
-      "false_refusal": false,
-      "has_citations": false,
-      "grounding_status": "GROUNDED"
-    },
-    {
-      "query_id": "final_034",
-      "role": "answerable",
-      "false_refusal": false,
-      "has_citations": false,
-      "grounding_status": "VALIDATION_FAILED"
-    },
-    {
-      "query_id": "final_035",
-      "role": "answerable",
-      "false_refusal": false,
-      "has_citations": false,
-      "grounding_status": "VALIDATION_FAILED"
-    },
-    {
-      "query_id": "final_036",
-      "role": "answerable",
-      "false_refusal": false,
-      "has_citations": true,
-      "grounding_status": "GROUNDED"
-    },
-    {
-      "query_id": "final_037",
-      "role": "answerable",
-      "false_refusal": false,
-      "has_citations": false,
-      "grounding_status": "VALIDATION_FAILED"
-    },
-    {
-      "query_id": "final_038",
-      "role": "answerable",
-      "false_refusal": false,
-      "has_citations": true,
-      "grounding_status": "GROUNDED"
-    },
-    {
-      "query_id": "final_039",
-      "role": "answerable",
+      "classification": "ANSWERED_GROUNDED",
       "false_refusal": false,
       "has_citations": true,
       "grounding_status": "PARTIALLY_SUPPORTED"
     },
     {
-      "query_id": "final_040",
+      "query_id": "final_v4_indep_034",
       "role": "answerable",
+      "classification": "ANSWERED_GROUNDED",
+      "false_refusal": false,
+      "has_citations": true,
+      "grounding_status": "GROUNDED"
+    },
+    {
+      "query_id": "final_v4_indep_035",
+      "role": "answerable",
+      "classification": "FALSE_REFUSAL",
+      "false_refusal": true,
+      "has_citations": false,
+      "grounding_status": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "query_id": "final_v4_indep_036",
+      "role": "answerable",
+      "classification": "FALSE_REFUSAL",
+      "false_refusal": true,
+      "has_citations": false,
+      "grounding_status": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "query_id": "final_v4_indep_037",
+      "role": "answerable",
+      "classification": "EXECUTION_FAILED",
+      "grounding_status": "EXECUTION_FAILED"
+    },
+    {
+      "query_id": "final_v4_indep_038",
+      "role": "answerable",
+      "classification": "ANSWERED_GROUNDED",
+      "false_refusal": false,
+      "has_citations": true,
+      "grounding_status": "VALIDATION_FAILED"
+    },
+    {
+      "query_id": "final_v4_indep_039",
+      "role": "answerable",
+      "classification": "UNGROUNDED_ANSWER",
       "false_refusal": false,
       "has_citations": false,
+      "grounding_status": "VALIDATION_FAILED"
+    },
+    {
+      "query_id": "final_v4_indep_040",
+      "role": "answerable",
+      "classification": "ANSWERED_GROUNDED",
+      "false_refusal": false,
+      "has_citations": true,
       "grounding_status": "GROUNDED"
     },
     {
-      "query_id": "final_041",
+      "query_id": "final_v4_indep_041",
       "role": "unanswerable",
-      "is_adversarial": true,
-      "refused_correctly": false,
-      "unsupported_confident_answer": true,
-      "grounding_status": "VALIDATION_FAILED"
-    },
-    {
-      "query_id": "final_042",
-      "role": "unanswerable",
-      "is_adversarial": true,
-      "refused_correctly": false,
-      "unsupported_confident_answer": true,
-      "grounding_status": "GROUNDED"
-    },
-    {
-      "query_id": "final_043",
-      "role": "unanswerable",
+      "classification": "TRUE_REFUSAL",
       "is_adversarial": true,
       "refused_correctly": true,
       "unsupported_confident_answer": false,
-      "grounding_status": "INSUFFICIENT_EVIDENCE"
+      "grounding_status": "INSUFFICIENT_EVIDENCE",
+      "grounding_status_aligned": true
     },
     {
-      "query_id": "final_044",
+      "query_id": "final_v4_indep_042",
       "role": "unanswerable",
-      "is_adversarial": true,
-      "refused_correctly": false,
-      "unsupported_confident_answer": true,
-      "grounding_status": "VALIDATION_FAILED"
-    },
-    {
-      "query_id": "final_045",
-      "role": "unanswerable",
-      "is_adversarial": true,
-      "refused_correctly": false,
-      "unsupported_confident_answer": true,
-      "grounding_status": "VALIDATION_FAILED"
-    },
-    {
-      "query_id": "final_046",
-      "role": "unanswerable",
-      "is_adversarial": true,
-      "refused_correctly": false,
-      "unsupported_confident_answer": true,
-      "grounding_status": "VALIDATION_FAILED"
-    },
-    {
-      "query_id": "final_047",
-      "role": "unanswerable",
-      "is_adversarial": false,
-      "refused_correctly": true,
-      "unsupported_confident_answer": false,
-      "grounding_status": "INSUFFICIENT_EVIDENCE"
-    },
-    {
-      "query_id": "final_048",
-      "role": "unanswerable",
+      "classification": "TRUE_REFUSAL",
       "is_adversarial": true,
       "refused_correctly": true,
       "unsupported_confident_answer": false,
-      "grounding_status": "VALIDATION_FAILED"
+      "grounding_status": "INSUFFICIENT_EVIDENCE",
+      "grounding_status_aligned": true
     },
     {
-      "query_id": "final_049",
+      "query_id": "final_v4_indep_043",
       "role": "unanswerable",
+      "classification": "TRUE_REFUSAL",
       "is_adversarial": true,
       "refused_correctly": true,
       "unsupported_confident_answer": false,
-      "grounding_status": "INSUFFICIENT_EVIDENCE"
+      "grounding_status": "INSUFFICIENT_EVIDENCE",
+      "grounding_status_aligned": true
     },
     {
-      "query_id": "final_050",
+      "query_id": "final_v4_indep_044",
       "role": "unanswerable",
+      "classification": "TRUE_REFUSAL",
       "is_adversarial": true,
       "refused_correctly": true,
       "unsupported_confident_answer": false,
-      "grounding_status": "INSUFFICIENT_EVIDENCE"
+      "grounding_status": "INSUFFICIENT_EVIDENCE",
+      "grounding_status_aligned": true
+    },
+    {
+      "query_id": "final_v4_indep_045",
+      "role": "unanswerable",
+      "classification": "TRUE_REFUSAL",
+      "is_adversarial": true,
+      "refused_correctly": true,
+      "unsupported_confident_answer": false,
+      "grounding_status": "INSUFFICIENT_EVIDENCE",
+      "grounding_status_aligned": true
+    },
+    {
+      "query_id": "final_v4_indep_046",
+      "role": "unanswerable",
+      "classification": "TRUE_REFUSAL",
+      "is_adversarial": true,
+      "refused_correctly": true,
+      "unsupported_confident_answer": false,
+      "grounding_status": "INSUFFICIENT_EVIDENCE",
+      "grounding_status_aligned": true
+    },
+    {
+      "query_id": "final_v4_indep_047",
+      "role": "unanswerable",
+      "classification": "TRUE_REFUSAL",
+      "is_adversarial": true,
+      "refused_correctly": true,
+      "unsupported_confident_answer": false,
+      "grounding_status": "INSUFFICIENT_EVIDENCE",
+      "grounding_status_aligned": true
+    },
+    {
+      "query_id": "final_v4_indep_048",
+      "role": "unanswerable",
+      "classification": "TRUE_REFUSAL",
+      "is_adversarial": true,
+      "refused_correctly": true,
+      "unsupported_confident_answer": false,
+      "grounding_status": "INSUFFICIENT_EVIDENCE",
+      "grounding_status_aligned": true
+    },
+    {
+      "query_id": "final_v4_indep_049",
+      "role": "unanswerable",
+      "classification": "TRUE_REFUSAL",
+      "is_adversarial": true,
+      "refused_correctly": true,
+      "unsupported_confident_answer": false,
+      "grounding_status": "INSUFFICIENT_EVIDENCE",
+      "grounding_status_aligned": true
+    },
+    {
+      "query_id": "final_v4_indep_050",
+      "role": "unanswerable",
+      "classification": "TRUE_REFUSAL",
+      "is_adversarial": true,
+      "refused_correctly": true,
+      "unsupported_confident_answer": false,
+      "grounding_status": "INSUFFICIENT_EVIDENCE",
+      "grounding_status_aligned": true
     }
   ]
 }

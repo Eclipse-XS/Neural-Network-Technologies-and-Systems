@@ -305,3 +305,97 @@ async def test_session_isolation_guarantees_no_leakage(
     # Session B must never have seen session A's secret
     b_messages = mockB.chat.completions.create.call_args_list[0].kwargs["messages"]
     assert "X999_ALPHA" not in str(b_messages)
+
+
+
+@pytest.mark.asyncio
+async def test_session_evidence_persists_across_followup_turns(
+    test_db_path: Path, sqlite_repo: SQLiteRepository
+):
+    """Turn 2 citing evidence retrieved in Turn 1 without re-calling search must retain Turn 1 evidence and remain GROUNDED."""
+    from openai.types.chat.chat_completion_message_tool_call import (
+        ChatCompletionMessageToolCall,
+        Function,
+    )
+    from labs.lab07_final_project.src.knowledge_copilot.application.ingestion_service import IngestionService
+    from labs.lab07_final_project.src.knowledge_copilot.application.query_service import QueryService
+    from labs.lab07_final_project.src.knowledge_copilot.domain.enums import ScoreType
+    from labs.lab07_final_project.src.knowledge_copilot.domain.models import Chunk, EvidenceChunk, Score
+
+    ev_decision = EvidenceChunk(
+        chunk=Chunk(
+            chunk_id="chunk-312",
+            document_id="adr_001_vector_and_storage_architecture",
+            ordinal=2,
+            text="We adopt Redis Stack for vector storage and SQLite with WAL for application state.",
+            section="## Decision",
+            token_count=18,
+            sha256="h1",
+            metadata={"filename": "adr_001_vector_and_storage_architecture.md"},
+        ),
+        score=Score("hybrid", ScoreType.RRF_SCORE, 0.25, 1),
+    )
+    ev_alts = EvidenceChunk(
+        chunk=Chunk(
+            chunk_id="chunk-6cf",
+            document_id="adr_001_vector_and_storage_architecture",
+            ordinal=4,
+            text="Alternatives Considered: Milvus and Qdrant rejected due to high memory overhead (>=2 GB idle RAM).",
+            section="## Alternatives Considered",
+            token_count=16,
+            sha256="h2",
+            metadata={"filename": "adr_001_vector_and_storage_architecture.md"},
+        ),
+        score=Score("hybrid", ScoreType.RRF_SCORE, 0.24, 2),
+    )
+
+    msg1_tool = ChatCompletionMessage(
+        role="assistant",
+        content=None,
+        tool_calls=[
+            ChatCompletionMessageToolCall(
+                id="call_1",
+                type="function",
+                function=Function(name="search_knowledge", arguments='{"query": "ADR 001 vector database"}'),
+            )
+        ],
+    )
+    msg1_final = ChatCompletionMessage(
+        role="assistant",
+        content="ADR 001 adopts Redis Stack and SQLite with WAL [adr_001_vector_and_storage_architecture#chunk-312].",
+    )
+    msg2_final = ChatCompletionMessage(
+        role="assistant",
+        content="Milvus and Qdrant were rejected due to high memory overhead (>=2 GB idle RAM) [adr_001_vector_and_storage_architecture#chunk-6cf].",
+    )
+    mock_client = MagicMock()
+    mock_client.base_url = "http://localhost:1234/v1"
+    mock_client.chat.completions.create = AsyncMock(
+        side_effect=[
+            ChatCompletion(id="c1", choices=[Choice(finish_reason="tool_calls", index=0, message=msg1_tool)], created=1, model="m", object="chat.completion"),
+            ChatCompletion(id="c2", choices=[Choice(finish_reason="stop", index=0, message=msg1_final)], created=2, model="m", object="chat.completion"),
+            ChatCompletion(id="c3", choices=[Choice(finish_reason="stop", index=0, message=msg2_final)], created=3, model="m", object="chat.completion"),
+        ]
+    )
+    adapter = MagicMock()
+    adapter.model_id = "m"
+    adapter.get_client.return_value = mock_client
+
+    dummy_redis = MagicMock()
+    dummy_emb = MagicMock()
+    dummy_ing = IngestionService(sqlite_repo, dummy_redis, dummy_emb, require_vector_store=False)
+    qs = QueryService(dummy_ing, dummy_redis, sqlite_repo)
+    qs.search = lambda **kwargs: [ev_decision, ev_alts]
+    qs.orchestrator = AgentOrchestrator(adapter, qs.search, lambda: [], db_path=test_db_path, max_turns=4)
+
+    t1 = await qs.execute_query("What database was selected in ADR 001?", session_id="mt_ev_sess")
+    assert t1.grounding_status == GroundingStatus.GROUNDED
+    assert len(t1.evidence) == 2
+
+    reloaded = sqlite_repo.get_session("mt_ev_sess")
+    assert reloaded is not None and len(reloaded.turns[0].evidence) == 2
+
+    t2 = await qs.execute_query("Why was it selected instead of Milvus and Qdrant?", session_id="mt_ev_sess")
+    assert t2.grounding_status == GroundingStatus.GROUNDED, f"Expected GROUNDED, got {t2.grounding_status}: {t2.canonical_answer}"
+    assert "milvus" in t2.canonical_answer.lower()
+    assert "[adr_001_vector_and_storage_architecture#chunk-6cf]" in t2.citations

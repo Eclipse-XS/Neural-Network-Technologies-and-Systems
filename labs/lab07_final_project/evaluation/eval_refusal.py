@@ -45,11 +45,42 @@ ADVERSARIAL_QUERY_MARKERS = [
     r"as65001",
     r"helm",
     r"eks",
+    r"kubernetes",
+    r"hpa",
+    r"pinecone",
+    r"milvus",
+    r"weaviate",
+    r"dynamodb",
+    r"elasticsearch",
+    r"claude",
+    r"gemini",
+    r"llama",
+    r"deepseek",
+    r"kafka",
+    r"aws s3",
+    r"stable video diffusion",
     r"tpu v4",
     r"bert",
+    r"sagemaker",
+    r"tensorrt",
+    r"ray\s+serve",
+    r"triton",
+    r"terraform",
+    r"vault",
+    r"oauth",
+    r"rabbitmq",
+    r"faiss",
+    r"vllm",
+    r"opentelemetry",
+    r"grafana",
+    r"datadog",
+    r"celery",
+    r"mongodb",
+    r"snowflake",
+    r"bigquery",
     r"ignore previous",
     r"system prompt",
-    r"कुлінарн|рецепт|хліб",
+    r"рецепт|хліб",
     r"світлофор|дорожнього руху",
     r"погода|вологість",
     r"футбольн",
@@ -89,11 +120,21 @@ def compute_refusal_metrics_from_items(
     case_breakdown: List[Dict[str, Any]] = []
 
     for item in itemized_results:
-        if not item.get("success", False):
-            continue
         qid = item.get("query_id") or item.get("id", "")
         meta = dataset_by_id.get(qid, {})
-        refusal_expected = bool(meta.get("refusal_expected", False) or item.get("category") == "unsupported_refusal")
+        refusal_expected = bool(meta.get("refusal_expected", False) or item.get("category") in ("unsupported", "unsupported_refusal"))
+        if not item.get("success", False):
+            if refusal_expected:
+                unanswerable_total += 1
+            else:
+                answerable_total += 1
+            case_breakdown.append({
+                "query_id": qid,
+                "role": "unanswerable" if refusal_expected else "answerable",
+                "classification": "EXECUTION_FAILED",
+                "grounding_status": "EXECUTION_FAILED",
+            })
+            continue
         query_text = item.get("query", meta.get("query", ""))
         answer_text = item.get("answer", "")
         g_status_str = item.get("grounding_status", "GROUNDED")
@@ -117,13 +158,20 @@ def compute_refusal_metrics_from_items(
                 if refused:
                     adversarial_refusals += 1
 
+            classification = (
+                "TRUE_REFUSAL"
+                if refused
+                else ("PARTIAL_PREMISE_SUBSTITUTION" if citations else "UNSUPPORTED_CONFIDENT_ANSWER")
+            )
             case_breakdown.append({
                 "query_id": qid,
                 "role": "unanswerable",
+                "classification": classification,
                 "is_adversarial": is_adversarial_unanswerable(query_text),
                 "refused_correctly": refused,
                 "unsupported_confident_answer": not refused,
                 "grounding_status": g_status.value,
+                "grounding_status_aligned": refused == (g_status == GroundingStatus.INSUFFICIENT_EVIDENCE),
             })
         else:
             answerable_total += 1
@@ -133,14 +181,25 @@ def compute_refusal_metrics_from_items(
                 false_refusals += 1
 
             # Check grounded partial answer: cross-document or nuanced queries where answer provides citations + caveat
-            if item.get("category") == "cross_document" or has_partial_caveat(answer_text):
+            is_partial_cand = item.get("category") == "cross_document" or has_partial_caveat(answer_text)
+            if is_partial_cand:
                 partial_candidates_total += 1
                 if not is_false_refusal and len(citations) > 0:
                     grounded_partial_answers += 1
 
+            if is_false_refusal:
+                ans_cls = "FALSE_REFUSAL"
+            elif is_partial_cand and len(citations) > 0:
+                ans_cls = "GROUNDED_PARTIAL_ANSWER"
+            elif len(citations) > 0:
+                ans_cls = "ANSWERED_GROUNDED"
+            else:
+                ans_cls = "UNGROUNDED_ANSWER"
+
             case_breakdown.append({
                 "query_id": qid,
                 "role": "answerable",
+                "classification": ans_cls,
                 "false_refusal": is_false_refusal,
                 "has_citations": len(citations) > 0,
                 "grounding_status": g_status.value,

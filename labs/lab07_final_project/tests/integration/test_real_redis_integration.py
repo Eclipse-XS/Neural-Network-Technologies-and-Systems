@@ -47,7 +47,20 @@ class RealSyntheticEmbeddings(Embeddings):
 @pytest.fixture(scope="module")
 def live_redis_adapter():
     import os
+    import sys
+    import subprocess
     candidate_urls = [os.environ.get("REDIS_URL"), "redis://localhost:6380", "redis://localhost:6379"]
+    if sys.platform == "win32":
+        try:
+            wsl_ip = subprocess.check_output(
+                ["wsl", "-d", "Ubuntu-24.04", "hostname", "-I"],
+                timeout=2,
+                text=True,
+            ).strip().split()[0]
+            if wsl_ip:
+                candidate_urls.append(f"redis://{wsl_ip}:6379")
+        except Exception:
+            pass
     raw_client = None
     redis_url = None
     last_exc = None
@@ -55,7 +68,7 @@ def live_redis_adapter():
         if not url:
             continue
         try:
-            c = redis.from_url(url, socket_connect_timeout=2)
+            c = redis.from_url(url, socket_connect_timeout=5)
             if c.ping():
                 raw_client = c
                 redis_url = url

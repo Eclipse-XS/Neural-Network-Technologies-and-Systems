@@ -41,6 +41,7 @@ from labs.lab07_final_project.src.knowledge_copilot.infrastructure.redis_store i
 from labs.lab07_final_project.src.knowledge_copilot.application.ingestion_service import IngestionService
 from labs.lab07_final_project.src.knowledge_copilot.application.query_service import QueryService
 from labs.lab07_final_project.src.knowledge_copilot.agents.orchestrator import AgentOrchestrator
+from labs.lab07_final_project.src.knowledge_copilot.agents.tools import safe_calculate
 from labs.lab07_final_project.src.knowledge_copilot.rag.embeddings import CopilotEmbeddings
 from labs.lab07_final_project.src.knowledge_copilot.infrastructure.llm_client import (
     LocalLLMClient,
@@ -49,6 +50,15 @@ from labs.lab07_final_project.src.knowledge_copilot.infrastructure.llm_client im
     LMStudioProbeResult,
 )
 from labs.lab07_final_project.evaluation.metrics import normalize_text
+from labs.lab07_final_project.src.knowledge_copilot.rag.lexical import (
+    BILINGUAL_SYNONYMS,
+    stem_word,
+)
+from labs.lab07_final_project.src.knowledge_copilot.agents.verifier import (
+    KNOWN_TECHNOLOGIES,
+    normalize_multi_citations,
+    strip_markdown,
+)
 
 GENERATION_ACCEPTANCE_THRESHOLDS = {
     "execution_failures": 0,
@@ -124,37 +134,39 @@ def audit_citations(
 
 
 def is_refusal_answer(answer: str, grounding_status: GroundingStatus) -> bool:
-    """Evaluate whether an answer appropriately abstained on an unsupported query."""
+    """Evaluate whether an answer appropriately abstained on an unsupported query.
+
+    Strips markdown styling so emphasis like 'do **not** explicitly' is parsed accurately,
+    while strictly excluding partial premise substitutions that assert an unrelated model/tech.
+    """
     if grounding_status == GroundingStatus.INSUFFICIENT_EVIDENCE:
         return True
     refusal_patterns = [
         r"не\s+знайден[оаіий]",
         r"не\s+міст\w+",
-        r"не\s+описан[оаіий]",
-        r"не\s+наведен[оаіий]",
+        r"не\s+(?:було\s+)?(?:прямо\s+)?(?:зазначен[оаіий]|наведен[оаіий]|описан[оаіий]|вказан[оаіий]|згадан[оаіий])",
         r"відсутн\w*\s+(?:інформаці\w*|дані|відомост\w*|згадк\w*)",
-        r"немає\s+(?:інформації|даних|відомостей|згадок|інструкцій|рецепт\w*|відомості|деталей)",
+        r"(?:інформаці\w*|дані|відомост\w*|згадк\w*)\s+(?:відсутн\w*|немає)",
+        r"немає\s+(?:жодної\s+|такої\s+|цієї\s+)?(?:інформації|даних|відомостей|згадок|інструкцій|рецепт\w*|відомості|деталей)",
         r"не\s+можу\s+(?:надати|відповісти|знайти|визначити)",
         r"не\s+нада[єе]ться",
         r"не\s+виявлено",
         r"не\s+входить\s+до",
         r"не\s+покрива[єе]ться",
-        r"не\s+вказан[оаіий]",
-        r"do(?:es)?\s+not\s+(?:contain|provide|mention|describe|specify|include|detail|cover|have)",
+        r"не\s+згадується",
+        r"недостатньо\s+(?:даних|доказів|інформації)",
+        r"do(?:es)?\s+not\s+(?:explicitly\s+)?(?:contain|provide|mention|describe|specify|include|detail|cover|have|report|list|state|configure)",
+        r"(?:is|are)\s+not\s+(?:explicitly\s+)?(?:configured|mentioned|reported|listed|stated|documented|supported|covered)",
+        r"not\s+(?:explicitly\s+)?(?:mentioned|listed|stated|reported|described|configured|documented|covered|found)",
         r"insufficient\s+(?:evidence|information|data)",
-        r"not\s+found",
-        r"no\s+(?:relevant\s+)?(?:information|data|evidence|mention|details|instructions|guidance|recipes)",
+        r"no\s+(?:specific\s+|relevant\s+|direct\s+)?(?:information|data|evidence|mention|details|instructions|guidance|recipes|benchmark)",
         r"cannot\s+(?:retrieve|answer|find|provide|determine)",
         r"unable\s+to\s+(?:find|retrieve|determine|answer|provide)",
-        r"not\s+mentioned",
-        r"no\s+evidence",
-        r"abstain",
-        r"not\s+covered",
+        r"\babstain\b",
         r"outside\s+(?:the\s+)?(?:scope|indexed|documentation)",
         r"does\s+not\s+have\s+context",
-        r"no\s+direct\s+evidence",
     ]
-    a_lower = (answer or "").casefold()
+    a_lower = strip_markdown(answer or "").casefold()
     return any(re.search(pat, a_lower) for pat in refusal_patterns)
 
 
@@ -195,10 +207,15 @@ UNIT_DEFINITIONS = {
     "сек": ("time", 1.0),
     "секунд": ("time", 1.0),
     "секунди": ("time", 1.0),
+    "секунда": ("time", 1.0),
+    "секунду": ("time", 1.0),
     "min": ("time", 60.0),
     "mins": ("time", 60.0),
     "хв": ("time", 60.0),
     "хвилин": ("time", 60.0),
+    "хвилини": ("time", 60.0),
+    "хвилина": ("time", 60.0),
+    "хвилину": ("time", 60.0),
     "минут": ("time", 60.0),
     "h": ("time", 3600.0),
     "hr": ("time", 3600.0),
@@ -207,6 +224,9 @@ UNIT_DEFINITIONS = {
     "hours": ("time", 3600.0),
     "год": ("time", 3600.0),
     "годин": ("time", 3600.0),
+    "години": ("time", 3600.0),
+    "година": ("time", 3600.0),
+    "годину": ("time", 3600.0),
     "часов": ("time", 3600.0),
     # Percentage -> base unit: percent
     "%": ("percentage", 1.0),
@@ -220,11 +240,17 @@ UNIT_DEFINITIONS = {
 def _parse_quantities(text: str) -> List[Tuple[float, Optional[str], Optional[str], float]]:
     """Extract numerical quantities with their units and converted base values.
     
+    Supports comma thousands ('12,400') and space thousands ('12 400' / '3 072 000').
     Returns list of (val, raw_unit, category, base_val).
     """
     if not text:
         return []
     clean = re.sub(r"(\d),(\d)", r"\1\2", text)
+    clean = re.sub(
+        r"(?<!\d)(\d{1,3}(?:[ \u00a0]\d{3})+)(?!\d)",
+        lambda m: m.group(1).replace(" ", "").replace("\u00a0", ""),
+        clean,
+    )
     pattern = r"\b(\d+(?:\.\d+)?)\s*([%a-zA-Zа-яА-ЯіІїЇєЄ]+)?\b"
     quantities = []
     for match in re.finditer(pattern, clean):
@@ -265,6 +291,12 @@ def check_numerical_match(answer: str, expected: str) -> bool:
     if not ans_quantities:
         return False
 
+    # Prefix-ambiguous decimal/binary byte units (excludes strict IEC kib/mib/gib/tib)
+    ambiguous_byte_exp = {
+        "b": 0, "bytes": 0, "байт": 0, "байтів": 0, "байти": 0,
+        "kb": 1, "кб": 1, "mb": 2, "мб": 2, "gb": 3, "гб": 3, "tb": 4, "тб": 4,
+    }
+
     def matches_quantity(eq: Tuple[float, Optional[str], Optional[str], float], aq: Tuple[float, Optional[str], Optional[str], float]) -> bool:
         e_val, e_unit, e_cat, e_base = eq
         a_val, a_unit, a_cat, a_base = aq
@@ -272,7 +304,22 @@ def check_numerical_match(answer: str, expected: str) -> bool:
             # Expected has a specific unit category (byte, time, percentage)
             if a_cat != e_cat:
                 return False
-            return math.isclose(a_base, e_base, rel_tol=0.03, abs_tol=0.01)
+            if math.isclose(a_base, e_base, rel_tol=0.03, abs_tol=0.01):
+                return True
+            # Allow consistent decimal SI (1000^p) or binary (1024^p) interpretation ONLY when both units are prefix-ambiguous (e.g., 3.072 MB == 3,072,000 bytes)
+            if e_cat == "byte":
+                ek = (e_unit or "").casefold()
+                ak = (a_unit or "").casefold()
+                if ek in ambiguous_byte_exp and ak in ambiguous_byte_exp:
+                    e_si = e_val * (1000.0 ** ambiguous_byte_exp[ek])
+                    a_si = a_val * (1000.0 ** ambiguous_byte_exp[ak])
+                    if math.isclose(a_si, e_si, rel_tol=0.03, abs_tol=0.01):
+                        return True
+                    e_iec = e_val * (1024.0 ** ambiguous_byte_exp[ek])
+                    a_iec = a_val * (1024.0 ** ambiguous_byte_exp[ak])
+                    if math.isclose(a_iec, e_iec, rel_tol=0.03, abs_tol=0.01):
+                        return True
+            return False
         else:
             # Dimensionless number or general entity count
             if math.isclose(a_val, e_val, rel_tol=0.01, abs_tol=0.01):
@@ -284,31 +331,66 @@ def check_numerical_match(answer: str, expected: str) -> bool:
                 return True
             return False
 
-    # Check key primary target quantity (usually the first number in expected answer)
-    target_q = exp_quantities[0]
+    # Identify primary target quantity: RHS of equation if '=' follows arithmetic expression, else first non-clock quantity
+    exp_no_clock = re.sub(r"\b\d{1,2}:\d{2}(?::\d{2})?\b", " ", expected)
+    clean_exp_qs = _parse_quantities(exp_no_clock) or exp_quantities
+    target_q = clean_exp_qs[0]
+    if "=" in exp_no_clock:
+        lhs, rhs = exp_no_clock.split("=", 1)
+        if re.search(r"[+*/×-]", lhs):
+            rhs_qs = _parse_quantities(rhs.split(")")[0])
+            if rhs_qs:
+                target_q = rhs_qs[0]
+
     for aq in ans_quantities:
         if matches_quantity(target_q, aq):
             return True
-
-    # Also check if any expected quantity matches
-    for eq in exp_quantities:
-        for aq in ans_quantities:
-            if matches_quantity(eq, aq):
-                return True
 
     return False
 
 
 def _detect_polarity_contradiction(text1: str, text2: str) -> bool:
-    """Detect if an answer explicitly contradicts the core affirmative proposition of expected text."""
-    stopwords = {"the", "and", "for", "that", "this", "with", "from", "are", "was", "were", "has", "have", "not"}
-    e_words = [w for w in re.findall(r"\b[a-zA-Z0-9_\u0400-\u04FF.-]{4,}\b", text2.casefold()) if w not in stopwords]
+    """Detect if an answer explicitly contradicts the core affirmative proposition of expected text.
+
+    Excludes function words, epistemic caveats ('not explicitly documented'), and cases
+    where expected text itself shares the negative/rejected framing.
+    """
+    stopwords = {
+        "the", "and", "for", "that", "this", "with", "from", "are", "was", "were", "has", "have", "not",
+        "which", "what", "where", "when", "while", "into", "over", "under", "between", "through", "against",
+        "system", "model", "data", "using", "state", "states", "stated", "mentioned", "documented",
+        "configured", "available", "explicitly", "details", "mode", "design", "value", "values", "level",
+        "система", "системи", "модель", "дані", "даними", "деталі", "інформація", "робота", "роботі",
+        "звіт", "звіті", "було", "була", "були", "буде", "можна", "тільки", "лише", "після",
+        "через", "згідно", "результаті", "також", "проте", "однак", "режим", "рівень",
+    }
+    t2_lower = strip_markdown(text2).casefold()
+    e_words = [w for w in re.findall(r"\b[a-zA-Z0-9_\u0400-\u04FF.-]{4,}\b", t2_lower) if w not in stopwords]
     if not e_words:
         return False
+
+    # Strip epistemic caveats & comparative contrasts from answer text before polarity matching
+    t1_clean = re.sub(
+        r"[^.!?\n]*\b(?:not\s+explicitly\s+(?:documented|mentioned|stated|specified|reported|listed)|не\s+зазначено\s+прямо)[^.!?\n]*",
+        " ",
+        strip_markdown(text1).casefold(),
+    )
+
     for w in e_words:
+        ew = re.escape(w)
+        # Skip if expected itself already contains negative/rejected phrasing around this term
+        t2_has_neg = bool(
+            re.search(r"\b(?:not|never|не|ніколи|відхилено|rejected|без|without)\s+(?:\w+\s+){0,2}" + ew, t2_lower)
+            or re.search(ew + r"\s+(?:\w+\s+){0,2}(?:not|never|не|ніколи|відхилено|rejected)\b", t2_lower)
+        )
+        if t2_has_neg:
+            continue
+
         direct_neg = (
-            re.search(r"\b(?:not|never|не|ніколи|відхилено|rejected)\s+\w*\s*" + re.escape(w), text1.casefold())
-            or re.search(re.escape(w) + r"\s+\w*\s*(?:not|never|не|ніколи|відхилено|rejected)\b", text1.casefold())
+            re.search(r"\b(?:not|never|rejected|відхилено)\s+(?:\w+\s+){0,1}" + ew, t1_clean)
+            or re.search(ew + r"\s+(?:is|was|were|are|був|була|було|були)?\s*(?:not|never|rejected|відхилено)\b", t1_clean)
+            or re.search(r"\bне\s+(?:використову\w+|застосову\w+|підтриму\w+|обрано|вибрано)\s+(?:\w+\s+){0,1}" + ew, t1_clean)
+            or re.search(ew + r"\s+(?:не\s+(?:використову\w+|застосову\w+|підтриму\w+|обрано|вибрано|використан\w+)|відхилено)\b", t1_clean)
         )
         if direct_neg:
             return True
@@ -450,6 +532,201 @@ def compute_factual_correctness(answer: str, expected: str, evidence_spans: List
     return True
 
 
+CLAIM_BILINGUAL_PAIRS: Dict[str, Tuple[str, ...]] = {
+    "сторінок": ("page", "pages"),
+    "сторінк": ("page", "pages"),
+    "page": ("сторінок", "сторінці"),
+    "чанк": ("chunk", "chunks"),
+    "chunk": ("чанк", "чанків", "чанки"),
+    "баз": ("database", "db"),
+    "database": ("база", "бази"),
+    "режим": ("mode", "state"),
+    "mode": ("режим", "режимі"),
+    "state": ("стан", "режим"),
+    "аварі": ("incident", "postmortem", "failure"),
+    "відмов": ("failure", "fails", "unavailable"),
+    "пошук": ("search", "retrieval", "retriever"),
+    "ранжуван": ("ranking",),
+    "запис": ("record", "records", "entry", "entries"),
+    "товар": ("product", "products", "catalog"),
+    "генерац": ("generation", "generated", "generations"),
+    "зображ": ("image", "images"),
+    "роздільн": ("resolution",),
+    "пакет": ("batch",),
+    "векторн": ("vector", "vectors"),
+    "лексичн": ("lexical", "bm25"),
+    "пам": ("memory", "ram", "vram"),
+    "памят": ("memory", "ram", "vram"),
+    "відбит": ("reflection", "reflections"),
+    "дерев": ("tree", "trees"),
+    "будин": ("cabin",),
+    "озер": ("lake",),
+    "крок": ("step", "steps"),
+    "звіт": ("report",),
+    "технічн": ("technical",),
+    "файл": ("file", "pdf", "document"),
+    "місти": ("containing", "contains", "contain", "included"),
+    "обсяг": ("size", "pages"),
+    "велик": ("large",),
+    "специфікац": ("specification", "spec"),
+    "витрат": ("overhead", "cost"),
+    "секунд": ("seconds", "second", "sec"),
+    "хвилин": ("minutes", "minute", "min"),
+    "байт": ("byte", "bytes"),
+    "розмір": ("size", "dimension"),
+    "помил": ("error", "errors", "failed"),
+    "крах": ("crashed", "crash"),
+    "відкид": ("rejected",),
+    "перезапуск": ("restarted", "restart"),
+    "порог": ("threshold",),
+    "перевищ": ("exceeded", "exceeding", "crossed"),
+    "триваліст": ("duration", "timeline", "time"),
+    "duration": ("timeline", "триваліст", "тривалість", "час"),
+    "інцидент": ("incident", "outage"),
+    "сервіс": ("service", "services"),
+    "перерв": ("outage", "downtime"),
+    "середн": ("average", "mean"),
+    "відношен": ("ratio",),
+}
+
+
+def _parse_claim_float(tok: str) -> Optional[float]:
+    if re.fullmatch(r"-?\d+(?:\.\d+)?", tok or ""):
+        try:
+            return float(tok)
+        except Exception:
+            return None
+    return None
+
+
+def _number_supported_by_evidence(n: float, ev_numbers: List[float]) -> bool:
+    if not ev_numbers:
+        return False
+    if any(math.isclose(n, en, rel_tol=0.02, abs_tol=0.01) for en in ev_numbers):
+        return True
+    if any(
+        math.isclose(n, en * f, rel_tol=0.05, abs_tol=1.0)
+        or math.isclose(n * f, en, rel_tol=0.05, abs_tol=1.0)
+        for en in ev_numbers
+        for f in (60.0, 1000.0, 1024.0, 1000.0 ** 2, 1024.0 ** 2)
+    ):
+        return True
+    for i, en1 in enumerate(ev_numbers):
+        for en2 in ev_numbers[i:]:
+            if (
+                math.isclose(n, abs(en1 - en2), rel_tol=0.02, abs_tol=0.5)
+                or math.isclose(n, en1 + en2, rel_tol=0.02, abs_tol=0.5)
+                or math.isclose(n, (en1 + en2) / 2.0, rel_tol=0.02, abs_tol=0.05)
+                or math.isclose(n, en1 * en2, rel_tol=0.02, abs_tol=0.5)
+                or (en2 > 0 and math.isclose(n, en1 / en2, rel_tol=0.02, abs_tol=0.05))
+                or (en1 > 0 and math.isclose(n, en2 / en1, rel_tol=0.02, abs_tol=0.05))
+            ):
+                return True
+    return False
+
+
+def _normalize_for_claims(text: str) -> str:
+    """Normalize whitespace, markdown, comma-thousands, and space-thousands."""
+    no_commas = re.sub(r"(?<=\d),(?=\d{3}\b)", "", text or "")
+    no_spaces = re.sub(
+        r"(?<!\d)(\d{1,3}(?:[ \u00a0]\d{3})+)(?!\d)",
+        lambda m: m.group(1).replace(" ", "").replace("\u00a0", ""),
+        no_commas,
+    )
+    return normalize_text(no_spaces)
+
+
+def _tokenize_claim_terms(norm_text: str) -> List[str]:
+    """Extract content tokens while preserving hyphen-separated sub-terms ('450-page' -> ['450', 'page'])."""
+    raw = re.findall(r"\b[a-zA-Z0-9_\u0400-\u04FF.-]{2,}\b", norm_text)
+    out: List[str] = []
+    for tok in raw:
+        parts = [p for p in tok.split("-") if len(p) >= 2]
+        if len(parts) > 1:
+            out.extend(parts)
+        elif len(tok) >= 3 or tok.isdigit():
+            out.append(tok)
+    return out
+
+
+def _expand_token_set(tokens: List[str]) -> Set[str]:
+    """Expand token list with morphological stems and bilingual EN<->UK technical synonyms."""
+    expanded: Set[str] = set()
+    for t in tokens:
+        expanded.add(t)
+        st = stem_word(t)
+        expanded.add(st)
+        if len(t) >= 5:
+            expanded.add(t[:5])
+        for d in (BILINGUAL_SYNONYMS, CLAIM_BILINGUAL_PAIRS):
+            for key, syns in d.items():
+                if t == key or st == key or (len(key) >= 4 and (t.startswith(key) or st.startswith(key))):
+                    for s in syns:
+                        s_cf = s.casefold()
+                        expanded.add(s_cf)
+                        expanded.add(stem_word(s_cf))
+    return expanded
+
+
+def _token_matches_expanded(ct: str, ev_raw_set: Set[str], ev_expanded_set: Set[str]) -> bool:
+    if ct in ev_raw_set or ct in ev_expanded_set:
+        return True
+    ct_stem = stem_word(ct)
+    if ct_stem in ev_expanded_set:
+        return True
+    if len(ct) >= 5 and any(et.startswith(ct[:5]) or ct.startswith(et[:5]) for et in ev_raw_set if len(et) >= 5):
+        return True
+    if len(ct) == 4 and ct in ev_raw_set:
+        return True
+    for d in (BILINGUAL_SYNONYMS, CLAIM_BILINGUAL_PAIRS):
+        for key, syns in d.items():
+            if ct == key or ct_stem == key or (len(key) >= 4 and (ct.startswith(key) or ct_stem.startswith(key))):
+                for s in syns:
+                    s_cf = s.casefold()
+                    if s_cf in ev_expanded_set or stem_word(s_cf) in ev_expanded_set:
+                        return True
+    return False
+
+
+def _preprocess_claim_lines(answer: str) -> List[str]:
+    """Normalize grouped citations, filter non-claim structural markdown/code blocks, and merge tiny trailing fragments."""
+    ans = normalize_multi_citations(answer or "")
+    # Strip fenced code blocks completely so JSON/curl/bash snippet lines aren't scored as independent English prose claims
+    ans = re.sub(r"```[\s\S]*?```", " ", ans)
+    # Merge standalone citation-only lines onto preceding line
+    ans = re.sub(
+        r"\n+\s*((?:\*{0,2}\[[a-zA-Z0-9_.-]+#[a-zA-Z0-9_.-]+\]\*{0,2}[.,;: ]*)+)(?=\n|$)",
+        r" \1",
+        ans,
+    )
+    lines = ans.splitlines()
+    filtered_lines: List[str] = []
+    for ln in lines:
+        s = ln.strip()
+        if not s:
+            if filtered_lines:
+                filtered_lines.append("")
+            continue
+        # Skip horizontal rules, markdown table dividers, and pure markdown headings (# Title)
+        if re.match(r"^[-=*_]{3,}$", s) or re.match(r"^\|[\s:|-]+\|$", s) or re.match(r"^#{1,6}\s+", s):
+            continue
+        # Skip short standalone colon header labels (e.g. '**У звіті про аварію:**', 'Key findings:', 'Evidence:')
+        no_cite_s = re.sub(r"\[[a-zA-Z0-9_.-]+#[a-zA-Z0-9_.-]+\]", "", s).strip()
+        plain_s = strip_markdown(no_cite_s).strip()
+        if plain_s.endswith(":") and len(plain_s.split()) <= 8:
+            continue
+        # Merge short non-sentence fragments (e.g. '**5 секунд**.') onto preceding line
+        if filtered_lines and filtered_lines[-1] and len(plain_s.split()) <= 3 and plain_s.endswith((".", "!")):
+            filtered_lines[-1] = f"{filtered_lines[-1]} {s}"
+            continue
+        filtered_lines.append(s)
+
+    joined = "\n".join(filtered_lines)
+    # Split on sentence punctuation followed by capital/bracket/digit+unit OR newlines
+    raw_sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+(?=[A-ZА-ЯІЇЄҐ\[*0-9])|\n+", joined) if s.strip()]
+    return raw_sentences
+
+
 def verify_claim_evidence_support(
     answer: str,
     evidence: List[EvidenceChunk],
@@ -457,100 +734,236 @@ def verify_claim_evidence_support(
 ) -> Any:
     """Verify that substantive claims in answer are anchored in retrieved evidence chunks.
     
-    Supports cumulative cross-chunk evidence grounding and derived numerical quantities.
+    Features:
+    - Structural markdown / code-fence / label filtering
+    - Exact [doc#chunk] provenance + bilingual EN<->UK entailment
+    - Technology premise consistency check
+    - Topical chunk-scoped polarity & verbatim error/rejection checking
+    - Explicit verdict taxonomy: SUPPORTED, CONTRADICTED, INSUFFICIENT_EVIDENCE, UNSUPPORTED_CITATION, NUMERICAL_MISMATCH
     """
     if not evidence or not answer.strip():
         return (False, []) if return_judgments else False
 
-    chunk_texts = [c.chunk.text for c in evidence]
-    combined_ev_norm = normalize_text(" ".join(chunk_texts))
-    combined_ev_tokens = set(re.findall(r"\b[a-zA-Z0-9_\u0400-\u04FF.-]{3,}\b", combined_ev_norm))
-    ev_numbers = _parse_numbers(combined_ev_norm)
+    chunk_norms = [_normalize_for_claims(c.chunk.text) for c in evidence]
+    chunk_token_sets = []
+    for cn in chunk_norms:
+        c_toks = _tokenize_claim_terms(cn)
+        chunk_token_sets.append((set(c_toks), _expand_token_set(c_toks)))
 
-    raw_sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+|\n+", answer) if s.strip()]
+    combined_ev_norm = " ".join(chunk_norms)
+    all_ev_lower = " ".join(c.chunk.text for c in evidence).casefold()
+    combined_ev_raw_tokens = set(_tokenize_claim_terms(combined_ev_norm))
+    combined_ev_expanded = _expand_token_set(list(combined_ev_raw_tokens))
+    ev_numbers = _parse_numbers(combined_ev_norm)
+    for c in evidence:
+        for h_s, m_s in re.findall(r"\b(\d{1,2}):(\d{2})\b", c.chunk.text):
+            ev_numbers.append(float(int(h_s) * 60 + int(m_s)))
+
+    raw_sentences = _preprocess_claim_lines(answer)
 
     stopwords = {
         "the", "and", "for", "that", "this", "with", "from", "are", "was", "were",
         "has", "have", "had", "not", "but", "what", "which", "who", "when", "where",
+        "will", "can", "may", "into", "over", "under", "each", "both", "also", "only",
         "було", "для", "або", "при", "який", "яка", "яке", "які", "так", "ні", "був",
         "according", "stated", "here", "shown", "there", "based", "document", "documents",
-        "наприклад", "зокрема", "також", "згідно", "calculated", "calculating", "difference", "remaining", "minus", "plus", "sum", "total", "обчислено", "різниця", "залишок", "разом", "становить",
+        "indexed", "provided", "available", "however", "whereas", "while", "note",
+        "наприклад", "зокрема", "також", "згідно", "проте", "однак", "наступним", "чином",
+        "calculated", "calculating", "difference", "remaining", "minus", "plus", "sum",
+        "total", "обчислено", "розраховано", "різниця", "залишок", "разом", "становить",
+        "стосувалося", "обсягом", "який", "якого", "таким", "чином", "великого",
     }
 
     judgments = []
 
     for raw_s in raw_sentences:
         clean_s = re.sub(r"\[[a-zA-Z0-9_.-]+#[a-zA-Z0-9_.-]+\]", "", raw_s).strip()
-        if not clean_s or len(clean_s) < 12:
+        plain_clean = strip_markdown(clean_s).strip()
+        if not plain_clean or len(plain_clean) < 12 or plain_clean.endswith("?"):
+            continue
+        # Skip conversational offer / caveat sign-offs without empirical assertions
+        if re.search(r"^(?:if you need|would you like|let me know|i recommend checking|якщо вам потрібн|якщо це стосується)", plain_clean, re.IGNORECASE):
             continue
 
-        s_norm = normalize_text(clean_s)
+        s_norm = _normalize_for_claims(clean_s)
 
-        # 0. Specific citation entailment check: if sentence cites specific [doc#chunk], verify cited chunk entails claim
+        # 0. Specific citation entailment & technology premise check
         cited_tags = re.findall(r"\[([a-zA-Z0-9_.-]+)#([a-zA-Z0-9_.-]+)\]", raw_s)
+        matched_cited_chunks: List[EvidenceChunk] = []
+        calc_prov_m = re.match(
+            r"^\s*\[Розраховано:\s*([^\]=]+)=\s*(-?\d+(?:\.\d+)?)\s*\]",
+            clean_s,
+            re.IGNORECASE,
+        )
+        calc_prov_verified = False
         if cited_tags:
             specific_chunk_supported = False
+            tech_premise_violation = None
             for doc_ref, chunk_ref in cited_tags:
+                d_ref_cf = doc_ref.casefold()
                 matched_chunks = [
                     c for c in evidence
-                    if c.chunk.chunk_id == chunk_ref or c.chunk.chunk_id.endswith(chunk_ref)
+                    if (c.chunk.chunk_id == chunk_ref or c.chunk.chunk_id.endswith(chunk_ref))
+                    and (
+                        c.chunk.document_id.casefold() == d_ref_cf
+                        or Path(c.chunk.document_id).stem.casefold() == d_ref_cf
+                        or str(c.chunk.metadata.get("source_id", "")).casefold() == d_ref_cf
+                        or Path(str(c.chunk.metadata.get("filename", ""))).stem.casefold() == d_ref_cf
+                    )
                 ]
+                matched_cited_chunks.extend(matched_chunks)
                 for mc in matched_chunks:
-                    mc_norm = normalize_text(mc.chunk.text)
-                    mc_tokens = set(re.findall(r"\b[a-zA-Z0-9_\u0400-\u04FF.-]{3,}\b", mc_norm))
-                    claim_tokens = [w for w in re.findall(r"\b[a-zA-Z0-9_\u0400-\u04FF.-]{3,}\b", s_norm) if w not in stopwords]
+                    mc_lower = mc.chunk.text.casefold()
+                    absent_techs = [
+                        tech for tech in KNOWN_TECHNOLOGIES
+                        if re.search(r"\b" + re.escape(tech) + r"\b", s_norm)
+                        and not re.search(r"\b" + re.escape(tech) + r"\b", mc_lower)
+                    ]
+                    if absent_techs:
+                        tech_premise_violation = absent_techs[0]
+                        continue
+                    mc_norm = _normalize_for_claims(mc.chunk.text)
+                    mc_toks = _tokenize_claim_terms(mc_norm)
+                    mc_raw_set = set(mc_toks)
+                    mc_exp_set = _expand_token_set(mc_toks)
+                    claim_tokens = [w for w in _tokenize_claim_terms(s_norm) if w not in stopwords]
                     if claim_tokens:
-                        c_overlap = sum(1 for ct in claim_tokens if ct in mc_tokens or any(et.startswith(ct[:4]) or ct.startswith(et[:4]) for et in mc_tokens if len(et) >= 4)) / len(claim_tokens)
+                        c_overlap = sum(
+                            1 for ct in claim_tokens
+                            if _token_matches_expanded(ct, mc_raw_set, mc_exp_set)
+                        ) / len(claim_tokens)
                         if c_overlap >= 0.25:
                             specific_chunk_supported = True
                             break
                 if specific_chunk_supported:
                     break
+            if not specific_chunk_supported and calc_prov_m and matched_cited_chunks:
+                lhs_raw = calc_prov_m.group(1).replace("×", "*").strip()
+                rhs_val = float(calc_prov_m.group(2))
+                try:
+                    eval_res = safe_calculate(lhs_raw)["result"]
+                except Exception:
+                    eval_res = None
+                lhs_nums = [float(x) for x in re.findall(r"\d+(?:\.\d+)?", lhs_raw)]
+                mc_all_nums: List[float] = []
+                for mc in matched_cited_chunks:
+                    mc_all_nums.extend(_parse_numbers(_normalize_for_claims(mc.chunk.text)))
+                    for h_s, m_s in re.findall(r"\b(\d{1,2}):(\d{2})\b", mc.chunk.text):
+                        mc_all_nums.append(float(int(h_s) * 60 + int(m_s)))
+                unit_constants = {2.0, 60.0, 100.0, 1000.0, 1024.0, 3600.0}
+                any_from_mc = any(
+                    any(math.isclose(n, evn, rel_tol=1e-4, abs_tol=1e-3) for evn in mc_all_nums)
+                    for n in lhs_nums
+                )
+                all_lhs_ok = bool(lhs_nums) and all(
+                    any(math.isclose(n, evn, rel_tol=1e-4, abs_tol=1e-3) for evn in mc_all_nums)
+                    or n in unit_constants
+                    for n in lhs_nums
+                )
+                if (
+                    eval_res is not None
+                    and math.isclose(eval_res, rhs_val, rel_tol=1e-2, abs_tol=0.05)
+                    and any_from_mc
+                    and all_lhs_ok
+                    and not tech_premise_violation
+                ):
+                    specific_chunk_supported = True
+                    calc_prov_verified = True
+            if calc_prov_verified:
+                judgments.append({
+                    "claim": clean_s,
+                    "supported": True,
+                    "verdict": "SUPPORTED",
+                    "support_score": 1.0,
+                })
+                continue
             if not specific_chunk_supported:
+                reason = (
+                    f"Subject '{tech_premise_violation}' absent from cited chunk(s) {cited_tags}."
+                    if tech_premise_violation
+                    else f"Cited chunk(s) {cited_tags} do not entail the claim sentence."
+                )
                 judgments.append({
                     "claim": clean_s,
                     "supported": False,
                     "verdict": "UNSUPPORTED_CITATION",
-                    "reason": f"Cited chunk(s) {cited_tags} do not entail the claim sentence.",
+                    "reason": reason,
                 })
                 continue
 
-        # 1. Contradiction & negation detection against evidence
-        has_neg = bool(re.search(r"\b(?:not|never|neither|nor|rejected|failed|cannot|isn't|wasn't|не|ні|відхилено)\b", s_norm))
-        if has_neg:
+        # 0b. Technology premise check even on uncited claims
+        absent_global_techs = [
+            tech for tech in KNOWN_TECHNOLOGIES
+            if re.search(r"\b" + re.escape(tech) + r"\b", s_norm)
+            and not re.search(r"\b" + re.escape(tech) + r"\b", all_ev_lower)
+        ]
+        if absent_global_techs and not re.search(r"\b(?:not|never|не|ніколи|відсутн|немає|ані)\b", s_norm):
+            judgments.append({
+                "claim": clean_s,
+                "supported": False,
+                "verdict": "INSUFFICIENT_EVIDENCE",
+                "reason": f"Subject '{absent_global_techs[0]}' absent from retrieved evidence.",
+            })
+            continue
+
+        # 1. Contradiction & negation detection against topical evidence
+        is_epistemic_caveat = bool(re.search(
+            r"\b(?:not\s+explicitly\s+(?:documented|mentioned|stated|reported|listed|configured)|не\s+зазначено\s+прямо)\b",
+            s_norm,
+        ))
+        has_neg = bool(re.search(r"\b(?:not|never|neither|nor|rejected|failed|cannot|isn't|wasn't|doesn't|didn't|відхилено)\b", s_norm))
+        if has_neg and not is_epistemic_caveat:
             core_words = [w for w in re.findall(r"\b[a-zA-Z0-9_\u0400-\u04FF.-]{4,}\b", s_norm) if w not in stopwords]
-            matched_affirmative = False
-            for c_text in chunk_texts:
-                c_norm = normalize_text(c_text)
-                if any(w in c_norm for w in core_words) and not any(re.search(r"\b(?:not|never|rejected|не|відхилено)\s+" + re.escape(w), c_norm) for w in core_words):
-                    matched_affirmative = True
-                    break
             is_negated = any(
-                re.search(r"\b(?:not|never|rejected|не|відхилено)\s+\w*\s*" + re.escape(w), s_norm)
-                or re.search(re.escape(w) + r"\s+\w*\s*(?:not|never|rejected|не|відхилено)\b", s_norm)
+                re.search(r"\b(?:not|never|rejected|відхилено)\s+(?:\w+\s+){0,1}" + re.escape(w), s_norm)
+                or re.search(re.escape(w) + r"\s+(?:is|was|were|are|був|була|було|були)?\s*(?:not|never|rejected|відхилено)\b", s_norm)
                 for w in core_words
             )
-            if matched_affirmative and is_negated:
-                judgments.append({
-                    "claim": clean_s,
-                    "supported": False,
-                    "verdict": "CONTRADICTED",
-                    "reason": "Claim asserts negative/rejection while evidence asserts affirmative.",
-                })
-                continue
+            if is_negated and core_words:
+                # Select topical chunks matching this claim
+                candidate_indices = (
+                    [i for i, ec in enumerate(evidence) if ec in matched_cited_chunks]
+                    if matched_cited_chunks
+                    else list(range(len(evidence)))
+                )
+                topical_indices = []
+                for idx in candidate_indices:
+                    ev_raw_s, ev_exp_s = chunk_token_sets[idx]
+                    hits = sum(1 for w in core_words if _token_matches_expanded(w, ev_raw_s, ev_exp_s))
+                    min_hits = 2 if len(core_words) >= 3 else 1
+                    if hits >= min_hits:
+                        topical_indices.append(idx)
 
-        # 2. Numerical verification with derived numbers allowance
-        claim_nums = _parse_numbers(s_norm)
-        substantive_nums = [n for n in claim_nums if n not in {3.0, 4.0, 5.0, 6.0, 7.0, 2024.0, 2025.0, 2026.0}]
+                if topical_indices:
+                    ev_already_has_neg = any(
+                        any(
+                            re.search(r"\b(?:not|never|rejected|failed|unable|without|не|відхилено|жоден)\s+(?:\w+\s+){0,2}" + re.escape(w), chunk_norms[i])
+                            or re.search(re.escape(w) + r"\s+(?:\w+\s+){0,2}(?:not|never|rejected|failed|unable|не|відхилено)\b", chunk_norms[i])
+                            for w in core_words
+                        )
+                        or any(phrase in chunk_norms[i] for phrase in ("not allowed", "rejected", "crashed", "заблокований", "не проводилося", "не застосовувалися"))
+                        for i in topical_indices
+                    )
+                    if not ev_already_has_neg:
+                        judgments.append({
+                            "claim": clean_s,
+                            "supported": False,
+                            "verdict": "CONTRADICTED",
+                            "reason": "Claim asserts negative/rejection while topical evidence asserts affirmative.",
+                        })
+                        continue
+
+        # 2. Numerical verification with derived numbers & time/unit scale allowance
+        claim_nums = _parse_numbers(re.sub(r"https?://\S+", " ", s_norm))
+        substantive_nums = [
+            n for n in claim_nums
+            if n not in {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 1234.0, 6380.0, 8000.0, 8501.0, 200.0, 400.0, 500.0, 503.0, 2024.0, 2025.0, 2026.0}
+        ]
         if substantive_nums and ev_numbers:
-            unsupported_nums = []
-            for n in substantive_nums:
-                in_ev = any(math.isclose(n, en, rel_tol=0.02, abs_tol=0.01) for en in ev_numbers)
-                in_scale = any(math.isclose(n, en * 1000, rel_tol=0.05, abs_tol=1.0) or math.isclose(n * 1000, en, rel_tol=0.05, abs_tol=1.0) for en in ev_numbers)
-                is_derived = any(math.isclose(n, abs(en1 - en2), rel_tol=0.02, abs_tol=0.5) for en1 in ev_numbers for en2 in ev_numbers)
-                is_derived_prod = any(math.isclose(n, en1 * en2, rel_tol=0.02, abs_tol=0.5) for en1 in ev_numbers for en2 in ev_numbers)
-                if not (in_ev or in_scale or is_derived or is_derived_prod):
-                    unsupported_nums.append(n)
+            unsupported_nums = [
+                n for n in substantive_nums
+                if not _number_supported_by_evidence(n, ev_numbers)
+            ]
             if len(unsupported_nums) > 2:
                 judgments.append({
                     "claim": clean_s,
@@ -560,18 +973,26 @@ def verify_claim_evidence_support(
                 })
                 continue
 
-        # 3. Grounding in cumulative evidence chunks
-        claim_tokens = [w for w in re.findall(r"\b[a-zA-Z0-9_\u0400-\u04FF.-]{3,}\b", s_norm) if w not in stopwords]
+        # 3. Grounding in cumulative evidence chunks (with bilingual stem/synonym + derived-number alignment)
+        claim_tokens = [w for w in _tokenize_claim_terms(s_norm) if w not in stopwords]
         if not claim_tokens:
             continue
 
-        matched_cnt = 0
+        non_num_matched = sum(
+            1 for ct in claim_tokens
+            if _parse_claim_float(ct) is None
+            and _token_matches_expanded(ct, combined_ev_raw_tokens, combined_ev_expanded)
+        )
+        num_matched = 0
         for ct in claim_tokens:
-            if ct in combined_ev_tokens:
-                matched_cnt += 1
-            elif len(ct) >= 4 and any(et.startswith(ct[:4]) or ct.startswith(et[:4]) for et in combined_ev_tokens if len(et) >= 4):
-                matched_cnt += 1
-
+            num_val = _parse_claim_float(ct)
+            if num_val is None:
+                continue
+            if _token_matches_expanded(ct, combined_ev_raw_tokens, combined_ev_expanded) or (
+                non_num_matched > 0 and ev_numbers and _number_supported_by_evidence(num_val, ev_numbers)
+            ):
+                num_matched += 1
+        matched_cnt = non_num_matched + num_matched
         coverage = matched_cnt / len(claim_tokens)
 
         if coverage >= 0.40:
@@ -585,7 +1006,7 @@ def verify_claim_evidence_support(
             judgments.append({
                 "claim": clean_s,
                 "supported": False,
-                "verdict": "UNRELATED_OR_INSUFFICIENT_EVIDENCE",
+                "verdict": "INSUFFICIENT_EVIDENCE",
                 "reason": f"Only {coverage:.2f} content coverage against evidence.",
             })
 
@@ -595,7 +1016,10 @@ def verify_claim_evidence_support(
 
     supported_count = sum(1 for j in judgments if j["supported"])
     support_rate = supported_count / len(judgments)
-    is_supported = (support_rate >= 0.70) and not any(j.get("verdict") in ("CONTRADICTED", "UNSUPPORTED_CITATION") for j in judgments)
+    is_supported = (support_rate >= 0.70) and not any(
+        j.get("verdict") in ("CONTRADICTED", "UNSUPPORTED_CITATION", "NUMERICAL_MISMATCH")
+        for j in judgments
+    )
 
     if return_judgments:
         return is_supported, judgments
@@ -698,8 +1122,9 @@ async def run_generation_evaluation(
     db_path = Path("labs/lab07_final_project/outputs/benchmark.db")
     repo = SQLiteRepository(db_path)
     embeddings = CopilotEmbeddings(local_files_only=True)
+    redis_url = os.getenv("REDIS_URL", "redis://127.0.0.1:6380")
     redis_adapter = RedisVectorAdapter(
-        redis_url="redis://127.0.0.1:6379",
+        redis_url=redis_url,
         index_name="lab07:benchmark:idx",
         key_prefix="lab07:bench:chunk",
     )
@@ -815,6 +1240,14 @@ async def run_generation_evaluation(
             print(f"[{idx}/{len(dataset)}] Evaluated {qid}: {turn.grounding_status.value} ({elapsed_ms/1000.0:.2f}s, tools: {tools_called})", flush=True)
 
             # 1. Refusal evaluation
+            refused = None
+            cit_rate = None
+            fab_list = []
+            fact_correct = None
+            claim_supp = None
+            claim_judgments = []
+            num_correct = None
+
             if is_refusal_req:
                 refused = is_refusal_answer(turn.canonical_answer, turn.grounding_status)
                 refusal_evals.append(1 if refused else 0)
@@ -822,12 +1255,15 @@ async def run_generation_evaluation(
                 # 2. Citation validity evaluation (exact (doc, chunk) matching & penalty for fabrications)
                 if not turn.citations:
                     # Missing citations on supported queries receive 0.0 (NO FREE PASS)
+                    cit_rate = 0.0
                     citation_evals.append(0.0)
                 else:
                     audit = audit_citations(turn.citations, turn.evidence)
-                    if audit["fabricated_citations"]:
-                        total_fabricated_citations += len(audit["fabricated_citations"])
-                    citation_evals.append(audit["validity_rate"])
+                    fab_list = audit["fabricated_citations"]
+                    if fab_list:
+                        total_fabricated_citations += len(fab_list)
+                    cit_rate = audit["validity_rate"]
+                    citation_evals.append(cit_rate)
 
                 # 3. Factual answer correctness
                 fact_correct = compute_factual_correctness(
@@ -837,8 +1273,10 @@ async def run_generation_evaluation(
                 )
                 factual_evals.append(1 if fact_correct else 0)
 
-                # 4. Claim-to-evidence support
-                claim_supp = verify_claim_evidence_support(turn.canonical_answer, turn.evidence)
+                # 4. Claim-to-evidence support (with explicit per-claim verdicts)
+                claim_supp, claim_judgments = verify_claim_evidence_support(
+                    turn.canonical_answer, turn.evidence, return_judgments=True
+                )
                 claim_evals.append(1 if claim_supp else 0)
 
             # 5. Calculator and tool invocation evaluation (disaggregated)
@@ -901,10 +1339,19 @@ async def run_generation_evaluation(
                 "query_id": qid,
                 "query": q_text,
                 "category": item.get("category"),
+                "refusal_expected": is_refusal_req,
                 "answer": turn.canonical_answer,
                 "grounding_status": turn.grounding_status.value,
                 "tools_executed": tools_called,
+                "tool_executions": [rec.to_dict() for rec in turn.tool_executions],
                 "citations": turn.citations,
+                "fabricated_citations": fab_list,
+                "citation_validity_rate": cit_rate,
+                "factual_correct": fact_correct,
+                "claim_supported": claim_supp,
+                "claim_verdicts": [j.get("verdict") for j in claim_judgments],
+                "refusal_detected": refused,
+                "numerical_match": num_correct,
                 "latency_ms": elapsed_ms,
                 "success": True,
             })

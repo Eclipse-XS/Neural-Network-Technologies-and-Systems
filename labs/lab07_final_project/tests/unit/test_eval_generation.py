@@ -238,3 +238,141 @@ class TestClaimEvidenceSupport:
         is_supported, judgments = verify_claim_evidence_support(answer, [ev1], return_judgments=True)
         assert not is_supported
         assert any(j.get("verdict") == "UNSUPPORTED_CITATION" for j in judgments)
+
+
+class TestHoldoutV3RegressionFixes:
+    """Regression tests covering confirmed failures in v3 refusal, SI bytes, bilingual citations, and markdown/polarity."""
+
+    def test_refusal_markdown_adverbs_and_hallucination_exclusion(self):
+        # Confirmed valid refusals from v3_041, v3_045, v3_047, v3_048, v3_050
+        assert is_refusal_answer(
+            "The indexed documents do **not** explicitly mention an AWS S3 bucket name or IAM credentials.",
+            GroundingStatus.VALIDATION_FAILED,
+        )
+        assert is_refusal_answer(
+            "The indexed documents for **Lab 5** do not explicitly report benchmark scores for Gemini 1.5 Pro.",
+            GroundingStatus.VALIDATION_FAILED,
+        )
+        assert is_refusal_answer(
+            "The **Milvus distributed cluster** is **not explicitly configured with a consensus protocol**.",
+            GroundingStatus.VALIDATION_FAILED,
+        )
+        assert is_refusal_answer(
+            "Інформація про вартість GPT-4o не міститься у відомих документах.",
+            GroundingStatus.VALIDATION_FAILED,
+        )
+        assert is_refusal_answer(
+            "В звіті **Lab 3** для моделі Llama 3.1 70B не було прямо зазначено точності.",
+            GroundingStatus.VALIDATION_FAILED,
+        )
+        # Confirmed premise substitutions / hallucinations (v3_042, v3_043) MUST remain False
+        assert not is_refusal_answer(
+            "В лабораторній роботі №5 для перекладу використовувалася модель Qwen/Qwen1.5-0.5B-Chat. "
+            "Модель Claude 3.5 Sonnet не використовувалася.",
+            GroundingStatus.PARTIALLY_SUPPORTED,
+        )
+        assert not is_refusal_answer(
+            "The **Pinecone Serverless vector collection** in ADR 001 is configured with lab07:kb:* [adr_001#chunk-312].",
+            GroundingStatus.GROUNDED,
+        )
+
+    def test_decimal_si_bytes_vs_wrong_clock_echo(self):
+        # v3_033: 3.072 MB == 3,072,000 bytes (SI decimal prefix)
+        assert check_numerical_match(
+            "The uncompressed vector memory required for 1,000 chunks is 3.072 MB.",
+            "1000 chunks * 768 dimensions * 4 bytes = 3,072,000 bytes.",
+        )
+        # v3_032: Echoing 14:20..14:47 with wrong duration 2h 42m MUST FAIL against 27 minutes
+        assert not check_numerical_match(
+            "Тривалість інциденту становить 2 години і 42 хвилини (Початок: 14:20 UTC, Перезапуск: 14:47 UTC).",
+            "Тривалість становить 27 хвилин (з 14:20 до 14:47 UTC).",
+        )
+
+    def test_polarity_caveat_not_false_contradiction(self):
+        # v3_023 & v3_026: 'which is not explicitly documented' and 'система не могла'
+        exp23 = "The API spec states /health/ready returns status ready with redis and database booleans, which the runbook checks via curl."
+        ans23 = "Both specify status, redis, and database flags. The runbook mentions a degraded state, which is not explicitly documented in the API spec."
+        assert compute_factual_correctness(ans23, exp23, [])
+
+        from labs.lab07_final_project.evaluation.eval_generation import _detect_polarity_contradiction
+        exp26 = "Система переходить у деградований стан із лексичним пошуком BM25 без векторного ранжування."
+        ans26 = "При перевищенні maxmemory система переходить на деградований режим пошуку BM25. Без належних настроєнь система не могла витримати навантаження."
+        assert _detect_polarity_contradiction(ans26, exp26) is False
+        assert compute_factual_correctness(
+            ans26,
+            exp26,
+            ["lexical fallback without vector ranking", "degraded state (BM25 lexical search only)"],
+        )
+
+    def test_bilingual_citation_verbatim_error_and_markdown_headers(self):
+        # v3_012 bilingual UK->EN + space thousands
+        ev12 = make_evidence(
+            "incident_postmortem_redis_oom",
+            "chunk-ec91ddb2dece2958",
+            "Ingestion job started for a 450-page technical specification PDF containing 12,400 chunks.",
+        )
+        ans12 = (
+            "### **Розмір PDF-документа**\n"
+            "Завантаження стосувалося великого технічного PDF-файлу обсягом 450 сторінок, "
+            "який містив 12 400 чанків [incident_postmortem_redis_oom#chunk-ec91ddb2dece2958]."
+        )
+        ok12, jud12 = verify_claim_evidence_support(ans12, [ev12], return_judgments=True)
+        assert ok12, f"Bilingual v3_012 failed: {jud12}"
+
+        # v3_003 verbatim error quote with 'not allowed'
+        ev03 = make_evidence(
+            "incident_postmortem_redis_oom",
+            "chunk-oom",
+            "The pipeline failed with redis.exceptions.ResponseError: OOM command not allowed when used memory > 'maxmemory'.",
+        )
+        ans03 = "The ingestion pipeline raised ResponseError: OOM command not allowed when used memory > 'maxmemory' [incident_postmortem_redis_oom#chunk-oom]."
+        ok03, jud03 = verify_claim_evidence_support(ans03, [ev03], return_judgments=True)
+        assert ok03, f"Verbatim quote v3_003 failed: {jud03}"
+
+        # v3_021 rejected alternative matching evidence
+        ev21 = make_evidence(
+            "adr_001_vector_and_storage_architecture",
+            "chunk-rej",
+            "Alternatives Considered: Milvus / Qdrant rejected due to high memory overhead (>=2 GB idle RAM).",
+        )
+        ans21 = "Milvus and Qdrant were rejected because of high memory overhead (>=2 GB idle RAM) [adr_001_vector_and_storage_architecture#chunk-rej]."
+        ok21, jud21 = verify_claim_evidence_support(ans21, [ev21], return_judgments=True)
+        assert ok21, f"Rejected alt v3_021 failed: {jud21}"
+
+        # Premise hallucination in citation must still FAIL claim verification
+        ev_redis = make_evidence("adr_001", "chunk-r", "Redis Stack uses namespace isolation lab07:kb:*.")
+        ok_pine, jud_pine = verify_claim_evidence_support(
+            "Pinecone Serverless uses namespace isolation lab07:kb:* [adr_001#chunk-r].",
+            [ev_redis],
+            return_judgments=True,
+        )
+        assert not ok_pine
+        assert any(j.get("verdict") == "UNSUPPORTED_CITATION" for j in jud_pine)
+
+    def test_recovered_calc_provenance_hhmm_and_ungrounded_rejection(self):
+        ev_post = make_evidence(
+            "incident_postmortem_redis_oom",
+            "chunk-oom-ts",
+            "Timeline: 14:20 UTC ingestion started; 14:47 UTC service restarted.",
+        )
+        ev_noise = make_evidence(
+            "adr_001",
+            "chunk-noise",
+            "FastAPI runs on port 8000.",
+        )
+        ans_ok = (
+            "Тривалість інциденту становить 27 хвилин.\n\n"
+            "[Розраховано: 887 - 860 = 27] [incident_postmortem_redis_oom#chunk-oom-ts]"
+        )
+        ok, jud_ok = verify_claim_evidence_support(ans_ok, [ev_post, ev_noise], return_judgments=True)
+        assert ok, f"Valid recovered HH:MM provenance failed: {jud_ok}"
+
+        ans_bad_cite = "[Розраховано: 887 - 860 = 27] [adr_001#chunk-noise]"
+        ok_bad, jud_bad = verify_claim_evidence_support(ans_bad_cite, [ev_post, ev_noise], return_judgments=True)
+        assert not ok_bad
+        assert any(j.get("verdict") == "UNSUPPORTED_CITATION" for j in jud_bad)
+
+        ans_wrong_num = "Тривалість інциденту становить 99 хвилин."
+        ok_wrong_num, jud_wrong_num = verify_claim_evidence_support(ans_wrong_num, [ev_post], return_judgments=True)
+        assert not ok_wrong_num
+        assert any(j.get("verdict") == "INSUFFICIENT_EVIDENCE" for j in jud_wrong_num)

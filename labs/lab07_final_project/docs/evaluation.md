@@ -26,7 +26,7 @@ All metrics below are drawn directly from the authoritative benchmark artifact [
 *Figure 2: MRR and Hit@5 retrieval quality comparison across modes.*
 
 > **Scientific Audit & Transparency Statement**:
-> Under strict passage-level evidence span verification, all three retrieval modes remain below the ambitious quality targets ($\text{Recall@1} \ge 0.65$, $\text{MRR} \ge 0.75$).
+> Under strict passage-level evidence span verification, **Evidence Recall@1** remains below the ambitious target ($\text{Recall@1} = 0.5721 < 0.6500$ in Hybrid mode), while **BM25 Lexical** and **Hybrid RRF** both meet targets for **Recall@3** ($\ge 0.80$), **Recall@5** ($\ge 0.85$), **Hit@5** ($\ge 0.92$), **MRR** (`0.8465` and `0.8363`, target $\ge 0.75$), and **0** truncation violations (Dense alone misses targets across recall and MRR).
 > BM25 Lexical retrieval achieved the highest overall Recall@5 (0.9127) and MRR (0.8465) due to strong exact-match symbol matching on technical constants.
 > In contrast, Hybrid RRF excels on Numerical Reasoning (Hit@5: 1.0000, Recall@5: 1.0000, MRR: 0.9750) and achieves 100% proper retrieval-level abstention on out-of-corpus negative controls.
 > These results represent an honest scientific baseline, not an artificially inflated pass.

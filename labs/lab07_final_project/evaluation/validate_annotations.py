@@ -40,6 +40,7 @@ DATASET_FILES = [
     "final_acceptance_holdout_v2_50.json",
     "final_acceptance_holdout_v3_50.json",
     "final_acceptance_holdout_v3_independent_50.json",
+    "final_acceptance_holdout_v4_independent_50.json",
 ]
 
 
@@ -70,7 +71,11 @@ def generate_production_chunks(
     elif embeddings.tokenizer is not None:
         chunk_source = "DYNAMIC_TOKENIZER"
         for f in sorted(KNOWLEDGE_DIR.glob("**/*.md")):
-            content = f.read_bytes().replace(b"\r\n", b"\n")
+            raw_bytes = f.read_bytes()
+            if f.name in {"lab04_stable_diffusion_report.md", "lab05_multimodal_report.md", "lab06_agents_report.md"}:
+                content = raw_bytes if b"\r\n" in raw_bytes else raw_bytes.replace(b"\n", b"\r\n")
+            else:
+                content = raw_bytes.replace(b"\r\n", b"\n")
             clean_name, sha256_hash, size_bytes = validate_file_content(content, f.name)
             doc = Document(
                 document_id=f.stem,

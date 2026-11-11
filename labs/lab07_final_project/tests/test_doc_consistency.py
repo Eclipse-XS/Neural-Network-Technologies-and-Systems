@@ -122,8 +122,17 @@ def test_lab07_generation_results_status():
 
     if gen.get("status") == "VERIFIED_LIVE":
         assert gen["total_queries"] == 50
-        assert gen["successful_turns"] in (45, 50)
+        items = gen.get("itemized_results", [])
+        assert len(items) == gen["total_queries"]
+        assert gen["successful_turns"] == sum(1 for item in items if item.get("success"))
+        assert gen["execution_failures"] == gen["total_queries"] - gen["successful_turns"]
+        assert 1 <= gen["successful_turns"] <= 50
         assert gen["model_id"] == "mistralai/ministral-3-3b"
+
+        v4_path = REPO_ROOT / "labs/lab07_final_project/evaluation/baselines/generation_results_v4.json"
+        if v4_path.exists():
+            with open(v4_path, "r", encoding="utf-8") as vf:
+                assert json.load(vf) == gen
     else:
         assert gen["status"] == "NOT_VERIFIED"
         assert gen["gate_status"].startswith("BLOCKED")
@@ -132,3 +141,10 @@ def test_lab07_generation_results_status():
     report_path = REPO_ROOT / "labs/lab07_final_project/report/report.md"
     report_text = report_path.read_text(encoding="utf-8")
     assert "VERIFIED_LIVE" in report_text or "NOT_VERIFIED" in report_text
+
+    lab07_readme = (REPO_ROOT / "labs/lab07_final_project/README.md").read_text(encoding="utf-8")
+    gen_doc = (REPO_ROOT / "labs/lab07_final_project/docs/generation_evaluation.md").read_text(encoding="utf-8")
+    assert "final_acceptance_holdout_v4_independent_50.json" in lab07_readme
+    assert "generation_results_v4.json" in lab07_readme
+    assert "VERIFIED_LIVE" in gen_doc
+    assert "final_acceptance_holdout_v4_independent_50.json" in gen_doc

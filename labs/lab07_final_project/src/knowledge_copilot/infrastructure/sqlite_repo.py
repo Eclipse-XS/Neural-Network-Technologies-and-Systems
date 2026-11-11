@@ -4,7 +4,7 @@ import sqlite3
 from pathlib import Path
 from typing import List, Optional
 
-from ..domain.enums import DocumentStatus, EvidenceQuality, GroundingStatus
+from ..domain.enums import DocumentStatus, EvidenceQuality, GroundingStatus, ScoreType
 from ..domain.models import Document, Session, Turn, ClaimSupport, ToolExecutionRecord, EvidenceChunk, Chunk, Score
 
 
@@ -342,6 +342,30 @@ class SQLiteRepository:
             for r in t_rows:
                 tools = [ToolExecutionRecord(**t) for t in json.loads(r["tools_json"])]
                 claims = [ClaimSupport(**c) for c in json.loads(r["claims_json"])]
+                hydrated_evidence: List[EvidenceChunk] = []
+                try:
+                    raw_ev = json.loads(r["evidence_json"] or "[]")
+                    for ev in raw_ev:
+                        chunk_obj = Chunk(
+                            chunk_id=ev["chunk_id"],
+                            document_id=ev["document_id"],
+                            ordinal=int(ev.get("ordinal", 0)),
+                            text=ev["text"],
+                            section=ev.get("section", ""),
+                            token_count=int(ev.get("token_count", 0)),
+                            sha256=ev.get("sha256", ""),
+                            evidence_quality=EvidenceQuality(ev.get("evidence_quality", EvidenceQuality.USER_DOCUMENT.value)),
+                            metadata=ev.get("metadata") or {},
+                        )
+                        score_obj = Score(
+                            retrieval_method=ev.get("retrieval_method", "hybrid"),
+                            score_type=ScoreType(ev.get("score_type", ScoreType.RRF_SCORE.value)),
+                            score_value=float(ev.get("score_value", ev.get("cosine_distance", 0.0))),
+                            ranking_position=int(ev.get("ranking_position", 1)),
+                        )
+                        hydrated_evidence.append(EvidenceChunk(chunk=chunk_obj, score=score_obj))
+                except Exception:
+                    hydrated_evidence = []
                 turns.append(
                     Turn(
                         turn_id=r["turn_id"],
@@ -354,7 +378,7 @@ class SQLiteRepository:
                         citations=json.loads(r["citations_json"]),
                         invalid_citations=json.loads(r["invalid_citations_json"]),
                         claims=claims,
-                        evidence=[],  # can be lazily loaded if needed
+                        evidence=hydrated_evidence,
                         created_at=r["created_at"],
                         runtime_seconds=r["runtime_seconds"],
                     )
