@@ -126,9 +126,9 @@ class QueryService:
                     continue
 
             if "postmortem" in stem or "incident" in stem:
-                if re.search(r"\b(?:postmortem|post-mortem|інцидент\w*|incident|oom|out-of-memory|недоступн\w*|unavail\w*|maxmemory|allkeys-lru)\b", q_lower):
+                if re.search(r"\b(?:postmortem|post-mortem|постінцидент\w*|аварі\w*|інцидент\w*|incident|oom|out-of-memory|недоступн\w*|відмов\w*|unavail\w*|maxmemory|allkeys-lru)\b", q_lower):
                     referenced_docs.append(doc.document_id)
-                    if re.search(r"\b(?:postmortem|post-mortem|інцидент\w*|incident|oom)\b", q_lower):
+                    if re.search(r"\b(?:postmortem|post-mortem|постінцидент\w*|аварі\w*|інцидент\w*|incident|oom)\b", q_lower):
                         explicit_single_docs.append(doc.document_id)
                     continue
 
@@ -140,13 +140,13 @@ class QueryService:
                     continue
 
             if "api_specification" in stem:
-                if re.search(r"\b(?:api specification|api contract|data contract|ендпоінт\w*|endpoint\w*|/health/live|/health/ready|chatresponse|documentuploadresponse|extractionerror|extractor\w*|parsing capabilit\w*|rate\s+limit|x-request-id)\b", q_lower):
+                if re.search(r"\b(?:api specification|api contract|data contract|api[\s-]*специфікац\w*|ендпоінт\w*|endpoint\w*|/health/live|/health/ready|chatresponse|documentuploadresponse|extractionerror|extractor\w*|parsing capabilit\w*|rate\s+limits?|обмежен\w*\s+частот\w*|x-request-id|(?:порожн\w*|zero-byte|пошкоджен\w*|corrupted).*?(?:файл\w*|file\w*|pdf\w*))\b", q_lower):
                     referenced_docs.append(doc.document_id)
-                    if re.search(r"\b(?:api specification|api contract|/health/live|/health/ready|chatresponse|documentuploadresponse|extractionerror)\b", q_lower):
+                    if re.search(r"\b(?:api specification|api contract|api[\s-]*специфікац\w*|/health/live|/health/ready|chatresponse|documentuploadresponse|extractionerror)\b", q_lower):
                         explicit_single_docs.append(doc.document_id)
                     continue
 
-        if re.search(r"\b(?:api|ендпоінт\w*|endpoints?|chatresponse|extractor\w*|contracts?|/health/live|/health/ready)\b", q_lower) and "api_specification_and_contracts" not in referenced_docs:
+        if re.search(r"\b(?:api|api[\s-]*специфікац\w*|ендпоінт\w*|endpoints?|chatresponse|extractor\w*|contracts?|/health/live|/health/ready|rate\s+limits?|обмежен\w*\s+частот\w*)\b", q_lower) and "api_specification_and_contracts" not in referenced_docs:
             for doc in docs:
                 if "api" in doc.filename.casefold() and doc.document_id not in referenced_docs:
                     referenced_docs.append(doc.document_id)
@@ -199,14 +199,32 @@ class QueryService:
         start_time = time.perf_counter()
 
         targets: List[str] = []
+        referenced_docs = self._route_query_documents(query)
         if document_id:
-            document_id = self._resolve_document_id(document_id)
+            resolved_doc = self._resolve_document_id(document_id)
+            # If the query text explicitly routes to specific document(s) that conflict with a hallucinated model document_id filter, honor the query routing
+            if referenced_docs and resolved_doc not in referenced_docs:
+                if len(referenced_docs) == 1:
+                    document_id = referenced_docs[0]
+                else:
+                    document_id = None
+                    targets = referenced_docs
+            else:
+                document_id = resolved_doc
         else:
-            referenced_docs = self._route_query_documents(query)
             if len(referenced_docs) == 1:
                 document_id = referenced_docs[0]
             elif len(referenced_docs) > 1:
                 targets = referenced_docs
+
+        is_table_query = bool(
+            re.search(
+                r"\b(?:summary\s+table|table|таблиц\w*|scenario_id|steps_\d+|generated_token_count|runtime_seconds)\b",
+                query.casefold(),
+            )
+        )
+        max_sec = 5 if (document_id and is_table_query) else 3
+        effective_k = max(k, 6) if (document_id and is_table_query) else k
 
         evidence_chunks: List[EvidenceChunk] = []
 
@@ -333,24 +351,24 @@ class QueryService:
             else:
                 dense_candidates = self.redis_adapter.dense_search(
                     query=query,
-                    k=k * 4,
+                    k=effective_k * 4,
                     document_id=document_id,
                     filter_quoted_outputs=filter_quoted_outputs,
                 )
                 lex_candidates = self.bm25.search(
                     query=query,
-                    k=k * 4,
+                    k=effective_k * 4,
                     document_id=document_id,
                     filter_quoted_outputs=filter_quoted_outputs,
                 )
                 evidence_chunks = reciprocal_rank_fusion(
                     dense_results=dense_candidates,
                     lexical_results=lex_candidates,
-                    k=k,
+                    k=effective_k,
                     rrf_k=10,
                     dense_weight=1.0,
                     lexical_weight=2.3,
-                    max_per_section=3,
+                    max_per_section=max_sec,
                     min_lexical_score=0.5,
                 )
 
@@ -389,10 +407,18 @@ class QueryService:
 
         history_messages = []
         session_evidence = []
+        seen_evidence_ids = set()
         for t in session.turns:
             history_messages.append({"role": "user", "content": t.user_input})
             history_messages.append({"role": "assistant", "content": t.canonical_answer})
-            session_evidence.extend(t.evidence)
+            for ev in t.evidence:
+                cid = ev.chunk.chunk_id
+                if cid not in seen_evidence_ids:
+                    seen_evidence_ids.add(cid)
+                    session_evidence.append(ev)
+
+        # Note: Do NOT pre-seed session_evidence with chunks the model never requested.
+        # Current-turn evidence comes strictly from tool calls (search_knowledge) or prior conversation turns.
 
         if not self.orchestrator:
             raise RuntimeError("AgentOrchestrator is not configured on QueryService.")

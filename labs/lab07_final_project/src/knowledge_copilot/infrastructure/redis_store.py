@@ -1,6 +1,8 @@
 """Redis Stack vector store and index management."""
 import hashlib
 import json
+import subprocess
+import re
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
@@ -44,12 +46,58 @@ class RedisVectorAdapter:
 
     def get_client(self) -> Redis:
         if self._client is None:
-            self._client = Redis.from_url(
-                self.redis_url,
-                socket_connect_timeout=3,
-                socket_timeout=10,
-                decode_responses=False,
-            )
+            import os
+            import sys
+            default_local_urls = {
+                "redis://localhost:6380",
+                "redis://127.0.0.1:6380",
+                "redis://localhost:6379",
+                "redis://127.0.0.1:6379",
+            }
+            is_default_local = self.redis_url.rstrip("/") in default_local_urls
+            candidate_urls = []
+            env_url = os.getenv("REDIS_URL") if is_default_local else None
+            if env_url and env_url not in candidate_urls:
+                candidate_urls.append(env_url)
+            if self.redis_url not in candidate_urls:
+                candidate_urls.append(self.redis_url)
+            if is_default_local:
+                if ":6380" in self.redis_url:
+                    candidate_urls.append(self.redis_url.replace(":6380", ":6379"))
+                    candidate_urls.append("redis://127.0.0.1:6379")
+                elif ":6379" in self.redis_url:
+                    candidate_urls.append(self.redis_url.replace(":6379", ":6380"))
+                    candidate_urls.append("redis://127.0.0.1:6380")
+
+                if sys.platform == "win32":
+                    try:
+                        wsl_ip = subprocess.check_output(
+                            ["wsl", "-d", "Ubuntu-24.04", "hostname", "-I"],
+                            timeout=2,
+                            text=True,
+                        ).strip().split()[0]
+                        if wsl_ip:
+                            candidate_urls.append(f"redis://{wsl_ip}:6379")
+                    except Exception:
+                        pass
+
+
+            last_err = None
+            for url in candidate_urls:
+                try:
+                    client = Redis.from_url(
+                        url,
+                        socket_connect_timeout=5,
+                        socket_timeout=30,
+                        decode_responses=False,
+                    )
+                    client.ping()
+                    self.redis_url = url
+                    self._client = client
+                    return self._client
+                except Exception as err:
+                    last_err = err
+            raise last_err or RuntimeError(f'Could not connect to Redis via {self.redis_url}')
         return self._client
 
     def ping(self) -> bool:
@@ -144,6 +192,39 @@ class RedisVectorAdapter:
             return deleted_count
         return 0
 
+    def _get_indexed_tag_fields(self) -> set:
+        """Return TAG field names actually present in the live Redis search index."""
+        try:
+            client = self.get_client()
+            raw_info = client.execute_command("FT.INFO", self.index_name)
+            info = decode_redis(raw_info)
+            attributes = []
+            if isinstance(info, dict):
+                attributes = info.get("attributes") or []
+            elif isinstance(info, list):
+                for i in range(0, len(info) - 1, 2):
+                    if info[i] == "attributes":
+                        attributes = info[i + 1] or []
+                        break
+
+            if attributes:
+                tag_fields = set()
+                for attr in attributes:
+                    if isinstance(attr, dict):
+                        attr_map = attr
+                    elif isinstance(attr, list):
+                        attr_map = {attr[i]: attr[i + 1] for i in range(0, len(attr) - 1, 2)}
+                    else:
+                        continue
+                    name = attr_map.get("attribute") or attr_map.get("identifier")
+                    if name and str(attr_map.get("type", "")).upper() == "TAG":
+                        tag_fields.add(str(name))
+                if tag_fields:
+                    return tag_fields
+        except Exception:
+            pass
+        return {f["name"] for f in self._schema if f.get("type", "tag") == "tag"}
+
     def dense_search(
         self,
         query: str,
@@ -156,10 +237,14 @@ class RedisVectorAdapter:
             return []
         from redisvl.query.filter import Tag
 
+        indexed_tags = self._get_indexed_tag_fields()
         expr = None
         if document_id:
-            expr = (Tag("document_id") == document_id) | (Tag("source_id") == document_id)
-        if filter_quoted_outputs:
+            doc_fields = [f for f in ("document_id", "source_id") if f in indexed_tags] or ["source_id"]
+            for field in doc_fields:
+                cond = Tag(field) == document_id
+                expr = cond if expr is None else (expr | cond)
+        if filter_quoted_outputs and "evidence_quality" in indexed_tags:
             quality_filter = (Tag("evidence_quality") == "canonical_report") | (Tag("evidence_quality") == "user_document")
             expr = expr & quality_filter if expr is not None else quality_filter
 

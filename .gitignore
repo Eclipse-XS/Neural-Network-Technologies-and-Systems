@@ -68,34 +68,23 @@ chroma_db/
 *.rdb
 dump.rdb
 
-# Generated artifacts
+# Generated artifacts (curated minimal examples are tracked explicitly)
 /outputs/
 /results/
 /generated/
 /runs/
 labs/*/outputs/*
 !labs/*/outputs/.gitkeep
-!labs/lab05_multimodal/outputs/README.md
+!labs/*/outputs/examples/
+!labs/*/outputs/examples/**
 !labs/lab05_multimodal/outputs/figures/
 !labs/lab05_multimodal/outputs/figures/token_budget.png
 !labs/lab06_agents/outputs/metadata/
 !labs/lab06_agents/outputs/metadata/*.json
-labs/lab06_agents/outputs/metadata/initial_file_hashes.json
 !labs/lab06_agents/outputs/runs/
 !labs/lab06_agents/outputs/runs/runs.jsonl
 !labs/lab06_agents/outputs/traces/
 !labs/lab06_agents/outputs/traces/*.json
-
-# Curated, small, verified portfolio artifacts are versioned explicitly.
-!labs/lab03_rag/artifacts/
-!labs/lab03_rag/artifacts/portfolio/
-!labs/lab03_rag/artifacts/portfolio/**
-!labs/lab04_stable_diffusion/artifacts/
-!labs/lab04_stable_diffusion/artifacts/portfolio/
-!labs/lab04_stable_diffusion/artifacts/portfolio/**
-!labs/lab07_final_project/artifacts/
-!labs/lab07_final_project/artifacts/portfolio/
-!labs/lab07_final_project/artifacts/portfolio/**
 
 # Logs and temporary archives
 *.log
@@ -106,6 +95,6 @@ labs/lab06_agents/outputs/metadata/initial_file_hashes.json
 Thumbs.db
 desktop.ini
 
-# Isolated student work
+# Isolated local directories
 /max/
 /NNTS_VARIANT_2/

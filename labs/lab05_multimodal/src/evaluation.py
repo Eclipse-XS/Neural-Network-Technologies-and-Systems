@@ -1,20 +1,21 @@
-"""Join explicitly reviewed answers; never infer subjective scores heuristically."""
+"""Join explicitly reviewed answers when available without heuristic scoring."""
 import json
 import pandas as pd
-from .config import LAB_ROOT, OUTPUT_ROOT
+from .config import OUTPUT_ROOT, REVIEW_LABELS_PATH
 
 
-def evaluated_results(rows):
-    reviews = json.loads((LAB_ROOT / 'report/manual_evaluation.json').read_text(encoding='utf-8'))
+def evaluated_results(rows, reviews_path=REVIEW_LABELS_PATH):
+    reviews = (json.loads(reviews_path.read_text(encoding='utf-8'))
+               if reviews_path is not None and reviews_path.is_file() else [])
     review_map = {r['run_id']: r for r in reviews}
     records = []
     for row in rows:
         review = review_map.get(row['run_id'])
         if review and (review['answer'] != row['answer'] or review['image_sha256'] != row['image_sha256']):
-            raise ValueError('Manual evaluation does not match the actual answer/image')
+            raise ValueError('Review label does not match the actual answer/image')
         records.append(dict(row, evaluation_label=review['evaluation_label'] if review else 'NOT_REVIEWED',
                             grounding_issue=review['grounding_issue'] if review else '',
-                            notes=review['notes'] if review else 'Потрібне ручне зіставлення з пікселями.'))
+                            notes=review['notes'] if review else 'Compare answer against image pixels.'))
     frame = pd.DataFrame(records)
     (OUTPUT_ROOT / 'metadata').mkdir(parents=True, exist_ok=True)
     frame[['run_id', 'question_id', 'evaluation_label', 'grounding_issue', 'notes']].drop_duplicates().to_csv(

@@ -20,7 +20,7 @@ async def run_suite():
     batch = uuid.uuid4().hex
     settings.session_db.parent.mkdir(parents=True, exist_ok=True)
     sessions = {key: SQLiteSession(f'{batch}_{key}', settings.session_db) for key in ['A', 'B']}
-    scenarios = json.loads((LAB_ROOT / 'experiments/scenarios.json').read_text(encoding='utf-8'))
+    scenarios = json.loads((LAB_ROOT / 'scenarios.json').read_text(encoding='utf-8'))
     records = []
     try:
         for scenario in scenarios:
@@ -41,7 +41,7 @@ async def append_scenario(scenario_id):
     """Add one explicitly selected independent scenario to the verified current batch."""
     from .evaluation import load_verified
     runs, batch = load_verified()
-    scenarios = json.loads((LAB_ROOT / 'experiments/scenarios.json').read_text(encoding='utf-8'))
+    scenarios = json.loads((LAB_ROOT / 'scenarios.json').read_text(encoding='utf-8'))
     scenario = next(s for s in scenarios if s['scenario_id'] == scenario_id)
     if scenario.get('session') or any(r['scenario_id'] == scenario_id for r in runs):
         raise ValueError('Only a new independent scenario may be appended')

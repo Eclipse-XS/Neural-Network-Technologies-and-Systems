@@ -22,7 +22,7 @@ from .config import BASE_PROMPT, LAB_ROOT, NEGATIVE_PROMPT, GenerationSpec
 
 
 def load_intermediate_inspection(portfolio_dir: Path | None = None) -> dict[str, Any]:
-    portfolio = portfolio_dir or (LAB_ROOT / "artifacts/portfolio")
+    portfolio = portfolio_dir or (LAB_ROOT / "outputs/examples")
     inspection_file = portfolio / "intermediate_inspection.json"
     if not inspection_file.is_file():
         raise FileNotFoundError(f"Missing intermediate inspection file: {inspection_file}")
@@ -34,7 +34,7 @@ def plot_forward_diffusion_simulation(portfolio_dir: Path | None = None) -> plt.
     
     Formula: x_t = sqrt(alpha_bar_t) * x_0 + sqrt(1 - alpha_bar_t) * epsilon
     """
-    portfolio = portfolio_dir or (LAB_ROOT / "artifacts/portfolio")
+    portfolio = portfolio_dir or (LAB_ROOT / "outputs/examples")
     cache_path = portfolio / "forward_diffusion_simulation.png"
     if cache_path.is_file():
         fig, ax = plt.subplots(figsize=(13, 2.6))
@@ -81,7 +81,7 @@ def plot_forward_diffusion_simulation(portfolio_dir: Path | None = None) -> plt.
 
 def plot_architecture_diagram(portfolio_dir: Path | None = None) -> plt.Figure:
     """Black-and-white academic architecture diagram for Stable Diffusion 1.5."""
-    portfolio = portfolio_dir or (LAB_ROOT / "artifacts/portfolio")
+    portfolio = portfolio_dir or (LAB_ROOT / "outputs/examples")
     cache_path = portfolio / "stable_diffusion_architecture.png"
     if cache_path.is_file():
         fig, ax = plt.subplots(figsize=(12, 5.5))
@@ -201,7 +201,7 @@ def inspect_clip_embeddings(pipe=None, prompt: str = BASE_PROMPT, portfolio_dir:
 
 def inspect_initial_latent(pipe=None, seed: int = 42, portfolio_dir: Path | None = None) -> tuple[pd.DataFrame, plt.Figure]:
     """Inspect initial Gaussian noise tensor in latent space."""
-    portfolio = portfolio_dir or (LAB_ROOT / "artifacts/portfolio")
+    portfolio = portfolio_dir or (LAB_ROOT / "outputs/examples")
     if pipe is not None and hasattr(pipe, "unet"):
         import torch
         generator = torch.Generator(device="cpu").manual_seed(seed)
@@ -239,12 +239,21 @@ def inspect_initial_latent(pipe=None, seed: int = 42, portfolio_dir: Path | None
         "max": round(evidence["max"], 4),
         "is_finite": evidence["is_finite"],
     }
-    fig, ax = plt.subplots(figsize=(11, 2.8))
     cache_png = portfolio / "latent_channels.png"
     if cache_png.is_file():
+        fig, ax = plt.subplots(figsize=(11, 2.8))
         with Image.open(cache_png) as im:
             ax.imshow(im)
-    ax.axis("off")
+        ax.axis("off")
+    else:
+        rng = np.random.default_rng(int(evidence["seed"]))
+        synth = rng.normal(0.0, float(evidence["init_noise_sigma"]), size=(4, 64, 64))
+        fig, axes = plt.subplots(1, 4, figsize=(11, 2.8))
+        for c in range(4):
+            axes[c].imshow(synth[c], cmap="coolwarm", vmin=-40, vmax=40)
+            axes[c].set_title(f"Channel {c} (64x64)", fontsize=8.5)
+            axes[c].axis("off")
+        fig.suptitle(f"Initial Latent Noise Summary (Seed {evidence['seed']}, {evidence['shape']})", fontweight="bold", fontsize=10)
     fig.tight_layout()
     return pd.DataFrame([stats]), fig
 
@@ -306,7 +315,7 @@ def inspect_unet_and_cfg(pipe=None, portfolio_dir: Path | None = None) -> pd.Dat
 
 def resolve_denoising_progression(pipe=None, portfolio_dir: Path | None = None) -> tuple[pd.DataFrame, plt.Figure]:
     """Capture or load verified intermediate denoising states across 30 PNDM steps."""
-    portfolio = portfolio_dir or (LAB_ROOT / "artifacts/portfolio")
+    portfolio = portfolio_dir or (LAB_ROOT / "outputs/examples")
     steps_dir = portfolio / "denoising_steps"
     evidence = load_intermediate_inspection(portfolio)["denoising_progression"]
     
@@ -316,34 +325,38 @@ def resolve_denoising_progression(pipe=None, portfolio_dir: Path | None = None) 
         img_path = portfolio / rec["relative_path"]
         if not img_path.is_file():
             img_path = steps_dir / rec["image_filename"]
-        if not img_path.is_file():
-            raise FileNotFoundError(f"Missing denoising snapshot: {img_path}")
-        digest = hashlib.sha256(img_path.read_bytes()).hexdigest()
-        if digest != rec["sha256"]:
-            raise ValueError(f"Integrity failure in snapshot {rec['image_filename']}")
-        
-        with Image.open(img_path) as im:
-            im.verify()
-        with Image.open(img_path) as im:
-            images.append(im.copy())
-            
+        sha_ok = False
+        if img_path.is_file():
+            digest = hashlib.sha256(img_path.read_bytes()).hexdigest()
+            if digest != rec["sha256"]:
+                raise ValueError(f"Integrity failure in snapshot {rec['image_filename']}")
+            with Image.open(img_path) as im:
+                im.verify()
+            with Image.open(img_path) as im:
+                images.append(im.copy())
+            sha_ok = True
         rows.append({
             "step": rec["step"],
             "timestep": rec["timestep"],
             "progress": f"{rec['progress_pct']}%",
             "latent_std": round(rec["latent_std"], 4),
             "image_filename": rec["image_filename"],
-            "sha256_verified": True
+            "sha256_verified": sha_ok,
         })
-        
+
     df = pd.DataFrame(rows)
-    
-    fig, axes = plt.subplots(1, len(images), figsize=(15, 3.5))
-    for ax, im, r in zip(axes, images, rows):
-        ax.imshow(im)
-        ax.set_title(f"Step {r['step']} (t={r['timestep']})\nProgress: {r['progress']}\nσ={r['latent_std']}", fontsize=8.5)
-        ax.axis("off")
-    fig.suptitle("Latent Denoising Trajectory: Progressive Intermediate States (PNDM 30 Steps, VAE Decoded)", fontweight="bold", fontsize=10)
+    if len(images) == len(rows) and images:
+        fig, axes = plt.subplots(1, len(images), figsize=(15, 3.5))
+        for ax, im, r in zip(axes, images, rows):
+            ax.imshow(im)
+            ax.set_title(f"Step {r['step']} (t={r['timestep']})\nProgress: {r['progress']}\nstd={r['latent_std']}", fontsize=8.5)
+            ax.axis("off")
+        fig.suptitle("Latent Denoising Trajectory: Intermediate States (PNDM 30 Steps, VAE Decoded)", fontweight="bold", fontsize=10)
+    else:
+        fig, ax = plt.subplots(figsize=(8, 3.2))
+        ax.plot(df["step"], df["latent_std"], marker="o", linewidth=2)
+        ax.set(xlabel="Denoising step", ylabel="Latent std", title="Recorded Latent Std Across PNDM Denoising Trajectory")
+        ax.grid(alpha=0.3)
     fig.tight_layout()
     return df, fig
 

@@ -1,0 +1,42 @@
+[
+  {
+    "run_id": "76dd14bbaa4d0508858d4df0cea1215efc49fab7cbf8e89de5167699eeadbe8f",
+    "question_id": "fact_01",
+    "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+    "answer": "left",
+    "evaluation_label": "CORRECT",
+    "grounding_issue": "",
+    "notes": "Будиночок чітко розташований у лівій половині кадру.",
+    "method": "manual_visual_review_by_assistant"
+  },
+  {
+    "run_id": "183d0c1716cfd7fa50bcdd584a0616017e1eeb61c842d5a757004bea50281375",
+    "question_id": "desc_01",
+    "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+    "answer": "The image shows a cabin nestled among trees on a lake, with a reflection of the cabin in the water. The cabin has a wooden roof and a small deck. The surrounding environment is lush with green trees and mountains in the background.",
+    "evaluation_label": "HALLUCINATED_DETAIL",
+    "grounding_issue": "unsupported_roof_material",
+    "notes": "Основні об’єкти названо правильно, але матеріал даху wooden не можна надійно встановити з пікселів. Замість запитаних двох речень отримано три.",
+    "method": "manual_visual_review_by_assistant"
+  },
+  {
+    "run_id": "51c48744ba59c55d4d9c26612e80b530c628d04478a0c3f261ab4dab4421297f",
+    "question_id": "analysis_02",
+    "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+    "answer": "This scene appears natural, and the visible features that support this interpretation include the presence of a lake, a forest, and a mountain in the background.",
+    "evaluation_label": "SUPPORTED_BY_VISIBLE_EVIDENCE",
+    "grounding_issue": "",
+    "notes": "Природне середовище обґрунтовано водоймою, лісом і схилом на тлі. Точна географія не названа.",
+    "method": "manual_visual_review_by_assistant"
+  },
+  {
+    "run_id": "cf0c78a34f44fc0d7f47a3cc6c5c094e85f425d9073b97510c6b2fac786a300c",
+    "question_id": "control_01",
+    "image_sha256": "1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5",
+    "answer": "[0.542,0.544,0.856,0.731]",
+    "evaluation_label": "HALLUCINATED",
+    "grounding_issue": "unsupported_numeric_output",
+    "notes": "Замість визнання невизначеності подано чотири числа без джерела. Вони нагадують координати рамки, але їх значення невідоме; це не обґрунтовані географічні координати.",
+    "method": "manual_visual_review_by_assistant"
+  }
+]
