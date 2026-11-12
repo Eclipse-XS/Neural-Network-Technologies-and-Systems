@@ -5,6 +5,13 @@ from typing import Dict, List, Optional, Set, Tuple
 
 from ..domain.enums import GroundingStatus
 from ..domain.models import ClaimSupport, EvidenceChunk
+from .recovery import (
+    extract_expected_documents,
+    extract_expression_numbers,
+    has_arithmetic_intent,
+    validate_calculator_execution,
+)
+from .tools import safe_calculate
 
 
 ABSTENTION_PATTERNS = [
@@ -14,7 +21,9 @@ ABSTENTION_PATTERNS = [
     r"\b(?:is not explicitly configured|is not configured|are not configured)\b",
     r"\b(?:outside (?:the )?(?:scope|indexed|documentation))\b",
     r"не можу визначити",
+    r"неможливо\s+(?:надійно\s+)?визначити",
     r"недостатньо (?:даних|доказів|інформації)",
+    r"недостатньо\s+однозначно\s+пов.{1,3}язаних",
     r"не міст(?:ить|ять|иться|яться)",
     r"даних .*? не виявлено",
     r"не (?:було\s+)?(?:прямо\s+)?(?:зазначен[оаіий]|наведен[оаіий]|описан[оаіий]|вказан[оаіий]|згадан[оаіий])",
@@ -533,10 +542,107 @@ def find_unique_supporting_citations(
     return []
 
 
+def _collect_verified_calc_state(
+    evidence_chunks: List[EvidenceChunk],
+    tool_executions: Optional[List],
+    user_input: Optional[str] = None,
+) -> Tuple[Set[str], Set[str], bool, str, bool]:
+    """
+    Collect ONLY verified calculator operands and results.
+    Returns (calc_numbers, calc_result_numbers, calc_failed, calc_fail_reason, calc_explicit_only).
+    """
+    calc_entries: List[Tuple[int, str, Any]] = []
+    for idx, t in enumerate(tool_executions or []):
+        t_name = getattr(t, "tool_name", None) or (t.get("tool_name") if isinstance(t, dict) else None)
+        if t_name != "calculate":
+            continue
+        t_args = getattr(t, "arguments", None) or (t.get("arguments") if isinstance(t, dict) else None)
+        t_res = getattr(t, "result", None) or (t.get("result") if isinstance(t, dict) else None)
+        expr = str(t_args.get("expression", "")) if isinstance(t_args, dict) else ""
+        calc_entries.append((idx, expr, t_res))
+
+    if not calc_entries:
+        return set(), set(), False, "", False
+
+    # Full semantic, provenance, and relevance validation when user_input is available
+    if user_input:
+        calc_val = validate_calculator_execution(user_input, tool_executions, evidence_chunks)
+        if not calc_val.is_valid:
+            return set(), set(), True, calc_val.reason, False
+        calc_numbers: Set[str] = set()
+        calc_result_numbers: Set[str] = set()
+        for auth_idx in calc_val.authoritative_record_indices:
+            _idx, expr, t_res = next((e for e in calc_entries if e[0] == auth_idx), (auth_idx, "", None))
+            res_val = t_res["result"] if isinstance(t_res, dict) and "result" in t_res else t_res
+            if isinstance(res_val, (int, float)):
+                r_str = str(res_val)
+                r_norm = _normalize_numeric_token(r_str)
+                calc_numbers.update({r_str, r_norm})
+                calc_result_numbers.update({r_str, r_norm})
+            if expr:
+                try:
+                    for op_val in extract_expression_numbers(expr):
+                        o_str = str(int(op_val)) if op_val.is_integer() else f"{op_val:g}"
+                        calc_numbers.update({o_str, _normalize_numeric_token(o_str)})
+                except Exception:
+                    pass
+        calc_numbers.update(calc_val.verified_numbers)
+        return calc_numbers, calc_result_numbers, False, "", (calc_val.status == "VALID_EXPLICIT")
+
+    # Standalone provenance + mathematical verification when user_input is omitted
+    combined_ev_text = " ".join(chunk_searchable_text(c) for c in evidence_chunks) if evidence_chunks else ""
+    ev_ts_parts: Set[str] = set()
+    for h_s, m_s in re.findall(r"\b([0-2]?\d):([0-5]\d)\b", combined_ev_text):
+        ev_ts_parts.add(str(int(h_s)))
+        ev_ts_parts.add(str(int(m_s)))
+        ev_ts_parts.add(str(int(h_s) * 60 + int(m_s)))
+
+    calc_numbers = set()
+    calc_result_numbers = set()
+    for _idx, expr, t_res in calc_entries:
+        if not expr.strip():
+            return set(), set(), True, "Calculator execution missing expression.", False
+        try:
+            expected_res = float(safe_calculate(expr)["result"])
+            expr_nums = extract_expression_numbers(expr)
+        except Exception as exc:
+            return set(), set(), True, f"Calculator expression '{expr}' failed verification: {exc}", False
+
+        actual_res = t_res["result"] if isinstance(t_res, dict) and "result" in t_res else t_res
+        if not isinstance(actual_res, (int, float)) or abs(float(actual_res) - expected_res) > max(1e-4, abs(expected_res) * 1e-4):
+            return set(), set(), True, f"Calculator result for '{expr}' did not match evaluated value.", False
+
+        if evidence_chunks:
+            conversion_consts = {"60", "100", "1000", "1024", "3600"}
+            grounded_non_consts = 0
+            for op_val in expr_nums:
+                tok = _normalize_numeric_token(str(int(op_val)) if op_val.is_integer() else f"{op_val:g}")
+                if _number_present_in_text(tok, combined_ev_text) or tok in ev_ts_parts:
+                    if tok not in conversion_consts:
+                        grounded_non_consts += 1
+                elif tok not in conversion_consts:
+                    return set(), set(), True, f"Calculator operand '{tok}' not present in retrieved evidence.", False
+            if expr_nums and grounded_non_consts == 0 and any(
+                _normalize_numeric_token(str(int(x)) if x.is_integer() else f"{x:g}") not in ev_ts_parts for x in expr_nums
+            ):
+                return set(), set(), True, "Calculator expression used only ungrounded constants.", False
+
+        r_str = str(actual_res)
+        r_norm = _normalize_numeric_token(r_str)
+        calc_numbers.update({r_str, r_norm})
+        calc_result_numbers.update({r_str, r_norm})
+        for op_val in expr_nums:
+            o_str = str(int(op_val)) if op_val.is_integer() else f"{op_val:g}"
+            calc_numbers.update({o_str, _normalize_numeric_token(o_str)})
+
+    return calc_numbers, calc_result_numbers, False, "", False
+
+
 def canonicalize_citations_and_claims(
     answer: str,
     evidence_chunks: List[EvidenceChunk],
     tool_executions: Optional[List] = None,
+    user_input: Optional[str] = None,
 ) -> CitationCanonicalizationReport:
     """
     Validate all citations against the authoritative registry, deterministically reconstruct
@@ -572,34 +678,10 @@ def canonicalize_citations_and_claims(
             final_invalid_citations=raw_invalid,
         )
 
-    # Collect calculator numbers (distinguishing outputs vs input operands)
-    calc_numbers: Set[str] = set()
-    calc_result_numbers: Set[str] = set()
-    used_calculator = False
-    if tool_executions:
-        for t in tool_executions:
-            t_name = getattr(t, "tool_name", None) or (t.get("tool_name") if isinstance(t, dict) else None)
-            if t_name == "calculate":
-                used_calculator = True
-                t_res = getattr(t, "result", None) or (t.get("result") if isinstance(t, dict) else None)
-                if isinstance(t_res, dict) and "result" in t_res:
-                    res_val = str(t_res["result"])
-                    calc_numbers.add(res_val)
-                    calc_numbers.add(_normalize_numeric_token(res_val))
-                    calc_result_numbers.add(res_val)
-                    calc_result_numbers.add(_normalize_numeric_token(res_val))
-                elif isinstance(t_res, (int, float)):
-                    calc_numbers.add(str(t_res))
-                    calc_numbers.add(_normalize_numeric_token(str(t_res)))
-                    calc_result_numbers.add(str(t_res))
-                    calc_result_numbers.add(_normalize_numeric_token(str(t_res)))
-                t_args = getattr(t, "arguments", None) or (t.get("arguments") if isinstance(t, dict) else None)
-                if isinstance(t_args, dict) and "expression" in t_args:
-                    for n in re.findall(r"\d+(?:\.\d+)?", str(t_args["expression"])):
-                        calc_numbers.add(n)
-                        calc_numbers.add(_normalize_numeric_token(n))
-        if used_calculator:
-            calc_numbers.update({"60", "100", "1000", "1024", "3600"})
+    # Collect ONLY verified calculator numbers (distinguishing outputs vs input operands)
+    calc_numbers, calc_result_numbers, _calc_failed, _calc_reason, _calc_explicit = _collect_verified_calc_state(
+        evidence_chunks, tool_executions, user_input=user_input
+    )
 
     repairs_count = 0
     removals_count = 0
@@ -713,14 +795,9 @@ def verify_grounding(
     answer: str,
     evidence_chunks: List[EvidenceChunk],
     tool_executions: List = None,
+    user_input: Optional[str] = None,
 ) -> Tuple[GroundingStatus, List[str], List[str], List[ClaimSupport]]:
-    """Distinct multi-dimensional validation solving DEFECT-02:
-    
-    1. Citation identifier validity & syntax (with bracket grouping normalization)
-    2. Citation provenance (retrieved in current turn)
-    3. Structured Claim-to-evidence support (numerical, entity, contradiction, and technology premise consistency)
-    4. Explicit status classification (including calculator-backed and refusal turns)
-    """
+    """Multi-dimensional grounding, citation provenance, and arithmetic operand verification."""
     answer_norm = normalize_multi_citations(answer)
     supplied_citations = build_citation_registry(evidence_chunks)
 
@@ -734,29 +811,14 @@ def verify_grounding(
 
     abstained = is_abstention(answer_norm)
 
-    # Collect calculator tool results if present
-    calc_numbers: Set[str] = set()
-    used_calculator = False
-    if tool_executions:
-        for t in tool_executions:
-            t_name = getattr(t, "tool_name", None) or (t.get("tool_name") if isinstance(t, dict) else None)
-            if t_name == "calculate":
-                used_calculator = True
-                t_res = getattr(t, "result", None) or (t.get("result") if isinstance(t, dict) else None)
-                if isinstance(t_res, dict) and "result" in t_res:
-                    res_val = str(t_res["result"])
-                    calc_numbers.add(res_val)
-                    calc_numbers.add(_normalize_numeric_token(res_val))
-                elif isinstance(t_res, (int, float)):
-                    calc_numbers.add(str(t_res))
-                    calc_numbers.add(_normalize_numeric_token(str(t_res)))
-                t_args = getattr(t, "arguments", None) or (t.get("arguments") if isinstance(t, dict) else None)
-                if isinstance(t_args, dict) and "expression" in t_args:
-                    for n in re.findall(r"\d+(?:\.\d+)?", str(t_args["expression"])):
-                        calc_numbers.add(n)
-                        calc_numbers.add(_normalize_numeric_token(n))
-        if used_calculator:
-            calc_numbers.update({"60", "100", "1000", "1024", "3600"})
+    # Collect ONLY verified calculator numbers (failing operand/provenance checks cannot be exempted)
+    calc_numbers, _calc_res_nums, calc_failed, calc_fail_reason, calc_explicit_only = _collect_verified_calc_state(
+        evidence_chunks, tool_executions, user_input=user_input
+    )
+    used_calculator = any(
+        (getattr(t, "tool_name", None) or (t.get("tool_name") if isinstance(t, dict) else None)) == "calculate"
+        for t in (tool_executions or [])
+    )
 
     # Merge standalone citation-only lines/paragraphs onto preceding paragraph before splitting
     answer_merged = re.sub(
@@ -768,6 +830,17 @@ def verify_grounding(
     sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+(?=[A-ZА-ЯІЇЄҐ*\[])|\n\n+", answer_merged) if s.strip()]
     claims: List[ClaimSupport] = []
 
+    if calc_failed and not abstained:
+        claims.append(
+            ClaimSupport(
+                claim_text=answer_norm,
+                cited_chunk_ids=cited,
+                is_supported=False,
+                unsupported_reason=calc_fail_reason or "Calculator execution used ungrounded or irrelevant source operands.",
+                verdict="UNGROUNDED_OPERANDS",
+            )
+        )
+
     for sentence in sentences:
         s_citations = extract_citations(sentence)
         sentence_without_cites = re.sub(r"\[[a-zA-Z0-9_.-]+#[a-zA-Z0-9_.-]+\]", "", sentence)
@@ -776,7 +849,6 @@ def verify_grounding(
             continue
 
         if not s_citations:
-            # If the whole answer has valid citations and any numbers in this summary/header line exist in cited chunks, allow it
             claim_nums = _extract_claim_numbers(sentence_without_cites)
             substantive_nums = [
                 n for n in claim_nums
@@ -790,8 +862,7 @@ def verify_grounding(
                 if not substantive_nums:
                     continue
 
-            if not substantive_nums and cited and not invalid:
-                # Sentence only mentions derived calculator/source numbers when overall response is properly cited
+            if not substantive_nums and cited and not invalid and not calc_failed:
                 continue
 
             supp = assess_claim_support(
@@ -816,6 +887,35 @@ def verify_grounding(
         )
         claims.append(supp)
 
+    # Cross-document numerical answers must cite each required target document when not abstaining
+    if (
+        user_input
+        and not abstained
+        and not calc_explicit_only
+        and has_arithmetic_intent(user_input)
+    ):
+        expected_docs = extract_expected_documents(user_input)
+        if len(expected_docs) >= 2:
+            cited_docs = {
+                supplied_citations[c].chunk.document_id
+                for c in cited
+                if c in supplied_citations
+            }
+            covered_expected = [d for d in expected_docs if d in cited_docs]
+            if len(covered_expected) < 2:
+                claims.append(
+                    ClaimSupport(
+                        claim_text=answer_norm,
+                        cited_chunk_ids=cited,
+                        is_supported=False,
+                        unsupported_reason=(
+                            f"Cross-document arithmetic query requires grounded citations from {expected_docs[:2]}, "
+                            f"but only {sorted(cited_docs)} were cited."
+                        ),
+                        verdict="INSUFFICIENT_EVIDENCE",
+                    )
+                )
+
     # Derive Grounding Status
     if abstained:
         if not invalid:
@@ -823,10 +923,10 @@ def verify_grounding(
         else:
             return GroundingStatus.VALIDATION_FAILED, cited, invalid, claims
 
-    if invalid:
+    if invalid or calc_failed:
         return GroundingStatus.VALIDATION_FAILED, cited, invalid, claims
 
-    if not cited and not evidence_chunks and used_calculator:
+    if not cited and used_calculator and (not evidence_chunks or calc_explicit_only):
         if not claims or all(c.is_supported for c in claims):
             return GroundingStatus.GROUNDED, cited, invalid, claims
 

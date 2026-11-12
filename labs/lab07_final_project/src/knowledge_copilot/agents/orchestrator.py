@@ -22,7 +22,13 @@ from agents import (
 from ..domain.enums import GroundingStatus, ToolCallOrigin
 from ..domain.models import EvidenceChunk, ToolExecutionRecord, Turn
 from ..observability.tracer import ExecutionTracer
-from .recovery import has_arithmetic_intent, run_arithmetic_recovery
+from .recovery import (
+    compose_arithmetic_uncertainty_answer,
+    determine_arithmetic_operation,
+    has_arithmetic_intent,
+    run_arithmetic_recovery,
+    validate_calculator_execution,
+)
 from .tools import safe_calculate
 from .prompts import SYSTEM_INSTRUCTIONS
 from .verifier import (
@@ -320,39 +326,142 @@ class AgentOrchestrator:
 
             t_ver_start = time.perf_counter()
             arithmetic_plan = None
-            # Check deterministic arithmetic planning & recovery if model omitted calculate tool
-            if has_arithmetic_intent(user_input):
+            calc_val = None
+            has_calc_calls = any(t.tool_name == "calculate" for t in trace_hooks.tool_records)
+            arith_intent = has_arithmetic_intent(user_input)
+
+            if has_calc_calls:
+                calc_val = validate_calculator_execution(user_input, trace_hooks.tool_records, evidence_accum)
+                if calc_val.is_valid:
+                    arithmetic_plan = calc_val.validated_plan
+                    tracer.add_event(
+                        "calculator_validation_passed",
+                        status=calc_val.status,
+                        operands=calc_val.validated_operands,
+                    )
+                    if (
+                        arithmetic_plan
+                        and arithmetic_plan.validation_status == "VALIDATED"
+                        and arithmetic_plan.source_citations
+                        and not is_abstention(canonical_answer)
+                    ):
+                        missing_cits = [c for c in arithmetic_plan.source_citations if c not in canonical_answer]
+                        if missing_cits:
+                            canonical_answer = f"{canonical_answer.rstrip()} {' '.join(missing_cits)}".strip()
+                else:
+                    tracer.add_event(
+                        "calculator_validation_failed",
+                        status=calc_val.status,
+                        reason=calc_val.reason,
+                        invalid_operands=calc_val.invalid_operands,
+                    )
+                    recovered_ans, updated_tools, arithmetic_plan = run_arithmetic_recovery(
+                        user_input,
+                        raw_answer,
+                        evidence_accum,
+                        trace_hooks.tool_records,
+                        force_recovery=True,
+                    )
+                    if (
+                        arithmetic_plan
+                        and arithmetic_plan.validation_status == "VALIDATED"
+                        and len(updated_tools) > len(trace_hooks.tool_records)
+                    ):
+                        recovery_tool = updated_tools[-1]
+                        trace_hooks.tool_records.append(recovery_tool)
+                        canonical_answer = recovered_ans
+                        tracer.add_event(
+                            "arithmetic_recovery",
+                            recovered_expression=recovery_tool.arguments.get("expression"),
+                            origin=ToolCallOrigin.RECOVERY_EXECUTED.value,
+                            validation_status=arithmetic_plan.validation_status,
+                            decision=arithmetic_plan.canonicalization_decision,
+                        )
+                    else:
+                        canonical_answer = compose_arithmetic_uncertainty_answer(
+                            user_input, plan=arithmetic_plan, calc_val=calc_val
+                        )
+                        tracer.add_event(
+                            "arithmetic_uncertainty_abstention",
+                            status=arithmetic_plan.validation_status if arithmetic_plan else calc_val.status,
+                            reason=calc_val.reason,
+                        )
+            elif arith_intent:
                 recovered_ans, updated_tools, arithmetic_plan = run_arithmetic_recovery(
                     user_input,
                     raw_answer,
                     evidence_accum,
                     trace_hooks.tool_records,
                 )
-                if recovered_ans and recovered_ans != raw_answer:
-                    canonical_answer = recovered_ans
                 if len(updated_tools) > len(trace_hooks.tool_records):
                     recovery_tool = updated_tools[-1]
-                    trace_hooks.tool_records.append(recovery_tool)
-                    tracer.add_event(
-                        "arithmetic_recovery",
-                        recovered_expression=recovery_tool.arguments.get("expression"),
-                        origin=ToolCallOrigin.RECOVERY_EXECUTED.value,
-                        validation_status=arithmetic_plan.validation_status if arithmetic_plan else "UNKNOWN",
-                        decision=arithmetic_plan.canonicalization_decision if arithmetic_plan else "UNKNOWN",
+                    rec_val = validate_calculator_execution(
+                        user_input, [recovery_tool], evidence_accum, plan=arithmetic_plan
                     )
+                    if rec_val.is_valid:
+                        trace_hooks.tool_records.append(recovery_tool)
+                        if recovered_ans and recovered_ans != raw_answer:
+                            canonical_answer = recovered_ans
+                        tracer.add_event(
+                            "arithmetic_recovery",
+                            recovered_expression=recovery_tool.arguments.get("expression"),
+                            origin=ToolCallOrigin.RECOVERY_EXECUTED.value,
+                            validation_status=arithmetic_plan.validation_status if arithmetic_plan else "UNKNOWN",
+                            decision=arithmetic_plan.canonicalization_decision if arithmetic_plan else "UNKNOWN",
+                        )
+                    else:
+                        canonical_answer = compose_arithmetic_uncertainty_answer(
+                            user_input, plan=arithmetic_plan, calc_val=rec_val
+                        )
+                        tracer.add_event(
+                            "arithmetic_uncertainty_abstention",
+                            status=rec_val.status,
+                            reason=rec_val.reason,
+                        )
 
             # Citation Boundary & Safe Content-Based Canonicalization (Phase 3)
             cit_report = canonicalize_citations_and_claims(
                 canonical_answer,
                 evidence_accum,
                 tool_executions=trace_hooks.tool_records,
+                user_input=user_input,
             )
             canonical_answer = cit_report.canonical_answer
 
             # Semantic Grounding Verification (Phase 4)
             grounding_status, cited, invalid_cited, claims = verify_grounding(
-                canonical_answer, evidence_accum, tool_executions=trace_hooks.tool_records
+                canonical_answer,
+                evidence_accum,
+                tool_executions=trace_hooks.tool_records,
+                user_input=user_input,
             )
+
+            # Guard against ungrounded prose math when source-derived arithmetic lacked valid operands
+            if (
+                arith_intent
+                and arithmetic_plan is not None
+                and arithmetic_plan.validation_status in {"MISSING_OPERAND", "AMBIGUOUS_OPERAND", "UNGROUNDED_OPERANDS", "DIVISION_BY_ZERO"}
+                and not is_abstention(canonical_answer)
+                and (
+                    grounding_status != GroundingStatus.GROUNDED
+                    or bool(re.search(r"\[(?:Calculated|Розраховано):|\d+\s*[+\-*/=]\s*\d+", canonical_answer))
+                    or determine_arithmetic_operation(user_input) != "ambiguous"
+                )
+            ):
+                canonical_answer = compose_arithmetic_uncertainty_answer(
+                    user_input, plan=arithmetic_plan, calc_val=calc_val
+                )
+                tracer.add_event(
+                    "arithmetic_uncertainty_abstention",
+                    status=arithmetic_plan.validation_status,
+                    reason=arithmetic_plan.canonicalization_decision,
+                )
+                grounding_status, cited, invalid_cited, claims = verify_grounding(
+                    canonical_answer,
+                    evidence_accum,
+                    tool_executions=trace_hooks.tool_records,
+                    user_input=user_input,
+                )
 
             # Premise Verification & Repair:
             # Check searchable text (including document_id and section!) so Lab 4 ('lab04_stable_diffusion_report') is recognized for 'stable diffusion'
@@ -408,7 +517,10 @@ class AgentOrchestrator:
 
             if premise_repaired:
                 grounding_status, cited, invalid_cited, claims = verify_grounding(
-                    canonical_answer, evidence_accum, tool_executions=trace_hooks.tool_records
+                    canonical_answer,
+                    evidence_accum,
+                    tool_executions=trace_hooks.tool_records,
+                    user_input=user_input,
                 )
 
             timings_ms["verification_ms"] = round((time.perf_counter() - t_ver_start) * 1000.0, 2)
