@@ -5,7 +5,7 @@ import re
 import time
 import uuid
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 
 from agents import (
     Agent,
@@ -22,11 +22,13 @@ from agents import (
 from ..domain.enums import GroundingStatus, ToolCallOrigin
 from ..domain.models import EvidenceChunk, ToolExecutionRecord, Turn
 from ..observability.tracer import ExecutionTracer
-from .recovery import attempt_arithmetic_recovery, has_arithmetic_intent
+from .recovery import has_arithmetic_intent, run_arithmetic_recovery
 from .tools import safe_calculate
 from .prompts import SYSTEM_INSTRUCTIONS
 from .verifier import (
     KNOWN_TECHNOLOGIES,
+    canonicalize_citations_and_claims,
+    chunk_searchable_text,
     is_abstention,
     normalize_multi_citations,
     verify_grounding,
@@ -38,6 +40,15 @@ class CopilotTraceHooks(RunHooks):
         self.tracer = tracer
         self.tool_records: List[ToolExecutionRecord] = []
         self._start_times: Dict[str, float] = {}
+        self._agent_start_times: List[float] = []
+        self.llm_calls_count: int = 0
+        self.retrieval_calls_count: int = 0
+        self.retrieval_ms: float = 0.0
+        self.tool_execution_ms: float = 0.0
+
+    async def on_agent_start(self, context, agent):
+        self.llm_calls_count += 1
+        self._agent_start_times.append(time.perf_counter())
 
     async def on_tool_start(self, context, agent, tool):
         call_id = context.tool_call_id
@@ -59,8 +70,12 @@ class CopilotTraceHooks(RunHooks):
     async def on_tool_end(self, context, agent, tool, result):
         call_id = context.tool_call_id
         start_time = self._start_times.pop(call_id, time.perf_counter())
-        exec_ms = (time.perf_counter() - start_time) * 1000
-        
+        exec_ms = (time.perf_counter() - start_time) * 1000.0
+        self.tool_execution_ms += exec_ms
+        if tool.name == "search_knowledge":
+            self.retrieval_calls_count += 1
+            self.retrieval_ms += exec_ms
+
         parsed_result = result
         if isinstance(result, str):
             try:
@@ -76,7 +91,7 @@ class CopilotTraceHooks(RunHooks):
                 pass
         if not isinstance(parsed_args, dict):
             parsed_args = {}
-                
+
         record = ToolExecutionRecord(
             tool_name=tool.name,
             arguments=parsed_args,
@@ -122,18 +137,45 @@ class AgentOrchestrator:
         current_evidence_accumulator: List[EvidenceChunk],
         retrieval_mode: Optional[Any] = None,
     ):
+        seen_chunk_keys: Set[Tuple[str, str]] = {
+            (c.chunk.document_id, c.chunk.chunk_id) for c in current_evidence_accumulator
+        }
+
         @function_tool
         def search_knowledge(query: str, k: int = 7, document_id: Optional[str] = None) -> Dict[str, Any]:
             """Retrieve evidence chunks from the local document vector index."""
             chunks = self.search_fn(query=query, k=k, document_id=document_id, mode=retrieval_mode)
-            current_evidence_accumulator.extend(chunks)
+            new_chunks: List[EvidenceChunk] = []
+            for c in chunks:
+                key = (c.chunk.document_id, c.chunk.chunk_id)
+                if key not in seen_chunk_keys:
+                    seen_chunk_keys.add(key)
+                    current_evidence_accumulator.append(c)
+                    new_chunks.append(c)
+                else:
+                    new_chunks.append(c)
+
             note = (
                 "Candidates are not proof of relevance. Use only supporting text; otherwise abstain."
                 if chunks
                 else "No matching evidence found. Do NOT search again; answer directly that the indexed knowledge base does not contain this information."
             )
+            # Return compact model-facing chunk payload (omitting 64-char sha256 and nested duplicate metadata)
+            compact_chunks = [
+                {
+                    "chunk_id": c.chunk.chunk_id,
+                    "document_id": c.chunk.document_id,
+                    "source_id": c.chunk.document_id,
+                    "citation": c.citation,
+                    "section": c.chunk.section,
+                    "text": c.chunk.text,
+                    "cosine_distance": round(c.score.score_value, 4),
+                    "ranking_position": c.score.ranking_position,
+                }
+                for c in new_chunks
+            ]
             return {
-                "chunks": [c.to_dict() for c in chunks],
+                "chunks": compact_chunks,
                 "evidence_note": note,
                 "empty": len(chunks) == 0,
             }
@@ -148,7 +190,10 @@ class AgentOrchestrator:
             """Compute exact derived arithmetic using retrieved numeric operands.
             Always invoke this tool for ANY mathematical calculation, difference, sum, product, division, unit conversion, or duration.
             Example expressions: '8501 - 8000', '26 * 24', '128 - 24', '5000 / 1000', '(14 * 60 + 47) - (14 * 60 + 20)'."""
-            return safe_calculate(expression)
+            try:
+                return safe_calculate(expression)
+            except (ZeroDivisionError, ValueError) as exc:
+                return {"expression": expression, "error": str(exc), "result": None}
 
         return [search_knowledge, list_knowledge_sources, calculate]
 
@@ -163,14 +208,28 @@ class AgentOrchestrator:
     ) -> Turn:
         start_time = time.perf_counter()
         turn_id = f"turn_{uuid.uuid4().hex[:12]}"
-        
+
         if tracer is None:
             tracer = ExecutionTracer(Path(f"outputs/traces/{turn_id}.json"))
-            
+
         tracer.add_event("user_input", text=user_input, session_id=session_id)
-        
+
         sdk_session = SQLiteSession(session_id=session_id, db_path=self.db_path)
+        trace_hooks = CopilotTraceHooks(tracer)
+        evidence_accum: List[EvidenceChunk] = list(session_evidence or [])
+        timings_ms: Dict[str, float] = {
+            "prompt_assembly_ms": 0.0,
+            "retrieval_ms": 0.0,
+            "embedding_ms": 0.0,
+            "llm_generation_ms": 0.0,
+            "tool_execution_ms": 0.0,
+            "verification_ms": 0.0,
+            "session_persistence_ms": 0.0,
+            "total_ms": 0.0,
+        }
+
         try:
+            t_prompt_start = time.perf_counter()
             existing_items = await sdk_session.get_items()
             if not existing_items and history_messages:
                 items_to_seed = [{"role": m["role"], "content": m["content"]} for m in history_messages]
@@ -179,24 +238,30 @@ class AgentOrchestrator:
 
             # Check pronoun ambiguity on empty history
             has_history = bool(history_messages) or bool(existing_items)
-            has_subject = bool(re.search(
-                r"\b(?:lab(?:oratory)?\s*\d+|report|model|document|system|paper|file)\b|"
-                r"\b(?:лабораторн\w*\s*(?:робот\w*)?\s*№?\s*\d+|звіт|модел|документ|систем|статт|файл)",
-                user_input,
-                re.IGNORECASE,
-            ))
-            ambiguous = not has_history and not has_subject and bool(re.search(
-                r"\b(?:it|its|that model|this model|that file)\b|\b(?:вона|воно|він|цей|ця|те)\b",
-                user_input,
-                re.IGNORECASE,
-            ))
-            
+            has_subject = bool(
+                re.search(
+                    r"\b(?:lab(?:oratory)?\s*\d+|report|model|document|system|paper|file)\b|"
+                    r"\b(?:лабораторн\w*\s*(?:робот\w*)?\s*№?\s*\d+|звіт|модел|документ|систем|статт|файл)",
+                    user_input,
+                    re.IGNORECASE,
+                )
+            )
+            ambiguous = not has_history and not has_subject and bool(
+                re.search(
+                    r"\b(?:it|its|that model|this model|that file)\b|\b(?:вона|воно|він|цей|ця|те)\b",
+                    user_input,
+                    re.IGNORECASE,
+                )
+            )
+
             if ambiguous:
                 clarification = (
                     "Please clarify which document, model, or report you are referring to. "
                     "A new session does not have context for that pronoun."
                 )
                 tracer.add_event("ambiguity_guard", reason="pronoun_without_session_antecedent")
+                total_ms = round((time.perf_counter() - start_time) * 1000.0, 2)
+                timings_ms["total_ms"] = total_ms
                 return Turn(
                     turn_id=turn_id,
                     session_id=session_id,
@@ -209,16 +274,15 @@ class AgentOrchestrator:
                     invalid_citations=[],
                     claims=[],
                     evidence=[],
-                    runtime_seconds=round(time.perf_counter() - start_time, 3),
+                    timings_ms=timings_ms,
+                    telemetry={"llm_calls_count": 0, "retrieval_calls_count": 0, "retries_count": 0, "timeout_type": None},
+                    runtime_seconds=round(total_ms / 1000.0, 3),
                 )
 
-            evidence_accum: List[EvidenceChunk] = list(session_evidence or [])
             tools = self._build_tools(evidence_accum, retrieval_mode=retrieval_mode)
-            trace_hooks = CopilotTraceHooks(tracer)
-            
             client = self.llm_client.get_client()
             model_id = self.llm_client.model_id
-            
+
             agent = Agent(
                 name="Knowledge Copilot",
                 instructions=SYSTEM_INSTRUCTIONS,
@@ -231,8 +295,10 @@ class AgentOrchestrator:
                     parallel_tool_calls=False,
                 ),
             )
+            timings_ms["prompt_assembly_ms"] = round((time.perf_counter() - t_prompt_start) * 1000.0, 2)
 
             # Execute runner with model-visible multi-turn conversation memory
+            t_run_start = time.perf_counter()
             result = await asyncio.wait_for(
                 Runner.run(
                     agent,
@@ -244,48 +310,53 @@ class AgentOrchestrator:
                 ),
                 timeout=self.timeout_seconds,
             )
+            runner_wall_ms = (time.perf_counter() - t_run_start) * 1000.0
+            timings_ms["retrieval_ms"] = round(trace_hooks.retrieval_ms, 2)
+            timings_ms["tool_execution_ms"] = round(trace_hooks.tool_execution_ms, 2)
+            timings_ms["llm_generation_ms"] = round(max(0.0, runner_wall_ms - trace_hooks.tool_execution_ms), 2)
+
             raw_answer = str(result.final_output)
             canonical_answer = raw_answer
-            
-            # Check arithmetic recovery if model omitted calculate tool
-            used_tool_names = [r.tool_name for r in trace_hooks.tool_records]
-            if has_arithmetic_intent(user_input) and "calculate" not in used_tool_names:
-                recovered_ans, recovery_tool = attempt_arithmetic_recovery(
-                    user_input, raw_answer, evidence_accum
+
+            t_ver_start = time.perf_counter()
+            arithmetic_plan = None
+            # Check deterministic arithmetic planning & recovery if model omitted calculate tool
+            if has_arithmetic_intent(user_input):
+                recovered_ans, updated_tools, arithmetic_plan = run_arithmetic_recovery(
+                    user_input,
+                    raw_answer,
+                    evidence_accum,
+                    trace_hooks.tool_records,
                 )
-                if recovered_ans and recovery_tool:
+                if recovered_ans and recovered_ans != raw_answer:
                     canonical_answer = recovered_ans
+                if len(updated_tools) > len(trace_hooks.tool_records):
+                    recovery_tool = updated_tools[-1]
                     trace_hooks.tool_records.append(recovery_tool)
                     tracer.add_event(
                         "arithmetic_recovery",
                         recovered_expression=recovery_tool.arguments.get("expression"),
                         origin=ToolCallOrigin.RECOVERY_EXECUTED.value,
+                        validation_status=arithmetic_plan.validation_status if arithmetic_plan else "UNKNOWN",
+                        decision=arithmetic_plan.canonicalization_decision if arithmetic_plan else "UNKNOWN",
                     )
-            
-            # Clean formatting: remove literal ungrounded placeholder strings
-            canonical_answer = re.sub(r"\s*\[source_id#chunk_id\]", "", canonical_answer).strip()
 
-            # Normalize comma/semicolon-grouped citations [doc#c1, doc#c2] -> [doc#c1] [doc#c2]
-            canonical_answer = normalize_multi_citations(canonical_answer)
+            # Citation Boundary & Safe Content-Based Canonicalization (Phase 3)
+            cit_report = canonicalize_citations_and_claims(
+                canonical_answer,
+                evidence_accum,
+                tool_executions=trace_hooks.tool_records,
+            )
+            canonical_answer = cit_report.canonical_answer
 
-            # If the model emitted placeholder [source_id#chunk_id] or [document_id#chunk_id] with a real chunk_id:
-            chunk_by_id = {c.chunk.chunk_id: c.chunk for c in evidence_accum}
-            def _replace_placeholder_doc(m):
-                cid = m.group(1)
-                if cid in chunk_by_id:
-                    return f"[{chunk_by_id[cid].document_id}#{cid}]"
-                return m.group(0)
-            canonical_answer = re.sub(r"\[(?:source_id|document_id)#([a-zA-Z0-9_-]+)\]", _replace_placeholder_doc, canonical_answer)
-            canonical_answer = re.sub(r"\s+([.,;:!?])", r"\1", canonical_answer)
-
-            # Semantic Grounding Verification (DEFECT-02)
+            # Semantic Grounding Verification (Phase 4)
             grounding_status, cited, invalid_cited, claims = verify_grounding(
                 canonical_answer, evidence_accum, tool_executions=trace_hooks.tool_records
             )
 
             # Premise Verification & Repair:
-            # 1. If user asks about a technology absent from retrieved evidence AND model asserted a premise conflict
-            all_evidence_lower = " ".join(c.chunk.text for c in evidence_accum).lower()
+            # Check searchable text (including document_id and section!) so Lab 4 ('lab04_stable_diffusion_report') is recognized for 'stable diffusion'
+            all_evidence_lower = " ".join(chunk_searchable_text(c) for c in evidence_accum).lower()
             q_lower = user_input.lower()
             premise_repaired = False
 
@@ -309,7 +380,7 @@ class AgentOrchestrator:
                             tracer.add_event("premise_repair", absent_technology=tech)
                             break
 
-            # 2. If answer abstained without citations, strip speculative tutorial YAML/code blocks and ungrounded how-to sections
+            # Strip speculative tutorial YAML/code blocks if answer abstained without citations
             if not premise_repaired and is_abstention(canonical_answer) and not cited:
                 def _strip_ungrounded_code(m):
                     code_body = m.group(0).strip().lower()
@@ -317,12 +388,16 @@ class AgentOrchestrator:
                     if key_tokens and not any(t in all_evidence_lower for t in key_tokens[:3]):
                         return ""
                     return m.group(0)
+
                 cleaned_refusal = re.sub(r"```[\s\S]*?```", _strip_ungrounded_code, canonical_answer).strip()
-                if any(
-                    re.search(r"\b" + re.escape(tech) + r"\b", q_lower)
-                    and not re.search(r"\b" + re.escape(tech) + r"\b", all_evidence_lower)
-                    for tech in KNOWN_TECHNOLOGIES
-                ) and len(cleaned_refusal) > 350:
+                if (
+                    any(
+                        re.search(r"\b" + re.escape(tech) + r"\b", q_lower)
+                        and not re.search(r"\b" + re.escape(tech) + r"\b", all_evidence_lower)
+                        for tech in KNOWN_TECHNOLOGIES
+                    )
+                    and len(cleaned_refusal) > 350
+                ):
                     first_para = cleaned_refusal.split("\n\n")[0].strip()
                     if first_para and is_abstention(first_para):
                         cleaned_refusal = first_para
@@ -336,7 +411,10 @@ class AgentOrchestrator:
                     canonical_answer, evidence_accum, tool_executions=trace_hooks.tool_records
                 )
 
+            timings_ms["verification_ms"] = round((time.perf_counter() - t_ver_start) * 1000.0, 2)
+
             # Prevent divergence between OpenAI Agents SDK session and authoritative canonical answer
+            t_sess_start = time.perf_counter()
             if canonical_answer != raw_answer:
                 try:
                     items = await sdk_session.get_items()
@@ -354,16 +432,39 @@ class AgentOrchestrator:
                             await sdk_session.add_items([updated_item])
                 except Exception as sync_err:
                     tracer.add_event("session_sync_warning", error=str(sync_err))
-            
+            timings_ms["session_persistence_ms"] = round((time.perf_counter() - t_sess_start) * 1000.0, 2)
+            timings_ms["total_ms"] = round((time.perf_counter() - start_time) * 1000.0, 2)
+
+            telemetry = {
+                "model_id": model_id,
+                "llm_calls_count": trace_hooks.llm_calls_count,
+                "retrieval_calls_count": trace_hooks.retrieval_calls_count,
+                "retries_count": 0,
+                "timeout_type": None,
+                "context_chars": sum(len(c.chunk.text) for c in evidence_accum),
+                "citation_repairs_count": cit_report.citation_repairs_count,
+                "citation_removals_count": cit_report.citation_removals_count,
+                "unsupported_claims_removed_count": cit_report.unsupported_claims_removed_count,
+            }
+
             tracer.add_event(
                 "grounding_verification",
                 status=grounding_status.value,
                 citations=cited,
                 invalid_citations=invalid_cited,
+                raw_citations=cit_report.raw_citations,
+                raw_invalid_citations=cit_report.raw_invalid_citations,
+                citation_repairs_count=cit_report.citation_repairs_count,
+                citation_removals_count=cit_report.citation_removals_count,
             )
-            
-            tracer.add_event("canonical_turn_complete", answer=canonical_answer)
-            
+
+            tracer.add_event(
+                "canonical_turn_complete",
+                answer=canonical_answer,
+                timings_ms=timings_ms,
+                telemetry=telemetry,
+            )
+
             return Turn(
                 turn_id=turn_id,
                 session_id=session_id,
@@ -374,13 +475,31 @@ class AgentOrchestrator:
                 tool_executions=trace_hooks.tool_records,
                 citations=cited,
                 invalid_citations=invalid_cited,
+                raw_citations=cit_report.raw_citations,
+                raw_invalid_citations=cit_report.raw_invalid_citations,
+                citation_repairs_count=cit_report.citation_repairs_count,
+                citation_removals_count=cit_report.citation_removals_count,
+                unsupported_claims_removed_count=cit_report.unsupported_claims_removed_count,
                 claims=claims,
                 evidence=evidence_accum,
-                runtime_seconds=round(time.perf_counter() - start_time, 3),
+                arithmetic_plan=arithmetic_plan,
+                timings_ms=timings_ms,
+                telemetry=telemetry,
+                runtime_seconds=round(timings_ms["total_ms"] / 1000.0, 3),
             )
         except Exception as exc:
             error_msg = f"{type(exc).__name__}: {exc}"
-            tracer.add_event("execution_error", error=error_msg)
+            timeout_type = "ORCHESTRATOR_TIMEOUT" if isinstance(exc, asyncio.TimeoutError) else type(exc).__name__
+            timings_ms["total_ms"] = round((time.perf_counter() - start_time) * 1000.0, 2)
+            telemetry = {
+                "model_id": getattr(self.llm_client, "model_id", "unknown"),
+                "llm_calls_count": trace_hooks.llm_calls_count,
+                "retrieval_calls_count": trace_hooks.retrieval_calls_count,
+                "retries_count": 0,
+                "timeout_type": timeout_type,
+                "error": error_msg,
+            }
+            tracer.add_event("execution_error", error=error_msg, timeout_type=timeout_type, timings_ms=timings_ms)
             return Turn(
                 turn_id=turn_id,
                 session_id=session_id,
@@ -393,7 +512,9 @@ class AgentOrchestrator:
                 invalid_citations=[],
                 claims=[],
                 evidence=evidence_accum,
-                runtime_seconds=round(time.perf_counter() - start_time, 3),
+                timings_ms=timings_ms,
+                telemetry=telemetry,
+                runtime_seconds=round(timings_ms["total_ms"] / 1000.0, 3),
             )
         finally:
             try:

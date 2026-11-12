@@ -199,14 +199,32 @@ class QueryService:
         start_time = time.perf_counter()
 
         targets: List[str] = []
+        referenced_docs = self._route_query_documents(query)
         if document_id:
-            document_id = self._resolve_document_id(document_id)
+            resolved_doc = self._resolve_document_id(document_id)
+            # If the query text explicitly routes to specific document(s) that conflict with a hallucinated model document_id filter, honor the query routing
+            if referenced_docs and resolved_doc not in referenced_docs:
+                if len(referenced_docs) == 1:
+                    document_id = referenced_docs[0]
+                else:
+                    document_id = None
+                    targets = referenced_docs
+            else:
+                document_id = resolved_doc
         else:
-            referenced_docs = self._route_query_documents(query)
             if len(referenced_docs) == 1:
                 document_id = referenced_docs[0]
             elif len(referenced_docs) > 1:
                 targets = referenced_docs
+
+        is_table_query = bool(
+            re.search(
+                r"\b(?:summary\s+table|table|таблиц\w*|scenario_id|steps_\d+|generated_token_count|runtime_seconds)\b",
+                query.casefold(),
+            )
+        )
+        max_sec = 5 if (document_id and is_table_query) else 3
+        effective_k = max(k, 6) if (document_id and is_table_query) else k
 
         evidence_chunks: List[EvidenceChunk] = []
 
@@ -333,24 +351,24 @@ class QueryService:
             else:
                 dense_candidates = self.redis_adapter.dense_search(
                     query=query,
-                    k=k * 4,
+                    k=effective_k * 4,
                     document_id=document_id,
                     filter_quoted_outputs=filter_quoted_outputs,
                 )
                 lex_candidates = self.bm25.search(
                     query=query,
-                    k=k * 4,
+                    k=effective_k * 4,
                     document_id=document_id,
                     filter_quoted_outputs=filter_quoted_outputs,
                 )
                 evidence_chunks = reciprocal_rank_fusion(
                     dense_results=dense_candidates,
                     lexical_results=lex_candidates,
-                    k=k,
+                    k=effective_k,
                     rrf_k=10,
                     dense_weight=1.0,
                     lexical_weight=2.3,
-                    max_per_section=3,
+                    max_per_section=max_sec,
                     min_lexical_score=0.5,
                 )
 

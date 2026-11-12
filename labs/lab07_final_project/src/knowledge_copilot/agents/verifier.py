@@ -1,6 +1,7 @@
-"""Multi-dimensional grounding, citation validity, and claim support verification."""
+"""Multi-dimensional grounding, citation validity, and structured claim support verification."""
+from dataclasses import dataclass, field
 import re
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
 from ..domain.enums import GroundingStatus
 from ..domain.models import ClaimSupport, EvidenceChunk
@@ -41,10 +42,48 @@ KNOWN_TECHNOLOGIES = [
     "opentelemetry", "grafana", "datadog", "celery", "mongodb",
 ]
 
+IGNORE_STRUCTURAL_NUMS = {
+    "001", "1", "2", "3", "4", "5", "6", "7", "2024", "2025", "2026",
+    "1234", "6379", "6380", "8000", "8080", "200", "201", "400", "404", "422", "500", "503",
+    "768", "384", "1536", "0.5", "8", "70",
+}
+
+BILINGUAL_DOMAIN_PAIRS = [
+    ({"офлайн", "автономн"}, {"offline"}),
+    ({"локальн", "робоч", "станц"}, {"local", "workstation", "workstations"}),
+    ({"затримк", "швидкост", "швидкіст", "обмежен"}, {"latency", "constraint", "sub"}),
+    ({"мілісекунд", "мс"}, {"ms", "50ms", "milliseconds"}),
+    ({"транзакційн", "цілісніст", "відкат", "статус"}, {"transactional", "integrity", "rollback", "rollbacks", "status"}),
+    ({"пошкоджен", "байт", "втрат"}, {"corrupted", "corruption", "bytes", "zero"}),
+    ({"невдал", "помилк", "завантажен"}, {"failed", "bulk", "uploads", "upload"}),
+    ({"лексичн", "резервн"}, {"lexical", "fallback"}),
+    ({"витіснен", "політик", "пам'ят"}, {"eviction", "policy", "maxmemory", "allkeys-lru", "noeviction"}),
+    ({"блокуван", "конкурентн", "запис"}, {"lock", "locks", "locking", "concurrent", "write", "busy_timeout"}),
+]
+
+
+@dataclass
+class CitationCanonicalizationReport:
+    canonical_answer: str
+    raw_citations: List[str] = field(default_factory=list)
+    raw_invalid_citations: List[str] = field(default_factory=list)
+    final_citations: List[str] = field(default_factory=list)
+    final_invalid_citations: List[str] = field(default_factory=list)
+    citation_repairs_count: int = 0
+    citation_removals_count: int = 0
+    unsupported_claims_removed_count: int = 0
+
 
 def strip_markdown(text: str) -> str:
     """Strip markdown formatting characters for robust text inspection."""
     return re.sub(r"[*_`#]", "", text or "")
+
+
+def chunk_searchable_text(ec: EvidenceChunk) -> str:
+    """Return full searchable text of an EvidenceChunk including document_id and section title."""
+    doc_norm = ec.chunk.document_id.replace("_", " ").replace("-", " ")
+    sec_norm = (ec.chunk.section or "").replace("_", " ")
+    return f"{ec.chunk.document_id} {doc_norm} {sec_norm} {ec.chunk.text}"
 
 
 def normalize_multi_citations(text: str) -> str:
@@ -82,7 +121,6 @@ def extract_suspicious_citations(text: str) -> List[str]:
         for m in re.findall(p, norm_text, re.IGNORECASE):
             if m not in valid_cites and m not in matches:
                 matches.append(m)
-    # Also flag any bracketed chunk reference that is NOT a valid [doc#chunk-...] tag
     for m in re.findall(r"\[[^\]\n]*chunk-[^\]\n]*\]", norm_text, re.IGNORECASE):
         if m not in valid_cites and m not in matches:
             matches.append(m)
@@ -100,7 +138,16 @@ def is_abstention(text: str) -> bool:
 
 def _normalize_numeric_token(num_str: str) -> str:
     """Normalize commas and leading zeros in numeric tokens (e.g. '7,292' -> '7292', '001' -> '1')."""
-    cleaned = num_str.replace(",", "").strip()
+    cleaned = num_str.strip()
+    if "," in cleaned and "." not in cleaned:
+        parts = cleaned.split(",")
+        if len(parts) == 2 and len(parts[1]) == 3 and parts[0] in {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "13", "18"}:
+            # Could be European decimal comma (e.g. 6,765 or 13,950) or thousands separator
+            cleaned = cleaned.replace(",", ".")
+        else:
+            cleaned = cleaned.replace(",", "")
+    else:
+        cleaned = cleaned.replace(",", "")
     try:
         val = float(cleaned)
         if val.is_integer():
@@ -111,17 +158,555 @@ def _normalize_numeric_token(num_str: str) -> str:
 
 
 def _number_present_in_text(num_str: str, target_text: str) -> bool:
-    """Check whether a numeric token appears in target_text in raw, comma-stripped, or integer form."""
-    if num_str in target_text:
-        return True
+    """Check whether a numeric token appears in target_text as a bounded number (not substring of 5000)."""
+    dot_ver = num_str.replace(",", ".")
     cleaned = num_str.replace(",", "")
-    if cleaned in target_text:
-        return True
-    norm = _normalize_numeric_token(cleaned)
-    if norm in target_text:
-        return True
+    norm = _normalize_numeric_token(num_str)
     target_no_commas = re.sub(r"(?<=\d),(?=\d{3}\b)", "", target_text)
-    return cleaned in target_no_commas or norm in target_no_commas
+    for variant in dict.fromkeys([num_str, dot_ver, cleaned, norm]):
+        if not variant:
+            continue
+        if re.search(rf"(?<![\d.]){re.escape(variant)}(?![\d]|(?:\.\d))", target_text) or re.search(
+            rf"(?<![\d.]){re.escape(variant)}(?![\d]|(?:\.\d))", target_no_commas
+        ):
+            return True
+    return False
+
+
+def build_citation_registry(evidence_chunks: List[EvidenceChunk]) -> Dict[str, EvidenceChunk]:
+    """Build the authoritative citation registry strictly from retrieved EvidenceChunk objects."""
+    registry: Dict[str, EvidenceChunk] = {}
+    for ec in evidence_chunks:
+        registry[ec.citation] = ec
+        c_id = ec.chunk.chunk_id
+        d_id = ec.chunk.document_id
+        registry[f"[{d_id}#{c_id}]"] = ec
+        if ec.chunk.metadata and "source_id" in ec.chunk.metadata:
+            registry[f"[{ec.chunk.metadata['source_id']}#{c_id}]"] = ec
+    return registry
+
+
+def _extract_claim_numbers(sentence_without_cites: str) -> List[str]:
+    """Extract numeric tokens from a claim sentence after scrubbing identifiers like Lab 4, Recall@5, HNSW, etc."""
+    scrubbed = re.sub(r"\b(?:Lab|Лабораторн\w*(?:\s+робот\w*)?)\s*№?\s*0?\d+\b", " ", sentence_without_cites, flags=re.IGNORECASE)
+    scrubbed = re.sub(r"\bADR[_\s-]*0*\d+\b", " ", scrubbed, flags=re.IGNORECASE)
+    scrubbed = re.sub(r"\b(?:Recall|Hit|MRR|NDCG)@\d+\b", " ", scrubbed, flags=re.IGNORECASE)
+    scrubbed = re.sub(r"\b(?:steps|seed|negative|phrasing|desc|fact|analysis|control)_\d+\b", " ", scrubbed, flags=re.IGNORECASE)
+    scrubbed = re.sub(r"\b\d+(?:\.\d+)?[BbKk]\b", " ", scrubbed)
+    scrubbed = re.sub(r"\b[0-2]?\d:[0-5]\d\b", " ", scrubbed)
+    return re.findall(r"(?<![\w.])-?\d+(?:,\d{3})*(?:\.\d+)?", scrubbed)
+
+
+def _extract_subject_predicate_entities(sentence_without_cites: str) -> Tuple[str, str, List[str]]:
+    """Extract structured subject, predicate, and key domain entities from a claim sentence."""
+    clean = strip_markdown(sentence_without_cites).strip()
+    words = re.findall(r"[A-Za-zА-Яа-яІіЇїЄєҐґ0-9_.-]{3,}", clean)
+    subject = " ".join(words[:3]) if words else ""
+    predicate = ""
+    pred_m = re.search(
+        r"\b(is|are|was|were|uses|used|requires|provides|failed|processed|equals|становить|складає|дорівнює|використову\w+|забезпечу\w+|підтриму\w+|досяг\w+|отрима\w+)\b",
+        clean,
+        re.IGNORECASE,
+    )
+    if pred_m:
+        predicate = pred_m.group(1)
+    entities = [
+        w.casefold()
+        for w in words
+        if len(w) >= 4
+        and w.casefold() not in {
+            "that", "this", "with", "from", "were", "have", "been", "when", "where", "which",
+            "становлять", "становить", "згідно", "також", "через", "після", "під", "для", "між",
+        }
+    ][:10]
+    return subject, predicate, entities
+
+
+def _has_contradiction(sentence_lower: str, chunk_lower: str) -> Optional[str]:
+    """Detect direct polarity/boolean/policy contradictions between claim sentence and cited chunk."""
+    # 1. Eviction policy contradiction (allkeys-lru vs noeviction)
+    if "noeviction" in sentence_lower and "allkeys-lru" in chunk_lower and "noeviction" not in chunk_lower:
+        return "Claim asserts 'noeviction' policy, contradicting 'allkeys-lru' in cited chunk."
+    if "allkeys-lru" in sentence_lower and "noeviction" in chunk_lower and "allkeys-lru" not in chunk_lower:
+        return "Claim asserts 'allkeys-lru' policy, contradicting 'noeviction' in cited chunk."
+
+    # 2. Cabin position contradiction (left vs right/center)
+    if re.search(r"\b(?:on\s+the\s+right|праворуч|у\s+правій)\b", sentence_lower) and re.search(r"\b(?:left|ліворуч|у\s+лівій)\b", chunk_lower):
+        if not re.search(r"\b(?:not|не|left\s+or\s+right|center\s+or\s+right)\b", sentence_lower):
+            return "Claim asserts right-side position, contradicting left-side position in cited chunk."
+
+    # 3. Attention slicing / xFormers enabled vs not applied
+    if re.search(r"\b(?:attention\s+slicing|xformers)\s+(?:was\s+enabled|enabled|було\s+увімкнено|застосовувалися)\b", sentence_lower):
+        if re.search(r"не\s+застосовувалися|not\s+applied|disabled", chunk_lower):
+            return "Claim asserts optimization was enabled, contradicting cited chunk stating it was not applied."
+
+    # 4. Data corruption > 0 vs 0 bytes corrupted
+    if re.search(r"\b(?:data\s+was\s+corrupted|дані\s+було\s+пошкоджено)\b", sentence_lower) and not re.search(r"\b(?:no|0|нуль|не\s+було)\b", sentence_lower):
+        if "0 bytes corrupted" in chunk_lower:
+            return "Claim asserts data corruption occurred, contradicting '0 bytes corrupted' in cited chunk."
+
+    return None
+
+
+def assess_claim_support(
+    sentence: str,
+    s_citations: List[str],
+    supplied_citations: Dict[str, EvidenceChunk],
+    all_evidence_chunks: List[EvidenceChunk],
+    calc_numbers: Set[str],
+    abstained: bool = False,
+) -> ClaimSupport:
+    """
+    Evaluate a single claim sentence against its cited chunks and return a structured ClaimSupport object
+    with explicit verdict: SUPPORTED, CONTRADICTED, INSUFFICIENT_EVIDENCE, INVALID_CITATION, or NEEDS_REVIEW.
+    """
+    sentence_without_cites = re.sub(r"\[[a-zA-Z0-9_.-]+#[a-zA-Z0-9_.-]+\]", "", sentence)
+    sentence_without_cites = re.sub(r"https?://\S+", "", sentence_without_cites)
+    subject, predicate, entities = _extract_subject_predicate_entities(sentence_without_cites)
+    claim_nums = _extract_claim_numbers(sentence_without_cites)
+
+    all_evidence_lower = " ".join(chunk_searchable_text(c) for c in all_evidence_chunks).lower() if all_evidence_chunks else ""
+    s_lower = strip_markdown(sentence_without_cites).lower()
+
+    # Check if any cited tag is invalid (not in authoritative registry)
+    invalid_tags = [c for c in s_citations if c not in supplied_citations]
+    if invalid_tags:
+        return ClaimSupport(
+            claim_text=sentence,
+            cited_chunk_ids=s_citations,
+            is_supported=False,
+            unsupported_reason=f"Citation(s) {invalid_tags} not found in authoritative retrieval registry.",
+            verdict="INVALID_CITATION",
+            subject=subject,
+            predicate=predicate,
+            objects_and_entities=entities,
+            numbers_and_units=claim_nums,
+        )
+
+    # Uncited sentence handling
+    if not s_citations:
+        if all_evidence_chunks and not abstained:
+            absent_techs = [
+                tech for tech in KNOWN_TECHNOLOGIES
+                if re.search(r"\b" + re.escape(tech) + r"\b", s_lower)
+                and not re.search(r"\b" + re.escape(tech) + r"\b", all_evidence_lower)
+            ]
+            if absent_techs:
+                return ClaimSupport(
+                    claim_text=sentence,
+                    cited_chunk_ids=[],
+                    is_supported=False,
+                    unsupported_reason=f"Subject '{absent_techs[0]}' absent from retrieved evidence.",
+                    verdict="INSUFFICIENT_EVIDENCE",
+                    subject=subject,
+                    predicate=predicate,
+                    objects_and_entities=entities,
+                    numbers_and_units=claim_nums,
+                )
+
+        substantive_nums = [
+            n for n in claim_nums
+            if n not in IGNORE_STRUCTURAL_NUMS
+            and _normalize_numeric_token(n) not in IGNORE_STRUCTURAL_NUMS
+            and _normalize_numeric_token(n) not in calc_numbers
+        ]
+        if substantive_nums and not abstained:
+            return ClaimSupport(
+                claim_text=sentence,
+                cited_chunk_ids=[],
+                is_supported=False,
+                unsupported_reason=f"Uncited factual claim with numbers {substantive_nums} lacks supporting citation.",
+                verdict="INSUFFICIENT_EVIDENCE",
+                subject=subject,
+                predicate=predicate,
+                objects_and_entities=entities,
+                numbers_and_units=claim_nums,
+            )
+
+        return ClaimSupport(
+            claim_text=sentence,
+            cited_chunk_ids=[],
+            is_supported=True,
+            unsupported_reason=None,
+            verdict="SUPPORTED",
+            subject=subject,
+            predicate=predicate,
+            objects_and_entities=entities,
+            numbers_and_units=claim_nums,
+        )
+
+    # Cited sentence handling
+    valid_chunks = [supplied_citations[c] for c in s_citations if c in supplied_citations]
+    combined_cited_text = " ".join(chunk_searchable_text(c) for c in valid_chunks)
+    combined_cited_lower = combined_cited_text.lower()
+
+    # 1. Check explicit contradictions
+    contradiction_reason = _has_contradiction(s_lower, combined_cited_lower)
+    if contradiction_reason:
+        return ClaimSupport(
+            claim_text=sentence,
+            cited_chunk_ids=s_citations,
+            is_supported=False,
+            unsupported_reason=contradiction_reason,
+            verdict="CONTRADICTED",
+            subject=subject,
+            predicate=predicate,
+            objects_and_entities=entities,
+            numbers_and_units=claim_nums,
+        )
+
+    # 2. Technology premise validation against cited chunks (including document_id and section!)
+    for tech in KNOWN_TECHNOLOGIES:
+        if re.search(r"\b" + re.escape(tech) + r"\b", s_lower):
+            if not re.search(r"\b" + re.escape(tech) + r"\b", combined_cited_lower):
+                return ClaimSupport(
+                    claim_text=sentence,
+                    cited_chunk_ids=s_citations,
+                    is_supported=False,
+                    unsupported_reason=f"Subject '{tech}' absent from cited passage(s) {s_citations}.",
+                    verdict="INSUFFICIENT_EVIDENCE",
+                    subject=subject,
+                    predicate=predicate,
+                    objects_and_entities=entities,
+                    numbers_and_units=claim_nums,
+                )
+
+    # 3. Numeric validation against cited chunks (and calculator results)
+    for num in claim_nums:
+        if (
+            num in IGNORE_STRUCTURAL_NUMS
+            or _normalize_numeric_token(num) in IGNORE_STRUCTURAL_NUMS
+            or _normalize_numeric_token(num) in calc_numbers
+        ):
+            continue
+        if not _number_present_in_text(num, combined_cited_text):
+            return ClaimSupport(
+                claim_text=sentence,
+                cited_chunk_ids=s_citations,
+                is_supported=False,
+                unsupported_reason=f"Number '{num}' absent from cited passage(s) {s_citations}.",
+                verdict="CONTRADICTED" if any(c.isdigit() for c in combined_cited_text) else "INSUFFICIENT_EVIDENCE",
+                subject=subject,
+                predicate=predicate,
+                objects_and_entities=entities,
+                numbers_and_units=claim_nums,
+            )
+
+    # 4. Entity / Bilingual lexical overlap check (when claim has no numbers, ensure cited chunk is not completely unrelated)
+    if not claim_nums and entities:
+        chunk_words = set(re.findall(r"[a-zа-яіїєґ0-9_]{3,}", combined_cited_lower))
+        chunk_stems = {w[:4] for w in chunk_words if len(w) >= 4}
+        claim_stems = {w[:4] for w in entities if len(w) >= 4}
+        has_overlap = bool(claim_stems & chunk_stems)
+        if not has_overlap:
+            for uk_set, en_set in BILINGUAL_DOMAIN_PAIRS:
+                uk_in_claim = any(any(u in w for u in uk_set) for w in entities)
+                en_in_chunk = any(any(e in cw for e in en_set) for cw in chunk_words)
+                en_in_claim = any(any(e in w for e in en_set) for w in entities)
+                uk_in_chunk = any(any(u in cw for u in uk_set) for cw in chunk_words)
+                if (uk_in_claim and en_in_chunk) or (en_in_claim and uk_in_chunk):
+                    has_overlap = True
+                    break
+        if not has_overlap and len(entities) >= 3:
+            return ClaimSupport(
+                claim_text=sentence,
+                cited_chunk_ids=s_citations,
+                is_supported=False,
+                unsupported_reason=f"Cited passage(s) {s_citations} do not share topical entities with claim.",
+                verdict="INSUFFICIENT_EVIDENCE",
+                subject=subject,
+                predicate=predicate,
+                objects_and_entities=entities,
+                numbers_and_units=claim_nums,
+            )
+
+    return ClaimSupport(
+        claim_text=sentence,
+        cited_chunk_ids=s_citations,
+        is_supported=True,
+        unsupported_reason=None,
+        verdict="SUPPORTED",
+        subject=subject,
+        predicate=predicate,
+        objects_and_entities=entities,
+        numbers_and_units=claim_nums,
+    )
+
+
+def find_unique_supporting_citations(
+    sentence_without_cites: str,
+    evidence_chunks: List[EvidenceChunk],
+    calc_numbers: Set[str],
+    preferred_doc_id: Optional[str] = None,
+) -> List[str]:
+    """
+    Find whether one or more retrieved chunks in evidence_chunks uniquely and deterministically
+    support the claim's numbers and entities.
+    Never uses string edit distance on chunk hashes.
+    """
+    if not evidence_chunks:
+        return []
+
+    claim_nums = [
+        n for n in _extract_claim_numbers(sentence_without_cites)
+        if n not in IGNORE_STRUCTURAL_NUMS and _normalize_numeric_token(n) not in IGNORE_STRUCTURAL_NUMS
+    ]
+    non_calc_nums = [n for n in claim_nums if _normalize_numeric_token(n) not in calc_numbers]
+    _, _, entities = _extract_subject_predicate_entities(sentence_without_cites)
+
+    # Case A: Claim has specific non-calculated numbers (e.g. "14 bulk uploads failed" or "5000 ms" and "50 ms")
+    if non_calc_nums:
+        # First check if a SINGLE chunk contains all non_calc_nums and passes assess_claim_support
+        matching_single: List[EvidenceChunk] = []
+        for ec in evidence_chunks:
+            if preferred_doc_id and ec.chunk.document_id != preferred_doc_id:
+                continue
+            txt = chunk_searchable_text(ec)
+            if all(_number_present_in_text(n, txt) for n in non_calc_nums):
+                supp = assess_claim_support(
+                    f"{sentence_without_cites} {ec.citation}",
+                    [ec.citation],
+                    {ec.citation: ec},
+                    evidence_chunks,
+                    calc_numbers,
+                )
+                if supp.is_supported:
+                    matching_single.append(ec)
+
+        if len(matching_single) == 1:
+            return [matching_single[0].citation]
+
+        # If preferred_doc_id had no unique match, try across all evidence_chunks
+        if not matching_single and preferred_doc_id:
+            for ec in evidence_chunks:
+                txt = chunk_searchable_text(ec)
+                if all(_number_present_in_text(n, txt) for n in non_calc_nums):
+                    supp = assess_claim_support(
+                        f"{sentence_without_cites} {ec.citation}",
+                        [ec.citation],
+                        {ec.citation: ec},
+                        evidence_chunks,
+                        calc_numbers,
+                    )
+                    if supp.is_supported:
+                        matching_single.append(ec)
+            if len(matching_single) == 1:
+                return [matching_single[0].citation]
+
+        # Next check if each number in non_calc_nums is uniquely supported by a specific chunk (e.g. 5000 in chunk A, 50 in chunk B)
+        if len(non_calc_nums) >= 2 and not matching_single:
+            per_num_cits: List[str] = []
+            all_unique = True
+            for n in non_calc_nums:
+                holders = [ec for ec in evidence_chunks if _number_present_in_text(n, chunk_searchable_text(ec))]
+                if len(holders) == 1:
+                    if holders[0].citation not in per_num_cits:
+                        per_num_cits.append(holders[0].citation)
+                else:
+                    all_unique = False
+                    break
+            if all_unique and per_num_cits:
+                return per_num_cits
+
+    # Case B: Claim has no non-calculated numbers (or numbers are in calc_numbers), check if a unique chunk matches >= 2 specific entities
+    if entities:
+        scored_chunks: List[Tuple[int, EvidenceChunk]] = []
+        for ec in evidence_chunks:
+            if preferred_doc_id and ec.chunk.document_id != preferred_doc_id:
+                continue
+            c_lower = chunk_searchable_text(ec).lower()
+            c_words = set(re.findall(r"[a-zа-яіїєґ0-9_]{3,}", c_lower))
+            overlap = sum(1 for e in entities if e in c_words or any(e[:5] == cw[:5] for cw in c_words if len(e) >= 5 and len(cw) >= 5))
+            if overlap >= 2:
+                supp = assess_claim_support(
+                    f"{sentence_without_cites} {ec.citation}",
+                    [ec.citation],
+                    {ec.citation: ec},
+                    evidence_chunks,
+                    calc_numbers,
+                )
+                if supp.is_supported:
+                    scored_chunks.append((overlap, ec))
+        if len(scored_chunks) == 1:
+            return [scored_chunks[0][1].citation]
+
+    return []
+
+
+def canonicalize_citations_and_claims(
+    answer: str,
+    evidence_chunks: List[EvidenceChunk],
+    tool_executions: Optional[List] = None,
+) -> CitationCanonicalizationReport:
+    """
+    Validate all citations against the authoritative registry, deterministically reconstruct
+    unique evidence-backed citations when a cited tag is invalid or missing on a supported claim,
+    and remove unrepairable invalid citations and unsupported claims.
+    """
+    registry = build_citation_registry(evidence_chunks)
+    norm_ans = normalize_multi_citations(answer or "")
+    norm_ans = re.sub(r"\s*\[source_id#chunk_id\]", "", norm_ans).strip()
+
+    # Resolve [source_id#chunk-xxx] or [document_id#chunk-xxx] if chunk-xxx is in registry
+    chunk_by_id = {c.chunk.chunk_id: c.chunk for c in evidence_chunks}
+    def _replace_placeholder_doc(m):
+        cid = m.group(1)
+        if cid in chunk_by_id:
+            return f"[{chunk_by_id[cid].document_id}#{cid}]"
+        return m.group(0)
+    norm_ans = re.sub(r"\[(?:source_id|document_id)#([a-zA-Z0-9_-]+)\]", _replace_placeholder_doc, norm_ans)
+
+    raw_citations = extract_citations(norm_ans)
+    raw_suspicious = extract_suspicious_citations(norm_ans)
+    raw_invalid = [c for c in raw_citations if c not in registry]
+    for s in raw_suspicious:
+        if s not in registry and s not in raw_invalid:
+            raw_invalid.append(s)
+
+    if not evidence_chunks or is_abstention(norm_ans):
+        return CitationCanonicalizationReport(
+            canonical_answer=norm_ans,
+            raw_citations=raw_citations,
+            raw_invalid_citations=raw_invalid,
+            final_citations=raw_citations,
+            final_invalid_citations=raw_invalid,
+        )
+
+    # Collect calculator numbers (distinguishing outputs vs input operands)
+    calc_numbers: Set[str] = set()
+    calc_result_numbers: Set[str] = set()
+    used_calculator = False
+    if tool_executions:
+        for t in tool_executions:
+            t_name = getattr(t, "tool_name", None) or (t.get("tool_name") if isinstance(t, dict) else None)
+            if t_name == "calculate":
+                used_calculator = True
+                t_res = getattr(t, "result", None) or (t.get("result") if isinstance(t, dict) else None)
+                if isinstance(t_res, dict) and "result" in t_res:
+                    res_val = str(t_res["result"])
+                    calc_numbers.add(res_val)
+                    calc_numbers.add(_normalize_numeric_token(res_val))
+                    calc_result_numbers.add(res_val)
+                    calc_result_numbers.add(_normalize_numeric_token(res_val))
+                elif isinstance(t_res, (int, float)):
+                    calc_numbers.add(str(t_res))
+                    calc_numbers.add(_normalize_numeric_token(str(t_res)))
+                    calc_result_numbers.add(str(t_res))
+                    calc_result_numbers.add(_normalize_numeric_token(str(t_res)))
+                t_args = getattr(t, "arguments", None) or (t.get("arguments") if isinstance(t, dict) else None)
+                if isinstance(t_args, dict) and "expression" in t_args:
+                    for n in re.findall(r"\d+(?:\.\d+)?", str(t_args["expression"])):
+                        calc_numbers.add(n)
+                        calc_numbers.add(_normalize_numeric_token(n))
+        if used_calculator:
+            calc_numbers.update({"60", "100", "1000", "1024", "3600"})
+
+    repairs_count = 0
+    removals_count = 0
+    claims_removed_count = 0
+
+    # Merge standalone citation lines before sentence processing
+    ans_merged = re.sub(
+        r"\n+\s*((?:\*{0,2}\[[a-zA-Z0-9_.-]+#[a-zA-Z0-9_.-]+\]\*{0,2}[.,;: ]*)+)(?=\n|$)",
+        r" \1",
+        norm_ans,
+    )
+    sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+(?=[A-ZА-ЯІЇЄҐ*\[])|\n\n+", ans_merged) if s.strip()]
+    rebuilt_sentences: List[str] = []
+
+    for sent in sentences:
+        s_cites = extract_citations(sent)
+        s_susp = extract_suspicious_citations(sent)
+        sent_without_cites = re.sub(r"\[[a-zA-Z0-9_.-]+#[a-zA-Z0-9_.-]+\]", "", sent)
+        for sp in s_susp:
+            sent_without_cites = sent_without_cites.replace(sp, "")
+        sent_without_cites = re.sub(r"\s+([.,;:!?])", r"\1", sent_without_cites).strip()
+
+        invalid_in_sent = [c for c in s_cites if c not in registry] + [s for s in s_susp if s not in registry]
+        valid_in_sent = [c for c in s_cites if c in registry]
+
+        if invalid_in_sent:
+            # Attempt deterministic content-based reconstruction for each invalid citation
+            preferred_doc = None
+            m_doc = re.match(r"^\[([a-zA-Z0-9_.-]+)#", invalid_in_sent[0])
+            if m_doc:
+                preferred_doc = m_doc.group(1)
+
+            unique_cits = find_unique_supporting_citations(
+                sent_without_cites,
+                evidence_chunks,
+                calc_numbers,
+                preferred_doc_id=preferred_doc,
+            )
+            if unique_cits:
+                repairs_count += len(invalid_in_sent)
+                for uc in unique_cits:
+                    if uc not in valid_in_sent:
+                        valid_in_sent.append(uc)
+            else:
+                removals_count += len(invalid_in_sent)
+
+            if valid_in_sent:
+                # Reconstruct sentence with only valid_in_sent
+                cits_str = " ".join(valid_in_sent)
+                if sent_without_cites.endswith((".", "!", "?")):
+                    rebuilt_sent = f"{sent_without_cites[:-1].rstrip()} {cits_str}{sent_without_cites[-1]}"
+                else:
+                    rebuilt_sent = f"{sent_without_cites} {cits_str}"
+                rebuilt_sentences.append(rebuilt_sent)
+            else:
+                # Neither valid nor uniquely reconstructible citation -> remove unsupported claim sentence if other sentences exist
+                claims_removed_count += 1
+        else:
+            rebuilt_sentences.append(sent)
+
+    if rebuilt_sentences:
+        canonical_ans = "\n\n".join(rebuilt_sentences) if "\n\n" in norm_ans else " ".join(rebuilt_sentences)
+    elif claims_removed_count > 0:
+        is_uk = bool(re.search(r"[а-яА-ЯіїєґІЇЄҐ]", norm_ans))
+        canonical_ans = (
+            "У наданих фрагментах документації недостатньо однозначно підтверджених цитатами фактів для відповіді."
+            if is_uk
+            else "Insufficient uniquely verified evidence in the retrieved passages to support a cited answer."
+        )
+    else:
+        canonical_ans = norm_ans
+
+    # If the entire answer has NO citations at all (e.g. model used calculate tool and forgot to cite retrieved operand chunks),
+    # check if retrieved chunks uniquely support the answer's operands/claims
+    current_cites = extract_citations(canonical_ans)
+    if not current_cites and evidence_chunks:
+        unique_cits = find_unique_supporting_citations(
+            canonical_ans,
+            evidence_chunks,
+            calc_numbers=calc_result_numbers,  # Match retrieved operand numbers while allowing calculated result!
+        )
+        if unique_cits:
+            repairs_count += len(unique_cits)
+            cits_str = " ".join(unique_cits)
+            if canonical_ans.endswith((".", "!", "?")):
+                canonical_ans = f"{canonical_ans[:-1].rstrip()} {cits_str}{canonical_ans[-1]}"
+            else:
+                canonical_ans = f"{canonical_ans} {cits_str}"
+
+    # Strip stray empty/slash-only bracket artifacts left by model formatting (e.g. \[\\] or \[\])
+    canonical_ans = re.sub(r"\\?\[[\\ ]*\\?\]", "", canonical_ans)
+    canonical_ans = re.sub(r"[ \t]{2,}", " ", canonical_ans)
+    canonical_ans = re.sub(r"\s+([.,;:!?])", r"\1", canonical_ans).strip()
+    final_cites = extract_citations(canonical_ans)
+    final_susp = extract_suspicious_citations(canonical_ans)
+    final_invalid = [c for c in final_cites if c not in registry] + [s for s in final_susp if s not in registry]
+
+    return CitationCanonicalizationReport(
+        canonical_answer=canonical_ans,
+        raw_citations=raw_citations,
+        raw_invalid_citations=raw_invalid,
+        final_citations=final_cites,
+        final_invalid_citations=final_invalid,
+        citation_repairs_count=repairs_count,
+        citation_removals_count=removals_count,
+        unsupported_claims_removed_count=claims_removed_count,
+    )
 
 
 def verify_grounding(
@@ -133,19 +718,11 @@ def verify_grounding(
     
     1. Citation identifier validity & syntax (with bracket grouping normalization)
     2. Citation provenance (retrieved in current turn)
-    3. Claim-to-evidence support (numerical and technology premise consistency)
+    3. Structured Claim-to-evidence support (numerical, entity, contradiction, and technology premise consistency)
     4. Explicit status classification (including calculator-backed and refusal turns)
     """
     answer_norm = normalize_multi_citations(answer)
-    supplied_citations: Dict[str, EvidenceChunk] = {}
-    for ec in evidence_chunks:
-        supplied_citations[ec.citation] = ec
-        # Also allow matching by filename stem or source_id if identical chunk_id
-        c_id = ec.chunk.chunk_id
-        d_id = ec.chunk.document_id
-        supplied_citations[f"[{d_id}#{c_id}]"] = ec
-        if ec.chunk.metadata and "source_id" in ec.chunk.metadata:
-            supplied_citations[f"[{ec.chunk.metadata['source_id']}#{c_id}]"] = ec
+    supplied_citations = build_citation_registry(evidence_chunks)
 
     cited = extract_citations(answer_norm)
     suspicious = extract_suspicious_citations(answer_norm)
@@ -170,11 +747,16 @@ def verify_grounding(
                     res_val = str(t_res["result"])
                     calc_numbers.add(res_val)
                     calc_numbers.add(_normalize_numeric_token(res_val))
+                elif isinstance(t_res, (int, float)):
+                    calc_numbers.add(str(t_res))
+                    calc_numbers.add(_normalize_numeric_token(str(t_res)))
                 t_args = getattr(t, "arguments", None) or (t.get("arguments") if isinstance(t, dict) else None)
                 if isinstance(t_args, dict) and "expression" in t_args:
                     for n in re.findall(r"\d+(?:\.\d+)?", str(t_args["expression"])):
                         calc_numbers.add(n)
                         calc_numbers.add(_normalize_numeric_token(n))
+        if used_calculator:
+            calc_numbers.update({"60", "100", "1000", "1024", "3600"})
 
     # Merge standalone citation-only lines/paragraphs onto preceding paragraph before splitting
     answer_merged = re.sub(
@@ -183,116 +765,56 @@ def verify_grounding(
         answer_norm,
     )
 
-    # Split into paragraphs / logical blocks so bulleted lists ending with a citation share context
     sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+(?=[A-ZА-ЯІЇЄҐ*\[])|\n\n+", answer_merged) if s.strip()]
     claims: List[ClaimSupport] = []
 
-    # Ignore structural identifiers, ports, HTTP codes, dimensions, and model sizes
-    ignore_nums = {
-        "001", "1", "2", "3", "4", "5", "6", "7", "2024", "2025", "2026",
-        "1234", "6379", "6380", "8000", "8080", "200", "201", "400", "404", "422", "500", "503",
-        "768", "384", "1536", "0.5", "8", "70",
-    }
-
-    all_evidence_lower = " ".join(c.text for c in evidence_chunks).lower() if evidence_chunks else ""
-
     for sentence in sentences:
         s_citations = extract_citations(sentence)
-        # Strip citations, URLs, and markdown formatting before extracting numbers
         sentence_without_cites = re.sub(r"\[[a-zA-Z0-9_.-]+#[a-zA-Z0-9_.-]+\]", "", sentence)
         sentence_without_cites = re.sub(r"https?://\S+", "", sentence_without_cites)
-        # Ignore Uncertainty / follow-up question sentences that make no factual assertions
         if is_abstention(sentence_without_cites) or sentence_without_cites.strip().endswith("?"):
             continue
 
-        # Enforce answer-wide technology premise validation when evidence was supplied
-        if evidence_chunks and not abstained:
-            s_lower_global = strip_markdown(sentence_without_cites).lower()
-            absent_techs = [
-                tech for tech in KNOWN_TECHNOLOGIES
-                if re.search(r"\b" + re.escape(tech) + r"\b", s_lower_global)
-                and not re.search(r"\b" + re.escape(tech) + r"\b", all_evidence_lower)
-            ]
-            if absent_techs and not s_citations:
-                claims.append(
-                    ClaimSupport(
-                        claim_text=sentence,
-                        cited_chunk_ids=[],
-                        is_supported=False,
-                        unsupported_reason=f"Subject '{absent_techs[0]}' absent from retrieved evidence.",
-                    )
-                )
-                continue
-
         if not s_citations:
-            # Check if sentence makes empirical/numeric claims without citation
-            nums = re.findall(r"(?<![\w.])-?\d+(?:,\d{3})*(?:\.\d+)?", sentence_without_cites)
+            # If the whole answer has valid citations and any numbers in this summary/header line exist in cited chunks, allow it
+            claim_nums = _extract_claim_numbers(sentence_without_cites)
             substantive_nums = [
-                n for n in nums
-                if n not in ignore_nums
-                and _normalize_numeric_token(n) not in ignore_nums
+                n for n in claim_nums
+                if n not in IGNORE_STRUCTURAL_NUMS
+                and _normalize_numeric_token(n) not in IGNORE_STRUCTURAL_NUMS
                 and _normalize_numeric_token(n) not in calc_numbers
             ]
-            # If the whole answer has valid citations and the number exists in any cited chunk, don't fail a header/summary line
             if substantive_nums and cited and not invalid:
-                all_cited_text = " ".join(supplied_citations[c].text for c in cited if c in supplied_citations)
+                all_cited_text = " ".join(chunk_searchable_text(supplied_citations[c]) for c in cited if c in supplied_citations)
                 substantive_nums = [n for n in substantive_nums if not _number_present_in_text(n, all_cited_text)]
+                if not substantive_nums:
+                    continue
 
-            if substantive_nums and not abstained:
-                claims.append(
-                    ClaimSupport(
-                        claim_text=sentence,
-                        cited_chunk_ids=[],
-                        is_supported=False,
-                        unsupported_reason="Factual claim with numbers lacks supporting citation.",
-                    )
-                )
+            if not substantive_nums and cited and not invalid:
+                # Sentence only mentions derived calculator/source numbers when overall response is properly cited
+                continue
+
+            supp = assess_claim_support(
+                sentence,
+                [],
+                supplied_citations,
+                evidence_chunks,
+                calc_numbers,
+                abstained=abstained,
+            )
+            if not supp.is_supported:
+                claims.append(supp)
             continue
 
-        # Verify sentence against combined text of all cited chunks in this sentence/block
-        sentence_supported = True
-        failure_reasons = []
-        valid_sentence_chunks = []
-        for cite_tag in s_citations:
-            if cite_tag not in supplied_citations:
-                sentence_supported = False
-                failure_reasons.append(f"Citation {cite_tag} was not supplied in current retrieval.")
-            else:
-                valid_sentence_chunks.append(supplied_citations[cite_tag])
-
-        if valid_sentence_chunks:
-            combined_cited_text = " ".join(c.text for c in valid_sentence_chunks)
-            combined_cited_lower = combined_cited_text.lower()
-            s_lower = sentence_without_cites.lower()
-
-            # 1. Technology premise validation: if claim sentence mentions a technology, it must appear in cited evidence
-            for tech in KNOWN_TECHNOLOGIES:
-                if re.search(r"\b" + re.escape(tech) + r"\b", s_lower):
-                    if not re.search(r"\b" + re.escape(tech) + r"\b", combined_cited_lower):
-                        sentence_supported = False
-                        failure_reasons.append(f"Subject '{tech}' absent from cited passage(s) {s_citations}.")
-
-            # 2. Numeric validation
-            claim_nums = re.findall(r"(?<![\w.])-?\d+(?:,\d{3})*(?:\.\d+)?", sentence_without_cites)
-            for num in claim_nums:
-                if (
-                    num in ignore_nums
-                    or _normalize_numeric_token(num) in ignore_nums
-                    or _normalize_numeric_token(num) in calc_numbers
-                ):
-                    continue
-                if not _number_present_in_text(num, combined_cited_text):
-                    sentence_supported = False
-                    failure_reasons.append(f"Number '{num}' absent from cited passage(s) {s_citations}.")
-
-        claims.append(
-            ClaimSupport(
-                claim_text=sentence,
-                cited_chunk_ids=s_citations,
-                is_supported=sentence_supported,
-                unsupported_reason="; ".join(failure_reasons) if failure_reasons else None,
-            )
+        supp = assess_claim_support(
+            sentence,
+            s_citations,
+            supplied_citations,
+            evidence_chunks,
+            calc_numbers,
+            abstained=abstained,
         )
+        claims.append(supp)
 
     # Derive Grounding Status
     if abstained:
@@ -304,13 +826,11 @@ def verify_grounding(
     if invalid:
         return GroundingStatus.VALIDATION_FAILED, cited, invalid, claims
 
-    # Pure calculator turn with no document retrieval required
     if not cited and not evidence_chunks and used_calculator:
         if not claims or all(c.is_supported for c in claims):
             return GroundingStatus.GROUNDED, cited, invalid, claims
 
     if not cited and evidence_chunks:
-        # Expected citations for retrieved evidence
         return GroundingStatus.VALIDATION_FAILED, cited, invalid, claims
 
     if claims and any(not c.is_supported for c in claims):

@@ -165,9 +165,54 @@ class ClaimSupport:
     cited_chunk_ids: List[str]
     is_supported: bool
     unsupported_reason: Optional[str] = None
+    verdict: str = "SUPPORTED"
+    subject: str = ""
+    predicate: str = ""
+    objects_and_entities: List[str] = field(default_factory=list)
+    numbers_and_units: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
+
+
+@dataclass
+class ArithmeticPlan:
+    operation: str
+    operands: List[float] = field(default_factory=list)
+    units: List[str] = field(default_factory=list)
+    timestamps: List[str] = field(default_factory=list)
+    source_document_ids: List[str] = field(default_factory=list)
+    source_chunk_ids: List[str] = field(default_factory=list)
+    source_citations: List[str] = field(default_factory=list)
+    source_text_spans: List[str] = field(default_factory=list)
+    validation_status: str = "MISSING_OPERAND"
+    expression: Optional[str] = None
+    result: Optional[float] = None
+    result_unit: str = ""
+    execution_origin: ToolCallOrigin = ToolCallOrigin.RECOVERY_EXECUTED
+    canonicalization_decision: str = "NO_MODIFICATION"
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "operation": self.operation,
+            "operands": self.operands,
+            "units": self.units,
+            "timestamps": self.timestamps,
+            "source_document_ids": self.source_document_ids,
+            "source_chunk_ids": self.source_chunk_ids,
+            "source_citations": self.source_citations,
+            "source_text_spans": self.source_text_spans,
+            "validation_status": self.validation_status,
+            "expression": self.expression,
+            "result": self.result,
+            "result_unit": self.result_unit,
+            "execution_origin": (
+                self.execution_origin.value
+                if isinstance(self.execution_origin, ToolCallOrigin)
+                else str(self.execution_origin)
+            ),
+            "canonicalization_decision": self.canonicalization_decision,
+        }
 
 
 @dataclass
@@ -181,8 +226,16 @@ class Turn:
     tool_executions: List[ToolExecutionRecord] = field(default_factory=list)
     citations: List[str] = field(default_factory=list)
     invalid_citations: List[str] = field(default_factory=list)
+    raw_citations: List[str] = field(default_factory=list)
+    raw_invalid_citations: List[str] = field(default_factory=list)
+    citation_repairs_count: int = 0
+    citation_removals_count: int = 0
+    unsupported_claims_removed_count: int = 0
     claims: List[ClaimSupport] = field(default_factory=list)
     evidence: List[EvidenceChunk] = field(default_factory=list)
+    arithmetic_plan: Optional[ArithmeticPlan] = None
+    timings_ms: Dict[str, float] = field(default_factory=dict)
+    telemetry: Dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     runtime_seconds: float = 0.0
 
@@ -197,8 +250,16 @@ class Turn:
             "tools_used": [t.to_dict() for t in self.tool_executions],
             "citations": self.citations,
             "invalid_citations": self.invalid_citations,
+            "raw_citations": self.raw_citations,
+            "raw_invalid_citations": self.raw_invalid_citations,
+            "citation_repairs_count": self.citation_repairs_count,
+            "citation_removals_count": self.citation_removals_count,
+            "unsupported_claims_removed_count": self.unsupported_claims_removed_count,
             "claims": [c.to_dict() for c in self.claims],
             "evidence": [e.to_dict() for e in self.evidence],
+            "arithmetic_plan": self.arithmetic_plan.to_dict() if self.arithmetic_plan else None,
+            "timings_ms": self.timings_ms,
+            "telemetry": self.telemetry,
             "created_at": self.created_at,
             "runtime_seconds": round(self.runtime_seconds, 3),
         }
