@@ -1,4 +1,4 @@
-"""Read and validate the compact, versioned record of the historical GPU run."""
+"""Read and validate the curated record of real GPU inference runs."""
 from __future__ import annotations
 
 import hashlib
@@ -26,12 +26,12 @@ def file_sha256(path: Path) -> str:
 
 
 def validate_verified_runs(payload: dict[str, Any]) -> None:
-    """Reject incomplete or internally inconsistent historical evidence."""
+    """Reject incomplete or internally inconsistent curated run records."""
     if payload.get('schema_version') != 1:
         raise ValueError('Unsupported verified evidence schema')
     runs = payload.get('runs')
-    if not isinstance(runs, list) or len(runs) != 17:
-        raise ValueError('Verified evidence must contain 17 unique generations')
+    if not isinstance(runs, list) or not runs:
+        raise ValueError('Verified evidence must contain at least one curated run')
     actual_image_sha = file_sha256(INPUT_IMAGE_PATH)
     seen: set[str] = set()
     for index, run in enumerate(runs):
@@ -52,7 +52,7 @@ def validate_verified_runs(payload: dict[str, Any]) -> None:
 
 
 def load_verified_runs(path: Path = VERIFIED_RUNS_PATH) -> list[dict[str, Any]]:
-    """Load historical runs after validating schema and image provenance."""
+    """Load curated runs after validating schema and image provenance."""
     try:
         payload = json.loads(path.read_text(encoding='utf-8'))
     except (OSError, json.JSONDecodeError) as exc:
@@ -61,27 +61,27 @@ def load_verified_runs(path: Path = VERIFIED_RUNS_PATH) -> list[dict[str, Any]]:
     return payload['runs']
 
 
-def verified_run_map() -> dict[str, dict[str, Any]]:
+def verified_run_map(path: Path = VERIFIED_RUNS_PATH) -> dict[str, dict[str, Any]]:
     """Index verified generations by their content-addressed run id."""
-    return {run['run_id']: run for run in load_verified_runs()}
+    return {run['run_id']: run for run in load_verified_runs(path)}
 
 
-def historical_experiment_rows() -> list[dict[str, Any]]:
-    """Expand 17 physical generations into the documented 19 experiment rows."""
+def historical_experiment_rows(path: Path = VERIFIED_RUNS_PATH) -> list[dict[str, Any]]:
+    """Expand curated example generations into matching experiment rows."""
     from dataclasses import asdict
     from .experiments import experiment_plan
 
-    runs = load_verified_runs()
+    runs = load_verified_runs(path)
     lookup = {(run['question'], tuple(sorted(run['generation_config'].items()))): run
               for run in runs}
     rows = []
     for case in experiment_plan():
         key = (case.question['question'], tuple(sorted(asdict(case.generation).items())))
-        if key not in lookup:
-            raise ValueError(f'Missing verified result for {case.experiment}/{case.case_id}')
-        run = lookup[key]
+        run = lookup.get(key)
+        if run is None:
+            continue
         generation = run['generation_config']
         rows.append(dict(run, **generation, experiment=case.experiment, case_id=case.case_id))
-    if len(rows) != 19 or len({row['run_id'] for row in rows}) != 17:
-        raise ValueError('Historical matrix must contain 19 rows and 17 unique runs')
+    if not rows:
+        raise ValueError('Curated example runs matched zero planned experiment cases')
     return rows

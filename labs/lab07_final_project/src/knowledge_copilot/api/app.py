@@ -34,6 +34,7 @@ async def lifespan(app: FastAPI):
             if manifest_file.exists():
                 import json
                 manifest = json.loads(manifest_file.read_text(encoding="utf-8"))
+                manifest_filenames = {item["workspace_filename"] for item in manifest}
                 for item in manifest:
                     fpath = knowledge_dir / item["workspace_filename"]
                     if fpath.exists():
@@ -49,7 +50,7 @@ async def lifespan(app: FastAPI):
 
             # Also ingest engineering documents from subdirectories
             for fpath in knowledge_dir.glob("**/*"):
-                if fpath.is_file() and fpath.suffix.lower() in {".md", ".txt", ".pdf"} and fpath.name != "manifest.json":
+                if fpath.is_file() and fpath.suffix.lower() in {".md", ".txt", ".pdf"} and fpath.name != "manifest.json" and fpath.name not in locals().get("manifest_filenames", set()):
                     doc_id = fpath.stem
                     if ingestion.sqlite_repo.get_document(doc_id) is None:
                         try:

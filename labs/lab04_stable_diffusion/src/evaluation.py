@@ -51,7 +51,7 @@ def quality_rubric(observations_path: Path) -> pd.DataFrame:
 def scheduler_experiment_plan() -> pd.DataFrame:
     return pd.DataFrame([
         {"scheduler": "PNDMScheduler", "status": "EXECUTED_BASELINE", "steps": 30,
-         "reason": "Scheduler recorded in all 13 verified sidecars."},
+         "reason": "Scheduler recorded in verified generation metadata."},
         {"scheduler": "EulerDiscreteScheduler", "status": "NOT_EXECUTED", "steps": 30,
          "reason": "No verified image or timing exists for this scheduler."},
         {"scheduler": "DDIMScheduler", "status": "NOT_EXECUTED", "steps": 30,

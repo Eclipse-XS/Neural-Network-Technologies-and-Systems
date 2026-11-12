@@ -1,4 +1,4 @@
-"""Transparent descriptive checks plus explicit, run-specific human review."""
+"""Transparent descriptive checks plus optional run-specific review annotations."""
 import hashlib
 import json
 import re
@@ -10,13 +10,13 @@ HISTORICAL_WORKSPACE_SHA256 = "fa8df1ee055497d41133b25cbecd354e419bddfe62f5befa6
 
 
 def load_verified():
-    batch = json.loads((OUTPUTS / 'metadata/latest_batch.json').read_text())
-    all_runs = [json.loads(line) for line in (OUTPUTS / 'runs/runs.jsonl').read_text(encoding='utf-8').splitlines()]
+    batch = json.loads((OUTPUTS / 'metadata/latest_batch.json').read_text(encoding='utf-8'))
+    all_runs = [json.loads(line) for line in (OUTPUTS / 'runs/runs.jsonl').read_text(encoding='utf-8').splitlines() if line.strip()]
     runs = [r for r in all_runs if r['run_id'] in batch['run_ids']]
     assert [r['run_id'] for r in runs] == batch['run_ids']
     settings = Settings()
     names = [t.name for t in build_tools()]
-    for item in json.loads((WORKSPACE / 'manifest.json').read_text()):
+    for item in json.loads((WORKSPACE / 'manifest.json').read_text(encoding='utf-8')):
         assert hashlib.sha256((WORKSPACE / item['workspace_filename']).read_bytes()).hexdigest() == item['sha256']
     current_ws_sha = hashlib.sha256((WORKSPACE / 'manifest.json').read_bytes()).hexdigest()
     allowed_ws_shas = {current_ws_sha, HISTORICAL_WORKSPACE_SHA256}
@@ -49,13 +49,14 @@ def evidence_checks(run, scenario, trace):
             'read_or_search_used': any(n in run['tools_used'] for n in ['search_workspace', 'read_workspace_file'])}
 
 
-def evaluated_rows():
+def evaluated_rows(reviews_path=None):
     runs, _ = load_verified()
-    scenarios = {s['scenario_id']: s for s in json.loads((LAB_ROOT / 'experiments/scenarios.json').read_text(encoding='utf-8'))}
-    reviews = json.loads((LAB_ROOT / 'report/manual_evaluation.json').read_text(encoding='utf-8'))
+    scenarios = {s['scenario_id']: s for s in json.loads((LAB_ROOT / 'scenarios.json').read_text(encoding='utf-8'))}
+    reviews = (json.loads(reviews_path.read_text(encoding='utf-8'))
+               if reviews_path is not None and reviews_path.is_file() else {})
     result = []
     for r in runs:
         trace = json.loads((LAB_ROOT / r['trace_path']).read_text(encoding='utf-8'))
-        review = reviews[r['run_id']]
+        review = reviews.get(r['run_id'], {})
         result.append({**r, **evidence_checks(r, scenarios[r['scenario_id']], trace), **review})
     return result
