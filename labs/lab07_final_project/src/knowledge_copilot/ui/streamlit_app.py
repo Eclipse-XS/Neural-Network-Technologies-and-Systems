@@ -1,18 +1,11 @@
 """Production Streamlit Interface for Local Engineering Knowledge Copilot."""
 import asyncio
 import os
-import sys
 import uuid
-from pathlib import Path
 import streamlit as st
 
-# Ensure repository root is on sys.path
-root_dir = Path(__file__).resolve().parents[4]
-if str(root_dir) not in sys.path:
-    sys.path.insert(0, str(root_dir))
-
 import httpx
-from labs.lab07_final_project.src.knowledge_copilot.api.dependencies import (
+from knowledge_copilot.api.dependencies import (
     get_embeddings,
     get_ingestion_service,
     get_llm_client,
@@ -21,7 +14,7 @@ from labs.lab07_final_project.src.knowledge_copilot.api.dependencies import (
     get_session_service,
     get_sqlite_repo,
 )
-from labs.lab07_final_project.src.knowledge_copilot.domain.enums import GroundingStatus, RetrievalMode
+from knowledge_copilot.domain.enums import GroundingStatus, RetrievalMode
 
 
 st.set_page_config(
@@ -42,43 +35,8 @@ def get_services():
     session_service = get_session_service()
     query_service = get_query_service()
     
-    # Initialize index and default corpus if Redis is online
-    if redis_adapter.ping():
-        redis_adapter.initialize_store(embeddings)
-        # Load coursework if not yet indexed
-        lab_root = Path(__file__).resolve().parents[3]
-        knowledge_dir = lab_root / "assets/knowledge"
-        manifest_file = knowledge_dir / "manifest.json"
-        if manifest_file.exists():
-            import json
-            manifest = json.loads(manifest_file.read_text(encoding="utf-8"))
-            manifest_filenames = {item["workspace_filename"] for item in manifest}
-            for item in manifest:
-                fpath = knowledge_dir / item["workspace_filename"]
-                if fpath.exists():
-                    try:
-                        ingestion_service.ingest_file(
-                            filename=item["workspace_filename"],
-                            content=fpath.read_bytes(),
-                            collection="coursework",
-                            document_id=item["source_id"],
-                        )
-                    except Exception:
-                        pass
-        # Also ingest engineering documents from subdirectories (matching FastAPI lifespan)
-        for fpath in knowledge_dir.glob("**/*"):
-            if fpath.is_file() and fpath.suffix.lower() in {".md", ".txt", ".pdf"} and fpath.name != "manifest.json" and fpath.name not in locals().get("manifest_filenames", set()):
-                doc_id = fpath.stem
-                if ingestion_service.sqlite_repo.get_document(doc_id) is None:
-                    try:
-                        ingestion_service.ingest_file(
-                            filename=fpath.name,
-                            content=fpath.read_bytes(),
-                            collection="engineering",
-                            document_id=doc_id,
-                        )
-                    except Exception:
-                        pass
+    from knowledge_copilot.bootstrap import initialize_knowledge
+    initialize_knowledge()
     return {
         "sqlite": sqlite_repo,
         "redis": redis_adapter,
@@ -89,7 +47,30 @@ def get_services():
     }
 
 
-services = get_services()
+async def execute_local_query(**kwargs):
+    try:
+        return await query_service.execute_query(**kwargs)
+    finally:
+        await llm_client.close()
+
+
+@st.cache_data(ttl=30, show_spinner=False)
+def llm_is_online(base_url, model_id):
+    """Cheap status refresh; inference/tool compatibility is checked by the launcher."""
+    try:
+        response = httpx.get(f"{base_url}/models", timeout=2, trust_env=False)
+        response.raise_for_status()
+        models = response.json().get("data", [])
+        return any(item.get("id") == model_id for item in models) if model_id else bool(models)
+    except Exception:
+        return False
+
+
+try:
+    services = get_services()
+except Exception as exc:
+    st.error(f"Startup failed ({type(exc).__name__}). Run .\\run.ps1 and inspect its diagnostics.")
+    st.stop()
 sqlite_repo = services["sqlite"]
 redis_adapter = services["redis"]
 ingestion_service = services["ingestion"]
@@ -133,11 +114,7 @@ with st.sidebar:
     redis_online = redis_adapter.ping()
     st.write(f"**Redis Vector Store:** {'🟢 Online' if redis_online else '🔴 Offline (Docker port 6380)'}")
     
-    llm_online = False
-    try:
-        llm_online = asyncio.run(llm_client.is_available())
-    except Exception:
-        pass
+    llm_online = llm_is_online(llm_client.base_url, llm_client.model_id)
     st.write(f"**Local LLM (LM Studio):** {'🟢 Available' if llm_online else '🟡 Standby / Port 1234'}")
     
     docs = ingestion_service.list_documents()
@@ -149,7 +126,7 @@ with st.sidebar:
     backend_mode = st.radio(
         "Service Backend",
         options=["FastAPI HTTP API (Port 8000)", "Standalone In-Process"],
-        index=0,
+        index=1,
         help="Select explicit execution path. HTTP API tests the networked FastAPI service, In-Process runs embedded.",
     )
     
@@ -264,7 +241,7 @@ with tab_chat:
                             st.error(
                                 f"Could not connect to FastAPI at `{api_url}`: {conn_err}\n\n"
                                 "Start the service via:\n"
-                                "```bash\nuvicorn labs.lab07_final_project.src.knowledge_copilot.api.app:app --host 127.0.0.1 --port 8000\n```\n"
+                                "```bash\nuvicorn knowledge_copilot.api.app:app --host 127.0.0.1 --port 8000\n```\n"
                                 "Or select 'Standalone In-Process' in the sidebar."
                             )
                             st.stop()
@@ -278,7 +255,7 @@ with tab_chat:
                     else:
                         mode_enum = RetrievalMode(st.session_state.retrieval_mode)
                         turn = asyncio.run(
-                            query_service.execute_query(
+                            execute_local_query(
                                 query=user_query,
                                 session_id=st.session_state.session_id,
                                 retrieval_mode=mode_enum,
@@ -370,13 +347,16 @@ with tab_docs:
                         st.success(f"Successfully indexed '{doc.filename}' ({doc.chunk_count} chunks generated).")
                         st.rerun()
                     except Exception as exc:
-                        st.error(f"Ingestion failed for '{f.name}': {type(exc).__name__}: {exc}")
+                        st.error(f"Ingestion failed for '{f.name}' ({type(exc).__name__}). Check document validity and storage availability.")
 
     st.subheader("Storage Consistency & Maintenance")
     if st.button("Reconcile Storage (Repair Inconsistencies)", type="secondary"):
         with st.spinner("Checking SQLite and Redis alignment..."):
-            rec_report = ingestion_service.reconcile_storage()
-            st.json(rec_report)
+            try:
+                rec_report = ingestion_service.reconcile_storage()
+                st.json(rec_report)
+            except Exception as exc:
+                st.error(f"Storage reconciliation failed ({type(exc).__name__}). Check storage availability.")
 
     st.subheader("Current Document Index")
     all_docs = ingestion_service.list_documents()

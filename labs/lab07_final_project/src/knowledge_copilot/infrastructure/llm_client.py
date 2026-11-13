@@ -1,7 +1,6 @@
 """Loopback LM Studio client adapter with preflight verification."""
 from dataclasses import dataclass, field
 from enum import Enum
-import re
 from typing import List, Optional, Tuple
 from urllib.parse import urlparse
 import httpx
@@ -54,7 +53,7 @@ def probe_lm_studio_readiness(
 
     # 1. Probe /models endpoint
     try:
-        models_resp = httpx.get(f"{base_url}/models", timeout=timeout)
+        models_resp = httpx.get(f"{base_url}/models", timeout=timeout, trust_env=False)
         if models_resp.status_code != 200:
             return LMStudioProbeResult(
                 status=LMStudioStatus.SERVER_UNREACHABLE,
@@ -89,29 +88,6 @@ def probe_lm_studio_readiness(
             if required_model.casefold() == m.casefold():
                 chosen_model = m
                 break
-        # Substring match
-        if not chosen_model:
-            for m in available_models:
-                if required_model.casefold() in m.casefold() or m.casefold() in required_model.casefold():
-                    chosen_model = m
-                    break
-        # Alphanumeric normalized match
-        if not chosen_model:
-            norm_req = re.sub(r"[^a-z0-9]", "", required_model.casefold())
-            for m in available_models:
-                norm_m = re.sub(r"[^a-z0-9]", "", m.casefold())
-                if norm_req in norm_m:
-                    chosen_model = m
-                    break
-        # Substantive stem match (excluding generic model vocabulary)
-        if not chosen_model:
-            generic = {"model", "chat", "instruct", "base", "text", "v1", "v2", "embed", "embedding", "ai"}
-            req_stems = [w for w in re.split(r"[-_/]", required_model.casefold()) if len(w) >= 4 and w not in generic]
-            if req_stems:
-                for m in available_models:
-                    if any(s in m.casefold() for s in req_stems):
-                        chosen_model = m
-                        break
         if not chosen_model:
             return LMStudioProbeResult(
                 status=LMStudioStatus.MODEL_NOT_FOUND,
@@ -129,7 +105,7 @@ def probe_lm_studio_readiness(
             "messages": [{"role": "user", "content": "ping"}],
             "max_tokens": 1,
         }
-        res = httpx.post(f"{base_url}/chat/completions", json=ping_payload, timeout=timeout)
+        res = httpx.post(f"{base_url}/chat/completions", json=ping_payload, timeout=timeout, trust_env=False)
         if res.status_code != 200:
             err_text = res.text.casefold()
             if "not found" in err_text:
@@ -184,7 +160,7 @@ def probe_lm_studio_readiness(
             "max_tokens": 100,
         }
         tool_timeout = min(15.0, max(5.0, timeout * 2))
-        t_res = httpx.post(f"{base_url}/chat/completions", json=tool_payload, timeout=tool_timeout)
+        t_res = httpx.post(f"{base_url}/chat/completions", json=tool_payload, timeout=tool_timeout, trust_env=False)
         if t_res.status_code != 200:
             return LMStudioProbeResult(
                 status=LMStudioStatus.TOOL_CALLING_UNSUPPORTED,

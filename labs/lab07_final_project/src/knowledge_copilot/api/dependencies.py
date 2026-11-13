@@ -28,7 +28,8 @@ def get_sqlite_repo() -> SQLiteRepository:
     if _SQLITE_REPO is None:
         db_path = Path(os.getenv("SESSION_DB", "outputs/sessions/assistant_memory.sqlite"))
         if not db_path.is_absolute():
-            lab_root = Path(__file__).resolve().parents[3]
+            from ..config import LAB_ROOT
+            lab_root = LAB_ROOT
             db_path = lab_root / db_path
         _SQLITE_REPO = SQLiteRepository(db_path)
     return _SQLITE_REPO
@@ -79,7 +80,7 @@ def get_llm_client() -> LocalLLMClient:
     global _LLM_CLIENT
     if _LLM_CLIENT is None:
         base_url = os.getenv("LM_STUDIO_BASE_URL", "http://localhost:1234/v1")
-        model_id = os.getenv("LM_STUDIO_MODEL", "mistralai/ministral-3-3b")
+        model_id = os.getenv("LM_STUDIO_MODEL", "")
         _LLM_CLIENT = LocalLLMClient(base_url=base_url, model_id=model_id)
     return _LLM_CLIENT
 

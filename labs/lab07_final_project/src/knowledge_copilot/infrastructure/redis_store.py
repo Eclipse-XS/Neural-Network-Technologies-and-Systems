@@ -1,8 +1,6 @@
 """Redis Stack vector store and index management."""
 import hashlib
 import json
-import subprocess
-import re
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
@@ -46,58 +44,10 @@ class RedisVectorAdapter:
 
     def get_client(self) -> Redis:
         if self._client is None:
-            import os
-            import sys
-            default_local_urls = {
-                "redis://localhost:6380",
-                "redis://127.0.0.1:6380",
-                "redis://localhost:6379",
-                "redis://127.0.0.1:6379",
-            }
-            is_default_local = self.redis_url.rstrip("/") in default_local_urls
-            candidate_urls = []
-            env_url = os.getenv("REDIS_URL") if is_default_local else None
-            if env_url and env_url not in candidate_urls:
-                candidate_urls.append(env_url)
-            if self.redis_url not in candidate_urls:
-                candidate_urls.append(self.redis_url)
-            if is_default_local:
-                if ":6380" in self.redis_url:
-                    candidate_urls.append(self.redis_url.replace(":6380", ":6379"))
-                    candidate_urls.append("redis://127.0.0.1:6379")
-                elif ":6379" in self.redis_url:
-                    candidate_urls.append(self.redis_url.replace(":6379", ":6380"))
-                    candidate_urls.append("redis://127.0.0.1:6380")
-
-                if sys.platform == "win32":
-                    try:
-                        wsl_ip = subprocess.check_output(
-                            ["wsl", "-d", "Ubuntu-24.04", "hostname", "-I"],
-                            timeout=2,
-                            text=True,
-                        ).strip().split()[0]
-                        if wsl_ip:
-                            candidate_urls.append(f"redis://{wsl_ip}:6379")
-                    except Exception:
-                        pass
-
-
-            last_err = None
-            for url in candidate_urls:
-                try:
-                    client = Redis.from_url(
-                        url,
-                        socket_connect_timeout=5,
-                        socket_timeout=30,
-                        decode_responses=False,
-                    )
-                    client.ping()
-                    self.redis_url = url
-                    self._client = client
-                    return self._client
-                except Exception as err:
-                    last_err = err
-            raise last_err or RuntimeError(f'Could not connect to Redis via {self.redis_url}')
+            self._client = Redis.from_url(
+                self.redis_url, socket_connect_timeout=2, socket_timeout=10,
+                decode_responses=False,
+            )
         return self._client
 
     def ping(self) -> bool:
@@ -130,8 +80,8 @@ class RedisVectorAdapter:
         if chunks:
             self.index_chunks(chunks, embeddings)
 
-    def index_chunks(self, chunks: List[Chunk], embeddings) -> int:
-        """Atomically index chunks into Redis without duplicating vectors."""
+    def index_chunks(self, chunks: List[Chunk], embeddings, *, force: bool = False) -> int:
+        """Return the number of requested chunks present after indexing, including existing keys."""
         if not chunks or not self.ping():
             return 0
         if self._store is None:
@@ -143,11 +93,11 @@ class RedisVectorAdapter:
         missing_chunks: List[Chunk] = []
         for c in chunks:
             key = f"{self.key_prefix}:{c.chunk_id}"
-            if not client.exists(key):
+            if force or not client.exists(key):
                 missing_chunks.append(c)
 
         if not missing_chunks:
-            return 0
+            return len(chunks)
 
         lc_docs = []
         for c in missing_chunks:
@@ -167,7 +117,7 @@ class RedisVectorAdapter:
         # Add to vector store
         ids = [c.chunk_id for c in missing_chunks]
         self._store.add_documents(lc_docs, ids=ids)
-        return len(missing_chunks)
+        return sum(bool(client.exists(f"{self.key_prefix}:{c.chunk_id}")) for c in chunks)
 
     def delete_document_chunks(self, document_id: str) -> int:
         """Remove all indexed chunks belonging to a document so they no longer appear in search."""

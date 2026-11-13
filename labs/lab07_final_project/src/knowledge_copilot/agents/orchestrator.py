@@ -5,6 +5,7 @@ import re
 import time
 import uuid
 from pathlib import Path
+from ..config import LAB_ROOT
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 
 from agents import (
@@ -131,7 +132,7 @@ class AgentOrchestrator:
         self.llm_client = llm_client
         self.search_fn = search_fn
         self.list_sources_fn = list_sources_fn
-        self.db_path = db_path or Path("outputs/sessions/assistant_memory.sqlite")
+        self.db_path = db_path or LAB_ROOT / "outputs/sessions/assistant_memory.sqlite"
         self.max_turns = max_turns
         self.timeout_seconds = timeout_seconds
         self.temperature = temperature
@@ -142,6 +143,7 @@ class AgentOrchestrator:
         self,
         current_evidence_accumulator: List[EvidenceChunk],
         retrieval_mode: Optional[Any] = None,
+        allow_calculation: bool = True,
     ):
         seen_chunk_keys: Set[Tuple[str, str]] = {
             (c.chunk.document_id, c.chunk.chunk_id) for c in current_evidence_accumulator
@@ -201,7 +203,10 @@ class AgentOrchestrator:
             except (ZeroDivisionError, ValueError) as exc:
                 return {"expression": expression, "error": str(exc), "result": None}
 
-        return [search_knowledge, list_knowledge_sources, calculate]
+        tools = [search_knowledge, list_knowledge_sources]
+        if allow_calculation:
+            tools.append(calculate)
+        return tools
 
     async def execute_turn(
         self,
@@ -216,7 +221,7 @@ class AgentOrchestrator:
         turn_id = f"turn_{uuid.uuid4().hex[:12]}"
 
         if tracer is None:
-            tracer = ExecutionTracer(Path(f"outputs/traces/{turn_id}.json"))
+            tracer = ExecutionTracer(LAB_ROOT / f"outputs/traces/{turn_id}.json")
 
         tracer.add_event("user_input", text=user_input, session_id=session_id)
 
@@ -285,7 +290,11 @@ class AgentOrchestrator:
                     runtime_seconds=round(total_ms / 1000.0, 3),
                 )
 
-            tools = self._build_tools(evidence_accum, retrieval_mode=retrieval_mode)
+            # Retrieved numbers and unsolicited tool choices do not establish user intent.
+            arith_intent = has_arithmetic_intent(user_input)
+            tools = self._build_tools(
+                evidence_accum, retrieval_mode=retrieval_mode, allow_calculation=arith_intent
+            )
             client = self.llm_client.get_client()
             model_id = self.llm_client.model_id
 
@@ -328,7 +337,6 @@ class AgentOrchestrator:
             arithmetic_plan = None
             calc_val = None
             has_calc_calls = any(t.tool_name == "calculate" for t in trace_hooks.tool_records)
-            arith_intent = has_arithmetic_intent(user_input)
 
             if has_calc_calls:
                 calc_val = validate_calculator_execution(user_input, trace_hooks.tool_records, evidence_accum)

@@ -2,7 +2,7 @@
 from typing import Optional
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 
-from ...domain.exceptions import DocumentNotFoundError, DocumentValidationError, ExtractionError
+from ...domain.exceptions import DocumentNotFoundError, DocumentValidationError, ExtractionError, IndexingError
 from ..dependencies import get_ingestion_service
 from ..schemas import DocumentListResponse, DocumentResponse
 
@@ -64,7 +64,10 @@ async def reindex_document(
     ingestion_service=Depends(get_ingestion_service),
 ):
     """Reindex an existing document."""
-    doc = ingestion_service.get_document(document_id)
-    if not doc:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Document '{document_id}' not found")
+    try:
+        doc = ingestion_service.reindex_document(document_id)
+    except DocumentNotFoundError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    except IndexingError as exc:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc)) from exc
     return DocumentResponse(**doc.to_dict())

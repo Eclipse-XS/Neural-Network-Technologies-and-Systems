@@ -4,21 +4,13 @@ Canonical multi-tab Streamlit entrypoint:
   streamlit run labs/lab07_final_project/src/knowledge_copilot/ui/streamlit_app.py --server.port 8501
 """
 import asyncio
-import os
-import sys
-from pathlib import Path
 import streamlit as st
-
-# Ensure repository root is on sys.path
-root_dir = Path(__file__).resolve().parents[2]
-if str(root_dir) not in sys.path:
-    sys.path.insert(0, str(root_dir))
 
 from src.agent import connect, create_agent, create_session, execute
 from src.config import Settings
 from src.knowledge_base import KnowledgeBase
-from src.knowledge_copilot.api.dependencies import get_ingestion_service
-from src.knowledge_copilot.rag.extractors import extract_text_from_bytes, validate_file_content
+from knowledge_copilot.api.dependencies import get_ingestion_service
+from knowledge_copilot.rag.extractors import extract_text_from_bytes, validate_file_content
 
 st.set_page_config(page_title="Coursework Knowledge Assistant", layout="wide")
 st.title("Coursework Knowledge Assistant")

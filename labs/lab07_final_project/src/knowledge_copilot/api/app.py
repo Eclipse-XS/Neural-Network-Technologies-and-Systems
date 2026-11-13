@@ -2,13 +2,11 @@
 import time
 import uuid
 from contextlib import asynccontextmanager
-from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from ..observability.logging import get_logger
-from .dependencies import get_embeddings, get_ingestion_service, get_redis_adapter
 from .routers import chat, documents, health
 
 logger = get_logger("knowledge_copilot.api")
@@ -16,59 +14,13 @@ logger = get_logger("knowledge_copilot.api")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: ensure Redis vector index is initialized and default coursework docs are loaded
-    logger.info("Initializing Knowledge Copilot API...")
+    from ..bootstrap import initialize_knowledge
+    from .dependencies import get_llm_client
+    initialize_knowledge()
     try:
-        redis_adapter = get_redis_adapter()
-        embeddings = get_embeddings()
-        ingestion = get_ingestion_service()
-        
-        if redis_adapter.ping():
-            redis_adapter.initialize_store(embeddings)
-            
-            # Load default coursework documents if available
-            lab_root = Path(__file__).resolve().parents[3]
-            knowledge_dir = lab_root / "assets/knowledge"
-            manifest_file = knowledge_dir / "manifest.json"
-            
-            if manifest_file.exists():
-                import json
-                manifest = json.loads(manifest_file.read_text(encoding="utf-8"))
-                manifest_filenames = {item["workspace_filename"] for item in manifest}
-                for item in manifest:
-                    fpath = knowledge_dir / item["workspace_filename"]
-                    if fpath.exists():
-                        try:
-                            ingestion.ingest_file(
-                                filename=item["workspace_filename"],
-                                content=fpath.read_bytes(),
-                                collection="coursework",
-                                document_id=item["source_id"],
-                            )
-                        except Exception as e:
-                            logger.warning(f"Could not ingest initial doc {item['source_id']}: {e}")
-
-            # Also ingest engineering documents from subdirectories
-            for fpath in knowledge_dir.glob("**/*"):
-                if fpath.is_file() and fpath.suffix.lower() in {".md", ".txt", ".pdf"} and fpath.name != "manifest.json" and fpath.name not in locals().get("manifest_filenames", set()):
-                    doc_id = fpath.stem
-                    if ingestion.sqlite_repo.get_document(doc_id) is None:
-                        try:
-                            ingestion.ingest_file(
-                                filename=fpath.name,
-                                content=fpath.read_bytes(),
-                                collection="engineering",
-                                document_id=doc_id,
-                            )
-                        except Exception as e:
-                            logger.warning(f"Could not ingest engineering doc {doc_id}: {e}")
-        else:
-            logger.warning("Redis is not currently reachable on startup.")
-    except Exception as exc:
-        logger.error(f"Error during startup initialization: {exc}")
-        
-    yield
-    logger.info("Shutting down Knowledge Copilot API...")
+        yield
+    finally:
+        await get_llm_client().close()
 
 
 def create_app() -> FastAPI:

@@ -1,5 +1,6 @@
 """Document ingestion lifecycle service with cross-store consistency and recovery."""
 import hashlib
+import logging
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -17,6 +18,8 @@ from ..observability.metrics import (
 )
 from ..rag.extractors import extract_text_from_bytes, validate_file_content
 from ..rag.splitters import build_chunks_from_document
+
+logger = logging.getLogger(__name__)
 
 
 class IngestionService:
@@ -62,9 +65,11 @@ class IngestionService:
         # Idempotency check: prevent duplicate vectors for identical content
         existing_doc = self.sqlite_repo.get_document_by_sha256(sha256_hash, collection=collection)
         existing_chunks = self.sqlite_repo.get_chunks_for_document(existing_doc.document_id) if existing_doc else []
-        if existing_doc and existing_doc.status == DocumentStatus.INDEXED and existing_chunks:
-            self._cached_chunks[existing_doc.document_id] = existing_chunks
-            return existing_doc
+        if existing_doc and existing_chunks:
+            return self.reindex_document(existing_doc.document_id, force=False)
+        prior_doc = self.sqlite_repo.get_document(doc_id)
+        if prior_doc and prior_doc.sha256 != sha256_hash:
+            raise IndexingError("Document ID already belongs to different content; delete it explicitly before replacement.")
 
         content_type = Path(clean_name).suffix.lstrip(".").lower()
         now = datetime.now(timezone.utc).isoformat()
@@ -98,17 +103,15 @@ class IngestionService:
             )
 
             # Atomic indexing into Redis and SQLite
-            self.redis_adapter.delete_document_chunks(doc_id)
             if self.require_vector_store:
                 if not self.redis_adapter.ping():
-                    r_url = getattr(self.redis_adapter, "redis_url", "configured endpoint")
-                    raise IndexingError(f"Vector store unreachable at {r_url}; indexing aborted to prevent false INDEXED state.")
+                    raise IndexingError("Vector store unreachable; indexing aborted to prevent false INDEXED state.")
                 indexed_count = self.redis_adapter.index_chunks(chunks, self.embeddings)
                 if len(chunks) > 0 and indexed_count != len(chunks):
-                    self.redis_adapter.delete_document_chunks(doc_id)
                     raise IndexingError(f"Vector indexing incomplete: expected {len(chunks)} chunks, indexed {indexed_count}.")
             elif self.redis_adapter.ping():
-                self.redis_adapter.index_chunks(chunks, self.embeddings)
+                if self.redis_adapter.index_chunks(chunks, self.embeddings) != len(chunks):
+                    raise IndexingError("Vector indexing incomplete.")
 
             self._cached_chunks[doc_id] = chunks
             try:
@@ -120,8 +123,9 @@ class IngestionService:
                 self.corpus_version += 1
             except Exception as sql_exc:
                 # Compensating rollback: remove Redis vectors if SQLite persistence fails
-                self.redis_adapter.delete_document_chunks(doc_id)
-                raise IndexingError(f"SQLite save failed, rolled back vectors: {sql_exc}") from sql_exc
+                if prior_doc is None:
+                    self.redis_adapter.delete_document_chunks(doc_id)
+                raise IndexingError("SQLite persistence failed during indexing.") from sql_exc
 
             self._reload_metrics()
             return doc
@@ -132,16 +136,43 @@ class IngestionService:
             doc.updated_at = datetime.now(timezone.utc).isoformat()
             try:
                 self.sqlite_repo.save_document(doc)
-            except Exception:
-                pass
+            except Exception as save_exc:
+                logger.error("Could not persist ingestion failure (%s).", type(save_exc).__name__)
 
             # Atomic rollback: clear any partially added chunks
-            self.redis_adapter.delete_document_chunks(doc_id)
+            if prior_doc is None:
+                self.redis_adapter.delete_document_chunks(doc_id)
             self._cached_chunks.pop(doc_id, None)
 
             RAG_INGESTION_FAILURES_TOTAL.labels(error_type=type(exc).__name__).inc()
             self._reload_metrics()
             raise
+
+    def reindex_document(self, document_id: str, *, force: bool = True) -> Document:
+        """Rebuild vectors from persisted chunks without deleting valid indexed data."""
+        doc = self.sqlite_repo.get_document(document_id)
+        if doc is None:
+            raise DocumentNotFoundError(f"Document '{document_id}' not found.")
+        chunks = self.sqlite_repo.get_chunks_for_document(document_id)
+        if not chunks:
+            raise IndexingError("Document has no persisted chunks to reindex.")
+        try:
+            indexed_count = self.redis_adapter.index_chunks(chunks, self.embeddings, force=force)
+            if indexed_count != len(chunks):
+                raise IndexingError(f"Vector indexing incomplete: expected {len(chunks)} chunks, indexed {indexed_count}.")
+            doc.status = DocumentStatus.INDEXED
+            doc.chunk_count = indexed_count
+            doc.error_message = None
+            doc.updated_at = datetime.now(timezone.utc).isoformat()
+            self.sqlite_repo.save_document(doc)
+        except IndexingError:
+            raise
+        except Exception as exc:
+            raise IndexingError("Document reindexing failed; existing data was retained.") from exc
+        self._cached_chunks[document_id] = chunks
+        self.corpus_version += 1
+        self._reload_metrics()
+        return doc
 
     def delete_document(self, document_id: str) -> bool:
         """Delete document from SQLite and remove all associated vectors from Redis."""
