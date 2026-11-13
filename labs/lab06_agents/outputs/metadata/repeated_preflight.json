@@ -1,0 +1,44 @@
+{
+  "python": "3.13.5 (tags/v3.13.5:6cb20a2, Jun 11 2025, 16:15:46) [MSC v.1943 64 bit (AMD64)]",
+  "packages": {
+    "openai-agents": "0.22.3",
+    "openai": "3.17.0",
+    "pydantic": "2.13.5",
+    "httpx2": "2.13.0"
+  },
+  "model_id": "mistralai/ministral-3-3b",
+  "models": {
+    "data": [
+      {
+        "id": "mistralai/ministral-3-3b",
+        "created": null,
+        "object": "model",
+        "owned_by": "organization_owner",
+        "shutdown_date": null
+      },
+      {
+        "id": "text-embedding-nomic-embed-text-v1.5",
+        "created": null,
+        "object": "model",
+        "owned_by": "organization_owner",
+        "shutdown_date": null
+      }
+    ],
+    "object": "list"
+  },
+  "direct_output": "READY",
+  "calls": [
+    {
+      "a": 17.0,
+      "b": 25.0,
+      "result": 42.0
+    }
+  ],
+  "final_output": "The sum of **17** and **25** is **42**.",
+  "item_types": [
+    "tool_call_item",
+    "tool_call_output_item",
+    "message_output_item"
+  ],
+  "passed": true
+}
