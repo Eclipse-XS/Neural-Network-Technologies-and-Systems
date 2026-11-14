@@ -1,0 +1,20 @@
+{
+  "redis": {
+    "image": "redis/redis-stack:7.4.0-v8",
+    "digest": "redis/redis-stack@sha256:5d5154123426693540ea6c1d9e638eae2bf2024879c839db6fcfdd7717e817c7",
+    "tested_docker_engine": "29.7.2"
+  },
+  "ollama": {
+    "source_model": "qwen3:4b",
+    "source_digest": "359d7dd4bcdab3d86b87d73ac27966f4dbb9f5efdfcc75d34a8764a09474fae7",
+    "generated_model": "qwen3:4b-studio",
+    "modelfile": "lab7_multimodal_studio/Modelfile",
+    "tested_version": "0.40.16"
+  },
+  "lm_studio": {
+    "model_id": "mistralai/ministral-3-3b",
+    "context_length": 16384,
+    "gpu_offload": 0,
+    "tested_cli_version": "1.3.3"
+  }
+}

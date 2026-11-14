@@ -1,0 +1,106 @@
+[
+  {
+    "repo_id": "sentence-transformers/all-MiniLM-L6-v2",
+    "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "lfs_sha256": {
+      "model.safetensors": "53aa51172d142c89d9012cce15ae4d6cc0ca6895895114379cacb4fab128d9db",
+      "onnx/model.onnx": "6fd5d72fe4589f189f8ebc006442dbb529bb7ce38f8082112682524616046452",
+      "onnx/model_O1.onnx": "1391c6fc20b5530250bc15cbe1f47578ffeca55ab0551d335cc668b6299a88ec",
+      "onnx/model_O2.onnx": "1de3905029190b398c7d300b530e320cf4b5e7d3dfb9af1429ebd73fd9a16faf",
+      "onnx/model_O3.onnx": "a44f671e364dddbac31f203f07b91be6b0a35e51936e5ebfab65b6d9538b83ff",
+      "onnx/model_O4.onnx": "1667d7f3ba669048b13a96ee3a44456d5e42c8f44588ae8b603430e16160c485",
+      "onnx/model_qint8_arm64.onnx": "4278337fd0ff3c68bfb6291042cad8ab363e1d9fbc43dcb499fe91c871902474",
+      "onnx/model_qint8_avx512.onnx": "4278337fd0ff3c68bfb6291042cad8ab363e1d9fbc43dcb499fe91c871902474",
+      "onnx/model_qint8_avx512_vnni.onnx": "4278337fd0ff3c68bfb6291042cad8ab363e1d9fbc43dcb499fe91c871902474",
+      "onnx/model_quint8_avx2.onnx": "b941bf19f1f1283680f449fa6a7336bb5600bdcd5f84d10ddc5cd72218a0fd21",
+      "openvino/openvino_model.bin": "8b86cab4722e2aefab310cf96d4d5a9eb3b187f7d9670a082afc55c7fa0d392a",
+      "openvino/openvino_model_qint8_quantized.bin": "c92ea4af3c6bc7b4a0f3b3d61b147c850f4dbdd7c9e7beee0c0c70dc12da289b",
+      "pytorch_model.bin": "c3a85f238711653950f6a79ece63eb0ea93d76f6a6284be04019c53733baf256",
+      "rust_model.ot": "2d98d96d278348988f2744e6445b8bc16d921c3f6e17c667362f3cb353007aea",
+      "tf_model.h5": "24c06a7429b843d46e40c6b167122053921bf94dce2e5550ea5c07fabc597646"
+    }
+  },
+  {
+    "repo_id": "llava-hf/llava-interleave-qwen-0.5b-hf",
+    "revision": "1090956dd1c79bc93ae98dcf395590369435ec91",
+    "lfs_sha256": {
+      "model.safetensors": "ec7b02696781afdb1f27871fdffe0f71ef030932d10fbd759bc59392669605f7",
+      "onnx/decoder_model_merged.onnx": "2cabb6abc10eb031ccad2b9af8aaf3d6d85f03ed483624025e6b547597c8a9e1",
+      "onnx/decoder_model_merged_bnb4.onnx": "f12a8bdc439aadbb877b190d6c914b382f5ab83fceafa0ed543865af718db7b2",
+      "onnx/decoder_model_merged_fp16.onnx": "56a413580b17618a2091a25fd0531b2e58921417eae7f8da0d6bf2f4cdc66863",
+      "onnx/decoder_model_merged_int8.onnx": "1441da7dc9ca13061dff09afd0a1c1a4d5a3c70a15a92d28e3b20b3df5a2b130",
+      "onnx/decoder_model_merged_q4.onnx": "21a8dcf948500795c2c35e1445d4a6402c73b3e0e83178254a09e7ea93809c72",
+      "onnx/decoder_model_merged_q4f16.onnx": "7fbebfa169f26e6d578b55ad90b3ee7d263be536e74ff1ae9c65f9df93429ebc",
+      "onnx/decoder_model_merged_quantized.onnx": "1441da7dc9ca13061dff09afd0a1c1a4d5a3c70a15a92d28e3b20b3df5a2b130",
+      "onnx/decoder_model_merged_uint8.onnx": "1b865d204c072ec0ba5b96f567e6c2545860d42d467deb738932fa8c955dbdd6",
+      "onnx/embed_tokens.onnx": "460a64e8f286b6cebad913035ea0554396e427e7fd7bfcb9633d6d3383e525bf",
+      "onnx/embed_tokens_bnb4.onnx": "3adc98e92f4a67ef47b45137c84f0a416c6f3affbd718bb81f10e51b40336f2e",
+      "onnx/embed_tokens_fp16.onnx": "4a256d4020d3edbf047dda795d9212da4aa0839c378665e291a26970f57cb5ec",
+      "onnx/embed_tokens_int8.onnx": "9a38e5e83216d7921e0ce5391af4de30eb11c0a380915adacdae2bfcf43247ea",
+      "onnx/embed_tokens_q4.onnx": "3adc98e92f4a67ef47b45137c84f0a416c6f3affbd718bb81f10e51b40336f2e",
+      "onnx/embed_tokens_q4f16.onnx": "08a57d97c1505251f8579d6579bfbe81cd3a2be2b255ef5f15943000fcd5628a",
+      "onnx/embed_tokens_quantized.onnx": "9a38e5e83216d7921e0ce5391af4de30eb11c0a380915adacdae2bfcf43247ea",
+      "onnx/embed_tokens_uint8.onnx": "3ab01b11174eb06975e6b3f42f9f3ed958ea4f41e38a7f60757c4af8e2d8f687",
+      "onnx/vision_encoder.onnx": "d42cfdb50dd623f35c522b04cc58317d27890d96d1b85e332ef94ad6e3fec704",
+      "onnx/vision_encoder_bnb4.onnx": "d335e190475f6bda9f0be317941545614c7f1cd50db99de8b94f4d78fcf90dda",
+      "onnx/vision_encoder_fp16.onnx": "55306600bdf39741a4e8321d5191d4fe38b711fd9db58ee86eb28849ff797dec",
+      "onnx/vision_encoder_int8.onnx": "1dc484349699feab4a339613870239b4eea1d8a474123a48127c1712136d2d7a",
+      "onnx/vision_encoder_q4.onnx": "fd8a1ba9f31090bafbdaa7513f516876d43afd58e216b059c0190821ea970656",
+      "onnx/vision_encoder_q4f16.onnx": "a27386a7d7bf14596fa8d59b06c8673882ab90011cca6cd23e5b85117976f3eb",
+      "onnx/vision_encoder_quantized.onnx": "81fe5c6c8c7101eb8174f685893e33d1bdbdda5f8b7d8dcf7953eff2f32966a0",
+      "onnx/vision_encoder_uint8.onnx": "81fe5c6c8c7101eb8174f685893e33d1bdbdda5f8b7d8dcf7953eff2f32966a0"
+    }
+  },
+  {
+    "repo_id": "intfloat/multilingual-e5-small",
+    "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
+    "lfs_sha256": {
+      "model.safetensors": "1a55775f53449dac10a2bcbc312469fac40b96d53198c407081a831f81c98477",
+      "onnx/model.onnx": "ca456c06b3a9505ddfd9131408916dd79290368331e7d76bb621f1cba6bc8665",
+      "onnx/model_O4.onnx": "4654c156f3e4171abc9c716cdb771bf9116455d15ac1aab364aeeede0e3205b0",
+      "onnx/model_qint8_avx512_vnni.onnx": "dd476dd0c2514e9b9be83aeb3853fac0763e0bdf4a71645407587d77c48a2d88",
+      "onnx/sentencepiece.bpe.model": "cfc8146abe2a0488e9e2a0c56de7952f7c11ab059eca145a0a727afce0db2865",
+      "onnx/tokenizer.json": "0b44a9d7b51c3c62626640cda0e2c2f70fdacdc25bbbd68038369d14ebdf4c39",
+      "openvino/openvino_model.bin": "22f5a10ec005a1606ec42758dedd52b59dfcb6e3d85de0b6b86946d0bc6cf232",
+      "pytorch_model.bin": "f0ccb64a2edc689fce7b1895f25146740e4075c3da28c8d0e672a8ba49c51167",
+      "sentencepiece.bpe.model": "cfc8146abe2a0488e9e2a0c56de7952f7c11ab059eca145a0a727afce0db2865",
+      "tokenizer.json": "0b44a9d7b51c3c62626640cda0e2c2f70fdacdc25bbbd68038369d14ebdf4c39"
+    }
+  },
+  {
+    "repo_id": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+    "revision": "451f4fe16113bff5a5d2269ed5ad43b0592e9a14",
+    "lfs_sha256": {
+      "safety_checker/model.fp16.safetensors": "08902f19b1cfebd7c989f152fc0507bef6898c706a91d666509383122324b511",
+      "safety_checker/model.safetensors": "9d6a233ff6fd5ccb9f76fd99618d73369c52dd3d8222376384d0e601911089e8",
+      "safety_checker/pytorch_model.bin": "193490b58ef62739077262e833bf091c66c29488058681ac25cf7df3d8190974",
+      "safety_checker/pytorch_model.fp16.bin": "22ba87205445ad5def13e54919b038dcfb7321ec1c3f4b12487d4fba6036125f",
+      "text_encoder/model.fp16.safetensors": "77795e2023adcf39bc29a884661950380bd093cf0750a966d473d1718dc9ef4e",
+      "text_encoder/model.safetensors": "d008943c017f0092921106440254dbbe00b6a285f7883ec8ba160c3faad88334",
+      "text_encoder/pytorch_model.bin": "770a47a9ffdcfda0b05506a7888ed714d06131d60267e6cf52765d61cf59fd67",
+      "text_encoder/pytorch_model.fp16.bin": "05eee911f195625deeab86f0b22b115d7d8bc3adbfc1404f03557f7e4e6a8fd7",
+      "unet/diffusion_pytorch_model.bin": "c7da0e21ba7ea50637bee26e81c220844defdf01aafca02b2c42ecdadb813de4",
+      "unet/diffusion_pytorch_model.fp16.bin": "30eb3dc47c90e4a55476332b284b2331774c530edbbb83b70cacdd9e7b91af92",
+      "unet/diffusion_pytorch_model.fp16.safetensors": "c83908253f9a64d08c25fc90874c9c8aef9a329ce1ca5fb909d73b0c83d1ea21",
+      "unet/diffusion_pytorch_model.non_ema.bin": "42bc8b8f3af32866db3c7bb5bcf591ab04438296c2712246d7a640bde5a5ddc1",
+      "unet/diffusion_pytorch_model.non_ema.safetensors": "cd1b6db09a81cb1d39fbd245a89c1e3db9da9fe8eba5e8f9098ea6c4994221d3",
+      "unet/diffusion_pytorch_model.safetensors": "19da7aaa4b880e59d56843f1fcb4dd9b599c28a1d9d9af7c1143057c8ffae9f1",
+      "v1-5-pruned-emaonly.ckpt": "cc6cb27103417325ff94f52b7a5d2dde45a7515b25c255d8e396c90014281516",
+      "v1-5-pruned-emaonly.safetensors": "6ce0161689b3853acaa03779ec93eafe75a02f4ced659bee03f50797806fa2fa",
+      "v1-5-pruned.ckpt": "e1441589a6f3c5a53f5f54d0975a18a7feb7cdf0b0dee276dfc3331ae376a053",
+      "v1-5-pruned.safetensors": "1a189f0be69d6106a48548e7626207dddd7042a418dbf372cefd05e0cdba61b6",
+      "vae/diffusion_pytorch_model.bin": "1b134cded8eb78b184aefb8805b6b572f36fa77b255c483665dda931fa0130c5",
+      "vae/diffusion_pytorch_model.fp16.bin": "b7643b3e40b9f128eda5fe174fea73c3ef3903562651fb344a79439709c2e503",
+      "vae/diffusion_pytorch_model.fp16.safetensors": "4fbcf0ebe55a0984f5a5e00d8c4521d52359af7229bb4d81890039d2aa16dd7c",
+      "vae/diffusion_pytorch_model.safetensors": "a2b5134f4dbc140d9c11f11cba3233099e00af40f262f136c691fb7d38d2194c"
+    }
+  },
+  {
+    "repo_id": "lmstudio-community/Ministral-3-3B-Instruct-2512-GGUF",
+    "revision": "94b49547f1931930f002226bc0a68b5f10a4ee25",
+    "lfs_sha256": {
+      "Ministral-3-3B-Instruct-2512-Q4_K_M.gguf": "ee46f8f2cc4acf15e89699563e23b4a3919dce2e9ce7c44b53778d6590318e96",
+      "mmproj-Ministral-3-3B-Instruct-2512-F16.gguf": "f5eed2b41fbeb82f4b9c620d4f01cdaf7a2ab9ddfb360cf3e22b8733122c18a3"
+    }
+  }
+]

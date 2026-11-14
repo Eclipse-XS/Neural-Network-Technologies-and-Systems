@@ -1,0 +1,37 @@
+[
+  {
+    "key": "sms",
+    "source": "uciml/sms-spam-collection-dataset",
+    "version": 1,
+    "url": "https://www.kaggle.com/api/v1/datasets/download/uciml/sms-spam-collection-dataset?datasetVersionNumber=1",
+    "archive_sha256": "3e05b8e6e1e8fc9aef3ca69399a1bf3849a22084c8401d5d5d592e6c9a0e422b",
+    "files": {
+      "labs/lab01_transformer/data/raw/spam.csv": "eedb591af061c9f485164b66c90c2b6de88bf52b286cec61e3c02c2cb6084a67"
+    },
+    "conversion": "latin-1 CSV columns 0:2 -> UTF-8 Category,Message LF"
+  },
+  {
+    "key": "bbc",
+    "source": "yufengdev/bbc-fulltext-and-category",
+    "version": 2,
+    "url": "https://www.kaggle.com/api/v1/datasets/download/yufengdev/bbc-fulltext-and-category?datasetVersionNumber=2",
+    "archive_sha256": "b20e83e6eb2b97cffe4e33dd245f503da654b373d0d6adad76ac876fd94df02a",
+    "files": {
+      "labs/lab01_transformer/data/raw/bbc-text.csv": "fdaee0f7451cd8db2709d00e992886fe1c387ee332b8c7b7c1554ed3d3e3382e"
+    },
+    "conversion": "none"
+  },
+  {
+    "key": "shopping",
+    "source": "anvitkumar/shopping-dataset",
+    "version": 611,
+    "url": "https://www.kaggle.com/api/v1/datasets/download/anvitkumar/shopping-dataset?datasetVersionNumber=611",
+    "archive_sha256": "0f93f0be871bd8553e4df4cb3b4356322b85857a64d5f4175c68d30436f247a9",
+    "files": {
+      "labs/lab03_rag/data/raw/csv/dresses.csv": "846451524f325f58a19005fe5c47392495e76bdb37b5c8ae28368785e48ab267",
+      "labs/lab03_rag/data/raw/csv/earrings.csv": "1040c970376583daa70aab84b798b71d3c1fbd351192b04363ebd03359021583",
+      "labs/lab03_rag/data/raw/csv/sports-shoes.csv": "93a0d131ef117c48558d97727ce06f796e3e71f7d12bb9b8c07cdb810ab729f3"
+    },
+    "conversion": "none"
+  }
+]

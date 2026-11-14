@@ -1,5 +1,21 @@
 # Lab 06 — Autonomous LLM Agent with OpenAI Agents SDK
 
+## Reproducible execution (Windows 11 / Python 3.13)
+
+Run from the repository root in PowerShell. Each lab has an isolated `.venv` and a complete `requirements.lock.txt`.
+
+```powershell
+.\setup.ps1 -Lab 6
+.\run.ps1 -Lab 6 -Smoke
+.\run.ps1 -Lab 6
+```
+
+LM Studio: http://localhost:1234/v1, Ministral 3 3B, context 16384, GPU offload disabled.
+
+`-Cuda` selects PyTorch 2.14.1+cu130 from the official CUDA 13.0 wheel index. The NVIDIA driver is required; these wheels do not require a separate CUDA toolkit. Omit this switch for CPU PyTorch. Vision smoke tests use the original model weights, batch size 1, 512x512 images and short real inference. They do not establish image quality or repeat the full experimental matrix.
+
+Model revision SHAs and weight checksums are in the root `models.lock.json`. Distributed input checksums are in `inputs.sha256.json` (text is normalized to LF). Setup downloads required models and NNTS datasets. Smoke tests use real services; unavailable services cause a failure. See the root `REPRODUCIBILITY.md` for sources, service preparation and verification limits.
+
 ## Overview
 
 Tool-using ReAct agent built with the OpenAI Agents SDK (`openai-agents`) against a local LM Studio server (`http://localhost:1234/v1`, `mistralai/ministral-3-3b`). Combines bounded local workspace tools (`list_workspace_files`, `search_workspace`, `read_workspace_file`), AST-sandboxed arithmetic (`calculate`), and isolated `SQLiteSession` multi-turn memory, comparing tool-enabled vs. tool-disabled agent runs.

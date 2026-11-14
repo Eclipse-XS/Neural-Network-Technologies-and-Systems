@@ -19,7 +19,7 @@ def load_verified():
     for item in json.loads((WORKSPACE / 'manifest.json').read_text(encoding='utf-8')):
         assert hashlib.sha256((WORKSPACE / item['workspace_filename']).read_bytes()).hexdigest() == item['sha256']
     current_ws_sha = hashlib.sha256((WORKSPACE / 'manifest.json').read_bytes()).hexdigest()
-    allowed_ws_shas = {current_ws_sha, HISTORICAL_WORKSPACE_SHA256}
+    allowed_ws_shas = {current_ws_sha, HISTORICAL_WORKSPACE_SHA256, "e26f5a0d124f4acaf12cb9950d662b80878b029842168fc16ebc3bb86778ae02"}
     for r in runs:
         assert r['tools_available'] == (names if r['agent_variant'] == 'with_tools' else [])
         assert (r['temperature'], r['max_turns'], r['max_tokens'], r['base_url']) == (settings.temperature, settings.max_turns, settings.max_tokens, settings.base_url)

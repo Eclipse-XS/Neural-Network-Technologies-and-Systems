@@ -42,7 +42,7 @@ Windows; Python 3.13.5; PyTorch 2.14.0+cu130; Transformers 5.17.0; Accelerate 1.
 
 ## 9. Вхідне зображення
 
-![Вхідне зображення](../assets/input/primary_image.png)
+![Вхідне зображення](../../../lab05_multimodal/assets/input/primary_image.png)
 
 primary_image.png: 512×512, PNG. Джерело: `labs/lab04_stable_diffusion/outputs/images/styles/photorealistic_seed42_steps30_cfg7p5_df410b01ba0eea49.png`; скопійовано без зміни оригіналу. SHA-256: `1fc881e5282f86a05f3abb98201985881a331a5241cd404bf9e2b560b5bb08c5`. Lab 5 використовує власну копію й не імпортує Lab 4. З пікселів видно будиночок ліворуч, коричневі дерев’яні стіни, темний дах, хвойні дерева, водойму та відбиття. Ground truth отримано з візуального огляду, а не prompt генератора.
 
@@ -63,7 +63,7 @@ output = pipe(text=messages, return_full_text=False,
               generate_kwargs=case.generation.kwargs())
 ```
 
-Повний код: [model.py](../src/model.py), [inference.py](../src/inference.py), [experiments.py](../src/experiments.py), [run.py](../src/run.py). [Офіційний pipeline](https://huggingface.co/docs/transformers/tasks/image_text_to_text).
+Повний код: [model.py](../../../lab05_multimodal/src/model.py), [inference.py](../../../lab05_multimodal/src/inference.py), [experiments.py](../../../lab05_multimodal/src/experiments.py), [run.py](../../../lab05_multimodal/src/run.py). [Офіційний pipeline](https://huggingface.co/docs/transformers/tasks/image_text_to_text).
 
 ## 11. Описові питання
 
@@ -123,7 +123,7 @@ Analysis_02 підкріплює природний характер сцени 
 
 За 24 токени продовження обірвано на The cabin, EOS відсутній. За лімітів 64 і 128 отримано дослівно однакову завершену відповідь із 48 токенів включно з EOS. Додатковий бюджет не усунув непідтверджений матеріал даху. max_new_tokens є верхньою межею довжини, не бажаною довжиною і не гарантією якості. Рядок 64 повторно використовує baseline desc_01.
 
-![Фактична довжина відповіді](../outputs/figures/token_budget.png)
+![Фактична довжина відповіді](../../../lab05_multimodal/outputs/figures/token_budget.png)
 
 ## 17. Узгодженість перефразованих питань
 
@@ -168,4 +168,4 @@ LLaVA розпізнає головний зміст цього зображен
 
 У температурному sweep усі три відповіді залишилися візуально обґрунтованими. Ліміт 24 токени спричинив обрив, 64 і 128 дали однаковий текст із природним завершенням. На цьому прикладі більший бюджет не покращив зміст. Компактна модель придатна для демонстрації мультимодального inference на GPU 4 ГБ, але її точні твердження та пояснення потребують перевірки за зображенням.
 
-[Контрольні запитання](defense_notes.md) · [Аудит методики](methodology_audit.md) · [Скріншоти](screenshot_checklist.md)
+Контрольні запитання (historical artifact not distributed) · Аудит методики (historical artifact not distributed) · Скріншоти (historical artifact not distributed)

@@ -1,5 +1,21 @@
 # Lab 04 — Stable Diffusion v1.5 Text-to-Image Synthesis
 
+## Reproducible execution (Windows 11 / Python 3.13)
+
+Run from the repository root in PowerShell. Each lab has an isolated `.venv` and a complete `requirements.lock.txt`.
+
+```powershell
+.\setup.ps1 -Lab 4 -Cuda
+.\run.ps1 -Lab 4 -Smoke
+.\run.ps1 -Lab 4
+```
+
+No separate inference server is required.
+
+`-Cuda` selects PyTorch 2.14.1+cu130 from the official CUDA 13.0 wheel index. The NVIDIA driver is required; these wheels do not require a separate CUDA toolkit. Omit this switch for CPU PyTorch. Vision smoke tests use the original model weights, batch size 1, 512x512 images and short real inference. They do not establish image quality or repeat the full experimental matrix.
+
+Model revision SHAs and weight checksums are in the root `models.lock.json`. Distributed input checksums are in `inputs.sha256.json` (text is normalized to LF). Setup downloads required models and NNTS datasets. Smoke tests use real services; unavailable services cause a failure. See the root `REPRODUCIBILITY.md` for sources, service preparation and verification limits.
+
 ## Overview
 
 Controlled latent text-to-image synthesis with `stable-diffusion-v1-5` (`runwayml/stable-diffusion-v1-5`, FP16 + `model_cpu_offload` on 4 GB CUDA VRAM). Explores initial Gaussian noise inspection, CLIP tokenization, PNDM iterative denoising progression, Classifier-Free Guidance (CFG) scale, step budgets, negative prompts, and stylistic prompting.

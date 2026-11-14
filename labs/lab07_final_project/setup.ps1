@@ -1,4 +1,4 @@
-param([string]$Python = 'py', [switch]$DownloadEmbedding)
+param([string]$Python = 'py', [switch]$DownloadEmbedding, [switch]$SkipEmbedding, [switch]$SkipDocker)
 $ErrorActionPreference = 'Stop'
 $labPython = Join-Path $PSScriptRoot '.venv\Scripts\python.exe'
 if (-not (Test-Path -LiteralPath $labPython)) {
@@ -13,11 +13,20 @@ if ($LASTEXITCODE -ne 0) { throw 'The existing Lab 7 environment has an incompat
 if ($LASTEXITCODE -ne 0) { throw 'Dependency installation failed. Inspect the pip error above.' }
 & $labPython -m pip install --no-deps --editable $PSScriptRoot
 if ($LASTEXITCODE -ne 0) { throw 'Editable package installation failed.' }
-if ($DownloadEmbedding) {
-    & $labPython -c 'from sentence_transformers import SentenceTransformer; SentenceTransformer("intfloat/multilingual-e5-small", revision="614241f622f53c4eeff9890bdc4f31cfecc418b3", device="cpu")'
+if (-not $SkipEmbedding) {
+    & $labPython (Join-Path $PSScriptRoot '../../scripts/fetch_models.py') e5
     if ($LASTEXITCODE -ne 0) { throw 'Embedding download failed. Check network access to Hugging Face.' }
 }
 & $labPython -m pip check
-if ($LASTEXITCODE -ne 0) { Write-Warning 'Dependency conflicts remain in this environment. Resolve the reported conflicts before using affected packages.' }
+if ($LASTEXITCODE -ne 0) { throw 'Dependency conflicts remain. Setup failed; inspect pip check output.' }
+if (-not $SkipDocker) {
+    & docker info --format '{{.ServerVersion}}'
+    if ($LASTEXITCODE -ne 0) { throw 'Start Docker Desktop Linux engine, then rerun setup; use -SkipDocker only for offline component tests.' }
+    & docker pull redis/redis-stack:7.4.0-v8
+    if ($LASTEXITCODE -ne 0) { throw 'Redis Stack image download failed.' }
+    $expected = (Get-Content -Raw (Join-Path $PSScriptRoot '../../services.lock.json') | ConvertFrom-Json).redis.digest
+    $digests = & docker image inspect redis/redis-stack:7.4.0-v8 --format '{{json .RepoDigests}}'
+    if ($LASTEXITCODE -ne 0 -or ($digests | ConvertFrom-Json) -notcontains $expected) { throw 'Redis image digest differs from services.lock.json' }
+}
 Write-Output "Lab interpreter: $labPython"
 Write-Output 'Setup complete. Start the application with .\run.ps1.'

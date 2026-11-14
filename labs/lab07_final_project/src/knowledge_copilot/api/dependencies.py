@@ -40,7 +40,7 @@ def get_redis_adapter() -> RedisVectorAdapter:
     if _REDIS_ADAPTER is None:
         redis_url = os.getenv("REDIS_URL", "redis://localhost:6380")
         index_name = os.getenv("REDIS_INDEX_NAME", "lab07_course_kb_idx")
-        _REDIS_ADAPTER = RedisVectorAdapter(redis_url=redis_url, index_name=index_name)
+        _REDIS_ADAPTER = RedisVectorAdapter(redis_url=redis_url, index_name=index_name, key_prefix=os.getenv("REDIS_KEY_PREFIX", "lab07:kb"))
     return _REDIS_ADAPTER
 
 

@@ -14,22 +14,11 @@ from knowledge_copilot.infrastructure.redis_store import RedisVectorAdapter
 from knowledge_copilot.infrastructure.sqlite_repo import SQLiteRepository
 
 
-class ClosingSQLiteRepository(SQLiteRepository):
-    @contextmanager
-    def _get_connection(self):
-        connection = super()._get_connection()
-        try:
-            with connection:
-                yield connection
-        finally:
-            connection.close()
-
-
 class IngestionRegressionTests(unittest.TestCase):
     def setUp(self):
         self.directory = tempfile.TemporaryDirectory()
         self.addCleanup(self.directory.cleanup)
-        self.repo = ClosingSQLiteRepository(Path(self.directory.name) / "test.sqlite")
+        self.repo = SQLiteRepository(Path(self.directory.name) / "test.sqlite")
         self.keys = {}
         self.adapter = RedisVectorAdapter()
         client = Mock()

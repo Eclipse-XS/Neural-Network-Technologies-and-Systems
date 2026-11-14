@@ -1,5 +1,7 @@
 # Neural Network Technologies and Systems
 
+Start with [REPRODUCIBILITY.md](REPRODUCIBILITY.md) for isolated Windows environments, pinned dependencies, model/data reconstruction and live smoke tests for Labs 1-7.
+
 Code-first portfolio of seven modular deep learning, retrieval-augmented generation (RAG), multimodal VQA, and agentic AI laboratories implemented in Python and PyTorch.
 
 ## Laboratory Directory
@@ -30,25 +32,17 @@ Code-first portfolio of seven modular deep learning, retrieval-augmented generat
     └── lab07_final_project/
 ```
 
-## Setup & Prerequisites
+## Setup and prerequisites
 
-1. **Python >= 3.11** (see `pyproject.toml`). Each lab pins its own dependencies in `labs/<lab>/requirements.txt`:
+Use Python 3.13 and the per-lab environment/lock, from the repository root:
 
-   ```powershell
-   python -m venv .venv
-   .\.venv\Scripts\python.exe -m pip install -r labs/lab07_final_project/requirements.txt
-   ```
+```powershell
+.\setup.ps1 -Lab 1
+.\run.ps1 -Lab 1 -Smoke
+.\run.ps1 -Lab 1
+```
 
-2. **Redis Stack** for vector storage (port `6379` in Lab 3, port `6380` in Lab 7):
-
-   ```powershell
-   docker compose -f labs/lab03_rag/docker-compose.yml up -d
-   docker compose -f labs/lab07_final_project/docker-compose.yml up -d
-   ```
-
-3. **LM Studio Local API** for local LLM labs (Labs 2, 3, 6, 7): start LM Studio's OpenAI-compatible server on `http://localhost:1234/v1` with a tool-capable model such as `mistralai/ministral-3-3b`.
-
-4. **CUDA GPU (optional for live runs)**: Labs 4 and 5 use PyTorch CUDA FP16 inference (`PORTFOLIO_MODE=live` / `LAB05_MODE=LIVE`) and support offline CPU replay modes (`PORTFOLIO_MODE=replay` / `LAB05_MODE=REPLAY`) over committed example outputs.
+Use `-Cuda` for Labs 4-5. Labs 2, 3, 6 and 7 use LM Studio with a tool-capable model, CPU offload and at least 16384 context tokens. Lab 3 Redis uses port 6379; Lab 7 uses 6380. Lab 7 setup provisions its Redis image and embeddings; its launcher validates the external services before starting Streamlit. The complete source/checksum, service and mode instructions are in [REPRODUCIBILITY.md](REPRODUCIBILITY.md). Do not combine all labs in a root virtual environment.
 
 ## Capstone Architecture (Lab 7)
 

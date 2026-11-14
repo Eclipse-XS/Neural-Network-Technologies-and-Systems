@@ -1,5 +1,21 @@
 # Lab 03 — CSV Retrieval-Augmented Generation with Redis Stack
 
+## Reproducible execution (Windows 11 / Python 3.13)
+
+Run from the repository root in PowerShell. Each lab has an isolated `.venv` and a complete `requirements.lock.txt`.
+
+```powershell
+.\setup.ps1 -Lab 3
+.\run.ps1 -Lab 3 -Smoke
+.\run.ps1 -Lab 3
+```
+
+LM Studio: http://localhost:1234/v1, Ministral 3 3B, context 16384, GPU offload disabled.
+
+`-Cuda` selects PyTorch 2.14.1+cu130 from the official CUDA 13.0 wheel index. The NVIDIA driver is required; these wheels do not require a separate CUDA toolkit. Omit this switch for CPU PyTorch. Vision smoke tests use the original model weights, batch size 1, 512x512 images and short real inference. They do not establish image quality or repeat the full experimental matrix.
+
+Model revision SHAs and weight checksums are in the root `models.lock.json`. Distributed input checksums are in `inputs.sha256.json` (text is normalized to LF). Setup downloads required models and NNTS datasets. Smoke tests use real services; unavailable services cause a failure. See the root `REPRODUCIBILITY.md` for sources, service preparation and verification limits.
+
 ## Overview
 
 Local RAG pipeline over a 185-product catalog spanning three CSV datasets (`dresses.csv`, `earrings.csv`, `sports-shoes.csv`). Compares a dense semantic Redis Stack baseline (`all-MiniLM-L6-v2`, 384-d cosine similarity) against an intent-aware `hybrid` router combining Redis semantic lookup with exact product ID, attribute filter, and numeric catalog aggregation.

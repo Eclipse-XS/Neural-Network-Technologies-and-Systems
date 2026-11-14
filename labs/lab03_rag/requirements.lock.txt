@@ -1,0 +1,428 @@
+aiohappyeyeballs==2.7.1
+    # via aiohttp
+aiohttp==3.14.5
+    # via langchain-community
+aiosignal==1.4.0
+    # via aiohttp
+annotated-doc==0.0.6
+    # via typer
+annotated-types==0.8.0
+    # via pydantic
+anyio==4.16.0
+    # via
+    #   httpx
+    #   httpx2
+    #   langchain-redis
+    #   langsmith
+    #   openai
+asttokens==3.0.2
+    # via stack-data
+attrs==26.1.0
+    # via
+    #   aiohttp
+    #   jsonschema
+    #   referencing
+certifi==2026.10.23
+    # via
+    #   httpcore
+    #   httpx
+    #   langchain-openai
+    #   langchain-redis
+    #   requests
+charset-normalizer==3.5.2
+    # via requests
+click==8.5.1
+    # via huggingface-hub
+cloudpickle==3.1.2
+    # via joblib
+colorama==0.4.6
+    # via
+    #   ipython
+    #   pytest
+    #   tqdm
+    #   typer
+comm==0.2.3
+    # via ipykernel
+debugpy==1.8.22
+    # via ipykernel
+distro==1.9.0
+    # via langsmith
+executing==2.3.0
+    # via stack-data
+fastjsonschema==2.22.3
+    # via nbformat
+filelock==4.2.10
+    # via
+    #   huggingface-hub
+    #   torch
+frozenlist==1.8.0
+    # via
+    #   aiohttp
+    #   aiosignal
+fsspec==2026.9.0
+    # via
+    #   huggingface-hub
+    #   torch
+h11==0.16.0
+    # via
+    #   httpcore
+    #   httpcore2
+hf-xet==1.5.2
+    # via
+    #   huggingface-hub
+    #   langchain-redis
+httpcore==1.0.9
+    # via
+    #   httpx
+    #   langchain-redis
+httpcore2==2.16.0
+    # via httpx2
+httpx==0.28.1
+    # via
+    #   huggingface-hub
+    #   langchain-core
+httpx-sse==0.4.3
+    # via langchain-community
+httpx2==2.16.0
+    # via
+    #   langsmith
+    #   openai
+huggingface-hub==1.32.0
+    # via
+    #   langchain-huggingface
+    #   sentence-transformers
+    #   tokenizers
+    #   transformers
+idna==3.20
+    # via
+    #   anyio
+    #   httpx
+    #   httpx2
+    #   requests
+    #   yarl
+iniconfig==2.3.1
+    # via pytest
+ipykernel==7.3.0
+    # via -r C:/Users/Eclipse/AppData/Local/Temp/nn-repro-6529c2430e444da197a08d87b1df7277/nnts/labs/lab03_rag/requirements.txt
+ipython==9.18.1
+    # via ipykernel
+ipython-pygments-lexers==1.1.1
+    # via ipython
+jedi==0.20.1
+    # via ipython
+jinja2==3.1.6
+    # via
+    #   langchain-redis
+    #   torch
+jiter==0.19.0
+    # via openai
+joblib==1.6.0
+    # via scikit-learn
+jsonpatch==1.47
+    # via langchain-core
+jsonpath-ng==1.16.0
+    # via redisvl
+jsonpointer==3.12
+    # via jsonpatch
+jsonschema==4.26.0
+    # via nbformat
+jsonschema-specifications==2025.9.1
+    # via jsonschema
+jupyter-client==8.10.0
+    # via
+    #   ipykernel
+    #   nbclient
+jupyter-core==5.9.1
+    # via
+    #   ipykernel
+    #   jupyter-client
+    #   nbclient
+    #   nbformat
+langchain-classic==1.0.8
+    # via langchain-community
+langchain-community==0.4.2
+    # via -r C:/Users/Eclipse/AppData/Local/Temp/nn-repro-6529c2430e444da197a08d87b1df7277/nnts/labs/lab03_rag/requirements.txt
+langchain-core==1.6.4
+    # via
+    #   -r C:/Users/Eclipse/AppData/Local/Temp/nn-repro-6529c2430e444da197a08d87b1df7277/nnts/labs/lab03_rag/requirements.txt
+    #   langchain-classic
+    #   langchain-community
+    #   langchain-huggingface
+    #   langchain-openai
+    #   langchain-redis
+    #   langchain-text-splitters
+langchain-huggingface==1.2.2
+    # via -r C:/Users/Eclipse/AppData/Local/Temp/nn-repro-6529c2430e444da197a08d87b1df7277/nnts/labs/lab03_rag/requirements.txt
+langchain-openai==1.6.3
+    # via -r C:/Users/Eclipse/AppData/Local/Temp/nn-repro-6529c2430e444da197a08d87b1df7277/nnts/labs/lab03_rag/requirements.txt
+langchain-protocol==0.0.21
+    # via langchain-core
+langchain-redis==0.2.6
+    # via -r C:/Users/Eclipse/AppData/Local/Temp/nn-repro-6529c2430e444da197a08d87b1df7277/nnts/labs/lab03_rag/requirements.txt
+langchain-text-splitters==1.1.3
+    # via langchain-classic
+langsmith==0.14.17
+    # via
+    #   langchain-classic
+    #   langchain-community
+    #   langchain-core
+markdown-it-py==4.3.0
+    # via rich
+markupsafe==3.0.4
+    # via jinja2
+matplotlib-inline==0.2.2
+    # via
+    #   ipykernel
+    #   ipython
+mdurl==0.1.2
+    # via markdown-it-py
+ml-dtypes==0.6.0
+    # via redisvl
+mpmath==1.3.0
+    # via sympy
+multidict==7.2.1
+    # via
+    #   aiohttp
+    #   yarl
+narwhals==2.28.0
+    # via scikit-learn
+nbclient==0.11.0
+    # via -r C:/Users/Eclipse/AppData/Local/Temp/nn-repro-6529c2430e444da197a08d87b1df7277/nnts/labs/lab03_rag/requirements.txt
+nbformat==5.11.1
+    # via
+    #   -r C:/Users/Eclipse/AppData/Local/Temp/nn-repro-6529c2430e444da197a08d87b1df7277/nnts/labs/lab03_rag/requirements.txt
+    #   nbclient
+nest-asyncio2==1.7.4
+    # via ipykernel
+networkx==3.7
+    # via torch
+numpy==2.5.3
+    # via
+    #   -r C:/Users/Eclipse/AppData/Local/Temp/nn-repro-6529c2430e444da197a08d87b1df7277/nnts/labs/lab03_rag/requirements.txt
+    #   langchain-community
+    #   ml-dtypes
+    #   pandas
+    #   redisvl
+    #   scikit-learn
+    #   scipy
+    #   sentence-transformers
+    #   transformers
+openai==3.51.0
+    # via langchain-openai
+orjson==3.13.0
+    # via langsmith
+packaging==26.3
+    # via
+    #   huggingface-hub
+    #   ipykernel
+    #   langchain-core
+    #   langsmith
+    #   pytest
+    #   transformers
+pandas==2.3.3
+    # via -r C:/Users/Eclipse/AppData/Local/Temp/nn-repro-6529c2430e444da197a08d87b1df7277/nnts/labs/lab03_rag/requirements.txt
+parso==0.8.7
+    # via jedi
+platformdirs==4.14.5
+    # via jupyter-core
+pluggy==1.7.0
+    # via pytest
+prompt-toolkit==3.0.53
+    # via ipython
+propcache==0.5.4
+    # via
+    #   aiohttp
+    #   yarl
+psutil==7.2.2
+    # via
+    #   ipykernel
+    #   ipython
+pure-eval==0.2.4
+    # via stack-data
+pydantic==2.14.3
+    # via
+    #   langchain-classic
+    #   langchain-core
+    #   langsmith
+    #   openai
+    #   pydantic-settings
+    #   redisvl
+    #   typer
+pydantic-core==2.50.4
+    # via pydantic
+pydantic-settings==2.16.3
+    # via langchain-community
+pygments==2.21.0
+    # via
+    #   ipython
+    #   ipython-pygments-lexers
+    #   pytest
+    #   rich
+pytest==9.1.1
+    # via -r C:/Users/Eclipse/AppData/Local/Temp/nn-repro-6529c2430e444da197a08d87b1df7277/nnts/labs/lab03_rag/requirements.txt
+python-dateutil==4.0.0
+    # via
+    #   jupyter-client
+    #   pandas
+python-dotenv==1.2.4
+    # via pydantic-settings
+python-ulid==4.1.0
+    # via
+    #   langchain-redis
+    #   redisvl
+pytz==2026.6
+    # via pandas
+pyyaml==6.0.3
+    # via
+    #   huggingface-hub
+    #   langchain-classic
+    #   langchain-community
+    #   langchain-core
+    #   redisvl
+    #   transformers
+pyzmq==27.3.0
+    # via
+    #   ipykernel
+    #   jupyter-client
+redis==8.1.0
+    # via
+    #   -r C:/Users/Eclipse/AppData/Local/Temp/nn-repro-6529c2430e444da197a08d87b1df7277/nnts/labs/lab03_rag/requirements.txt
+    #   redisvl
+redisvl==0.27.2
+    # via
+    #   -r C:/Users/Eclipse/AppData/Local/Temp/nn-repro-6529c2430e444da197a08d87b1df7277/nnts/labs/lab03_rag/requirements.txt
+    #   langchain-redis
+referencing==0.37.0
+    # via
+    #   jsonschema
+    #   jsonschema-specifications
+regex==2026.11.9
+    # via
+    #   tiktoken
+    #   transformers
+requests==2.34.2
+    # via
+    #   langchain-classic
+    #   langchain-community
+    #   langsmith
+    #   requests-toolbelt
+    #   tiktoken
+requests-toolbelt==1.0.0
+    # via langsmith
+rich==15.0.0
+    # via typer
+rpds-py==2026.9.1
+    # via
+    #   jsonschema
+    #   referencing
+safetensors==0.8.0
+    # via transformers
+scikit-learn==1.9.1
+    # via sentence-transformers
+scipy==1.18.1
+    # via
+    #   scikit-learn
+    #   sentence-transformers
+sentence-transformers==6.1.0
+    # via -r C:/Users/Eclipse/AppData/Local/Temp/nn-repro-6529c2430e444da197a08d87b1df7277/nnts/labs/lab03_rag/requirements.txt
+setuptools==84.2.1
+    # via torch
+shellingham==1.5.4
+    # via typer
+sniffio==1.3.1
+    # via
+    #   langsmith
+    #   openai
+sqlalchemy==2.1.8
+    # via
+    #   langchain-classic
+    #   langchain-community
+stack-data==0.6.3
+    # via ipython
+sympy==1.14.0
+    # via torch
+tenacity==9.2.1
+    # via
+    #   langchain-community
+    #   langchain-core
+    #   redisvl
+threadpoolctl==3.8.0
+    # via scikit-learn
+tiktoken==0.14.0
+    # via langchain-openai
+tokenizers==0.23.3
+    # via
+    #   langchain-huggingface
+    #   sentence-transformers
+    #   transformers
+torch==2.15.0
+    # via sentence-transformers
+tornado==6.6.1
+    # via
+    #   ipykernel
+    #   jupyter-client
+tqdm==4.70.1
+    # via
+    #   huggingface-hub
+    #   sentence-transformers
+    #   transformers
+traitlets==5.16.1
+    # via
+    #   ipykernel
+    #   ipython
+    #   jupyter-client
+    #   jupyter-core
+    #   matplotlib-inline
+    #   nbclient
+    #   nbformat
+transformers==5.23.0
+    # via sentence-transformers
+truststore==0.10.5
+    # via
+    #   httpcore2
+    #   httpx2
+typer==0.29.1
+    # via transformers
+typing-extensions==4.16.0
+    # via
+    #   anyio
+    #   huggingface-hub
+    #   jupyter-client
+    #   langchain-core
+    #   langchain-protocol
+    #   langchain-redis
+    #   langsmith
+    #   openai
+    #   pydantic
+    #   pydantic-core
+    #   pydantic-settings
+    #   sentence-transformers
+    #   sqlalchemy
+    #   torch
+    #   typing-inspection
+typing-inspection==0.4.5
+    # via
+    #   pydantic
+    #   pydantic-settings
+tzdata==2026.6
+    # via
+    #   pandas
+    #   python-dateutil
+urllib3==2.8.0
+    # via
+    #   langchain-redis
+    #   requests
+uuid-utils==0.19.0
+    # via
+    #   langchain-core
+    #   langsmith
+wcwidth==0.9.4
+    # via prompt-toolkit
+websockets==17.4
+    # via langsmith
+xxhash==4.1.0
+    # via langsmith
+yarl==1.25.1
+    # via aiohttp
+zstandard==0.25.0
+    # via langsmith

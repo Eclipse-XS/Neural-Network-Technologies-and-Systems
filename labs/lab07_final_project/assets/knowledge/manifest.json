@@ -14,8 +14,8 @@
     "title": "Лабораторна робота №4",
     "workspace_filename": "lab04_stable_diffusion_report.md",
     "original_repository_path": "labs/lab04_stable_diffusion/report/report.md",
-    "sha256": "6b11e807a68c9f04ab3adcc13987b277ac6f744515cfd1925ab12a02e79a2263",
-    "size_bytes": 15550
+    "sha256": "06f2f968be84945aae72a89daacb1bcef44264eb1d05e5fd3483bba15acc74cf",
+    "size_bytes": 15574
   },
   {
     "source_id": "lab05",
@@ -23,8 +23,8 @@
     "title": "Лабораторна робота №5",
     "workspace_filename": "lab05_multimodal_report.md",
     "original_repository_path": "labs/lab05_multimodal/report/report.md",
-    "sha256": "9c4fce1431dd2cba9c0514fd5941f05783453e377951533e3698419593e91b5e",
-    "size_bytes": 25125
+    "sha256": "6c61db021a82f577cbe66e4b880f5f7242e6f2bf5a181af07df1041784b78e10",
+    "size_bytes": 25306
   },
   {
     "source_id": "lab06",
@@ -32,7 +32,7 @@
     "title": "Лабораторна робота №6",
     "workspace_filename": "lab06_agents_report.md",
     "original_repository_path": "labs/lab06_agents/report/report.md",
-    "sha256": "bccc31c3d081b410818d2fbfaa363fd182a8a8db4361799cc3391e72c6eb893d",
-    "size_bytes": 34221
+    "sha256": "bdf99f221a382c9cd1ad96b66e193d3762b73e693261e647bda05751f5d1cf9d",
+    "size_bytes": 34238
   }
 ]

@@ -98,3 +98,18 @@ desktop.ini
 # Isolated local directories
 /max/
 /NNTS_VARIANT_2/
+
+# Isolated lab environments and reproducibility execution artifacts
+**/.venv/
+**/__pycache__/
+**/.pytest_cache/
+**/outputs/reproducibility-run.ipynb
+**/outputs/smoke/
+**/*.egg-info/
+
+**/resolve.log
+**/install.log
+
+**/cuda-install.log
+
+**/dependency-check.log

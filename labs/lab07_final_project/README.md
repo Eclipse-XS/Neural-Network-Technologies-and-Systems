@@ -1,101 +1,57 @@
-# Lab 07 — Local Engineering Knowledge Copilot
+# Lab 7: Local Engineering Knowledge Copilot
 
-Local retrieval with Redis Stack, CPU embeddings, LM Studio tool calling, SQLite
-session persistence, and Streamlit. The UI uses services directly; FastAPI is optional.
+Redis Stack retrieval, CPU E5 embeddings, LM Studio tool calling, Streamlit, and SQLite document/session persistence. Canonical code is in `src/knowledge_copilot`; the editable installation avoids PYTHONPATH changes. The UI calls services directly. FastAPI is optional.
 
-## First installation — Windows 11
+## Fresh installation on Windows 11
 
-Prerequisites:
+Install 64-bit Python 3.13, Docker Desktop with its Linux engine running, and LM Studio. Python 3.12 is accepted by the package but has not been validated with this dependency lock.
 
-- 64-bit Python **3.12 or 3.13**, PowerShell, Docker Desktop with its Linux engine running, and Compose v2.
-- Redis Stack image: explicitly run `docker pull redis/redis-stack:7.4.0-v8` once.
-- LM Studio: load a tool-capable chat model (tested with `mistralai/ministral-3-3b`) and start its local server at `http://localhost:1234/v1`.
-- Cached embedding model `intfloat/multilingual-e5-small`, revision `614241f622f53c4eeff9890bdc4f31cfecc418b3`.
+Load `mistralai/ministral-3-3b` in LM Studio with context **16384 or larger**, GPU offload **disabled**, and start its local server on port 1234. A 4096-token model passed the simple readiness probe but failed the actual RAG workflow. The exact GGUF source revision and checksum are in the root model lock; see the root reproduction guide for download instructions.
 
 From this directory:
 
 ```powershell
-.\setup.ps1 -Python 'C:\Path\To\Python313\python.exe' -DownloadEmbedding
+.\setup.ps1
+.\run.ps1 -NoBrowser
 ```
 
-`-DownloadEmbedding` explicitly permits the initial embedding download. Omit it
-if already cached. Setup reuses the Lab 7 `.venv`; new environments are isolated
-from other labs. It installs `requirements.lock.txt` and the editable package.
-Direct requirements are in `requirements.txt`. The dependency snapshot was resolved
-on Windows/Python 3.13; a fresh Python 3.12 installation remains unverified.
-Matching existing CUDA torch builds satisfy the public version pin.
+Setup creates `.venv`, installs `requirements.lock.txt` and the editable package, downloads and verifies the pinned E5 weights, pulls Redis Stack and checks its image digest. `pip check` failures abort setup. Use `-Python <executable>` to select Python 3.13. `-SkipEmbedding` and `-SkipDocker` skip provisioning for deliberate component testing. The old `-DownloadEmbedding` option remains accepted for compatibility; downloads are now the default.
 
-Optional: copy `.env.example` to `.env` and edit it. Shell variables take precedence.
-No API key is needed. Relative `SESSION_DB` paths resolve under Lab 7.
-Startup never installs packages, pulls images, or downloads models.
+Copy `.env.example` to `.env` only if overriding defaults. Shell variables take precedence. No cloud API key is needed. `SESSION_DB` resolves under the lab directory. Set both `REDIS_INDEX_NAME` and `REDIS_KEY_PREFIX` when isolating another application instance from an existing index.
 
-## Start and stop
+## Startup, upload and persistence
+
+`run.ps1` validates Python/dependencies, Docker, Redis Search, real LM Studio inference/tool calling, local embedding weights and corpus integrity before opening Streamlit. Routine startup does not install dependencies or download models. The default URL is http://localhost:8501. Use `-Port 8503` when another application owns 8501; the launcher never terminates the port owner. An absolute launcher path works from another terminal directory.
+
+Use the document management tab to upload Markdown, text or PDF; the application extracts, chunks and indexes the content. Ask a document-specific question in chat and inspect the returned citations. The bundled corpus is in `assets/knowledge`. Content hashes prevent duplicate embeddings; missing vectors can be restored from SQLite. Uploaded document metadata/chunks, sessions and canonical turns persist in `outputs/sessions/assistant_memory.sqlite`; Redis persists in its Compose volume.
+
+Keep the terminal open. Ctrl+C stops owned Streamlit processes and Redis only if this invocation started it. Previously running Redis, its volume and SQLite are retained. The Windows Job Object also removes the owned Streamlit process tree if the supervisor dies abruptly. A duplicate launcher is rejected before importing heavyweight services. Startup logs are under `outputs/startup.log`.
+
+## Verification
+
+From the repository root:
 
 ```powershell
-.\run.ps1
+.\run.ps1 -Lab 7 -Smoke
+.\labs\lab07_final_project\.venv\Scripts\python.exe -m pytest labs/lab07_final_project/tests -q
+.\labs\lab07_final_project\.venv\Scripts\python.exe scripts/smoke_launcher.py
 ```
 
-This also works in PyCharm's PowerShell terminal. Select `.venv\Scripts\python.exe`
-as its interpreter. An absolute path works from another directory:
-
-```powershell
-& 'C:\Path\To\Repository\labs\lab07_final_project\run.ps1'
-```
-
-Startup validates dependencies, Docker, Redis Search, inference, actual function
-tool calls, corpus integrity, and indexing. It opens [the UI](http://localhost:8501)
-after Streamlit's health endpoint responds. The UI defaults to **Standalone In-Process**.
-No separate API is started or advertised. `-NoBrowser` suppresses browser opening;
-`-Python <venv interpreter>` selects another prepared project environment.
-
-Keep the terminal open. Press **Ctrl+C** to stop. Only the launcher's Streamlit
-process tree and a Redis container started by this invocation are stopped.
-Previously running Redis is retained. Volumes and SQLite files are never removed.
-A Windows Job Object kills the Streamlit tree if its supervisor dies abruptly;
-Docker may remain running after abrupt termination. A second launcher is rejected.
-
-The eight default documents are in `assets/knowledge/`. Content hashes avoid
-re-embedding unchanged documents; missing Redis vectors are restored from SQLite.
-Initial ingestion failures block startup. Uploads and history persist in Redis's
-Compose volume and `outputs/sessions/`. Logs are in `outputs/startup.log`.
-
-## Troubleshooting
-
-| Error | Resolution |
-| --- | --- |
-| Missing environment / incompatible Python | Run setup with a 64-bit Python 3.12–3.13 executable. |
-| Missing dependency / `No module named knowledge_copilot` | Run `.\setup.ps1`, including editable installation. No `PYTHONPATH` changes are needed. |
-| Docker unavailable | Start Docker Desktop; confirm `docker info` succeeds. |
-| Redis image missing | Run the explicit `docker pull` command above. |
-| Redis not ready / port 6380 occupied | Check `docker compose logs redis` and `Get-NetTCPConnection -LocalPort 6380`. Resolve the conflict yourself; startup uses only the configured endpoint. |
-| LM Studio unreachable | Start its local server and check `http://localhost:1234/v1/models`. |
-| No model / wrong model / unsupported tools | Load a tool-capable chat model. Set `LM_STUDIO_MODEL` to its exact API ID, or leave it unset for discovery. |
-| Missing embedding cache | Run `.\setup.ps1 -DownloadEmbedding` with network access. Custom models need their own cached revision. |
-| Port 8501 occupied / already running | Use the existing UI or stop its launcher. Inspect `Get-NetTCPConnection -LocalPort 8501`; startup does not kill the owner. |
-| UI fails after server readiness | Inspect `outputs/startup.log`. UI initialization reports service/corpus errors on screen. |
-| Legacy environment dependency conflicts | Inspect `pip check`. Use a clean Lab 7 environment if inherited unrelated packages conflict; other labs' environments are not modified. |
-| PowerShell blocks scripts | Follow your organization's execution policy. The scripts do not change system policy. |
+The live smoke uses a unique Redis index/prefix and temporary SQLite database, uploads a document, asks the real model a question, checks its answer/citations, reopens SQLite, reindexes/deletes the document, and renders the real Streamlit UI. The launcher test starts and restarts `run.ps1` on port 8503, checks duplicate rejection, SQLite persistence and owned-child cleanup. It deliberately refuses an already occupied test port. The regression suite includes fault injection; those cases are not evidence of live service execution. See [VERIFICATION.md](VERIFICATION.md) for the current record.
 
 ## Optional REST API
-
-For API development, use the same shared initialization:
 
 ```powershell
 .\.venv\Scripts\python.exe -m uvicorn knowledge_copilot.api.app:app --host 127.0.0.1 --port 8000
 ```
 
-[API docs](http://localhost:8000/docs) are available only while this process runs.
-Routes include `/api/v1/health/live`, `/api/v1/health/ready`, `/api/v1/documents`,
-`/api/v1/chat`, and `/metrics`. The UI's optional HTTP mode requires this server.
+The API exposes `/api/v1/documents`, `/api/v1/chat`, session retrieval, health endpoints and `/metrics`. API documentation is available at http://localhost:8000/docs only while this server runs. The UI HTTP mode requires this separate server; standalone UI mode does not.
 
-## Verification and implementation
+## Diagnostics
 
-```powershell
-.\.venv\Scripts\python.exe -m unittest discover -s tests -v
-```
-
-See [VERIFICATION.md](VERIFICATION.md) for executed scenarios and limitations.
-Canonical code is in `src/knowledge_copilot/`; imports use the installed
-`knowledge_copilot` package. The notebook remains at
-`notebooks/01_final_project.ipynb`; compatibility entrypoints `app.py` and
-`web_app.py` remain available.
+- Docker unavailable: start Docker Desktop and verify `docker info`.
+- Missing model/cache/dependency: rerun setup with network access. Do not enable synthetic embedding fallback for application use.
+- LM Studio context overflow: reload the model with at least 16384 context tokens.
+- Unsupported tool calling/wrong ID: use the exact model ID reported by `/v1/models` and a tool-capable checkpoint.
+- Redis port 6380 or UI port occupied: inspect the owning application; configure an unused endpoint/port.
+- Errors after HTTP readiness: inspect `outputs/startup.log` and UI errors. An HTTP health response alone does not establish inference success.

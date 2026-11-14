@@ -136,14 +136,13 @@ def main():
         signal.signal(signal.SIGBREAK, interrupt)
     parser = argparse.ArgumentParser()
     parser.add_argument('--no-browser', action='store_true')
+    parser.add_argument('--port', type=int, default=8501)
     args = parser.parse_args()
+    if not 1 <= args.port <= 65535:
+        parser.error('--port must be between 1 and 65535')
     print('LAB 7 - ENGINEERING KNOWLEDGE COPILOT', flush=True)
     load_environment()
     os.chdir(ROOT)
-    dependencies()
-    from knowledge_copilot.config import LAB_ROOT
-    if LAB_ROOT != ROOT:
-        raise RuntimeError(f'Wrong editable installation ({LAB_ROOT}); run .\\setup.ps1 in {ROOT}.')
     outputs = ROOT / 'outputs'
     outputs.mkdir(exist_ok=True)
     lock = (outputs / 'startup.lock').open('a+b')
@@ -156,13 +155,17 @@ def main():
             try:
                 msvcrt.locking(lock.fileno(), msvcrt.LK_NBLCK, 1)
             except OSError as exc:
-                raise RuntimeError('Lab 7 launcher is already running. Use http://localhost:8501 or stop it with Ctrl+C.') from exc
+                raise RuntimeError(f'Lab 7 launcher is already running. Use http://localhost:{args.port} or stop it with Ctrl+C.') from exc
+        dependencies()
+        from knowledge_copilot.config import LAB_ROOT
+        if LAB_ROOT != ROOT:
+            raise RuntimeError(f'Wrong editable installation ({LAB_ROOT}); run .\\setup.ps1 in {ROOT}.')
         # Reserve/check the port before costly probes. Never terminate its owner.
         with socket.socket() as port:
             try:
-                port.bind(('127.0.0.1', 8501))
+                port.bind(('127.0.0.1', args.port))
             except OSError as exc:
-                raise RuntimeError('Port 8501 is occupied. Stop its application or the previous Lab 7 launcher.') from exc
+                raise RuntimeError(f'Port {args.port} is occupied. Stop its application or the previous Lab 7 launcher.') from exc
         if not shutil.which('docker'):
             raise RuntimeError('Docker CLI missing. Install Docker Desktop with Compose and start its Linux engine.')
         try:
@@ -209,16 +212,16 @@ def main():
             get_sqlite_repo()
             script = ROOT / 'src/knowledge_copilot/ui/streamlit_app.py'
             with (outputs / 'startup.log').open('w', encoding='utf-8') as log:
-                process = subprocess.Popen([sys.executable, '-m', 'streamlit', 'run', str(script), '--server.address', '127.0.0.1', '--server.port', '8501', '--server.headless', 'true', '--browser.gatherUsageStats', 'false'], cwd=ROOT, stdout=log, stderr=subprocess.STDOUT)
+                process = subprocess.Popen([sys.executable, '-m', 'streamlit', 'run', str(script), '--server.address', '127.0.0.1', '--server.port', str(args.port), '--server.headless', 'true', '--browser.gatherUsageStats', 'false'], cwd=ROOT, stdout=log, stderr=subprocess.STDOUT)
                 job.assign(process)
                 def frontend_ready():
-                    with urllib.request.urlopen('http://127.0.0.1:8501/_stcore/health', timeout=2) as response:
+                    with urllib.request.urlopen(f'http://127.0.0.1:{args.port}/_stcore/health', timeout=2) as response:
                         return response.status == 200 and response.read().strip() == b'ok'
                 wait_ready(frontend_ready, 'Streamlit', process=process)
                 ok('Application ready')
-                print('Web UI: http://localhost:8501\nStop: Ctrl+C in this terminal.', flush=True)
+                print(f'Web UI: http://localhost:{args.port}\nStop: Ctrl+C in this terminal.', flush=True)
                 if not args.no_browser:
-                    webbrowser.open('http://localhost:8501')
+                    webbrowser.open(f'http://localhost:{args.port}')
                 process.wait()
                 if process.returncode:
                     raise RuntimeError('Streamlit stopped unexpectedly; inspect outputs/startup.log.')
