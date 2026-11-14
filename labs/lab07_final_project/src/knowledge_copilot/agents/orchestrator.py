@@ -177,7 +177,7 @@ class AgentOrchestrator:
                     "citation": c.citation,
                     "section": c.chunk.section,
                     "text": c.chunk.text,
-                    "cosine_distance": round(c.score.score_value, 4),
+                    "score": c.score.to_dict(),
                     "ranking_position": c.score.ranking_position,
                 }
                 for c in new_chunks
